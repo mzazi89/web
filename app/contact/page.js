@@ -1,135 +1,78 @@
-'use client';
-import { useState } from 'react';
+import Link from 'next/link';
+
+const channels = [
+  {
+    icon: '💬',
+    title: 'Telegram Bot',
+    desc: 'Get instant support and link your WhatsApp bot via our Telegram bot.',
+    action: 'Message @mrsmzazixdbot',
+    href: 'https://t.me/mrsmzazixdbot',
+  },
+  {
+    icon: '📱',
+    title: 'WhatsApp',
+    desc: 'Chat with our support team directly on WhatsApp for quick responses.',
+    action: 'Chat on WhatsApp',
+    href: 'https://wa.me/254',
+  },
+  {
+    icon: '📧',
+    title: 'Email',
+    desc: 'Send us an email for billing, partnerships, and formal inquiries.',
+    action: 'support@mzazitech.com',
+    href: 'mailto:support@mzazitech.com',
+  },
+];
 
 export default function ContactPage() {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    message: ''
-  });
-  const [submitted, setSubmitted] = useState(false);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Here you would typically send the form data to your backend
-    console.log('Form submitted:', formData);
-    setSubmitted(true);
-  };
-
   return (
-    <div>
-      <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-16">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <h1 className="text-4xl font-bold mb-4">Contact Us</h1>
-          <p className="text-xl text-blue-100">
-            Get in touch with our team
-          </p>
+    <div style={{ backgroundColor: '#0a0a0f' }}>
+      <section className="relative py-24" style={{ background: 'linear-gradient(180deg, #071428, #0a0a0f)' }}>
+        <div className="absolute inset-0" style={{
+          backgroundImage: 'linear-gradient(rgba(37,99,235,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(37,99,235,0.05) 1px, transparent 1px)',
+          backgroundSize: '40px 40px'
+        }} />
+        <div className="relative max-w-3xl mx-auto px-4 text-center">
+          <h1 className="text-5xl font-extrabold mb-4" style={{ color: '#f0f4ff' }}>Contact Us</h1>
+          <p className="text-lg" style={{ color: '#64748b' }}>We're here to help. Reach out through any of the channels below and our team will respond promptly.</p>
         </div>
       </section>
 
-      <section className="py-16">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-            {/* Contact Form */}
-            <div>
-              <h2 className="text-3xl font-bold mb-6">Send us a Message</h2>
-              {submitted ? (
-                <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
-                  Thank you for your message! We'll get back to you soon.
-                </div>
-              ) : (
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div>
-                    <label className="block text-gray-700 mb-2">Name</label>
-                    <input
-                      type="text"
-                      required
-                      className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      value={formData.name}
-                      onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-gray-700 mb-2">Email</label>
-                    <input
-                      type="email"
-                      required
-                      className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      value={formData.email}
-                      onChange={(e) => setFormData({...formData, email: e.target.value})}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-gray-700 mb-2">Subject</label>
-                    <input
-                      type="text"
-                      required
-                      className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      value={formData.subject}
-                      onChange={(e) => setFormData({...formData, subject: e.target.value})}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-gray-700 mb-2">Message</label>
-                    <textarea
-                      required
-                      rows="5"
-                      className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      value={formData.message}
-                      onChange={(e) => setFormData({...formData, message: e.target.value})}
-                    ></textarea>
-                  </div>
-                  <button
-                    type="submit"
-                    className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition"
-                  >
-                    Send Message
-                  </button>
-                </form>
-              )}
-            </div>
-
-            {/* Contact Info */}
-            <div>
-              <h2 className="text-3xl font-bold mb-6">Contact Information</h2>
-              <div className="space-y-6">
-                <div className="flex items-start space-x-4">
-                  <div className="text-2xl">📍</div>
-                  <div>
-                    <h3 className="font-bold text-lg">Address</h3>
-                    <p className="text-gray-600">Tech Hub, Innovation Street<br />Nairobi, Kenya</p>
-                  </div>
-                </div>
-                <div className="flex items-start space-x-4">
-                  <div className="text-2xl">📧</div>
-                  <div>
-                    <h3 className="font-bold text-lg">Email</h3>
-                    <p className="text-gray-600">info@mzazitech.com</p>
-                    <p className="text-gray-600">support@mzazitech.com</p>
-                  </div>
-                </div>
-                <div className="flex items-start space-x-4">
-                  <div className="text-2xl">📞</div>
-                  <div>
-                    <h3 className="font-bold text-lg">Phone</h3>
-                    <p className="text-gray-600">+254 700 000 000</p>
-                  </div>
-                </div>
-                <div className="flex items-start space-x-4">
-                  <div className="text-2xl">🕐</div>
-                  <div>
-                    <h3 className="font-bold text-lg">Business Hours</h3>
-                    <p className="text-gray-600">Monday - Friday: 8:00 AM - 6:00 PM</p>
-                    <p className="text-gray-600">Saturday: 9:00 AM - 1:00 PM</p>
-                  </div>
-                </div>
+      <section className="py-20" style={{ backgroundColor: '#0a0a0f' }}>
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+            {channels.map(c => (
+              <div key={c.title} className="p-6 rounded-2xl text-center transition-all hover:scale-105" style={{ backgroundColor: '#16182a', border: '1px solid #1e2d4a' }}>
+                <div className="text-4xl mb-4">{c.icon}</div>
+                <h3 className="font-bold text-lg mb-2" style={{ color: '#f0f4ff' }}>{c.title}</h3>
+                <p className="text-sm mb-6" style={{ color: '#64748b' }}>{c.desc}</p>
+                <a href={c.href} target="_blank" rel="noopener noreferrer"
+                  className="inline-block px-5 py-2.5 rounded-xl text-sm font-semibold transition-all"
+                  style={{ background: 'linear-gradient(135deg, #2563eb, #1d4ed8)', color: '#fff' }}>
+                  {c.action}
+                </a>
               </div>
+            ))}
+          </div>
 
-              {/* Map placeholder */}
-              <div className="mt-8 bg-gray-200 rounded-lg h-64 flex items-center justify-center">
-                <p className="text-gray-500">Map Integration Coming Soon</p>
-              </div>
+          <div className="rounded-2xl p-8" style={{ backgroundColor: '#16182a', border: '1px solid rgba(37,99,235,0.3)' }}>
+            <h2 className="text-2xl font-bold mb-3" style={{ color: '#f0f4ff' }}>Quick Links</h2>
+            <p className="mb-6" style={{ color: '#64748b' }}>Looking for something specific? These links might help.</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {[
+                { label: 'Deploy a Panel', href: '/products', desc: 'Set up a new Pterodactyl server' },
+                { label: 'WhatsApp Bot Setup', href: '/whatsapp-bot', desc: 'Link your WhatsApp via Telegram' },
+                { label: 'Top Up Wallet', href: '/wallet', desc: 'Add funds via M-Pesa or card' },
+                { label: 'Dashboard', href: '/dashboard', desc: 'Manage all your services' },
+              ].map(l => (
+                <Link key={l.href} href={l.href} className="flex items-start space-x-3 p-4 rounded-xl transition-all hover:scale-[1.02]"
+                  style={{ backgroundColor: '#0d1117', border: '1px solid #1e2d4a' }}>
+                  <div>
+                    <p className="font-semibold text-sm" style={{ color: '#60a5fa' }}>{l.label}</p>
+                    <p className="text-xs mt-0.5" style={{ color: '#475569' }}>{l.desc}</p>
+                  </div>
+                </Link>
+              ))}
             </div>
           </div>
         </div>

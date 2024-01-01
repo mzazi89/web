@@ -11,23 +11,16 @@ export async function GET() {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get('token');
-
-    if (!token) {
-      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
-    }
-
+    if (!token) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     const decoded = jwt.verify(token.value, JWT_SECRET);
-    const rows = await sql`
-      SELECT id, firstname, lastname, fullname, email, created_at 
-      FROM users WHERE id = ${decoded.userId}
+
+    const panels = await sql`
+      SELECT * FROM panels WHERE user_id = ${decoded.userId} ORDER BY created_at DESC
     `;
 
-    if (rows.length === 0) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-
-    return NextResponse.json({ user: rows[0] });
+    return NextResponse.json({ panels });
   } catch (error) {
-    return NextResponse.json({ error: 'Invalid or expired session' }, { status: 401 });
+    console.error('Panel list error:', error);
+    return NextResponse.json({ error: 'Failed to fetch panels' }, { status: 500 });
   }
 }
