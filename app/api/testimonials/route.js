@@ -3,9 +3,23 @@ import sql from '../../../lib/database';
 
 export const dynamic = 'force-dynamic';
 
+async function ensureTable() {
+  await sql`
+    CREATE TABLE IF NOT EXISTS testimonials (
+      id SERIAL PRIMARY KEY,
+      name VARCHAR(100) NOT NULL,
+      rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
+      message TEXT NOT NULL,
+      approved BOOLEAN DEFAULT true,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `;
+}
+
 // GET all approved testimonials
 export async function GET() {
   try {
+    await ensureTable();
     const testimonials = await sql`
       SELECT id, name, rating, message, created_at
       FROM testimonials
@@ -23,6 +37,8 @@ export async function GET() {
 // POST a new testimonial
 export async function POST(request) {
   try {
+    await ensureTable();
+
     const body = await request.json();
     const { name, rating, message } = body;
 
