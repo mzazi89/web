@@ -1,15 +1,28 @@
 'use client';
-import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 
-export default function PaymentCallback() {
-  const [status, setStatus] = useState('verifying');
-  const [credentials, setCredentials] = useState(null);
-  const [error, setError] = useState(null);
+// Loading component while Suspense resolves
+function LoadingState() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
+        <h2 className="text-2xl font-bold text-gray-800">Loading payment details...</h2>
+        <p className="text-gray-600 mt-2">Please wait</p>
+      </div>
+    </div>
+  );
+}
+
+// Main component with useSearchParams
+function PaymentCallbackContent() {
+  const [status, setStatus] = React.useState('verifying');
+  const [credentials, setCredentials] = React.useState(null);
+  const [error, setError] = React.useState(null);
   const searchParams = useSearchParams();
   const reference = searchParams.get('reference');
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (reference) {
       verifyPayment();
     }
@@ -68,12 +81,28 @@ export default function PaymentCallback() {
 
               <div className="bg-white p-4 rounded border">
                 <label className="text-sm text-gray-600 font-medium">Username</label>
-                <p className="text-lg font-mono break-all">{credentials.username}</p>
+                <div className="flex items-center justify-between">
+                  <p className="text-lg font-mono break-all">{credentials.username}</p>
+                  <button
+                    onClick={() => navigator.clipboard.writeText(credentials.username)}
+                    className="text-blue-600 hover:text-blue-800 text-sm"
+                  >
+                    Copy
+                  </button>
+                </div>
               </div>
 
               <div className="bg-white p-4 rounded border">
                 <label className="text-sm text-gray-600 font-medium">Password</label>
-                <p className="text-lg font-mono break-all">{credentials.password}</p>
+                <div className="flex items-center justify-between">
+                  <p className="text-lg font-mono break-all">{credentials.password}</p>
+                  <button
+                    onClick={() => navigator.clipboard.writeText(credentials.password)}
+                    className="text-blue-600 hover:text-blue-800 text-sm"
+                  >
+                    Copy
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -86,7 +115,7 @@ export default function PaymentCallback() {
             </p>
           </div>
 
-          <div className="flex space-x-4">
+          <div className="flex flex-col sm:flex-row gap-4">
             <button
               onClick={() => window.open(credentials.panel_link, '_blank')}
               className="flex-1 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition"
@@ -112,7 +141,7 @@ export default function PaymentCallback() {
           <div className="text-6xl mb-4">❌</div>
           <h1 className="text-3xl font-bold text-red-600 mb-4">Payment Failed</h1>
           <p className="text-gray-600 mb-6">{error}</p>
-          <div className="space-x-4">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
               onClick={() => window.location.href = '/products'}
               className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition"
@@ -130,4 +159,13 @@ export default function PaymentCallback() {
       </div>
     );
   }
+}
+
+// Main export wrapped in Suspense
+export default function PaymentCallback() {
+  return (
+    <Suspense fallback={<LoadingState />}>
+      <PaymentCallbackContent />
+    </Suspense>
+  );
 }
