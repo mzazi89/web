@@ -4,9 +4,10 @@ import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { neon } from '@neondatabase/serverless';
 
+export const dynamic = 'force-dynamic';
+
 const sql = neon(process.env.DATABASE_URL);
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-this';
-
 export async function POST(request) {
   try {
     const { email, password } = await request.json();
