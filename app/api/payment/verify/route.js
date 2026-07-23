@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import https from 'https';
-import db from '@/lib/database';
+import { sql } from '@vercel/postgres';
 
-const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY || 'sk_test_your_secret_key';
+const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
 
 export async function GET(request) {
   try {
@@ -27,15 +27,9 @@ export async function GET(request) {
     const verificationResponse = await new Promise((resolve, reject) => {
       https.get(options, res => {
         let data = '';
-        res.on('data', chunk => {
-          data += chunk;
-        });
-        res.on('end', () => {
-          resolve(JSON.parse(data));
-        });
-      }).on('error', error => {
-        reject(error);
-      });
+        res.on('data', chunk => data += chunk);
+        res.on('end', () => resolve(JSON.parse(data)));
+      }).on('error', reject);
     });
 
     if (verificationResponse.status && verificationResponse.data.status === 'success') {
@@ -53,18 +47,18 @@ export async function GET(request) {
         package: metadata.package_name
       });
 
-      // Update order status
-      db.prepare(`
+      // Update order
+      await sql`
         UPDATE orders 
-        SET status = 'completed', pterodactyl_credentials = ? 
-        WHERE reference = ?
-      `).run(credentials, reference);
+        SET status = 'completed', pterodactyl_credentials = ${credentials} 
+        WHERE reference = ${reference}
+      `;
 
       // Record payment
-      db.prepare(`
+      await sql`
         INSERT INTO payments (reference, amount, status, paid_at) 
-        VALUES (?, ?, 'success', datetime('now'))
-      `).run(reference, verificationResponse.data.amount / 100);
+        VALUES (${reference}, ${verificationResponse.data.amount / 100}, 'success', NOW())
+      `;
 
       return NextResponse.json({
         status: true,
@@ -76,9 +70,9 @@ export async function GET(request) {
         }
       });
     } else {
-      // Update order as failed
-      db.prepare('UPDATE orders SET status = ? WHERE reference = ?')
-        .run('failed', reference);
+      await sql`
+        UPDATE orders SET status = 'failed' WHERE reference = ${reference}
+      `;
 
       return NextResponse.json({
         status: false,
