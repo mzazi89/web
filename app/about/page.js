@@ -28,7 +28,7 @@ export default function AboutPage() {
             </span>
           </h1>
           <p className="text-lg" style={{ color: '#64748b' }}>
-            MZAZI TECH INC is a Kenyan technology company specializing in game server hosting, WhatsApp automation, and digital infrastructure solutions. We believe powerful technology should be affordable and accessible to everyone.
+            MZAZI TECH INC is a Kenyan Tech Company specializing in game server hosting, WhatsApp automation, and digital infrastructure solutions. We believe powerful technology should be affordable and accessible to everyone.
           </p>
         </div>
       </section>
@@ -43,7 +43,7 @@ export default function AboutPage() {
                 To democratize access to powerful cloud infrastructure for Kenyan businesses and individuals. We offer enterprise-level Pterodactyl panel hosting at prices anyone can afford — starting from just KSH 50/month.
               </p>
               <p className="text-lg" style={{ color: '#64748b' }}>
-                From small WhatsApp bots to large-scale game servers, we provide the infrastructure backbone so you can focus on what matters — building your product.
+                From small WhatsApp bots to large-scale game servers and perodactly panel for whatsapp bot, we provide the infrastructure backbone so you can focus on what matters — building your product.
               </p>
             </div>
             <div className="grid grid-cols-2 gap-4">
