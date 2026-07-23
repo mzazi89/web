@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import https from 'https';
 import { neon } from '@neondatabase/serverless';
 
+// Add this line to force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 const sql = neon(process.env.DATABASE_URL);
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
 
