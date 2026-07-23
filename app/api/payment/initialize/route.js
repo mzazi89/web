@@ -2,8 +2,9 @@ import { NextResponse } from 'next/server';
 import https from 'https';
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
-import { sql } from '@vercel/postgres';
+import { neon } from '@neondatabase/serverless';
 
+const sql = neon(process.env.DATABASE_URL);
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
 
 export async function POST(request) {
@@ -16,14 +17,14 @@ export async function POST(request) {
     }
 
     const decoded = jwt.verify(token.value, process.env.JWT_SECRET);
-    const { rows } = await sql`SELECT * FROM users WHERE id = ${decoded.userId}`;
+    const rows = await sql`SELECT * FROM users WHERE id = ${decoded.userId}`;
     const user = rows[0];
 
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 401 });
     }
 
-    const { packageName, amount, type } = await request.json();
+    const { packageName, amount } = await request.json();
     const reference = `MZAZI-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
     await sql`
@@ -38,8 +39,7 @@ export async function POST(request) {
       callback_url: `${process.env.NEXT_PUBLIC_BASE_URL}/payment/callback`,
       metadata: {
         user_id: user.id,
-        package_name: packageName,
-        type: type
+        package_name: packageName
       }
     });
 
