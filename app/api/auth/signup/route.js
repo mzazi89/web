@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
-import { sql } from '@vercel/postgres';
+import { neon } from '@neondatabase/serverless';
+
+const sql = neon(process.env.DATABASE_URL);
 
 export async function POST(request) {
   try {
@@ -14,7 +16,7 @@ export async function POST(request) {
     }
 
     // Check if user exists
-    const { rows } = await sql`SELECT * FROM users WHERE email = ${email}`;
+    const rows = await sql`SELECT * FROM users WHERE email = ${email}`;
     if (rows.length > 0) {
       return NextResponse.json(
         { error: 'User already exists' },
@@ -35,7 +37,7 @@ export async function POST(request) {
     return NextResponse.json(
       { 
         message: 'User created successfully', 
-        userId: result.rows[0].id 
+        userId: result[0].id 
       },
       { status: 201 }
     );
