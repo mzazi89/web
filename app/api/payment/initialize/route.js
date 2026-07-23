@@ -5,7 +5,6 @@ import { cookies } from 'next/headers';
 import { sql } from '@vercel/postgres';
 
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
-const JWT_SECRET = process.env.JWT_SECRET;
 
 export async function POST(request) {
   try {
@@ -16,9 +15,9 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const decoded = jwt.verify(token.value, JWT_SECRET);
-    const result = await sql`SELECT * FROM users WHERE id = ${decoded.userId}`;
-    const user = result.rows[0];
+    const decoded = jwt.verify(token.value, process.env.JWT_SECRET);
+    const { rows } = await sql`SELECT * FROM users WHERE id = ${decoded.userId}`;
+    const user = rows[0];
 
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 401 });
@@ -27,13 +26,11 @@ export async function POST(request) {
     const { packageName, amount, type } = await request.json();
     const reference = `MZAZI-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
-    // Create order
     await sql`
-      INSERT INTO orders (user_id, package_name, amount, type, reference, status) 
-      VALUES (${user.id}, ${packageName}, ${amount}, ${type}, ${reference}, 'pending')
+      INSERT INTO orders (user_id, package_name, amount, reference, status) 
+      VALUES (${user.id}, ${packageName}, ${amount}, ${reference}, 'pending')
     `;
 
-    // Initialize Paystack payment
     const params = JSON.stringify({
       email: user.email,
       amount: amount * 100,
