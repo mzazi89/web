@@ -15,7 +15,8 @@
     "bcryptjs": "^2.4.3",
     "jsonwebtoken": "^9.0.2",
     "axios": "^1.7.9",
-    "cookies-next": "^4.3.0"
+    "cookies-next": "^4.3.0",
+    "next-auth": "^4.24.7"
   },
   "devDependencies": {
     "tailwindcss": "^3.4.17",
