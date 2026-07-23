@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
-import db from '@/lib/database';
+import { sql } from '@vercel/postgres';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-this';
 
@@ -11,7 +11,9 @@ export async function POST(request) {
     const { email, password } = await request.json();
 
     // Find user
-    const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email);
+    const result = await sql`SELECT * FROM users WHERE email = ${email}`;
+    const user = result.rows[0];
+
     if (!user) {
       return NextResponse.json(
         { error: 'Invalid credentials' },
@@ -40,7 +42,7 @@ export async function POST(request) {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 // 7 days
+      maxAge: 7 * 24 * 60 * 60
     });
 
     return NextResponse.json({
