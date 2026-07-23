@@ -16,18 +16,28 @@ async function ensureTable() {
   `;
 }
 
-// GET all approved testimonials
-export async function GET() {
+// GET testimonials with pagination — ?offset=0&limit=6
+export async function GET(request) {
   try {
     await ensureTable();
+
+    const { searchParams } = new URL(request.url);
+    const offset = Math.max(0, parseInt(searchParams.get('offset') || '0', 10));
+    const limit  = Math.min(50, Math.max(1, parseInt(searchParams.get('limit') || '6', 10)));
+
+    const [{ count }] = await sql`
+      SELECT COUNT(*)::int AS count FROM testimonials WHERE approved = true
+    `;
+
     const testimonials = await sql`
       SELECT id, name, rating, message, created_at
       FROM testimonials
       WHERE approved = true
       ORDER BY created_at DESC
-      LIMIT 50
+      LIMIT ${limit} OFFSET ${offset}
     `;
-    return NextResponse.json({ testimonials });
+
+    return NextResponse.json({ testimonials, total: count });
   } catch (error) {
     console.error('Failed to fetch testimonials:', error);
     return NextResponse.json({ error: 'Failed to fetch testimonials' }, { status: 500 });
@@ -50,11 +60,9 @@ export async function POST(request) {
     if (ratingNum < 1 || ratingNum > 5) {
       return NextResponse.json({ error: 'Rating must be between 1 and 5.' }, { status: 400 });
     }
-
     if (name.trim().length < 2 || name.trim().length > 100) {
       return NextResponse.json({ error: 'Name must be between 2 and 100 characters.' }, { status: 400 });
     }
-
     if (message.trim().length < 10 || message.trim().length > 1000) {
       return NextResponse.json({ error: 'Message must be between 10 and 1000 characters.' }, { status: 400 });
     }
