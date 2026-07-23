@@ -10,9 +10,8 @@ export async function POST(request) {
   try {
     const { email, password } = await request.json();
 
-    // Find user
-    const result = await sql`SELECT * FROM users WHERE email = ${email}`;
-    const user = result.rows[0];
+    const { rows } = await sql`SELECT * FROM users WHERE email = ${email}`;
+    const user = rows[0];
 
     if (!user) {
       return NextResponse.json(
@@ -21,7 +20,6 @@ export async function POST(request) {
       );
     }
 
-    // Check password
     const isValidPassword = await bcrypt.compare(password, user.password);
     if (!isValidPassword) {
       return NextResponse.json(
@@ -30,15 +28,14 @@ export async function POST(request) {
       );
     }
 
-    // Create JWT token
     const token = jwt.sign(
       { userId: user.id, email: user.email },
       JWT_SECRET,
       { expiresIn: '7d' }
     );
 
-    // Set cookie
-    cookies().set('token', token, {
+    const cookieStore = cookies();
+    cookieStore.set('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
