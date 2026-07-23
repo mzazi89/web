@@ -1,20 +1,25 @@
 {
   "name": "mzazi-tech",
   "version": "1.0.0",
+  "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "lint": "next lint",
+    "db:init": "node -e \"require('./lib/database').initializeDatabase()\""
   },
   "dependencies": {
-    "next": "14.0.0",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "better-sqlite3": "^9.4.3",
+    "@vercel/postgres": "^0.10.0",
+    "next": "14.2.29",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "bcryptjs": "^2.4.3",
     "jsonwebtoken": "^9.0.2",
     "axios": "^1.6.2",
-    "cookies-next": "^4.1.0",
+    "cookies-next": "^4.1.0"
+  },
+  "devDependencies": {
     "tailwindcss": "^3.3.6",
     "autoprefixer": "^10.4.16",
     "postcss": "^8.4.32"
