@@ -14,8 +14,8 @@ export async function POST(request) {
     }
 
     // Check if user exists
-    const existingUser = await sql`SELECT * FROM users WHERE email = ${email}`;
-    if (existingUser.rows.length > 0) {
+    const { rows } = await sql`SELECT * FROM users WHERE email = ${email}`;
+    if (rows.length > 0) {
       return NextResponse.json(
         { error: 'User already exists' },
         { status: 400 }
@@ -33,7 +33,10 @@ export async function POST(request) {
     `;
 
     return NextResponse.json(
-      { message: 'User created successfully', userId: result.rows[0].id },
+      { 
+        message: 'User created successfully', 
+        userId: result.rows[0].id 
+      },
       { status: 201 }
     );
   } catch (error) {
