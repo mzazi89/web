@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import https from 'https';
-import { sql } from '@vercel/postgres';
+import { neon } from '@neondatabase/serverless';
 
+const sql = neon(process.env.DATABASE_URL);
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
 
 export async function GET(request) {
