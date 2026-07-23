@@ -13,7 +13,6 @@ export async function GET(request) {
       return NextResponse.json({ error: 'No reference provided' }, { status: 400 });
     }
 
-    // Verify payment with Paystack
     const options = {
       hostname: 'api.paystack.co',
       port: 443,
@@ -35,7 +34,6 @@ export async function GET(request) {
     if (verificationResponse.status && verificationResponse.data.status === 'success') {
       const { metadata } = verificationResponse.data;
       
-      // Generate Pterodactyl credentials
       const username = `user_${metadata.user_id}_${Date.now()}`;
       const password = Math.random().toString(36).slice(-10) + Math.random().toString(36).slice(-10);
       const panelLink = `https://panel.mzazitech.com`;
@@ -47,14 +45,12 @@ export async function GET(request) {
         package: metadata.package_name
       });
 
-      // Update order
       await sql`
         UPDATE orders 
         SET status = 'completed', pterodactyl_credentials = ${credentials} 
         WHERE reference = ${reference}
       `;
 
-      // Record payment
       await sql`
         INSERT INTO payments (reference, amount, status, paid_at) 
         VALUES (${reference}, ${verificationResponse.data.amount / 100}, 'success', NOW())
