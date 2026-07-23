@@ -13,14 +13,14 @@ const channels = [
     title: 'WhatsApp',
     desc: 'Chat with our support team directly on WhatsApp for quick responses.',
     action: 'Chat on WhatsApp',
-    href: 'https://wa.me/254',
+    href: 'https://wa.me/254108595201',
   },
   {
     icon: '📧',
     title: 'Email',
     desc: 'Send us an email for billing, partnerships, and formal inquiries.',
-    action: 'support@mzazitech.com',
-    href: 'mailto:support@mzazitech.com',
+    action: 'mzazitechinc@gmail.com',
+    href: 'mzazitechinc@gmail.com',
   },
 ];
 
