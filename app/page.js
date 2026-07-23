@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Testimonials from '../components/Testimonials';
 
 const stats = [
   { value: '500+', label: 'Active Panels' },
@@ -75,67 +76,18 @@ export default function Home() {
               style={{ background: 'linear-gradient(135deg, #2563eb, #1d4ed8)', boxShadow: '0 0 30px rgba(37,99,235,0.4)' }}>
               View Plans — From KSH 50
             </Link>
-            <Link href="/signup" className="px-8 py-4 rounded-xl font-bold text-lg transition-all duration-200 inline-block"
+            <Link href="/about" className="px-8 py-4 rounded-xl font-bold text-lg inline-block transition-all duration-200"
               style={{ backgroundColor: 'rgba(37,99,235,0.1)', color: '#60a5fa', border: '1px solid rgba(37,99,235,0.3)' }}>
-              Create Free Account
+              Learn More
             </Link>
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-20">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-20 max-w-4xl mx-auto">
             {stats.map(s => (
-              <div key={s.label} className="p-6 rounded-xl" style={{ backgroundColor: 'rgba(22,24,42,0.8)', border: '1px solid #1e2d4a' }}>
-                <div className="text-3xl font-extrabold mb-1" style={{ color: '#3b82f6' }}>{s.value}</div>
+              <div key={s.label} className="p-6 rounded-2xl" style={{ backgroundColor: 'rgba(37,99,235,0.07)', border: '1px solid rgba(37,99,235,0.15)' }}>
+                <div className="text-3xl font-extrabold mb-1" style={{ color: '#60a5fa' }}>{s.value}</div>
                 <div className="text-sm" style={{ color: '#64748b' }}>{s.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Panel Packages Preview */}
-      <section className="py-20" style={{ backgroundColor: '#0a0a0f' }}>
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-14">
-            <span className="text-sm font-semibold uppercase tracking-wider px-4 py-1.5 rounded-full mb-4 inline-block" style={{ backgroundColor: 'rgba(37,99,235,0.1)', color: '#60a5fa', border: '1px solid rgba(37,99,235,0.3)' }}>
-              Pterodactyl Panels
-            </span>
-            <h2 className="text-4xl font-extrabold mt-4" style={{ color: '#f0f4ff' }}>Affordable Hosting Plans</h2>
-            <p className="mt-3 text-lg" style={{ color: '#64748b' }}>Deploy your game server in under 2 minutes</p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {packages.map(pkg => (
-              <div key={pkg.name} className="relative rounded-2xl p-6 transition-all duration-300"
-                style={{
-                  backgroundColor: '#16182a',
-                  border: pkg.popular ? '1px solid #2563eb' : '1px solid #1e2d4a',
-                  boxShadow: pkg.popular ? '0 0 30px rgba(37,99,235,0.2)' : 'none',
-                }}>
-                {pkg.popular && (
-                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                    <span className="text-xs font-bold px-3 py-1 rounded-full" style={{ background: 'linear-gradient(135deg, #2563eb, #1d4ed8)', color: '#fff' }}>POPULAR</span>
-                  </div>
-                )}
-                <h3 className="font-bold text-lg mb-1" style={{ color: '#f0f4ff' }}>{pkg.name}</h3>
-                <div className="mb-4">
-                  <span className="text-3xl font-extrabold" style={{ color: '#3b82f6' }}>KSH {pkg.price}</span>
-                  <span className="text-sm" style={{ color: '#64748b' }}>/month</span>
-                </div>
-                <ul className="space-y-2 mb-6">
-                  {[pkg.cpu, pkg.ram].map(spec => (
-                    <li key={spec} className="flex items-center space-x-2 text-sm">
-                      <svg className="w-4 h-4 flex-shrink-0" style={{ color: '#3b82f6' }} fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-                      </svg>
-                      <span style={{ color: '#cbd5e1' }}>{spec}</span>
-                    </li>
-                  ))}
-                </ul>
-                <Link href="/products" className="block w-full text-center py-2.5 rounded-xl text-sm font-semibold transition-all"
-                  style={{ background: 'linear-gradient(135deg, #2563eb, #1d4ed8)', color: '#fff' }}>
-                  Deploy Now
-                </Link>
               </div>
             ))}
           </div>
@@ -167,6 +119,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Testimonials */}
+      <Testimonials />
 
       {/* CTA */}
       <section className="py-20 relative overflow-hidden" style={{ backgroundColor: '#0a0a0f' }}>
