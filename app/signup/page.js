@@ -48,7 +48,7 @@ export default function SignupPage() {
         setSuccess('Account created! Redirecting...');
         setTimeout(() => router.push('/login'), 1500);
       } else {
-        setError(data.error || 'Signup failed. Try again.');
+        setError(data.error || 'Signup failed. Try again.' + (data.detail ? `: ${data.detail}` : ''));
       }
     } catch (err) {
       setError('Network error. Please try again.');
