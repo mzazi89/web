@@ -1,5 +1,6 @@
 'use client';
-import { Suspense } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 
 // Loading component while Suspense resolves
 function LoadingState() {
@@ -16,13 +17,13 @@ function LoadingState() {
 
 // Main component with useSearchParams
 function PaymentCallbackContent() {
-  const [status, setStatus] = React.useState('verifying');
-  const [credentials, setCredentials] = React.useState(null);
-  const [error, setError] = React.useState(null);
+  const [status, setStatus] = useState('verifying');
+  const [credentials, setCredentials] = useState(null);
+  const [error, setError] = useState(null);
   const searchParams = useSearchParams();
   const reference = searchParams.get('reference');
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (reference) {
       verifyPayment();
     }
@@ -85,7 +86,7 @@ function PaymentCallbackContent() {
                   <p className="text-lg font-mono break-all">{credentials.username}</p>
                   <button
                     onClick={() => navigator.clipboard.writeText(credentials.username)}
-                    className="text-blue-600 hover:text-blue-800 text-sm"
+                    className="text-blue-600 hover:text-blue-800 text-sm ml-2"
                   >
                     Copy
                   </button>
@@ -98,7 +99,7 @@ function PaymentCallbackContent() {
                   <p className="text-lg font-mono break-all">{credentials.password}</p>
                   <button
                     onClick={() => navigator.clipboard.writeText(credentials.password)}
-                    className="text-blue-600 hover:text-blue-800 text-sm"
+                    className="text-blue-600 hover:text-blue-800 text-sm ml-2"
                   >
                     Copy
                   </button>
