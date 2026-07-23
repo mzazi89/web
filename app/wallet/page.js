@@ -1,8 +1,9 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-export default function WalletPage() {
+// Separate component so useSearchParams() is inside a Suspense boundary
+function WalletInner() {
   const [user, setUser] = useState(null);
   const [balance, setBalance] = useState(0);
   const [transactions, setTransactions] = useState([]);
@@ -14,7 +15,6 @@ export default function WalletPage() {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    checkAuth();
     // Handle Paystack callback messages
     const success = searchParams.get('success');
     const error = searchParams.get('error');
@@ -26,6 +26,7 @@ export default function WalletPage() {
     } else if (error) {
       setMessage({ type: 'error', text: 'Payment failed or was cancelled. Please try again.' });
     }
+    checkAuth();
   }, []);
 
   const checkAuth = async () => {
@@ -108,97 +109,76 @@ export default function WalletPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Balance Card */}
-          <div className="rounded-2xl p-6" style={{ backgroundColor: '#16182a', border: '1px solid #1e2d4a' }}>
-            <div className="flex items-center space-x-3 mb-6">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #2563eb, #1d4ed8)' }}>
-                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                </svg>
-              </div>
-              <div>
-                <p className="text-xs" style={{ color: '#64748b' }}>Available Balance</p>
-                <p className="text-3xl font-extrabold" style={{ color: '#3b82f6' }}>KSH {balance.toLocaleString()}</p>
-              </div>
-            </div>
-
-            <div className="p-4 rounded-xl mb-4" style={{ backgroundColor: 'rgba(37,99,235,0.06)', border: '1px solid rgba(37,99,235,0.15)' }}>
-              <p className="text-xs" style={{ color: '#64748b' }}>
-                💡 Your wallet balance is deducted automatically when you create a new panel. Top up before deploying.
+          <div className="rounded-2xl p-6" style={{ backgroundColor: '#0f1629', border: '1px solid #1e2d4a' }}>
+            <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: '#475569' }}>Available Balance</p>
+            <p className="text-4xl font-extrabold" style={{ color: '#3b82f6' }}>
+              KSH {parseFloat(balance).toLocaleString()}
+            </p>
+            {user && (
+              <p className="mt-3 text-sm" style={{ color: '#64748b' }}>
+                Account: <span style={{ color: '#94a3b8' }}>{user.email}</span>
               </p>
-            </div>
-
-            <div className="space-y-2">
-              {[
-                { label: 'Starter Panel', cost: 50 },
-                { label: 'Standard Panel', cost: 75 },
-                { label: 'Premium Panel', cost: 100 },
-                { label: 'Ultimate Panel', cost: 120 },
-              ].map(pkg => (
-                <div key={pkg.label} className="flex justify-between text-xs" style={{ color: '#64748b' }}>
-                  <span>{pkg.label}</span>
-                  <span style={{ color: balance >= pkg.cost ? '#4ade80' : '#f87171' }}>
-                    {balance >= pkg.cost ? '✓' : '✗'} KSH {pkg.cost}
-                  </span>
-                </div>
-              ))}
-            </div>
+            )}
           </div>
 
           {/* Deposit Form */}
-          <div className="rounded-2xl p-6" style={{ backgroundColor: '#16182a', border: '1px solid #1e2d4a' }}>
-            <h2 className="text-lg font-bold mb-6" style={{ color: '#f0f4ff' }}>Top Up Wallet</h2>
-
-            {/* Quick amounts */}
-            <div className="mb-5">
-              <p className="text-xs font-medium mb-3" style={{ color: '#64748b' }}>Quick amounts (KSH)</p>
-              <div className="grid grid-cols-3 gap-2">
-                {quickAmounts.map(amt => (
-                  <button key={amt}
-                    onClick={() => setDepositAmount(amt.toString())}
-                    className="py-2 rounded-xl text-sm font-semibold transition-all"
-                    style={{
-                      backgroundColor: depositAmount === amt.toString() ? 'rgba(37,99,235,0.3)' : 'rgba(37,99,235,0.1)',
-                      border: depositAmount === amt.toString() ? '1px solid #2563eb' : '1px solid rgba(37,99,235,0.2)',
-                      color: '#60a5fa',
-                    }}>
-                    {amt}
-                  </button>
-                ))}
-              </div>
-            </div>
-
+          <div className="rounded-2xl p-6" style={{ backgroundColor: '#0f1629', border: '1px solid #1e2d4a' }}>
+            <p className="text-xs font-semibold uppercase tracking-wider mb-4" style={{ color: '#475569' }}>Deposit Funds</p>
             <form onSubmit={handleDeposit}>
-              <div className="mb-5">
-                <label className="block text-sm font-medium mb-2" style={{ color: '#94a3b8' }}>Custom Amount (KSH)</label>
+              <div className="mb-3">
+                <label className="block text-xs mb-1" style={{ color: '#64748b' }}>Amount (KSH)</label>
                 <input
                   type="number"
                   min="10"
                   value={depositAmount}
                   onChange={e => setDepositAmount(e.target.value)}
-                  className="w-full rounded-xl px-4 py-3 text-sm outline-none"
-                  style={{ backgroundColor: '#0d1117', border: '1px solid #1e2d4a', color: '#f0f4ff' }}
-                  placeholder="Enter amount (min KSH 10)"
-                  onFocus={e => e.target.style.borderColor = '#2563eb'}
-                  onBlur={e => e.target.style.borderColor = '#1e2d4a'}
+                  placeholder="Enter amount..."
+                  className="w-full px-3 py-2 rounded-lg text-sm outline-none focus:ring-2"
+                  style={{
+                    backgroundColor: '#0a0a0f',
+                    border: '1px solid #1e2d4a',
+                    color: '#f0f4ff',
+                    focusRingColor: '#3b82f6',
+                  }}
+                  required
                 />
               </div>
 
-              <button type="submit" disabled={depositing}
-                className="w-full py-3 rounded-xl font-bold text-white text-sm transition-all"
-                style={{ background: depositing ? '#1e2d4a' : 'linear-gradient(135deg, #2563eb, #1d4ed8)', cursor: depositing ? 'not-allowed' : 'pointer' }}>
-                {depositing ? 'Redirecting to Paystack...' : `Deposit ${depositAmount ? `KSH ${parseFloat(depositAmount).toLocaleString()}` : 'Now'}`}
-              </button>
+              {/* Quick amounts */}
+              <div className="flex flex-wrap gap-2 mb-4">
+                {quickAmounts.map(amt => (
+                  <button
+                    key={amt}
+                    type="button"
+                    onClick={() => setDepositAmount(String(amt))}
+                    className="text-xs px-3 py-1 rounded-lg transition-colors"
+                    style={{
+                      backgroundColor: depositAmount === String(amt) ? '#2563eb' : '#1e2d4a',
+                      color: depositAmount === String(amt) ? '#fff' : '#94a3b8',
+                      border: '1px solid #1e2d4a',
+                    }}
+                  >
+                    KSH {amt}
+                  </button>
+                ))}
+              </div>
 
-              <p className="text-center text-xs mt-3" style={{ color: '#475569' }}>
-                🔒 Secure payment via Paystack · M-Pesa & Cards accepted
-              </p>
+              <button
+                type="submit"
+                disabled={depositing}
+                className="w-full py-2.5 rounded-lg font-semibold text-sm transition-opacity"
+                style={{ backgroundColor: '#2563eb', color: '#fff', opacity: depositing ? 0.7 : 1 }}
+              >
+                {depositing ? 'Redirecting to Paystack...' : 'Deposit via Paystack'}
+              </button>
             </form>
           </div>
         </div>
 
-        {/* Transactions */}
-        <div className="mt-6 rounded-2xl p-6" style={{ backgroundColor: '#16182a', border: '1px solid #1e2d4a' }}>
-          <h2 className="text-lg font-bold mb-6" style={{ color: '#f0f4ff' }}>Transaction History</h2>
+        {/* Transaction History */}
+        <div className="mt-8 rounded-2xl p-6" style={{ backgroundColor: '#0f1629', border: '1px solid #1e2d4a' }}>
+          <p className="text-xs font-semibold uppercase tracking-wider mb-5" style={{ color: '#475569' }}>Transaction History</p>
+
           {transactions.length === 0 ? (
             <div className="text-center py-10">
               <div className="text-4xl mb-3">📋</div>
@@ -248,5 +228,18 @@ export default function WalletPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Outer page wraps WalletInner in Suspense (required for useSearchParams in Next.js 14)
+export default function WalletPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#0a0a0f' }}>
+        <div className="w-10 h-10 rounded-full border-2 animate-spin" style={{ borderColor: '#1e2d4a', borderTopColor: '#3b82f6' }} />
+      </div>
+    }>
+      <WalletInner />
+    </Suspense>
   );
 }
