@@ -1,5 +1,6 @@
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import TechBackground from '../components/TechBackground';
 import './globals.css';
 
 export const metadata = {
@@ -17,8 +18,11 @@ export default function RootLayout({ children }) {
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
       </head>
       <body className="flex flex-col min-h-screen" style={{ backgroundColor: '#0a0a0f', color: '#f0f4ff' }}>
+        {/* Fixed tech background — sits behind everything */}
+        <TechBackground />
+
         <Navbar />
-        <main className="flex-grow">
+        <main className="flex-grow" style={{ position: 'relative', zIndex: 1 }}>
           {children}
         </main>
         <Footer />
