@@ -3,12 +3,9 @@ import { useState, useEffect, Fragment } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-const PACKAGES = [
-  { id: 'starter',  name: 'Starter',  price: 50,  cpu: '20% CPU',       ram: '512 MB RAM',    disk: '2 GB Disk',       desc: 'Perfect for small bots and lightweight servers',          popular: false, accent: '#1e3a8a' },
-  { id: 'standard', name: 'Standard', price: 75,  cpu: '50% CPU',       ram: '1 GB RAM',      disk: '5 GB Disk',       desc: 'Great for Minecraft, Discord bots & medium workloads',    popular: true,  accent: '#2563eb' },
-  { id: 'premium',  name: 'Premium',  price: 100, cpu: '100% CPU',      ram: '5 GB RAM',      disk: '10 GB Disk',      desc: 'Full power for high-performance game servers',            popular: false, accent: '#1d4ed8' },
-  { id: 'ultimate', name: 'Ultimate', price: 120, cpu: 'Unlimited CPU', ram: 'Unlimited RAM', disk: 'Unlimited Disk',  desc: 'No limits. Maximum performance for any workload.',        popular: false, accent: '#4f46e5' },
-];
+function fmtCpu(v)  { const n = parseInt(v); return n === 0 ? 'Unlimited CPU'  : `${n}% CPU`; }
+function fmtRam(v)  { const n = parseInt(v); return n === 0 ? 'Unlimited RAM'  : n >= 1024 ? `${n / 1024} GB RAM`  : `${n} MB RAM`; }
+function fmtDisk(v) { const n = parseInt(v); return n === 0 ? 'Unlimited Disk' : n >= 1024 ? `${n / 1024} GB Disk` : `${n} MB Disk`; }
 
 const STEPS = ['Select Plan', 'Configure', 'Review', 'Done'];
 
@@ -16,6 +13,7 @@ export default function ProductsPage() {
   const [user, setUser]         = useState(null);
   const [balance, setBalance]   = useState(0);
   const [loading, setLoading]   = useState(true);
+  const [packages, setPackages] = useState([]);
   const [pkg, setPkg]           = useState(null);
   const [nests, setNests]       = useState([]);
   const [eggs, setEggs]         = useState([]);
@@ -27,15 +25,19 @@ export default function ProductsPage() {
   const [error, setError]       = useState('');
   const router = useRouter();
 
-  useEffect(() => { fetchAuth(); }, []);
+  useEffect(() => { init(); }, []);
 
-  const fetchAuth = async () => {
-    const res = await fetch('/api/auth/me');
-    if (res.ok) {
-      const d = await res.json(); setUser(d.user);
+  const init = async () => {
+    const [authRes, pkgRes] = await Promise.all([
+      fetch('/api/auth/me'),
+      fetch('/api/packages'),
+    ]);
+    if (authRes.ok) {
+      const d = await authRes.json(); setUser(d.user);
       const wr = await fetch('/api/wallet/balance');
       if (wr.ok) { const wd = await wr.json(); setBalance(wd.balance || 0); }
     }
+    if (pkgRes.ok) { const pd = await pkgRes.json(); setPackages(pd.packages || []); }
     setLoading(false);
   };
 
@@ -170,49 +172,53 @@ export default function ProductsPage() {
                 <Link href="/login" className="font-bold underline flex-shrink-0" style={{ color: '#fbbf24' }}>Log in →</Link>
               </div>
             )}
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5">
-              {PACKAGES.map(p => (
-                <div key={p.id}
-                  className="relative rounded-2xl p-5 sm:p-6 flex flex-col transition-all duration-300 hover:-translate-y-1 cursor-pointer"
-                  style={{
-                    backgroundColor: p.popular ? '#0f1a35' : '#0f1629',
-                    border: `1px solid ${p.popular ? p.accent : '#1e2d4a'}`,
-                    boxShadow: p.popular ? '0 0 30px rgba(37,99,235,0.18)' : 'none',
-                  }}
-                  onClick={() => handleSelectPkg(p)}>
-                  {p.popular && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                      <span className="px-3 py-1 rounded-full text-xs font-bold text-white"
-                        style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)' }}>
-                        Most Popular
-                      </span>
+            {packages.length === 0 ? (
+              <div className="text-center py-16" style={{ color: '#475569' }}>No packages available at the moment. Please check back soon.</div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5">
+                {packages.map(p => (
+                  <div key={p.id}
+                    className="relative rounded-2xl p-5 sm:p-6 flex flex-col transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+                    style={{
+                      backgroundColor: p.popular ? '#0f1a35' : '#0f1629',
+                      border: `1px solid ${p.popular ? p.accent : '#1e2d4a'}`,
+                      boxShadow: p.popular ? `0 0 30px ${p.accent}30` : 'none',
+                    }}
+                    onClick={() => handleSelectPkg(p)}>
+                    {p.popular && (
+                      <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                        <span className="px-3 py-1 rounded-full text-xs font-bold text-white"
+                          style={{ background: `linear-gradient(135deg,${p.accent},${p.accent}cc)` }}>
+                          Most Popular
+                        </span>
+                      </div>
+                    )}
+                    <p className="font-bold text-base mb-1" style={{ color: '#f0f4ff' }}>{p.name}</p>
+                    <div className="flex items-baseline gap-1 mb-3">
+                      <span className="font-extrabold text-3xl" style={{ color: p.popular ? p.accent : '#f0f4ff' }}>KSH {parseFloat(p.price).toLocaleString()}</span>
+                      <span className="text-xs" style={{ color: '#475569' }}>/mo</span>
                     </div>
-                  )}
-                  <p className="font-bold text-base mb-1" style={{ color: '#f0f4ff' }}>{p.name}</p>
-                  <div className="flex items-baseline gap-1 mb-3">
-                    <span className="font-extrabold text-3xl" style={{ color: p.popular ? '#60a5fa' : '#f0f4ff' }}>KSH {p.price}</span>
-                    <span className="text-xs" style={{ color: '#475569' }}>/mo</span>
+                    <p className="text-xs leading-relaxed mb-4" style={{ color: '#64748b' }}>{p.description}</p>
+                    <ul className="space-y-2 mb-5 flex-1">
+                      {[fmtCpu(p.cpu), fmtRam(p.ram), fmtDisk(p.disk)].map(spec => (
+                        <li key={spec} className="flex items-center gap-2 text-sm" style={{ color: '#94a3b8' }}>
+                          <svg className="w-4 h-4 flex-shrink-0" style={{ color: p.accent || '#3b82f6' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                          </svg>
+                          {spec}
+                        </li>
+                      ))}
+                    </ul>
+                    <button
+                      className="w-full py-2.5 rounded-xl text-sm font-bold text-white transition-all"
+                      style={{ background: p.popular ? `linear-gradient(135deg,${p.accent},${p.accent}cc)` : '#1e2d4a' }}
+                      onClick={e => { e.stopPropagation(); handleSelectPkg(p); }}>
+                      {p.popular ? '⚡ Get Started' : 'Choose Plan'}
+                    </button>
                   </div>
-                  <p className="text-xs leading-relaxed mb-4" style={{ color: '#64748b' }}>{p.desc}</p>
-                  <ul className="space-y-2 mb-5 flex-1">
-                    {[p.cpu, p.ram, p.disk].map(spec => (
-                      <li key={spec} className="flex items-center gap-2 text-sm" style={{ color: '#94a3b8' }}>
-                        <svg className="w-4 h-4 flex-shrink-0" style={{ color: '#3b82f6' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                        </svg>
-                        {spec}
-                      </li>
-                    ))}
-                  </ul>
-                  <button
-                    className="w-full py-2.5 rounded-xl text-sm font-bold text-white transition-all"
-                    style={{ background: p.popular ? 'linear-gradient(135deg,#2563eb,#1d4ed8)' : '#1e2d4a' }}
-                    onClick={e => { e.stopPropagation(); handleSelectPkg(p); }}>
-                    {p.popular ? '⚡ Get Started' : 'Choose Plan'}
-                  </button>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </>
         )}
 
@@ -301,14 +307,14 @@ export default function ProductsPage() {
                     <p className="font-bold" style={{ color: '#f0f4ff' }}>{pkg.name} Plan</p>
                     <p className="text-xs mt-0.5" style={{ color: '#64748b' }}>Monthly subscription</p>
                   </div>
-                  <p className="font-extrabold text-xl" style={{ color: '#3b82f6' }}>KSH {pkg.price}</p>
+                  <p className="font-extrabold text-xl" style={{ color: '#3b82f6' }}>KSH {parseFloat(pkg.price).toLocaleString()}</p>
                 </div>
-                {[{ label: pkg.cpu }, { label: pkg.ram }, { label: pkg.disk }].map(s => (
-                  <div key={s.label} className="flex items-center gap-2 py-1.5 text-sm" style={{ color: '#64748b' }}>
+                {[fmtCpu(pkg.cpu), fmtRam(pkg.ram), fmtDisk(pkg.disk)].map(s => (
+                  <div key={s} className="flex items-center gap-2 py-1.5 text-sm" style={{ color: '#64748b' }}>
                     <svg className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#3b82f6' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                     </svg>
-                    {s.label}
+                    {s}
                   </div>
                 ))}
                 <div className="mt-4 pt-4" style={{ borderTop: '1px solid #1e2d4a' }}>
@@ -331,8 +337,8 @@ export default function ProductsPage() {
           <div className="max-w-lg mx-auto rounded-2xl p-6 sm:p-8" style={{ backgroundColor: '#0f1629', border: '1px solid #1e2d4a' }}>
             <h2 className="font-bold text-xl mb-6" style={{ color: '#f0f4ff' }}>Confirm Order</h2>
             {[
-              { label: 'Plan',      value: `${pkg.name} — KSH ${pkg.price}/mo` },
-              { label: 'Resources', value: `${pkg.cpu} · ${pkg.ram} · ${pkg.disk}` },
+              { label: 'Plan',      value: `${pkg.name} — KSH ${parseFloat(pkg.price).toLocaleString()}/mo` },
+              { label: 'Resources', value: `${fmtCpu(pkg.cpu)} · ${fmtRam(pkg.ram)} · ${fmtDisk(pkg.disk)}` },
               { label: 'Username',  value: form.ptero_username },
               { label: 'Name',      value: `${form.firstname} ${form.lastname}` },
               { label: 'Nest',      value: nests.find(n => String(n.id) === String(form.nest_id))?.name || form.nest_id },
@@ -345,10 +351,10 @@ export default function ProductsPage() {
             ))}
             <div className="flex justify-between py-3 text-base font-bold" style={{ borderBottom: '1px solid #1e2d4a' }}>
               <span style={{ color: '#94a3b8' }}>Total Charge</span>
-              <span style={{ color: '#3b82f6' }}>KSH {pkg.price}</span>
+              <span style={{ color: '#3b82f6' }}>KSH {parseFloat(pkg.price).toLocaleString()}</span>
             </div>
             <p className="text-xs mt-4 mb-6" style={{ color: '#475569' }}>
-              KSH {pkg.price} will be deducted from your wallet. Balance after: KSH {Math.max(0, balance - pkg.price).toLocaleString()}
+              KSH {parseFloat(pkg.price).toLocaleString()} will be deducted from your wallet. Balance after: KSH {Math.max(0, balance - pkg.price).toLocaleString()}
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
               <button onClick={() => setStep('configure')}
@@ -385,9 +391,9 @@ export default function ProductsPage() {
 
               <div className="rounded-xl p-4 mb-6 text-left space-y-2" style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a' }}>
                 {[
-                  { label: 'Plan',     value: pkg?.name },
-                  { label: 'Username', value: form.ptero_username },
-                  { label: 'Server ID',value: result.ptero_server_id || '—' },
+                  { label: 'Plan',      value: pkg?.name },
+                  { label: 'Username',  value: form.ptero_username },
+                  { label: 'Server ID', value: result.ptero_server_id || '—' },
                 ].map(r => (
                   <div key={r.label} className="flex justify-between text-sm">
                     <span style={{ color: '#64748b' }}>{r.label}</span>

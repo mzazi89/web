@@ -78,6 +78,7 @@ export default function AdminDashboard() {
             { href: '/admin/users', label: 'Users' },
             { href: '/admin/transactions', label: 'Transactions' },
             { href: '/admin/inquiries', label: 'Inquiries' },
+            { href: '/admin/packages', label: 'Packages' },
           ].map(n => (
             <Link key={n.href} href={n.href} className="px-4 py-2 rounded-xl text-sm font-medium"
               style={{ backgroundColor: n.active ? 'rgba(220,38,38,0.15)' : 'rgba(30,32,48,0.5)', color: n.active ? '#f87171' : '#64748b', border: n.active ? '1px solid rgba(220,38,38,0.3)' : '1px solid #1e2030' }}>

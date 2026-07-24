@@ -9,13 +9,6 @@ const JWT_SECRET = process.env.JWT_SECRET || 'mzazi-tech-secret-2024';
 const PTERO_URL = process.env.PTERODACTYL_URL || 'https://public.mzazi.shop';
 const PTERO_KEY = process.env.PTERODACTYL_API_KEY;
 
-const PACKAGES = {
-  starter:  { name: 'Starter',  price: 50,  cpu: 20,   ram: 512,    disk: 2048  },
-  standard: { name: 'Standard', price: 75,  cpu: 50,   ram: 1024,   disk: 5120  },
-  premium:  { name: 'Premium',  price: 100, cpu: 100,  ram: 5120,   disk: 10240 },
-  ultimate: { name: 'Ultimate', price: 120, cpu: 0,    ram: 0,      disk: 0     },
-};
-
 const pteroHeaders = {
   Authorization: `Bearer ${PTERO_KEY}`,
   'Content-Type': 'application/json',
@@ -51,14 +44,16 @@ export async function POST(request) {
       return NextResponse.json({ error: 'All fields are required' }, { status: 400 });
     }
 
-    const pkg = PACKAGES[package_id];
-    if (!pkg) return NextResponse.json({ error: 'Invalid package' }, { status: 400 });
+    // Load package from DB (supports admin-created packages)
+    const pkgRows = await sql`SELECT * FROM packages WHERE id = ${parseInt(package_id)} AND active = true LIMIT 1`;
+    if (pkgRows.length === 0) return NextResponse.json({ error: 'Invalid or unavailable package' }, { status: 400 });
+    const pkg = pkgRows[0];
 
     // Check wallet balance
     const walletRows = await sql`SELECT balance FROM wallet WHERE user_id = ${userId}`;
     const balance = walletRows.length > 0 ? parseFloat(walletRows[0].balance) : 0;
 
-    if (balance < pkg.price) {
+    if (balance < parseFloat(pkg.price)) {
       return NextResponse.json({
         error: `Insufficient wallet balance. You need KSH ${pkg.price} but have KSH ${balance.toFixed(2)}. Please top up your wallet.`,
         need_topup: true,
@@ -77,11 +72,11 @@ export async function POST(request) {
 
     const eggAttrs = eggData.attributes;
     const dockerImage = eggAttrs.docker_image || eggAttrs.docker_images?.[0] || 'ghcr.io/pterodactyl/yolks:java_17';
-    const startupCmd = eggAttrs.startup || '{{SERVER_JARFILE}}';
+    const startupCmd  = eggAttrs.startup || '{{SERVER_JARFILE}}';
 
     // Build environment from egg variables — use defaults where available
     const eggVariables = eggAttrs.relationships?.variables?.data || [];
-    const environment = {};
+    const environment  = {};
     for (const v of eggVariables) {
       const attr = v.attributes;
       environment[attr.env_variable] = attr.default_value ?? '';
@@ -114,11 +109,11 @@ export async function POST(request) {
       startup: startupCmd,
       environment,
       limits: {
-        memory: pkg.ram,
+        memory: parseInt(pkg.ram),
         swap: 0,
-        disk: pkg.disk,
+        disk: parseInt(pkg.disk),
         io: 500,
-        cpu: pkg.cpu,
+        cpu: parseInt(pkg.cpu),
       },
       feature_limits: {
         databases: 1,
@@ -151,18 +146,18 @@ export async function POST(request) {
 
     // Deduct from wallet
     await sql`
-      UPDATE wallet SET balance = balance - ${pkg.price}, updated_at = NOW()
+      UPDATE wallet SET balance = balance - ${parseFloat(pkg.price)}, updated_at = NOW()
       WHERE user_id = ${userId}
     `;
     await sql`
       INSERT INTO wallet_transactions (user_id, type, amount, description, status)
-      VALUES (${userId}, 'deduction', ${pkg.price}, ${`Panel created: ${pkg.name}`}, 'success')
+      VALUES (${userId}, 'deduction', ${parseFloat(pkg.price)}, ${`Panel created: ${pkg.name}`}, 'success')
     `;
 
     // Save panel record
     await sql`
       INSERT INTO panels (user_id, ptero_server_id, ptero_user_id, ptero_username, package_name, package_price, nest_id, egg_id)
-      VALUES (${userId}, ${pteroServerId}, ${pteroUserId}, ${ptero_username}, ${pkg.name}, ${pkg.price}, ${nest_id}, ${egg_id})
+      VALUES (${userId}, ${pteroServerId}, ${pteroUserId}, ${ptero_username}, ${pkg.name}, ${parseFloat(pkg.price)}, ${nest_id}, ${egg_id})
     `;
 
     return NextResponse.json({
