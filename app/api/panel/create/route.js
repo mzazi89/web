@@ -88,24 +88,64 @@ export async function POST(request) {
       environment[attr.env_variable] = attr.default_value ?? '';
     }
 
-    // Create Pterodactyl user
+    // ── Find-or-create Pterodactyl user ─────────────────────────────────────
+    // If the username already exists we reuse that account and just add a
+    // new server to it (same username + firstname + lastname = same person).
     const pteroEmail = `${ptero_username.toLowerCase()}_${userId}@panel.mzazitech.local`;
+    let pteroUserId   = null;
+    let freshlyCreated = false;  // track so we only delete on server-fail if WE made it
+
     const userRes = await pteroPost('/users', {
-      email: pteroEmail,
-      username: ptero_username,
+      email:      pteroEmail,
+      username:   ptero_username,
       first_name: firstname,
-      last_name: lastname,
-      password: ptero_password,
+      last_name:  lastname,
+      password:   ptero_password,
     });
 
-    if (userRes.status !== 201) {
-      const errMsg = userRes.data?.errors?.[0]?.detail || 'Failed to create panel user';
-      return NextResponse.json({ error: errMsg }, { status: 400 });
+    if (userRes.status === 201) {
+      // Brand-new user created successfully
+      pteroUserId    = userRes.data.attributes.id;
+      freshlyCreated = true;
+    } else {
+      // Creation failed — check if it's a duplicate username/email conflict
+      const errDetail = userRes.data?.errors?.[0]?.detail || '';
+      const isConflict =
+        userRes.status === 422 ||
+        errDetail.toLowerCase().includes('username') ||
+        errDetail.toLowerCase().includes('email') ||
+        errDetail.toLowerCase().includes('already') ||
+        errDetail.toLowerCase().includes('taken');
+
+      if (!isConflict) {
+        // Some other error — surface it
+        return NextResponse.json({ error: errDetail || 'Failed to create panel user' }, { status: 400 });
+      }
+
+      // Username already exists — look it up by username
+      const searchRes = await pteroGet(`/users?filter[username]=${encodeURIComponent(ptero_username)}`);
+      const match = (searchRes?.data || []).find(
+        u => u.attributes.username.toLowerCase() === ptero_username.toLowerCase()
+      );
+
+      if (!match) {
+        // Conflict but can't find the user — try email search as fallback
+        const emailSearch = await pteroGet(`/users?filter[email]=${encodeURIComponent(pteroEmail)}`);
+        const emailMatch  = (emailSearch?.data || []).find(
+          u => u.attributes.email.toLowerCase() === pteroEmail.toLowerCase()
+        );
+        if (!emailMatch) {
+          return NextResponse.json({ error: 'Username is taken by another account. Please choose a different username.' }, { status: 400 });
+        }
+        pteroUserId = emailMatch.attributes.id;
+      } else {
+        pteroUserId = match.attributes.id;
+      }
+      // Not freshly created — do NOT delete on server failure
+      freshlyCreated = false;
     }
 
-    const pteroUserId = userRes.data.attributes.id;
-
-    // Create Pterodactyl server
+    // ── Create Pterodactyl server on the resolved user account ───────────────
     const serverName = `${ptero_username}-${pkg.name.toLowerCase().replace(/\s+/g, '-')}`;
     const serverRes = await pteroPost('/servers', {
       name: serverName,
@@ -129,13 +169,15 @@ export async function POST(request) {
     });
 
     if (serverRes.status !== 201) {
-      // Cleanup: delete ptero user we just created
-      try {
-        await fetch(`${PTERO_URL}/api/application/users/${pteroUserId}`, {
-          method: 'DELETE',
-          headers: pteroHeaders,
-        });
-      } catch {}
+      // Only clean up the ptero user if we just created them
+      if (freshlyCreated) {
+        try {
+          await fetch(`${PTERO_URL}/api/application/users/${pteroUserId}`, {
+            method: 'DELETE',
+            headers: pteroHeaders,
+          });
+        } catch {}
+      }
       const errMsg = serverRes.data?.errors?.[0]?.detail || 'Failed to create server';
       return NextResponse.json({ error: errMsg }, { status: 400 });
     }
