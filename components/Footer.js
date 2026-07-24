@@ -123,6 +123,11 @@ export default function Footer() {
                 {l.label}
               </Link>
             ))}
+            <Link href="/admin/login"
+              className="text-xs transition-colors hover:text-red-400"
+              style={{ color: '#1f2937', textDecoration: 'none' }}>
+              Admin
+            </Link>
           </div>
         </div>
       </div>

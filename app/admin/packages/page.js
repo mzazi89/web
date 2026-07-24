@@ -18,6 +18,7 @@ export default function AdminPackages() {
   const [modal, setModal]       = useState(null); // null | 'add' | 'edit'
   const [form, setForm]         = useState(EMPTY);
   const [saving, setSaving]     = useState(false);
+  const [restoring, setRestoring] = useState(false);
   const [error, setError]       = useState('');
   const [deleteId, setDeleteId] = useState(null);
   const router = useRouter();
@@ -35,6 +36,15 @@ export default function AdminPackages() {
       setPackages(d.packages || []);
       setLoading(false);
     });
+  };
+
+  const handleRestoreDefaults = async () => {
+    setRestoring(true);
+    try {
+      await fetch('/api/admin/packages/restore-defaults', { method: 'POST' });
+      load();
+    } catch {}
+    setRestoring(false);
   };
 
   const openAdd  = () => { setForm(EMPTY); setError(''); setModal('add'); };
@@ -104,15 +114,24 @@ export default function AdminPackages() {
           ))}
         </div>
 
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
           <h1 className="text-2xl font-extrabold" style={{ color: '#f0f4ff' }}>Packages</h1>
-          <button onClick={openAdd} className="px-4 py-2 rounded-xl text-sm font-bold text-white flex items-center gap-2"
-            style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)' }}>
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
-            </svg>
-            Add Package
-          </button>
+          <div className="flex items-center gap-2">
+            <button onClick={handleRestoreDefaults} disabled={restoring} className="px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2"
+              style={{ color: '#94a3b8', border: '1px solid #1e2030', opacity: restoring ? 0.6 : 1 }}>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              {restoring ? 'Adding…' : 'Restore Defaults'}
+            </button>
+            <button onClick={openAdd} className="px-4 py-2 rounded-xl text-sm font-bold text-white flex items-center gap-2"
+              style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)' }}>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+              </svg>
+              Add Package
+            </button>
+          </div>
         </div>
 
         {loading ? (
