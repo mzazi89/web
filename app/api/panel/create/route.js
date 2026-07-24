@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { neon } from '@neondatabase/serverless';
-import bcrypt from 'bcryptjs';
 
 export const dynamic = 'force-dynamic';
 const sql = neon(process.env.DATABASE_URL);
@@ -14,17 +13,24 @@ const PACKAGES = {
   starter:  { name: 'Starter',  price: 50,  cpu: 20,   ram: 512,    disk: 2048  },
   standard: { name: 'Standard', price: 75,  cpu: 50,   ram: 1024,   disk: 5120  },
   premium:  { name: 'Premium',  price: 100, cpu: 100,  ram: 5120,   disk: 10240 },
-  ultimate: { name: 'Ultimate', price: 120, cpu: 0,    ram: 0,      disk: 0     }, // 0 = unlimited
+  ultimate: { name: 'Ultimate', price: 120, cpu: 0,    ram: 0,      disk: 0     },
 };
+
+const pteroHeaders = {
+  Authorization: `Bearer ${PTERO_KEY}`,
+  'Content-Type': 'application/json',
+  Accept: 'application/json',
+};
+
+async function pteroGet(path) {
+  const res = await fetch(`${PTERO_URL}/api/application${path}`, { headers: pteroHeaders });
+  return res.json();
+}
 
 async function pteroPost(path, body) {
   const res = await fetch(`${PTERO_URL}/api/application${path}`, {
     method: 'POST',
-    headers: {
-      Authorization: `Bearer ${PTERO_KEY}`,
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    },
+    headers: pteroHeaders,
     body: JSON.stringify(body),
   });
   return { status: res.status, data: await res.json() };
@@ -62,7 +68,24 @@ export async function POST(request) {
     // Get user info
     const userRows = await sql`SELECT email, firstname, lastname FROM users WHERE id = ${userId}`;
     if (userRows.length === 0) return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    const user = userRows[0];
+
+    // Fetch egg details to get the correct docker image, startup, and environment
+    const eggData = await pteroGet(`/nests/${nest_id}/eggs/${egg_id}?include=variables`);
+    if (!eggData?.attributes) {
+      return NextResponse.json({ error: 'Could not fetch egg details from panel' }, { status: 400 });
+    }
+
+    const eggAttrs = eggData.attributes;
+    const dockerImage = eggAttrs.docker_image || eggAttrs.docker_images?.[0] || 'ghcr.io/pterodactyl/yolks:java_17';
+    const startupCmd = eggAttrs.startup || '{{SERVER_JARFILE}}';
+
+    // Build environment from egg variables — use defaults where available
+    const eggVariables = eggAttrs.relationships?.variables?.data || [];
+    const environment = {};
+    for (const v of eggVariables) {
+      const attr = v.attributes;
+      environment[attr.env_variable] = attr.default_value ?? '';
+    }
 
     // Create Pterodactyl user
     const pteroEmail = `${ptero_username.toLowerCase()}_${userId}@panel.mzazitech.local`;
@@ -81,15 +104,15 @@ export async function POST(request) {
 
     const pteroUserId = userRes.data.attributes.id;
 
-    // Create Pterodactyl server
+    // Create Pterodactyl server using the egg's own docker image and startup
     const serverName = `${ptero_username}-${pkg.name.toLowerCase()}`;
     const serverRes = await pteroPost('/servers', {
       name: serverName,
       user: pteroUserId,
       egg: parseInt(egg_id),
-      docker_image: 'ghcr.io/pterodactyl/yolks:java_17',
-      startup: '{{SERVER_JARFILE}}',
-      environment: {},
+      docker_image: dockerImage,
+      startup: startupCmd,
+      environment,
       limits: {
         memory: pkg.ram,
         swap: 0,
@@ -117,7 +140,7 @@ export async function POST(request) {
       try {
         await fetch(`${PTERO_URL}/api/application/users/${pteroUserId}`, {
           method: 'DELETE',
-          headers: { Authorization: `Bearer ${PTERO_KEY}`, Accept: 'application/json' },
+          headers: pteroHeaders,
         });
       } catch {}
       const errMsg = serverRes.data?.errors?.[0]?.detail || 'Failed to create server';
@@ -145,7 +168,7 @@ export async function POST(request) {
     return NextResponse.json({
       message: 'Panel created successfully!',
       panel: {
-        server_id: pteroServerId,
+        ptero_server_id: pteroServerId,
         username: ptero_username,
         panel_url: PTERO_URL,
         package: pkg.name,
