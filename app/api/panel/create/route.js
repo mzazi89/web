@@ -31,6 +31,10 @@ async function pteroPost(path, body) {
 
 export async function POST(request) {
   try {
+    // ── Run schema migrations first so columns always exist ──────────────────
+    await sql`ALTER TABLE packages ADD COLUMN IF NOT EXISTS expires_after_hours INTEGER DEFAULT NULL`;
+    await sql`ALTER TABLE panels   ADD COLUMN IF NOT EXISTS expires_at TIMESTAMP DEFAULT NULL`;
+
     const cookieStore = await cookies();
     const token = cookieStore.get('token');
     if (!token) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
@@ -44,7 +48,7 @@ export async function POST(request) {
       return NextResponse.json({ error: 'All fields are required' }, { status: 400 });
     }
 
-    // Load package from DB (supports admin-created packages)
+    // Load package from DB
     const pkgRows = await sql`SELECT * FROM packages WHERE id = ${parseInt(package_id)} AND active = true LIMIT 1`;
     if (pkgRows.length === 0) return NextResponse.json({ error: 'Invalid or unavailable package' }, { status: 400 });
     const pkg = pkgRows[0];
@@ -64,7 +68,7 @@ export async function POST(request) {
     const userRows = await sql`SELECT email, firstname, lastname FROM users WHERE id = ${userId}`;
     if (userRows.length === 0) return NextResponse.json({ error: 'User not found' }, { status: 404 });
 
-    // Fetch egg details to get the correct docker image, startup, and environment
+    // Fetch egg details
     const eggData = await pteroGet(`/nests/${nest_id}/eggs/${egg_id}?include=variables`);
     if (!eggData?.attributes) {
       return NextResponse.json({ error: 'Could not fetch egg details from panel' }, { status: 400 });
@@ -74,7 +78,7 @@ export async function POST(request) {
     const dockerImage = eggAttrs.docker_image || eggAttrs.docker_images?.[0] || 'ghcr.io/pterodactyl/yolks:java_17';
     const startupCmd  = eggAttrs.startup || '{{SERVER_JARFILE}}';
 
-    // Build environment from egg variables — use defaults where available
+    // Build environment from egg variables
     const eggVariables = eggAttrs.relationships?.variables?.data || [];
     const environment  = {};
     for (const v of eggVariables) {
@@ -99,8 +103,8 @@ export async function POST(request) {
 
     const pteroUserId = userRes.data.attributes.id;
 
-    // Create Pterodactyl server using the egg's own docker image and startup
-    const serverName = `${ptero_username}-${pkg.name.toLowerCase()}`;
+    // Create Pterodactyl server
+    const serverName = `${ptero_username}-${pkg.name.toLowerCase().replace(/\s+/g, '-')}`;
     const serverRes = await pteroPost('/servers', {
       name: serverName,
       user: pteroUserId,
@@ -115,16 +119,8 @@ export async function POST(request) {
         io: 500,
         cpu: parseInt(pkg.cpu),
       },
-      feature_limits: {
-        databases: 1,
-        backups: 1,
-        allocations: 1,
-      },
-      deploy: {
-        locations: [1],
-        dedicated_ip: false,
-        port_range: [],
-      },
+      feature_limits: { databases: 1, backups: 1, allocations: 1 },
+      deploy: { locations: [1], dedicated_ip: false, port_range: [] },
       start_on_completion: true,
       skip_scripts: false,
       oom_disabled: false,
@@ -144,7 +140,7 @@ export async function POST(request) {
 
     const pteroServerId = serverRes.data.attributes.id;
 
-    // Deduct from wallet
+    // ── Deduct from wallet ───────────────────────────────────────────────────
     await sql`
       UPDATE wallet SET balance = balance - ${parseFloat(pkg.price)}, updated_at = NOW()
       WHERE user_id = ${userId}
@@ -154,27 +150,38 @@ export async function POST(request) {
       VALUES (${userId}, 'deduction', ${parseFloat(pkg.price)}, ${`Panel created: ${pkg.name}`}, 'success')
     `;
 
-    // Save panel record
+    // ── Save panel record (wrapped so a DB hiccup never hides success) ───────
     const expiresAt = pkg.expires_after_hours
       ? new Date(Date.now() + parseInt(pkg.expires_after_hours) * 60 * 60 * 1000)
       : null;
-    await sql`
-      INSERT INTO panels (user_id, ptero_server_id, ptero_user_id, ptero_username, package_name, package_price, nest_id, egg_id, expires_at)
-      VALUES (
-        ${userId}, ${pteroServerId}, ${pteroUserId}, ${ptero_username},
-        ${pkg.name}, ${parseFloat(pkg.price)}, ${nest_id}, ${egg_id},
-        ${expiresAt}
-      )
-    `;
 
+    try {
+      await sql`
+        INSERT INTO panels (user_id, ptero_server_id, ptero_user_id, ptero_username, package_name, package_price, nest_id, egg_id, expires_at)
+        VALUES (
+          ${userId}, ${pteroServerId}, ${pteroUserId}, ${ptero_username},
+          ${pkg.name}, ${parseFloat(pkg.price)}, ${parseInt(nest_id)}, ${parseInt(egg_id)},
+          ${expiresAt}
+        )
+      `;
+    } catch (dbErr) {
+      // DB logging failed but the panel WAS created — log and continue
+      console.error('Panel record save failed (panel still created):', dbErr);
+    }
+
+    // ── Return all credentials the user needs ────────────────────────────────
     return NextResponse.json({
       message: 'Panel created successfully!',
       panel: {
         ptero_server_id: pteroServerId,
-        username: ptero_username,
-        panel_url: PTERO_URL,
-        package: pkg.name,
-        price: pkg.price,
+        ptero_user_id:   pteroUserId,
+        username:        ptero_username,
+        password:        ptero_password,
+        panel_url:       PTERO_URL,
+        package:         pkg.name,
+        price:           pkg.price,
+        expires_after_hours: pkg.expires_after_hours || null,
+        expires_at:      expiresAt ? expiresAt.toISOString() : null,
       },
     });
   } catch (error) {

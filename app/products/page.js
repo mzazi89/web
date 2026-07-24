@@ -383,31 +383,53 @@ export default function ProductsPage() {
 
         {/* ════ STEP: done ════ */}
         {step === 'done' && result && (
-          <div className="max-w-lg mx-auto text-center">
-            <div className="rounded-2xl p-8 sm:p-10" style={{ backgroundColor: '#0f1629', border: '1px solid rgba(34,197,94,0.3)', boxShadow: '0 0 40px rgba(34,197,94,0.1)' }}>
-              <div className="text-5xl mb-4">🎉</div>
-              <h2 className="text-2xl font-extrabold mb-2" style={{ color: '#f0f4ff' }}>Panel Deployed!</h2>
-              <p className="text-sm mb-6" style={{ color: '#64748b' }}>Your server is live. Log in to the Pterodactyl panel to manage it.</p>
+          <div className="max-w-lg mx-auto">
+            <div className="rounded-2xl p-6 sm:p-8" style={{ backgroundColor: '#0f1629', border: '1px solid rgba(34,197,94,0.3)', boxShadow: '0 0 40px rgba(34,197,94,0.1)' }}>
+              <div className="text-center mb-6">
+                <div className="text-5xl mb-3">🎉</div>
+                <h2 className="text-2xl font-extrabold mb-1" style={{ color: '#f0f4ff' }}>Panel Deployed!</h2>
+                <p className="text-sm" style={{ color: '#64748b' }}>Your server is live. Save these credentials — you will need them to log in.</p>
+              </div>
 
-              <div className="rounded-xl p-4 mb-6 text-left space-y-2" style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a' }}>
+              {/* Credentials box */}
+              <div className="rounded-xl p-4 mb-4 text-left space-y-3" style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a' }}>
+                <p className="text-xs font-bold uppercase tracking-wider mb-1" style={{ color: '#475569' }}>Login Credentials</p>
                 {[
-                  { label: 'Plan',      value: pkg?.name },
-                  { label: 'Username',  value: form.ptero_username },
-                  { label: 'Server ID', value: result.ptero_server_id || '—' },
+                  { label: '🌐 Panel URL',  value: result.panel_url || 'https://public.mzazi.shop', link: result.panel_url || 'https://public.mzazi.shop' },
+                  { label: '👤 Username',   value: result.username  || form.ptero_username },
+                  { label: '🔑 Password',   value: result.password  || form.ptero_password },
+                  { label: '📦 Plan',       value: result.package   || pkg?.name },
+                  { label: '🖥️ Server ID',  value: result.ptero_server_id ? String(result.ptero_server_id) : '—' },
                 ].map(r => (
-                  <div key={r.label} className="flex justify-between text-sm">
-                    <span style={{ color: '#64748b' }}>{r.label}</span>
-                    <span className="font-semibold" style={{ color: '#f0f4ff' }}>{r.value}</span>
+                  <div key={r.label} className="flex items-center justify-between gap-3 text-sm py-1" style={{ borderBottom: '1px solid #1e2d4a' }}>
+                    <span className="flex-shrink-0" style={{ color: '#64748b' }}>{r.label}</span>
+                    {r.link
+                      ? <a href={r.link} target="_blank" rel="noopener noreferrer" className="font-semibold truncate" style={{ color: '#60a5fa', textDecoration: 'underline', wordBreak: 'break-all' }}>{r.value}</a>
+                      : <span className="font-mono font-semibold text-right" style={{ color: '#f0f4ff', wordBreak: 'break-all' }}>{r.value}</span>
+                    }
                   </div>
                 ))}
               </div>
 
+              {/* Expiry notice */}
+              {result.expires_at && (
+                <div className="rounded-xl px-4 py-3 mb-4 text-sm flex items-start gap-2" style={{ backgroundColor: 'rgba(124,58,237,0.1)', border: '1px solid rgba(124,58,237,0.3)', color: '#a78bfa' }}>
+                  <span className="flex-shrink-0">⏱</span>
+                  <span>This server will be <strong>automatically removed</strong> on {new Date(result.expires_at).toLocaleString()}. Make sure to back up your data before then.</span>
+                </div>
+              )}
+
+              {/* Warning to save creds */}
+              <div className="rounded-xl px-4 py-3 mb-5 text-xs" style={{ backgroundColor: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.2)', color: '#fbbf24' }}>
+                ⚠️ <strong>Save your password now.</strong> It is shown only once and cannot be recovered from this page.
+              </div>
+
               <div className="flex flex-col sm:flex-row gap-3">
-                <a href={process.env.NEXT_PUBLIC_PTERODACTYL_URL || 'https://public.mzazi.shop'}
+                <a href={result.panel_url || 'https://public.mzazi.shop'}
                   target="_blank" rel="noopener noreferrer"
                   className="flex-1 py-3 rounded-xl text-sm font-bold text-white text-center"
                   style={{ background: 'linear-gradient(135deg,#22c55e,#16a34a)', textDecoration: 'none' }}>
-                  Open Panel →
+                  🚀 Open Panel →
                 </a>
                 <button onClick={reset}
                   className="flex-1 py-3 rounded-xl text-sm font-semibold"
