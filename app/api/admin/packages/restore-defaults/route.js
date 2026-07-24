@@ -43,6 +43,12 @@ export async function POST() {
       )
     `;
 
+    // DELETE all existing packages first so restore doesn't create duplicates
+    await sql`DELETE FROM packages`;
+
+    // Reset the ID sequence so IDs start cleanly from 1
+    await sql`ALTER SEQUENCE packages_id_seq RESTART WITH 1`;
+
     const inserted = [];
     for (const pkg of DEFAULTS) {
       const rows = await sql`
@@ -52,7 +58,7 @@ export async function POST() {
       `;
       inserted.push(rows[0]);
     }
-    return NextResponse.json({ message: `${inserted.length} default packages added`, packages: inserted });
+    return NextResponse.json({ message: `Restored ${inserted.length} default packages`, packages: inserted });
   } catch (error) {
     console.error('Restore defaults error:', error);
     return NextResponse.json({ error: 'Failed to restore defaults' }, { status: 500 });
