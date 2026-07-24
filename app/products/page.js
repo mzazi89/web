@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Fragment } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -127,7 +127,7 @@ export default function ProductsPage() {
         {step !== 'select' && (
           <div className="flex items-center gap-0 mb-8 sm:mb-10 overflow-x-auto pb-1">
             {STEPS.map((s, i) => (
-              <React.Fragment key={s}>
+              <Fragment key={s}>
                 <div className="flex flex-col items-center flex-shrink-0">
                   <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all"
                     style={{
@@ -145,7 +145,7 @@ export default function ProductsPage() {
                   <div className="flex-1 h-px mx-2 sm:mx-3 min-w-4"
                     style={{ backgroundColor: i < stepIndex ? '#22c55e' : '#1e2d4a', marginBottom: '1.25rem' }} />
                 )}
-              </React.Fragment>
+              </Fragment>
             ))}
           </div>
         )}
