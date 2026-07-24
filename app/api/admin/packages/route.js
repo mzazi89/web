@@ -20,7 +20,7 @@ export async function GET() {
   if (!await verifyAdmin()) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   try {
     const packages = await sql`
-      SELECT * FROM packages ORDER BY sort_order ASC, id ASC
+      SELECT *, expires_after_hours FROM packages ORDER BY sort_order ASC, id ASC
     `;
     return NextResponse.json({ packages });
   } catch (error) {
@@ -33,11 +33,11 @@ export async function GET() {
 export async function POST(request) {
   if (!await verifyAdmin()) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   try {
-    const { name, price, cpu, ram, disk, description, popular, accent, active, sort_order } = await request.json();
+    const { name, price, cpu, ram, disk, description, popular, accent, active, sort_order, expires_after_hours } = await request.json();
     if (!name || price == null) return NextResponse.json({ error: 'name and price are required' }, { status: 400 });
 
     const rows = await sql`
-      INSERT INTO packages (name, price, cpu, ram, disk, description, popular, accent, active, sort_order)
+      INSERT INTO packages (name, price, cpu, ram, disk, description, popular, accent, active, sort_order, expires_after_hours)
       VALUES (
         ${name},
         ${parseFloat(price)},
@@ -48,7 +48,8 @@ export async function POST(request) {
         ${popular === true || popular === 'true'},
         ${accent || '#2563eb'},
         ${active !== false && active !== 'false'},
-        ${parseInt(sort_order) || 0}
+        ${parseInt(sort_order) || 0},
+        ${expires_after_hours ? parseInt(expires_after_hours) : null}
       )
       RETURNING *
     `;

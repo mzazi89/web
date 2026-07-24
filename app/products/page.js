@@ -200,7 +200,7 @@ export default function ProductsPage() {
                     </div>
                     <p className="text-xs leading-relaxed mb-4" style={{ color: '#64748b' }}>{p.description}</p>
                     <ul className="space-y-2 mb-5 flex-1">
-                      {[fmtCpu(p.cpu), fmtRam(p.ram), fmtDisk(p.disk)].map(spec => (
+                      {[fmtCpu(p.cpu), fmtRam(p.ram), fmtDisk(p.disk), ...(p.expires_after_hours ? [`Auto-removed after ${p.expires_after_hours}h`] : [])].map(spec => (
                         <li key={spec} className="flex items-center gap-2 text-sm" style={{ color: '#94a3b8' }}>
                           <svg className="w-4 h-4 flex-shrink-0" style={{ color: p.accent || '#3b82f6' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />

@@ -20,7 +20,7 @@ export async function PUT(request, { params }) {
   if (!await verifyAdmin()) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   try {
     const { id } = await params;
-    const { name, price, cpu, ram, disk, description, popular, accent, active, sort_order } = await request.json();
+    const { name, price, cpu, ram, disk, description, popular, accent, active, sort_order, expires_after_hours } = await request.json();
     if (!name || price == null) return NextResponse.json({ error: 'name and price are required' }, { status: 400 });
 
     const rows = await sql`
@@ -33,8 +33,9 @@ export async function PUT(request, { params }) {
         description = ${description || ''},
         popular     = ${popular === true || popular === 'true'},
         accent      = ${accent || '#2563eb'},
-        active      = ${active !== false && active !== 'false'},
-        sort_order  = ${parseInt(sort_order) || 0}
+        active           = ${active !== false && active !== 'false'},
+        sort_order       = ${parseInt(sort_order) || 0},
+        expires_after_hours = ${expires_after_hours ? parseInt(expires_after_hours) : null}
       WHERE id = ${parseInt(id)}
       RETURNING *
     `;

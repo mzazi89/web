@@ -14,11 +14,22 @@ export async function GET() {
     if (!token) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     const decoded = jwt.verify(token.value, JWT_SECRET);
 
+    // Ensure expires_at column exists
+    await sql`ALTER TABLE panels ADD COLUMN IF NOT EXISTS expires_at TIMESTAMP DEFAULT NULL`;
+
     const panels = await sql`
-      SELECT * FROM panels WHERE user_id = ${decoded.userId} ORDER BY created_at DESC
+      SELECT *, expires_at FROM panels WHERE user_id = ${decoded.userId} ORDER BY created_at DESC
     `;
 
-    return NextResponse.json({ panels });
+    // Mark expired panels
+    const now = new Date();
+    const enriched = panels.map(p => ({
+      ...p,
+      is_expired: p.expires_at ? new Date(p.expires_at) < now : false,
+      expires_at: p.expires_at || null,
+    }));
+
+    return NextResponse.json({ panels: enriched });
   } catch (error) {
     console.error('Panel list error:', error);
     return NextResponse.json({ error: 'Failed to fetch panels' }, { status: 500 });

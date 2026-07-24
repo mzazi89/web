@@ -210,7 +210,7 @@ export default async function Home() {
                 </div>
 
                 <ul className="space-y-2.5 mb-6">
-                  {[fmtCpu(pkg.cpu), fmtRam(pkg.ram), fmtDisk(pkg.disk)].map(spec => (
+                  {[fmtCpu(pkg.cpu), fmtRam(pkg.ram), fmtDisk(pkg.disk), ...(pkg.expires_after_hours ? [`Auto-removed after ${pkg.expires_after_hours}h`] : [])].map(spec => (
                     <li key={spec} className="flex items-center gap-2.5 text-sm" style={{ color: '#94a3b8' }}>
                       <svg className="w-4 h-4 flex-shrink-0" style={{ color: '#3b82f6' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />

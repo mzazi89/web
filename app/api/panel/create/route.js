@@ -155,9 +155,16 @@ export async function POST(request) {
     `;
 
     // Save panel record
+    const expiresAt = pkg.expires_after_hours
+      ? new Date(Date.now() + parseInt(pkg.expires_after_hours) * 60 * 60 * 1000)
+      : null;
     await sql`
-      INSERT INTO panels (user_id, ptero_server_id, ptero_user_id, ptero_username, package_name, package_price, nest_id, egg_id)
-      VALUES (${userId}, ${pteroServerId}, ${pteroUserId}, ${ptero_username}, ${pkg.name}, ${parseFloat(pkg.price)}, ${nest_id}, ${egg_id})
+      INSERT INTO panels (user_id, ptero_server_id, ptero_user_id, ptero_username, package_name, package_price, nest_id, egg_id, expires_at)
+      VALUES (
+        ${userId}, ${pteroServerId}, ${pteroUserId}, ${ptero_username},
+        ${pkg.name}, ${parseFloat(pkg.price)}, ${nest_id}, ${egg_id},
+        ${expiresAt}
+      )
     `;
 
     return NextResponse.json({

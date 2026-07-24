@@ -151,7 +151,12 @@ export default function DashboardPage() {
                           {p.ptero_username || `Panel #${p.id}`}
                         </p>
                         <p className="text-xs mt-0.5" style={{ color: '#64748b' }}>
-                          {p.package_name} · KSH {parseFloat(p.package_price || 0).toLocaleString()}/mo
+                          {p.package_name} · KSH {parseFloat(p.package_price || 0).toLocaleString()}
+                          {p.expires_at && (
+                            <span className="ml-1" style={{ color: p.is_expired ? '#f87171' : '#a78bfa' }}>
+                              · {p.is_expired ? '⏱ Expired' : `⏱ Expires ${new Date(p.expires_at).toLocaleString()}`}
+                            </span>
+                          )}
                         </p>
                       </div>
                     </div>

@@ -3,7 +3,7 @@ import { useState, useEffect, Fragment } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-const EMPTY = { name: '', price: '', cpu: '', ram: '', disk: '', description: '', popular: false, accent: '#2563eb', active: true, sort_order: '' };
+const EMPTY = { name: '', price: '', cpu: '', ram: '', disk: '', description: '', popular: false, accent: '#2563eb', active: true, sort_order: '', expires_after_hours: '' };
 
 function fmtCpu(v)  { const n = parseInt(v); return n === 0 ? 'Unlimited CPU'  : `${n}% CPU`; }
 function fmtRam(v)  { const n = parseInt(v); return n === 0 ? 'Unlimited RAM'  : n >= 1024 ? `${n / 1024} GB RAM`  : `${n} MB RAM`; }
@@ -48,7 +48,7 @@ export default function AdminPackages() {
   };
 
   const openAdd  = () => { setForm(EMPTY); setError(''); setModal('add'); };
-  const openEdit = (pkg) => { setForm({ ...pkg, price: String(pkg.price), cpu: String(pkg.cpu), ram: String(pkg.ram), disk: String(pkg.disk), sort_order: String(pkg.sort_order) }); setError(''); setModal('edit'); };
+  const openEdit = (pkg) => { setForm({ ...pkg, price: String(pkg.price), cpu: String(pkg.cpu), ram: String(pkg.ram), disk: String(pkg.disk), sort_order: String(pkg.sort_order), expires_after_hours: pkg.expires_after_hours != null ? String(pkg.expires_after_hours) : '' }); setError(''); setModal('edit'); };
   const closeModal = () => { setModal(null); setError(''); };
 
   const handleSave = async (e) => {
@@ -217,6 +217,10 @@ export default function AdminPackages() {
                 <div>
                   <label style={labelStyle}>Sort Order</label>
                   <input style={inputStyle} type="number" min="0" value={form.sort_order} onChange={e => setForm(f => ({ ...f, sort_order: e.target.value }))} placeholder="5" />
+                </div>
+                <div>
+                  <label style={labelStyle}>Expires After (hours, leave blank = never)</label>
+                  <input style={inputStyle} type="number" min="1" value={form.expires_after_hours} onChange={e => setForm(f => ({ ...f, expires_after_hours: e.target.value }))} placeholder="e.g. 6" />
                 </div>
                 <div>
                   <label style={labelStyle}>CPU % (0 = Unlimited)</label>
