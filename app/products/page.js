@@ -30,7 +30,7 @@ export default function ProductsPage() {
   const init = async () => {
     const [authRes, pkgRes] = await Promise.all([
       fetch('/api/auth/me'),
-      fetch('/api/packages'),
+      fetch('/api/packages', { cache: 'no-store' }),
     ]);
     if (authRes.ok) {
       const d = await authRes.json(); setUser(d.user);

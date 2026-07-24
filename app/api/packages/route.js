@@ -12,7 +12,9 @@ export async function GET() {
       WHERE active = true
       ORDER BY sort_order ASC, id ASC
     `;
-    return NextResponse.json({ packages });
+    return NextResponse.json({ packages }, {
+      headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate' }
+    });
   } catch (error) {
     console.error('Packages fetch error:', error);
     return NextResponse.json({ error: 'Failed to fetch packages' }, { status: 500 });
