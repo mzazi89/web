@@ -1,17 +1,13 @@
 import Link from 'next/link';
+import { neon } from '@neondatabase/serverless';
+
+export const dynamic = 'force-dynamic';
 
 const STATS = [
   { value: '500+',   label: 'Active Panels' },
   { value: '99.9%',  label: 'Uptime' },
   { value: '24/7',   label: 'Support' },
   { value: '1,000+', label: 'Happy Clients' },
-];
-
-const PACKAGES = [
-  { name: 'Starter',  price: 50,  cpu: '20% CPU',       ram: '512 MB RAM',    disk: '2 GB',       popular: false, accent: '#1e3a8a' },
-  { name: 'Standard', price: 75,  cpu: '50% CPU',       ram: '1 GB RAM',      disk: '5 GB',       popular: true,  accent: '#2563eb' },
-  { name: 'Premium',  price: 100, cpu: '100% CPU',      ram: '5 GB RAM',      disk: '10 GB',      popular: false, accent: '#1d4ed8' },
-  { name: 'Ultimate', price: 120, cpu: 'Unlimited CPU', ram: 'Unlimited RAM', disk: 'Unlimited',  popular: false, accent: '#4f46e5' },
 ];
 
 const FEATURES = [
@@ -38,7 +34,28 @@ const FEATURES = [
   },
 ];
 
-export default function Home() {
+function fmtCpu(v)  { const n = parseInt(v); return n === 0 ? 'Unlimited CPU'  : `${n}% CPU`; }
+function fmtRam(v)  { const n = parseInt(v); return n === 0 ? 'Unlimited RAM'  : n >= 1024 ? `${n / 1024} GB RAM`  : `${n} MB RAM`; }
+function fmtDisk(v) { const n = parseInt(v); return n === 0 ? 'Unlimited Disk' : n >= 1024 ? `${n / 1024} GB Disk` : `${n} GB`; }
+
+async function getPackages() {
+  try {
+    const sql = neon(process.env.DATABASE_URL);
+    const rows = await sql`
+      SELECT id, name, price, cpu, ram, disk, popular, accent
+      FROM packages
+      WHERE active = true
+      ORDER BY sort_order ASC, id ASC
+    `;
+    return rows;
+  } catch {
+    return [];
+  }
+}
+
+export default async function Home() {
+  const packages = await getPackages();
+
   return (
     <div style={{ backgroundColor: '#0a0a0f' }}>
 
@@ -61,7 +78,7 @@ export default function Home() {
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-6 sm:mb-8"
             style={{ backgroundColor: 'rgba(37,99,235,0.1)', border: '1px solid rgba(37,99,235,0.3)' }}>
             <div className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
-            <span className="text-xs sm:text-sm font-semibold" style={{ color: '#60a5fa' }}>Kenya's #1 Panel Hosting Provider</span>
+            <span className="text-xs sm:text-sm font-semibold" style={{ color: '#60a5fa' }}>Kenya&apos;s #1 Panel Hosting Provider</span>
           </div>
 
           {/* Headline */}
@@ -108,20 +125,20 @@ export default function Home() {
       </section>
 
       {/* ─── Stats ─── */}
-      <section style={{ backgroundColor: '#0f1629', borderTop: '1px solid #1e2d4a', borderBottom: '1px solid #1e2d4a' }}>
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 sm:py-12">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+      <section className="py-10 sm:py-14" style={{ backgroundColor: '#0a0a0f', borderTop: '1px solid #0d1120', borderBottom: '1px solid #0d1120' }}>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-8 text-center">
             {STATS.map(s => (
-              <div key={s.label} className="text-center">
-                <p className="font-extrabold mb-1" style={{ fontSize: 'clamp(1.75rem,5vw,2.5rem)', color: '#3b82f6' }}>{s.value}</p>
-                <p className="text-xs sm:text-sm" style={{ color: '#64748b' }}>{s.label}</p>
+              <div key={s.label}>
+                <p className="font-extrabold mb-1" style={{ fontSize: 'clamp(1.6rem,4vw,2rem)', color: '#f0f4ff' }}>{s.value}</p>
+                <p className="text-xs sm:text-sm" style={{ color: '#475569' }}>{s.label}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ─── Services ─── */}
+      {/* ─── Features ─── */}
       <section className="py-16 sm:py-24" style={{ backgroundColor: '#0a0a0f' }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-12 sm:mb-16">
@@ -129,25 +146,23 @@ export default function Home() {
             <h2 className="font-extrabold mb-4" style={{ fontSize: 'clamp(1.6rem,4vw,2.5rem)', color: '#f0f4ff' }}>
               Everything You Need
             </h2>
-            <p className="max-w-xl mx-auto text-sm sm:text-base px-2" style={{ color: '#64748b' }}>
-              From game server hosting to WhatsApp automation — Mzazi Tech has you covered.
+            <p className="text-sm sm:text-base max-w-xl mx-auto" style={{ color: '#64748b' }}>
+              From game servers to WhatsApp bots — deploy, manage, and scale your digital infrastructure in minutes.
             </p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-6">
             {FEATURES.map(f => (
               <div key={f.title}
-                className="group p-6 sm:p-7 rounded-2xl transition-all duration-300 hover:-translate-y-1"
+                className="rounded-2xl p-6 sm:p-7 transition-all duration-300 hover:-translate-y-1 group"
                 style={{ backgroundColor: '#0f1629', border: '1px solid #1e2d4a' }}>
-                <div className="text-3xl sm:text-4xl mb-4">{f.icon}</div>
-                <h3 className="text-base sm:text-lg font-bold mb-2" style={{ color: '#f0f4ff' }}>{f.title}</h3>
+                <div className="text-3xl mb-4">{f.icon}</div>
+                <h3 className="font-bold text-base sm:text-lg mb-2" style={{ color: '#f0f4ff' }}>{f.title}</h3>
                 <p className="text-sm leading-relaxed mb-5" style={{ color: '#64748b' }}>{f.desc}</p>
                 <Link href={f.href}
-                  className="inline-flex items-center gap-1.5 text-sm font-semibold transition-all"
+                  className="inline-flex items-center gap-1 text-sm font-semibold transition-all"
                   style={{ color: '#3b82f6', textDecoration: 'none' }}>
-                  {f.cta}
-                  <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
+                  {f.cta} <span className="group-hover:translate-x-1 transition-transform inline-block">→</span>
                 </Link>
               </div>
             ))}
@@ -167,12 +182,12 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 sm:gap-6">
-            {PACKAGES.map(pkg => (
-              <div key={pkg.name}
+            {packages.map(pkg => (
+              <div key={pkg.id}
                 className="relative rounded-2xl p-5 sm:p-6 transition-all duration-300 hover:-translate-y-1"
                 style={{
                   backgroundColor: pkg.popular ? '#0f1a35' : '#0f1629',
-                  border: `1px solid ${pkg.popular ? pkg.accent : '#1e2d4a'}`,
+                  border: `1px solid ${pkg.popular ? (pkg.accent || '#2563eb') : '#1e2d4a'}`,
                   boxShadow: pkg.popular ? `0 0 30px rgba(37,99,235,0.2)` : 'none',
                 }}>
                 {pkg.popular && (
@@ -195,7 +210,7 @@ export default function Home() {
                 </div>
 
                 <ul className="space-y-2.5 mb-6">
-                  {[pkg.cpu, pkg.ram, pkg.disk].map(spec => (
+                  {[fmtCpu(pkg.cpu), fmtRam(pkg.ram), fmtDisk(pkg.disk)].map(spec => (
                     <li key={spec} className="flex items-center gap-2.5 text-sm" style={{ color: '#94a3b8' }}>
                       <svg className="w-4 h-4 flex-shrink-0" style={{ color: '#3b82f6' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
