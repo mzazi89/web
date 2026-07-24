@@ -262,7 +262,7 @@ export default function ProductsPage() {
                     className="w-full px-4 py-3 rounded-xl text-sm outline-none"
                     style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a', color: form.nest_id ? '#f0f4ff' : '#475569' }}>
                     <option value="">{loadingNests ? 'Loading nests…' : '— Select a nest —'}</option>
-                    {nests.map(n => <option key={n.id} value={n.id}>{n.attributes?.name || `Nest #${n.id}`}</option>)}
+                    {nests.map(n => <option key={n.id} value={n.id}>{n.name}</option>)}
                   </select>
                 </div>
 
@@ -273,7 +273,7 @@ export default function ProductsPage() {
                     className="w-full px-4 py-3 rounded-xl text-sm outline-none"
                     style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a', color: form.egg_id ? '#f0f4ff' : '#475569', opacity: !form.nest_id ? 0.5 : 1 }}>
                     <option value="">{loadingEggs ? 'Loading eggs…' : !form.nest_id ? '— Select a nest first —' : '— Select software —'}</option>
-                    {eggs.map(e => <option key={e.id} value={e.id}>{e.attributes?.name || `Egg #${e.id}`}</option>)}
+                    {eggs.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}
                   </select>
                 </div>
 
@@ -335,8 +335,8 @@ export default function ProductsPage() {
               { label: 'Resources', value: `${pkg.cpu} · ${pkg.ram} · ${pkg.disk}` },
               { label: 'Username',  value: form.ptero_username },
               { label: 'Name',      value: `${form.firstname} ${form.lastname}` },
-              { label: 'Nest',      value: nests.find(n => String(n.id) === String(form.nest_id))?.attributes?.name || form.nest_id },
-              { label: 'Egg',       value: eggs.find(e => String(e.id) === String(form.egg_id))?.attributes?.name || form.egg_id },
+              { label: 'Nest',      value: nests.find(n => String(n.id) === String(form.nest_id))?.name || form.nest_id },
+              { label: 'Egg',       value: eggs.find(e => String(e.id) === String(form.egg_id))?.name || form.egg_id },
             ].map(r => (
               <div key={r.label} className="flex justify-between py-3 text-sm" style={{ borderBottom: '1px solid #1e2d4a' }}>
                 <span style={{ color: '#64748b' }}>{r.label}</span>
