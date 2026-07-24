@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -9,6 +9,7 @@ export default function DashboardPage() {
   const [panels, setPanels]       = useState([]);
   const [balance, setBalance]     = useState(0);
   const [transactions, setTxns]   = useState([]);
+  const [credModal, setCredModal] = useState(null); // { panel } | null
   const router = useRouter();
 
   useEffect(() => { checkAuth(); }, []);
@@ -20,14 +21,9 @@ export default function DashboardPage() {
         const data = await res.json();
         setUser(data.user);
         await Promise.all([fetchPanels(), fetchWallet()]);
-      } else {
-        router.push('/login');
-      }
-    } catch {
-      router.push('/login');
-    } finally {
-      setLoading(false);
-    }
+      } else { router.push('/login'); }
+    } catch { router.push('/login'); }
+    finally { setLoading(false); }
   };
 
   const fetchPanels = async () => {
@@ -98,9 +94,7 @@ export default function DashboardPage() {
               className="p-4 sm:p-5 rounded-2xl transition-all"
               style={{ backgroundColor: '#0f1629', border: '1px solid #1e2d4a' }}>
               {s.href ? (
-                <Link href={s.href} style={{ textDecoration: 'none' }}>
-                  <StatInner s={s} />
-                </Link>
+                <Link href={s.href} style={{ textDecoration: 'none' }}><StatInner s={s} /></Link>
               ) : (
                 <StatInner s={s} />
               )}
@@ -169,9 +163,18 @@ export default function DashboardPage() {
                         }}>
                         {p.status}
                       </span>
-                      <p className="text-xs" style={{ color: '#475569' }}>
-                        {new Date(p.created_at).toLocaleDateString()}
-                      </p>
+                      {/* 🔐 View Credentials button */}
+                      <button
+                        onClick={() => setCredModal({ panel: p })}
+                        className="text-xs px-2.5 py-1 rounded-full font-medium transition-all"
+                        style={{
+                          backgroundColor: 'rgba(168,85,247,0.1)',
+                          color: '#c084fc',
+                          border: '1px solid rgba(168,85,247,0.25)',
+                          cursor: 'pointer',
+                        }}>
+                        🔐 Credentials
+                      </button>
                     </div>
                   </div>
                 ))}
@@ -235,9 +238,9 @@ export default function DashboardPage() {
               <p className="text-xs font-bold uppercase tracking-wider mb-3" style={{ color: '#475569' }}>Quick Links</p>
               <div className="space-y-2">
                 {[
-                  { label: 'Deploy Panel',      href: '/products',     icon: '🚀' },
-                  { label: 'WhatsApp Bot',       href: '/whatsapp-bot', icon: '🤖' },
-                  { label: 'Contact Support',    href: '/contact',      icon: '💬' },
+                  { label: 'Deploy Panel',   href: '/products', icon: '🚀' },
+                  { label: 'WhatsApp Bot',   href: '/whatsapp-bot', icon: '🤖' },
+                  { label: 'Contact Support',href: '/contact',  icon: '💬' },
                 ].map(l => (
                   <Link key={l.href} href={l.href}
                     className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm transition-all"
@@ -254,6 +257,15 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+
+      {/* ── Credentials Modal ── */}
+      {credModal && (
+        <CredentialsModal
+          panel={credModal.panel}
+          user={user}
+          onClose={() => setCredModal(null)}
+        />
+      )}
     </div>
   );
 }
@@ -268,5 +280,205 @@ function StatInner({ s }) {
       <p className="font-extrabold text-xl sm:text-2xl mb-1" style={{ color: s.color }}>{s.value}</p>
       <p className="text-xs" style={{ color: '#64748b' }}>{s.label}</p>
     </>
+  );
+}
+
+function CredentialsModal({ panel, user, onClose }) {
+  const [password, setPassword]   = useState('');
+  const [loading, setLoading]     = useState(false);
+  const [creds, setCreds]         = useState(null);
+  const [error, setError]         = useState('');
+  const [copied, setCopied]       = useState('');
+  const inputRef = useRef(null);
+  const isGoogleOnly = !user?.password_set; // Google accounts have no local password
+
+  useEffect(() => {
+    setTimeout(() => inputRef.current?.focus(), 100);
+  }, []);
+
+  const handleReveal = async (e) => {
+    e.preventDefault();
+    if (!password && !isGoogleOnly) return;
+    setLoading(true);
+    setError('');
+    try {
+      const res = await fetch('/api/panel/credentials', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ panel_id: panel.id, password: password || 'google-auth' }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setCreds(data.credentials);
+      } else {
+        setError(data.error || 'Failed to verify');
+      }
+    } catch {
+      setError('Network error. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const copy = (text, key) => {
+    navigator.clipboard.writeText(text);
+    setCopied(key);
+    setTimeout(() => setCopied(''), 2000);
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ backgroundColor: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(6px)' }}
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div className="w-full max-w-md rounded-2xl overflow-hidden" style={{ backgroundColor: '#0f1629', border: '1px solid #1e2d4a' }}>
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid #1e2d4a' }}>
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg,#7c3aed,#6d28d9)' }}>
+              🔐
+            </div>
+            <div>
+              <p className="font-bold text-sm" style={{ color: '#f0f4ff' }}>Panel Credentials</p>
+              <p className="text-xs" style={{ color: '#475569' }}>{panel.ptero_username || `Panel #${panel.id}`}</p>
+            </div>
+          </div>
+          <button onClick={onClose} className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ color: '#475569', border: '1px solid #1e2d4a', background: 'transparent', cursor: 'pointer' }}>✕</button>
+        </div>
+
+        <div className="p-6">
+          {!creds ? (
+            /* Password gate */
+            <form onSubmit={handleReveal} className="space-y-4">
+              <div className="p-4 rounded-xl" style={{ backgroundColor: 'rgba(168,85,247,0.06)', border: '1px solid rgba(168,85,247,0.2)' }}>
+                <p className="text-xs leading-relaxed" style={{ color: '#c084fc' }}>
+                  🔒 For your security, enter your account password to view the credentials for this panel.
+                </p>
+              </div>
+
+              {error && (
+                <div className="p-3 rounded-xl text-xs" style={{ backgroundColor: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: '#f87171' }}>
+                  {error}
+                </div>
+              )}
+
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: '#475569' }}>
+                  Account Password
+                </label>
+                <input
+                  ref={inputRef}
+                  type="password"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  placeholder="Enter your login password"
+                  className="w-full px-4 py-3 rounded-xl text-sm outline-none"
+                  style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a', color: '#f0f4ff' }}
+                  onFocus={e => e.target.style.borderColor = '#7c3aed'}
+                  onBlur={e => e.target.style.borderColor = '#1e2d4a'}
+                  required
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading || !password}
+                className="w-full py-3 rounded-xl font-bold text-sm text-white transition-all"
+                style={{
+                  background: loading || !password ? '#1e2d4a' : 'linear-gradient(135deg,#7c3aed,#6d28d9)',
+                  cursor: loading || !password ? 'not-allowed' : 'pointer',
+                }}>
+                {loading ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                    </svg>
+                    Verifying…
+                  </span>
+                ) : '🔓 Reveal Credentials'}
+              </button>
+            </form>
+          ) : (
+            /* Credentials view */
+            <div className="space-y-3">
+              <div className="p-3 rounded-xl text-xs" style={{ backgroundColor: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.2)', color: '#4ade80' }}>
+                ✅ Identity verified — credentials revealed below.
+              </div>
+
+              {[
+                { label: 'Panel URL',  value: creds.panel_url,  key: 'url',   icon: '🌐', link: creds.panel_url },
+                { label: 'Username',   value: creds.username,   key: 'user',  icon: '👤' },
+                { label: 'Email',      value: creds.email,      key: 'email', icon: '📧' },
+                { label: 'Password',   value: creds.password,   key: 'pass',  icon: '🔑' },
+              ].map(({ label, value, key, icon, link }) => (
+                <div key={key} className="flex items-center justify-between gap-3 p-3 rounded-xl"
+                  style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a' }}>
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <span className="text-base">{icon}</span>
+                    <div className="min-w-0">
+                      <p className="text-xs" style={{ color: '#475569' }}>{label}</p>
+                      <p className="text-sm font-mono font-semibold truncate" style={{ color: key === 'pass' ? '#c084fc' : '#f0f4ff' }}>
+                        {key === 'pass' ? '••••••••' : value}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-1.5 flex-shrink-0">
+                    {link && (
+                      <a href={link} target="_blank" rel="noopener noreferrer"
+                        className="px-2.5 py-1.5 rounded-lg text-xs font-semibold"
+                        style={{ backgroundColor: 'rgba(37,99,235,0.1)', color: '#60a5fa', border: '1px solid rgba(37,99,235,0.2)', textDecoration: 'none' }}>
+                        Open ↗
+                      </a>
+                    )}
+                    <button
+                      onClick={() => copy(value, key)}
+                      className="px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all"
+                      style={{
+                        backgroundColor: copied === key ? 'rgba(34,197,94,0.15)' : 'rgba(168,85,247,0.1)',
+                        color: copied === key ? '#4ade80' : '#c084fc',
+                        border: `1px solid ${copied === key ? 'rgba(34,197,94,0.3)' : 'rgba(168,85,247,0.25)'}`,
+                        cursor: 'pointer',
+                      }}>
+                      {copied === key ? '✓ Copied' : 'Copy'}
+                    </button>
+                  </div>
+                </div>
+              ))}
+
+              {/* Show real password (toggle) */}
+              <PasswordReveal password={creds.password} />
+
+              <div className="pt-1">
+                <p className="text-xs text-center" style={{ color: '#374151' }}>
+                  Keep these credentials safe — do not share them with anyone.
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PasswordReveal({ password }) {
+  const [show, setShow] = useState(false);
+  return (
+    <div className="flex items-center justify-between p-3 rounded-xl"
+      style={{ backgroundColor: 'rgba(168,85,247,0.06)', border: '1px solid rgba(168,85,247,0.2)' }}>
+      <div>
+        <p className="text-xs mb-0.5" style={{ color: '#475569' }}>Password (visible)</p>
+        <p className="text-sm font-mono font-bold" style={{ color: '#c084fc', letterSpacing: show ? 0 : '0.1em' }}>
+          {show ? password : '••••••••••••'}
+        </p>
+      </div>
+      <button
+        onClick={() => setShow(v => !v)}
+        className="px-3 py-1.5 rounded-lg text-xs font-semibold"
+        style={{ backgroundColor: 'rgba(168,85,247,0.1)', color: '#c084fc', border: '1px solid rgba(168,85,247,0.25)', cursor: 'pointer' }}>
+        {show ? '🙈 Hide' : '👁 Show'}
+      </button>
+    </div>
   );
 }

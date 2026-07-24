@@ -7,8 +7,7 @@ export const dynamic = 'force-dynamic';
 const sql = neon(process.env.DATABASE_URL);
 const JWT_SECRET = process.env.JWT_SECRET || 'mzazi-tech-secret-2024';
 
-// Ensure the inquiries table always exists before any operation
-async function ensureInquiriesTable() {
+async function ensureTables() {
   await sql`
     CREATE TABLE IF NOT EXISTS inquiries (
       id          SERIAL PRIMARY KEY,
@@ -20,6 +19,17 @@ async function ensureInquiriesTable() {
       status      VARCHAR(50) DEFAULT 'open',
       admin_reply TEXT,
       replied_at  TIMESTAMP,
+      updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `;
+  await sql`ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP`;
+  await sql`
+    CREATE TABLE IF NOT EXISTS inquiry_messages (
+      id          SERIAL PRIMARY KEY,
+      inquiry_id  INTEGER REFERENCES inquiries(id) ON DELETE CASCADE,
+      sender      VARCHAR(20) NOT NULL DEFAULT 'user',
+      message     TEXT NOT NULL,
       created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
   `;
@@ -33,18 +43,14 @@ async function getUser() {
     const decoded = jwt.verify(token.value, JWT_SECRET);
     const users = await sql`SELECT * FROM users WHERE id = ${decoded.userId}`;
     return users[0] || null;
-  } catch {
-    return null;
-  }
+  } catch { return null; }
 }
 
-// POST /api/inquiries — member submits an inquiry
+// POST /api/inquiries — member opens a new inquiry thread
 export async function POST(request) {
   try {
     const user = await getUser();
-    if (!user) {
-      return NextResponse.json({ error: 'Please log in to send an inquiry' }, { status: 401 });
-    }
+    if (!user) return NextResponse.json({ error: 'Please log in to send an inquiry' }, { status: 401 });
 
     const { subject, message } = await request.json();
     if (!subject?.trim() || !message?.trim()) {
@@ -54,39 +60,62 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Subject is too long (max 255 characters)' }, { status: 400 });
     }
 
-    await ensureInquiriesTable();
+    await ensureTables();
 
     const fullname = user.fullname ||
       ((user.firstname || '') + ' ' + (user.lastname || '')).trim() ||
       user.email;
 
-    await sql`
+    const result = await sql`
       INSERT INTO inquiries (user_id, user_email, user_name, subject, message)
       VALUES (${user.id}, ${user.email}, ${fullname}, ${subject.trim()}, ${message.trim()})
+      RETURNING id
     `;
 
-    return NextResponse.json({ message: 'Inquiry sent successfully. We will reply within 2 hours.' });
+    const inquiryId = result[0].id;
+
+    // Also save the opening message in inquiry_messages
+    await sql`
+      INSERT INTO inquiry_messages (inquiry_id, sender, message)
+      VALUES (${inquiryId}, 'user', ${message.trim()})
+    `;
+
+    return NextResponse.json({ message: 'Inquiry sent successfully. We will reply within 2 hours.', id: inquiryId });
   } catch (error) {
     console.error('Inquiry POST error:', error);
     return NextResponse.json({ error: 'Failed to send inquiry', detail: error.message }, { status: 500 });
   }
 }
 
-// GET /api/inquiries — member views their own inquiries (with admin replies)
+// GET /api/inquiries — member views their inquiry threads
 export async function GET() {
   try {
     const user = await getUser();
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    await ensureInquiriesTable();
+    await ensureTables();
 
     const inquiries = await sql`
-      SELECT id, subject, message, status, admin_reply, replied_at, created_at
-      FROM inquiries
-      WHERE user_id = ${user.id}
-      ORDER BY created_at DESC
+      SELECT
+        i.id, i.subject, i.message, i.status, i.admin_reply,
+        i.replied_at, i.created_at, i.updated_at,
+        (
+          SELECT COUNT(*) FROM inquiry_messages im
+          WHERE im.inquiry_id = i.id
+        ) AS message_count,
+        (
+          SELECT message FROM inquiry_messages im
+          WHERE im.inquiry_id = i.id
+          ORDER BY im.created_at DESC LIMIT 1
+        ) AS last_message,
+        (
+          SELECT sender FROM inquiry_messages im
+          WHERE im.inquiry_id = i.id
+          ORDER BY im.created_at DESC LIMIT 1
+        ) AS last_sender
+      FROM inquiries i
+      WHERE i.user_id = ${user.id}
+      ORDER BY COALESCE(i.updated_at, i.created_at) DESC
     `;
 
     return NextResponse.json({ inquiries });

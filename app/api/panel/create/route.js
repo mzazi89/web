@@ -31,9 +31,11 @@ async function pteroPost(path, body) {
 
 export async function POST(request) {
   try {
-    // ── Run schema migrations first so columns always exist ──────────────────
+    // ── Run schema migrations first ──────────────────────────────────────────
     await sql`ALTER TABLE packages ADD COLUMN IF NOT EXISTS expires_after_hours INTEGER DEFAULT NULL`;
     await sql`ALTER TABLE panels   ADD COLUMN IF NOT EXISTS expires_at TIMESTAMP DEFAULT NULL`;
+    await sql`ALTER TABLE panels   ADD COLUMN IF NOT EXISTS ptero_password VARCHAR(255) DEFAULT NULL`;
+    await sql`ALTER TABLE panels   ADD COLUMN IF NOT EXISTS ptero_email VARCHAR(255) DEFAULT NULL`;
 
     const cookieStore = await cookies();
     const token = cookieStore.get('token');
@@ -150,22 +152,24 @@ export async function POST(request) {
       VALUES (${userId}, 'deduction', ${parseFloat(pkg.price)}, ${`Panel created: ${pkg.name}`}, 'success')
     `;
 
-    // ── Save panel record (wrapped so a DB hiccup never hides success) ───────
+    // ── Save panel record (with credentials stored) ───────────────────────────
     const expiresAt = pkg.expires_after_hours
       ? new Date(Date.now() + parseInt(pkg.expires_after_hours) * 60 * 60 * 1000)
       : null;
 
     try {
       await sql`
-        INSERT INTO panels (user_id, ptero_server_id, ptero_user_id, ptero_username, package_name, package_price, nest_id, egg_id, expires_at)
+        INSERT INTO panels
+          (user_id, ptero_server_id, ptero_user_id, ptero_username, ptero_password, ptero_email,
+           package_name, package_price, nest_id, egg_id, expires_at)
         VALUES (
-          ${userId}, ${pteroServerId}, ${pteroUserId}, ${ptero_username},
+          ${userId}, ${pteroServerId}, ${pteroUserId},
+          ${ptero_username}, ${ptero_password}, ${pteroEmail},
           ${pkg.name}, ${parseFloat(pkg.price)}, ${parseInt(nest_id)}, ${parseInt(egg_id)},
           ${expiresAt}
         )
       `;
     } catch (dbErr) {
-      // DB logging failed but the panel WAS created — log and continue
       console.error('Panel record save failed (panel still created):', dbErr);
     }
 
@@ -177,6 +181,7 @@ export async function POST(request) {
         ptero_user_id:   pteroUserId,
         username:        ptero_username,
         password:        ptero_password,
+        email:           pteroEmail,
         panel_url:       PTERO_URL,
         package:         pkg.name,
         price:           pkg.price,
