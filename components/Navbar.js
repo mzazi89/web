@@ -1,47 +1,67 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 
+const NAV_LINKS = [
+  { href: '/',             label: 'Home' },
+  { href: '/products',     label: 'Panels' },
+  { href: '/whatsapp-bot', label: 'WhatsApp Bot' },
+  { href: '/about',        label: 'About' },
+  { href: '/contact',      label: 'Contact' },
+];
+
 export default function Navbar() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState(null);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [walletBalance, setWalletBalance] = useState(null);
-  const [chatOpen, setChatOpen] = useState(false);
-  const [chatMsg, setChatMsg] = useState({ subject: '', message: '' });
+  const [user, setUser]               = useState(null);
+  const [walletBalance, setWallet]    = useState(null);
+  const [menuOpen, setMenuOpen]       = useState(false);
+  const [scrolled, setScrolled]       = useState(false);
+  const [chatOpen, setChatOpen]       = useState(false);
+  const [chatMsg, setChatMsg]         = useState({ subject: '', message: '' });
   const [chatLoading, setChatLoading] = useState(false);
-  const [chatSent, setChatSent] = useState(false);
-  const router = useRouter();
+  const [chatSent, setChatSent]       = useState(false);
+  const router   = useRouter();
   const pathname = usePathname();
+  const chatRef  = useRef(null);
 
-  useEffect(() => { checkAuthStatus(); }, [pathname]);
+  // Close mobile menu on route change
+  useEffect(() => { setMenuOpen(false); }, [pathname]);
 
-  const checkAuthStatus = async () => {
-    try {
-      const res = await fetch('/api/auth/me');
-      if (res.ok) {
-        const data = await res.json();
-        setIsLoggedIn(true);
-        setUser(data.user);
-        fetchWalletBalance();
-      } else {
-        setIsLoggedIn(false);
-        setUser(null);
-      }
-    } catch { setIsLoggedIn(false); }
-  };
+  // Scroll shadow
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 10);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
-  const fetchWalletBalance = async () => {
-    try {
-      const res = await fetch('/api/wallet/balance');
-      if (res.ok) { const d = await res.json(); setWalletBalance(d.balance); }
-    } catch {}
-  };
+  // Auth check on every route change
+  useEffect(() => {
+    fetch('/api/auth/me')
+      .then(r => r.ok ? r.json() : null)
+      .then(d => {
+        if (d?.user) {
+          setUser(d.user);
+          fetch('/api/wallet/balance')
+            .then(r => r.ok ? r.json() : null)
+            .then(wd => { if (wd) setWallet(wd.balance); });
+        } else {
+          setUser(null);
+          setWallet(null);
+        }
+      })
+      .catch(() => { setUser(null); setWallet(null); });
+  }, [pathname]);
+
+  // Close chat dropdown on outside click
+  useEffect(() => {
+    const handler = e => { if (chatRef.current && !chatRef.current.contains(e.target)) setChatOpen(false); };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
 
   const handleLogout = async () => {
     await fetch('/api/auth/logout', { method: 'POST' });
-    setIsLoggedIn(false); setUser(null); setWalletBalance(null);
+    setUser(null); setWallet(null); setMenuOpen(false);
     router.push('/');
   };
 
@@ -59,195 +79,248 @@ export default function Navbar() {
     setChatLoading(false);
   };
 
-  const navLinks = [
-    { href: '/', label: 'Home' },
-    { href: '/products', label: 'Panels' },
-    { href: '/whatsapp-bot', label: 'WhatsApp Bot' },
-    { href: '/about', label: 'About' },
-    { href: '/contact', label: 'Contact' },
-  ];
+  const isActive = href => href === '/' ? pathname === '/' : pathname.startsWith(href);
 
   return (
     <>
-      <nav style={{ backgroundColor: '#0a0a0f', borderBottom: '1px solid #1e2d4a' }} className="sticky top-0 z-50 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex justify-between items-center h-16">
+      {/* ── Nav bar ── */}
+      <nav
+        className="sticky top-0 z-50 transition-shadow duration-300"
+        style={{
+          backgroundColor: '#0a0a0f',
+          borderBottom: '1px solid #1e2d4a',
+          boxShadow: scrolled ? '0 4px 24px rgba(0,0,0,0.5)' : 'none',
+        }}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="flex items-center justify-between h-16">
 
             {/* Logo */}
-            <Link href="/" className="flex items-center space-x-3">
-              <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #2563eb, #1d4ed8)' }}>
-                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <Link href="/" className="flex items-center gap-2.5 flex-shrink-0" style={{ textDecoration: 'none' }}>
+              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+                style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)' }}>
+                <svg className="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
               </div>
-              <span className="text-xl font-bold" style={{ background: 'linear-gradient(135deg, #60a5fa, #3b82f6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              <span className="text-base sm:text-lg font-extrabold tracking-tight"
+                style={{ background: 'linear-gradient(135deg,#60a5fa,#3b82f6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                 MZAZI TECH
               </span>
             </Link>
 
-            {/* Desktop Nav Links */}
-            <div className="hidden md:flex items-center space-x-1">
-              {navLinks.map(link => (
-                <Link key={link.href} href={link.href}
-                  className="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200"
-                  style={{ color: pathname === link.href ? '#3b82f6' : '#94a3b8', backgroundColor: pathname === link.href ? 'rgba(37,99,235,0.1)' : 'transparent' }}>
-                  {link.label}
+            {/* Desktop nav links */}
+            <div className="hidden lg:flex items-center gap-1">
+              {NAV_LINKS.map(l => (
+                <Link key={l.href} href={l.href}
+                  className="px-3 py-2 rounded-lg text-sm font-medium transition-all"
+                  style={{
+                    color: isActive(l.href) ? '#3b82f6' : '#94a3b8',
+                    backgroundColor: isActive(l.href) ? 'rgba(37,99,235,0.1)' : 'transparent',
+                  }}>
+                  {l.label}
                 </Link>
               ))}
             </div>
 
-            {/* Desktop Auth Area */}
-            <div className="hidden md:flex items-center space-x-3">
-              {isLoggedIn ? (
-                <>
-                  <Link href="/wallet" className="flex items-center space-x-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all"
-                    style={{ backgroundColor: 'rgba(37,99,235,0.1)', border: '1px solid rgba(37,99,235,0.3)', color: '#60a5fa' }}>
+            {/* Desktop right side */}
+            <div className="hidden lg:flex items-center gap-2">
+              {/* Quick inquiry button */}
+              {user && (
+                <div className="relative" ref={chatRef}>
+                  <button
+                    onClick={() => { setChatOpen(o => !o); setChatSent(false); }}
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all"
+                    style={{ color: '#94a3b8', border: '1px solid #1e2d4a' }}>
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                        d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                     </svg>
-                    <span>KSH {walletBalance !== null ? parseFloat(walletBalance).toLocaleString() : '...'}</span>
+                    Support
+                  </button>
+                  {chatOpen && (
+                    <div className="absolute right-0 top-12 w-80 rounded-2xl shadow-2xl overflow-hidden"
+                      style={{ backgroundColor: '#0f1629', border: '1px solid #1e2d4a', zIndex: 60 }}>
+                      <div className="p-4 border-b" style={{ borderColor: '#1e2d4a' }}>
+                        <p className="font-bold text-sm" style={{ color: '#f0f4ff' }}>Quick Inquiry</p>
+                        <p className="text-xs mt-0.5" style={{ color: '#475569' }}>We reply within 2 hours</p>
+                      </div>
+                      {chatSent ? (
+                        <div className="p-6 text-center">
+                          <div className="text-3xl mb-2">✅</div>
+                          <p className="font-semibold text-sm" style={{ color: '#4ade80' }}>Sent! We'll reply soon.</p>
+                          <button onClick={() => setChatSent(false)} className="mt-3 text-xs" style={{ color: '#475569' }}>Send another</button>
+                        </div>
+                      ) : (
+                        <form onSubmit={handleChatSubmit} className="p-4 space-y-3">
+                          <input value={chatMsg.subject} onChange={e => setChatMsg(m => ({ ...m, subject: e.target.value }))}
+                            placeholder="Subject" required
+                            className="w-full px-3 py-2 rounded-lg text-sm outline-none"
+                            style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a', color: '#f0f4ff' }} />
+                          <textarea value={chatMsg.message} onChange={e => setChatMsg(m => ({ ...m, message: e.target.value }))}
+                            placeholder="Your message..." required rows={3}
+                            className="w-full px-3 py-2 rounded-lg text-sm outline-none resize-none"
+                            style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a', color: '#f0f4ff' }} />
+                          <button type="submit" disabled={chatLoading}
+                            className="w-full py-2 rounded-lg text-sm font-semibold text-white"
+                            style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', opacity: chatLoading ? 0.7 : 1 }}>
+                            {chatLoading ? 'Sending…' : 'Send Inquiry'}
+                          </button>
+                        </form>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Wallet balance */}
+              {user && walletBalance !== null && (
+                <Link href="/wallet"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold transition-all"
+                  style={{ backgroundColor: 'rgba(37,99,235,0.1)', color: '#60a5fa', border: '1px solid rgba(37,99,235,0.2)', textDecoration: 'none' }}>
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                  </svg>
+                  KSH {parseFloat(walletBalance).toLocaleString()}
+                </Link>
+              )}
+
+              {/* Auth buttons */}
+              {user ? (
+                <>
+                  <Link href="/dashboard"
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all"
+                    style={{ color: '#94a3b8', border: '1px solid #1e2d4a', textDecoration: 'none' }}>
+                    <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
+                      style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', color: '#fff' }}>
+                      {(user.firstname || user.email || 'U')[0].toUpperCase()}
+                    </div>
+                    {user.firstname || 'Account'}
                   </Link>
-                  <Link href="/dashboard" className="px-4 py-2 rounded-lg text-sm font-medium"
-                    style={{ backgroundColor: 'rgba(37,99,235,0.08)', color: '#94a3b8', border: '1px solid #1e2d4a' }}>
-                    Dashboard
-                  </Link>
-                  <button onClick={handleLogout} className="px-4 py-2 rounded-lg text-sm font-medium"
-                    style={{ color: '#f87171', border: '1px solid rgba(248,113,113,0.2)', backgroundColor: 'rgba(248,113,113,0.05)' }}>
+                  <button onClick={handleLogout}
+                    className="px-3 py-1.5 rounded-lg text-sm font-medium transition-all"
+                    style={{ color: '#f87171', border: '1px solid rgba(248,113,113,0.2)' }}>
                     Logout
                   </button>
                 </>
               ) : (
                 <>
-                  <Link href="/login" className="px-4 py-2 rounded-lg text-sm font-medium" style={{ color: '#94a3b8' }}>Login</Link>
-                  <Link href="/signup" className="px-5 py-2 rounded-lg text-sm font-semibold text-white transition-all"
-                    style={{ background: 'linear-gradient(135deg, #2563eb, #1d4ed8)', boxShadow: '0 0 20px rgba(37,99,235,0.3)' }}>
+                  <Link href="/login"
+                    className="px-4 py-2 rounded-lg text-sm font-medium transition-all"
+                    style={{ color: '#94a3b8', border: '1px solid #1e2d4a', textDecoration: 'none' }}>
+                    Login
+                  </Link>
+                  <Link href="/signup"
+                    className="px-4 py-2 rounded-lg text-sm font-semibold text-white transition-all"
+                    style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', textDecoration: 'none' }}>
                     Get Started
                   </Link>
                 </>
               )}
-
-              {/* Admin Button */}
-              <Link href="/admin/login"
-                className="flex items-center space-x-1.5 px-3 py-2 rounded-lg text-xs font-semibold transition-all"
-                style={{ backgroundColor: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)', color: '#f87171' }}>
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
-                <span>Admin</span>
-              </Link>
             </div>
 
-            {/* Mobile Hamburger */}
-            <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden p-2 rounded-lg" style={{ color: '#94a3b8' }}>
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                {isMenuOpen
-                  ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  : <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />}
-              </svg>
-            </button>
+            {/* Mobile right: wallet + hamburger */}
+            <div className="flex lg:hidden items-center gap-2">
+              {user && walletBalance !== null && (
+                <Link href="/wallet"
+                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold"
+                  style={{ backgroundColor: 'rgba(37,99,235,0.1)', color: '#60a5fa', border: '1px solid rgba(37,99,235,0.2)', textDecoration: 'none' }}>
+                  💳 KSH {parseFloat(walletBalance).toLocaleString()}
+                </Link>
+              )}
+              <button
+                onClick={() => setMenuOpen(o => !o)}
+                className="w-10 h-10 flex flex-col items-center justify-center gap-1.5 rounded-lg"
+                style={{ border: '1px solid #1e2d4a' }}
+                aria-label="Toggle menu"
+              >
+                <span className="block w-5 h-0.5 transition-all duration-300"
+                  style={{ backgroundColor: '#94a3b8', transform: menuOpen ? 'translateY(6px) rotate(45deg)' : 'none' }} />
+                <span className="block w-5 h-0.5 transition-all duration-300"
+                  style={{ backgroundColor: '#94a3b8', opacity: menuOpen ? 0 : 1 }} />
+                <span className="block w-5 h-0.5 transition-all duration-300"
+                  style={{ backgroundColor: '#94a3b8', transform: menuOpen ? 'translateY(-6px) rotate(-45deg)' : 'none' }} />
+              </button>
+            </div>
           </div>
-
-          {/* Mobile Menu */}
-          {isMenuOpen && (
-            <div className="md:hidden pb-4 pt-2 border-t" style={{ borderColor: '#1e2d4a' }}>
-              {navLinks.map(link => (
-                <Link key={link.href} href={link.href}
-                  className="block py-2.5 px-3 rounded-lg text-sm font-medium mb-1"
-                  style={{ color: pathname === link.href ? '#3b82f6' : '#94a3b8' }}
-                  onClick={() => setIsMenuOpen(false)}>
-                  {link.label}
-                </Link>
-              ))}
-              <div className="mt-3 pt-3 border-t" style={{ borderColor: '#1e2d4a' }}>
-                {isLoggedIn ? (
-                  <>
-                    <Link href="/wallet" className="block py-2.5 px-3 rounded-lg text-sm font-medium mb-1" style={{ color: '#60a5fa' }} onClick={() => setIsMenuOpen(false)}>
-                      💳 Wallet: KSH {walletBalance !== null ? parseFloat(walletBalance).toLocaleString() : '...'}
-                    </Link>
-                    <Link href="/dashboard" className="block py-2.5 px-3 rounded-lg text-sm font-medium mb-1" style={{ color: '#94a3b8' }} onClick={() => setIsMenuOpen(false)}>Dashboard</Link>
-                    <button onClick={handleLogout} className="block w-full text-left py-2.5 px-3 rounded-lg text-sm font-medium" style={{ color: '#f87171' }}>Logout</button>
-                  </>
-                ) : (
-                  <>
-                    <Link href="/login" className="block py-2.5 px-3 rounded-lg text-sm font-medium mb-2" style={{ color: '#94a3b8' }} onClick={() => setIsMenuOpen(false)}>Login</Link>
-                    <Link href="/signup" className="block py-2.5 px-3 rounded-lg text-sm font-semibold text-center" style={{ background: 'linear-gradient(135deg, #2563eb, #1d4ed8)', color: '#fff', borderRadius: '8px' }} onClick={() => setIsMenuOpen(false)}>Get Started</Link>
-                  </>
-                )}
-                <Link href="/admin/login" className="flex items-center space-x-2 mt-2 py-2.5 px-3 rounded-lg text-sm font-semibold" style={{ color: '#f87171', backgroundColor: 'rgba(239,68,68,0.08)' }} onClick={() => setIsMenuOpen(false)}>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                  </svg>
-                  <span>Admin Panel</span>
-                </Link>
-              </div>
-            </div>
-          )}
         </div>
-      </nav>
 
-      {/* ── Floating Chat Button (visible to logged-in users only) ── */}
-      {isLoggedIn && (
-        <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end space-y-3">
-          {chatOpen && (
-            <div className="rounded-2xl p-5 shadow-2xl w-80" style={{ backgroundColor: '#0f1629', border: '1px solid #1e2d4a', boxShadow: '0 25px 50px rgba(0,0,0,0.5)' }}>
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center space-x-2">
-                  <div className="w-2.5 h-2.5 rounded-full bg-green-400 animate-pulse" />
-                  <span className="text-sm font-semibold" style={{ color: '#f0f4ff' }}>Message Admin</span>
-                </div>
-                <button onClick={() => { setChatOpen(false); setChatSent(false); }} style={{ color: '#64748b' }}>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-              {chatSent ? (
-                <div className="text-center py-6">
-                  <div className="text-3xl mb-2">✅</div>
-                  <p className="text-sm font-semibold" style={{ color: '#4ade80' }}>Message Sent!</p>
-                  <p className="text-xs mt-1" style={{ color: '#64748b' }}>Admin will get back to you soon.</p>
-                  <button onClick={() => setChatSent(false)} className="mt-4 text-xs px-3 py-1.5 rounded-lg" style={{ backgroundColor: '#1e2d4a', color: '#94a3b8' }}>
-                    Send Another
+        {/* ── Mobile menu dropdown ── */}
+        <div
+          className="lg:hidden overflow-hidden transition-all duration-300"
+          style={{
+            maxHeight: menuOpen ? '600px' : '0',
+            borderTop: menuOpen ? '1px solid #1e2d4a' : 'none',
+          }}
+        >
+          <div className="px-4 py-4 space-y-1" style={{ backgroundColor: '#0a0a0f' }}>
+            {NAV_LINKS.map(l => (
+              <Link key={l.href} href={l.href}
+                className="flex items-center px-4 py-3 rounded-xl text-sm font-medium transition-all"
+                style={{
+                  color: isActive(l.href) ? '#3b82f6' : '#94a3b8',
+                  backgroundColor: isActive(l.href) ? 'rgba(37,99,235,0.1)' : 'transparent',
+                }}>
+                {l.label}
+              </Link>
+            ))}
+
+            <div className="pt-3 border-t" style={{ borderColor: '#1e2d4a' }}>
+              {user ? (
+                <div className="space-y-2">
+                  {/* User info */}
+                  <div className="flex items-center gap-3 px-4 py-3 rounded-xl"
+                    style={{ backgroundColor: '#0f1629', border: '1px solid #1e2d4a' }}>
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold"
+                      style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', color: '#fff' }}>
+                      {(user.firstname || user.email || 'U')[0].toUpperCase()}
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold" style={{ color: '#f0f4ff' }}>
+                        {user.firstname ? `${user.firstname} ${user.lastname || ''}`.trim() : user.email}
+                      </p>
+                      <p className="text-xs" style={{ color: '#475569' }}>{user.email}</p>
+                    </div>
+                  </div>
+                  <Link href="/dashboard"
+                    className="flex items-center px-4 py-3 rounded-xl text-sm font-medium"
+                    style={{ color: '#94a3b8', backgroundColor: '#0f1629', border: '1px solid #1e2d4a', textDecoration: 'none' }}>
+                    📊 Dashboard
+                  </Link>
+                  <Link href="/wallet"
+                    className="flex items-center px-4 py-3 rounded-xl text-sm font-medium"
+                    style={{ color: '#60a5fa', backgroundColor: 'rgba(37,99,235,0.08)', border: '1px solid rgba(37,99,235,0.2)', textDecoration: 'none' }}>
+                    💳 Wallet · KSH {walletBalance !== null ? parseFloat(walletBalance).toLocaleString() : '—'}
+                  </Link>
+                  <button onClick={handleLogout}
+                    className="w-full flex items-center px-4 py-3 rounded-xl text-sm font-medium"
+                    style={{ color: '#f87171', backgroundColor: 'rgba(248,113,113,0.06)', border: '1px solid rgba(248,113,113,0.15)' }}>
+                    🚪 Logout
                   </button>
                 </div>
               ) : (
-                <form onSubmit={handleChatSubmit} className="space-y-3">
-                  <div>
-                    <label className="block text-xs font-medium mb-1" style={{ color: '#64748b' }}>Subject</label>
-                    <input type="text" required value={chatMsg.subject}
-                      onChange={e => setChatMsg(m => ({ ...m, subject: e.target.value }))}
-                      placeholder="e.g. Payment issue, Panel help..."
-                      className="w-full rounded-lg px-3 py-2 text-sm outline-none"
-                      style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a', color: '#f0f4ff' }} />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium mb-1" style={{ color: '#64748b' }}>Message</label>
-                    <textarea required rows={3} value={chatMsg.message}
-                      onChange={e => setChatMsg(m => ({ ...m, message: e.target.value }))}
-                      placeholder="Describe your issue or question..."
-                      className="w-full rounded-lg px-3 py-2 text-sm outline-none resize-none"
-                      style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a', color: '#f0f4ff' }} />
-                  </div>
-                  <button type="submit" disabled={chatLoading}
-                    className="w-full py-2.5 rounded-lg text-sm font-semibold text-white transition-all"
-                    style={{ background: chatLoading ? '#1e2d4a' : 'linear-gradient(135deg, #2563eb, #1d4ed8)', cursor: chatLoading ? 'not-allowed' : 'pointer' }}>
-                    {chatLoading ? 'Sending...' : 'Send to Admin'}
-                  </button>
-                </form>
+                <div className="flex flex-col gap-2">
+                  <Link href="/login"
+                    className="flex items-center justify-center px-4 py-3 rounded-xl text-sm font-semibold"
+                    style={{ color: '#94a3b8', border: '1px solid #1e2d4a', textDecoration: 'none' }}>
+                    Log In
+                  </Link>
+                  <Link href="/signup"
+                    className="flex items-center justify-center px-4 py-3 rounded-xl text-sm font-semibold text-white"
+                    style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', textDecoration: 'none' }}>
+                    Get Started — Free
+                  </Link>
+                </div>
               )}
             </div>
-          )}
-          <button
-            onClick={() => { setChatOpen(o => !o); setChatSent(false); }}
-            className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-2xl transition-all duration-200 hover:scale-110"
-            style={{ background: 'linear-gradient(135deg, #2563eb, #1d4ed8)', boxShadow: '0 0 30px rgba(37,99,235,0.5)' }}
-            title="Message Admin">
-            {chatOpen
-              ? <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-              : <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
-            }
-          </button>
+          </div>
         </div>
+      </nav>
+
+      {/* Mobile menu backdrop */}
+      {menuOpen && (
+        <div className="fixed inset-0 z-40 lg:hidden" onClick={() => setMenuOpen(false)}
+          style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} />
       )}
     </>
   );
