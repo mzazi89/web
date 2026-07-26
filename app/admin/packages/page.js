@@ -81,6 +81,7 @@ export default function AdminPackages() {
     { href: '/admin/transactions', label: 'Transactions' },
     { href: '/admin/inquiries', label: 'Inquiries' },
     { href: '/admin/packages', label: 'Packages', active: true },
+    { href: '/admin/vouchers', label: 'Vouchers & Recoveries' },
   ];
 
   return (

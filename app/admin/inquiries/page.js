@@ -129,6 +129,7 @@ export default function AdminInquiries() {
             { href: '/admin/transactions', label: 'Transactions' },
             { href: '/admin/inquiries', label: 'Inquiries', active: true, badge: openCount },
             { href: '/admin/packages', label: 'Packages' },
+            { href: '/admin/vouchers', label: 'Vouchers & Recoveries' },
           ].map(n => (
             <Link key={n.href} href={n.href}
               className="px-3 py-1.5 rounded-xl text-xs sm:text-sm font-medium whitespace-nowrap flex items-center gap-1.5"
