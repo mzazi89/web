@@ -163,6 +163,9 @@ function WalletInner() {
   const [loading, setLoading] = useState(true);
   const [depositAmount, setDepositAmount] = useState('');
   const [depositing, setDepositing] = useState(false);
+  const [voucherCode, setVoucherCode] = useState('');
+  const [redeemingVoucher, setRedeemingVoucher] = useState(false);
+  const [showVoucherForm, setShowVoucherForm] = useState(false);
   const [message, setMessage] = useState(null);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -226,6 +229,34 @@ function WalletInner() {
       setMessage({ type: 'error', text: 'Network error. Please try again.' });
     } finally {
       setDepositing(false);
+    }
+  };
+
+  const handleRedeemVoucher = async (e) => {
+    e.preventDefault();
+    if (!voucherCode.trim()) return;
+    setRedeemingVoucher(true);
+    setMessage(null);
+    try {
+      const res = await fetch('/api/vouchers/redeem', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: voucherCode.trim() }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setMessage({ type: 'success', text: data.message });
+        setVoucherCode('');
+        setShowVoucherForm(false);
+        setBalance(data.newBalance);
+        await fetchWallet();
+      } else {
+        setMessage({ type: 'error', text: data.error || 'Invalid voucher code' });
+      }
+    } catch {
+      setMessage({ type: 'error', text: 'Network error. Please try again.' });
+    } finally {
+      setRedeemingVoucher(false);
     }
   };
 
@@ -346,6 +377,54 @@ function WalletInner() {
               </button>
             </form>
           </div>
+        </div>
+
+        {/* ── Voucher Top-Up ── */}
+        <div className="mt-6 rounded-2xl p-6" style={{ backgroundColor: '#0f1629', border: '1px solid #1e2d4a' }}>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#475569' }}>Top Up with Voucher</p>
+              <p className="text-xs mt-1" style={{ color: '#374151' }}>Enter a 6-character code given by admin to credit your wallet instantly</p>
+            </div>
+            <button
+              onClick={() => { setShowVoucherForm(v => !v); setMessage(null); setVoucherCode(''); }}
+              className="px-4 py-2 rounded-lg text-xs font-semibold transition-all"
+              style={{ background: 'linear-gradient(135deg, #16a34a, #15803d)', color: '#fff' }}
+            >
+              {showVoucherForm ? 'Cancel' : 'Top Up with Voucher'}
+            </button>
+          </div>
+          {showVoucherForm && (
+            <form onSubmit={handleRedeemVoucher} className="mt-5 flex flex-col sm:flex-row gap-3 items-end">
+              <div className="flex-1">
+                <label className="block text-xs mb-1.5" style={{ color: '#64748b' }}>Voucher Code</label>
+                <input
+                  type="text"
+                  value={voucherCode}
+                  onChange={e => setVoucherCode(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6))}
+                  placeholder="Enter 6-character code..."
+                  maxLength={6}
+                  className="w-full px-3 py-2.5 rounded-lg text-sm outline-none font-mono tracking-widest"
+                  style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a', color: '#f0f4ff' }}
+                  required
+                  autoFocus
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={redeemingVoucher || voucherCode.length !== 6}
+                className="px-6 py-2.5 rounded-lg font-semibold text-sm transition-all whitespace-nowrap"
+                style={{
+                  background: 'linear-gradient(135deg, #16a34a, #15803d)',
+                  color: '#fff',
+                  opacity: (redeemingVoucher || voucherCode.length !== 6) ? 0.5 : 1,
+                  cursor: (redeemingVoucher || voucherCode.length !== 6) ? 'not-allowed' : 'pointer',
+                }}
+              >
+                {redeemingVoucher ? 'Activating...' : 'Activate'}
+              </button>
+            </form>
+          )}
         </div>
 
         {/* ── Transaction History ── */}
