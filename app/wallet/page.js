@@ -208,9 +208,9 @@ function WalletInner() {
 
   const handleDeposit = async (e) => {
     e.preventDefault();
-    const amount = parseFloat(depositAmount);
-    if (!amount || amount < 10) {
-      setMessage({ type: 'error', text: 'Minimum deposit is 1 MTC' });
+    const amount = parseFloat(depositAmount); // entered in MTC
+    if (!amount || amount < 1) { // minimum 1 MTC = KSH 10
+      setMessage({ type: 'error', text: 'Minimum deposit is 1 MTC (KSH 10)' });
       return;
     }
     setDepositing(true);
