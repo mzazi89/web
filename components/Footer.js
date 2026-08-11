@@ -33,7 +33,7 @@ const sections = [
 
 export default function Footer() {
   return (
-    <footer style={{ backgroundColor: '#060810', borderTop: '1px solid #1e2d4a' }}>
+    <footer style={{ backgroundColor: 'rgba(6,8,16,0.78)', borderTop: '1px solid #1e2d4a' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
         {/* Top row */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">

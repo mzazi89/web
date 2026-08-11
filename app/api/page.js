@@ -76,7 +76,7 @@ export default async function ApiLanding() {
   const activeEndpoints = endpoints.filter(e => e.is_active);
 
   return (
-    <div style={{ backgroundColor: '#0a0a0f' }}>
+    <div style={{ backgroundColor: 'rgba(10,10,15,0.72)' }}>
 
       {/* ── Hero ── */}
       <section className="relative overflow-hidden"

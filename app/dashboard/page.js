@@ -64,7 +64,7 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#0a0a0f' }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'rgba(10,10,15,0.72)' }}>
         <div className="flex flex-col items-center gap-4">
           <div className="w-10 h-10 rounded-full border-2 animate-spin" style={{ borderColor: '#1e2d4a', borderTopColor: '#3b82f6' }} />
           <p className="text-sm" style={{ color: '#475569' }}>Loading dashboard…</p>
@@ -84,7 +84,7 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div className="min-h-screen py-8 sm:py-10" style={{ backgroundColor: '#0a0a0f' }}>
+    <div className="min-h-screen py-8 sm:py-10" style={{ backgroundColor: 'rgba(10,10,15,0.72)' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
 
         {/* ── Header ── */}
@@ -156,7 +156,7 @@ export default function DashboardPage() {
                 {panels.map(p => (
                   <div key={p.id}
                     className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl"
-                    style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a' }}>
+                    style={{ backgroundColor: 'rgba(10,10,15,0.72)', border: '1px solid #1e2d4a' }}>
                     <div className="flex items-center gap-3 min-w-0">
                       <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
                         style={{ backgroundColor: 'rgba(37,99,235,0.15)', color: '#60a5fa' }}>
@@ -266,11 +266,11 @@ export default function DashboardPage() {
               </p>
               {apiStats && apiStats.usage && (
                 <div className="grid grid-cols-2 gap-2 mb-3">
-                  <div className="p-2.5 rounded-xl" style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a' }}>
+                  <div className="p-2.5 rounded-xl" style={{ backgroundColor: 'rgba(10,10,15,0.72)', border: '1px solid #1e2d4a' }}>
                     <p className="text-[10px] uppercase tracking-wide" style={{ color: '#475569' }}>Today</p>
                     <p className="text-sm font-bold" style={{ color: '#93c5fd' }}>{apiStats.usage.requests_today.toLocaleString()}</p>
                   </div>
-                  <div className="p-2.5 rounded-xl" style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a' }}>
+                  <div className="p-2.5 rounded-xl" style={{ backgroundColor: 'rgba(10,10,15,0.72)', border: '1px solid #1e2d4a' }}>
                     <p className="text-[10px] uppercase tracking-wide" style={{ color: '#475569' }}>Avg ms</p>
                     <p className="text-sm font-bold" style={{ color: '#4ade80' }}>{apiStats.usage.avg_response_ms !== null ? `${Number(apiStats.usage.avg_response_ms).toFixed(0)}ms` : '—'}</p>
                   </div>
@@ -303,18 +303,18 @@ export default function DashboardPage() {
                   Share your link — when someone signs up and buys a panel, you get 2 MTC (KSH 20) in your wallet.
                 </p>
                 <div className="grid grid-cols-2 gap-2 mb-3">
-                  <div className="p-2.5 rounded-xl" style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a' }}>
+                  <div className="p-2.5 rounded-xl" style={{ backgroundColor: 'rgba(10,10,15,0.72)', border: '1px solid #1e2d4a' }}>
                     <p className="text-[10px] uppercase tracking-wide" style={{ color: '#475569' }}>Referred</p>
                     <p className="text-sm font-bold" style={{ color: '#4ade80' }}>{referral.referred_count}</p>
                   </div>
-                  <div className="p-2.5 rounded-xl" style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a' }}>
+                  <div className="p-2.5 rounded-xl" style={{ backgroundColor: 'rgba(10,10,15,0.72)', border: '1px solid #1e2d4a' }}>
                     <p className="text-[10px] uppercase tracking-wide" style={{ color: '#475569' }}>Earned</p>
                     <p className="text-sm font-bold" style={{ color: '#fbbf24' }}>{fmtMtc(referral.total_earned)}</p>
                   </div>
                 </div>
                 <div className="flex gap-2 mb-2">
                   <code className="flex-1 px-3 py-2 rounded-lg text-xs font-mono truncate"
-                    style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a', color: '#93c5fd' }}>
+                    style={{ backgroundColor: 'rgba(10,10,15,0.72)', border: '1px solid #1e2d4a', color: '#93c5fd' }}>
                     {referral.link}
                   </code>
                   <button
@@ -340,7 +340,7 @@ export default function DashboardPage() {
                 ].map(l => (
                   <Link key={l.href} href={l.href}
                     className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm transition-all"
-                    style={{ color: '#94a3b8', backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a', textDecoration: 'none' }}>
+                    style={{ color: '#94a3b8', backgroundColor: 'rgba(10,10,15,0.72)', border: '1px solid #1e2d4a', textDecoration: 'none' }}>
                     <span>{l.icon}</span>
                     <span>{l.label}</span>
                     <svg className="w-3.5 h-3.5 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -469,7 +469,7 @@ function CredentialsModal({ panel, user, onClose }) {
                   onChange={e => setPassword(e.target.value)}
                   placeholder="Enter your login password"
                   className="w-full px-4 py-3 rounded-xl text-sm outline-none"
-                  style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a', color: '#f0f4ff' }}
+                  style={{ backgroundColor: 'rgba(10,10,15,0.72)', border: '1px solid #1e2d4a', color: '#f0f4ff' }}
                   onFocus={e => e.target.style.borderColor = '#7c3aed'}
                   onBlur={e => e.target.style.borderColor = '#1e2d4a'}
                   required
@@ -509,7 +509,7 @@ function CredentialsModal({ panel, user, onClose }) {
                 { label: 'Password',   value: creds.password,   key: 'pass',  icon: '🔑' },
               ].map(({ label, value, key, icon, link }) => (
                 <div key={key} className="flex items-center justify-between gap-3 p-3 rounded-xl"
-                  style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a' }}>
+                  style={{ backgroundColor: 'rgba(10,10,15,0.72)', border: '1px solid #1e2d4a' }}>
                   <div className="flex items-center gap-2.5 min-w-0">
                     <span className="text-base">{icon}</span>
                     <div className="min-w-0">

@@ -240,7 +240,7 @@ function AdminInner() {
                             e.target.value = '';
                           }}
                           className="px-2 py-1 rounded-md text-[11px] outline-none"
-                          style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a', color: '#94a3b8' }}>
+                          style={{ backgroundColor: 'rgba(10,10,15,0.72)', border: '1px solid #1e2d4a', color: '#94a3b8' }}>
                           <option value="">Status…</option>
                           <option value="suspend">Suspend</option>
                           <option value="ban">Ban</option>
@@ -263,7 +263,7 @@ function AdminInner() {
                             e.target.value = '';
                           }}
                           className="px-2 py-1 rounded-md text-[11px] outline-none"
-                          style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a', color: '#94a3b8' }}>
+                          style={{ backgroundColor: 'rgba(10,10,15,0.72)', border: '1px solid #1e2d4a', color: '#94a3b8' }}>
                           <option value="">Plan…</option>
                           <option value="FREE">Free</option>
                           <option value="PREMIUM">Premium</option>
@@ -471,7 +471,7 @@ function AdminInner() {
                             e.target.value = '';
                           }}
                             className="px-2 py-1 rounded-md text-[11px] outline-none"
-                            style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a', color: '#94a3b8' }}>
+                            style={{ backgroundColor: 'rgba(10,10,15,0.72)', border: '1px solid #1e2d4a', color: '#94a3b8' }}>
                             <option value="">Status…</option>
                             <option value="active">Active</option>
                             <option value="offline">Offline</option>
@@ -575,7 +575,7 @@ function AdminInner() {
                   defaultValue={settings[k]?.value ?? ''}
                   placeholder="requests/day"
                   className="w-36 px-3 py-1.5 rounded-lg text-sm outline-none"
-                  style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a', color: '#f0f4ff' }}
+                  style={{ backgroundColor: 'rgba(10,10,15,0.72)', border: '1px solid #1e2d4a', color: '#f0f4ff' }}
                 />
                 <button disabled={busy} onClick={() => {
                   const el = document.getElementById(`input-${k}`);

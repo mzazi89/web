@@ -91,7 +91,7 @@ export default function Navbar() {
       <nav
         className="sticky top-0 z-50 transition-shadow duration-300"
         style={{
-          backgroundColor: '#0a0a0f',
+          backgroundColor: 'rgba(10,10,15,0.72)',
           borderBottom: '1px solid #1e2d4a',
           boxShadow: scrolled ? '0 4px 24px rgba(0,0,0,0.5)' : 'none',
         }}
@@ -151,11 +151,11 @@ export default function Navbar() {
                           <input value={chatMsg.subject} onChange={e => setChatMsg(m => ({ ...m, subject: e.target.value }))}
                             placeholder="Subject" required
                             className="w-full px-3 py-2 rounded-lg text-sm outline-none"
-                            style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a', color: '#f0f4ff' }} />
+                            style={{ backgroundColor: 'rgba(10,10,15,0.72)', border: '1px solid #1e2d4a', color: '#f0f4ff' }} />
                           <textarea value={chatMsg.message} onChange={e => setChatMsg(m => ({ ...m, message: e.target.value }))}
                             placeholder="Your message..." required rows={3}
                             className="w-full px-3 py-2 rounded-lg text-sm outline-none resize-none"
-                            style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a', color: '#f0f4ff' }} />
+                            style={{ backgroundColor: 'rgba(10,10,15,0.72)', border: '1px solid #1e2d4a', color: '#f0f4ff' }} />
                           <button type="submit" disabled={chatLoading}
                             className="w-full py-2 rounded-lg text-sm font-semibold text-white"
                             style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', opacity: chatLoading ? 0.7 : 1 }}>
@@ -248,7 +248,7 @@ export default function Navbar() {
             borderTop: menuOpen ? '1px solid #1e2d4a' : 'none',
           }}
         >
-          <div className="px-4 py-4 space-y-1" style={{ backgroundColor: '#0a0a0f' }}>
+          <div className="px-4 py-4 space-y-1" style={{ backgroundColor: 'rgba(10,10,15,0.72)' }}>
             {NAV_LINKS.map(l => (
               <Link key={l.href} href={l.href}
                 className="flex items-center px-4 py-3 rounded-xl text-sm font-medium transition-all"

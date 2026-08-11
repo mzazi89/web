@@ -47,7 +47,7 @@ export default function RootLayout({ children }) {
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
-      <body className="flex flex-col min-h-screen" style={{ backgroundColor: '#0a0a0f', color: '#f0f4ff' }}>
+      <body className="flex flex-col min-h-screen" style={{ backgroundColor: 'rgba(10,10,15,0.72)', color: '#f0f4ff' }}>
         <PwaProvider>
           {/* Fixed tech background — sits behind everything */}
           <TechBackground />

@@ -29,7 +29,7 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4" style={{ backgroundColor: '#060810' }}>
+    <div className="min-h-screen flex items-center justify-center px-4" style={{ backgroundColor: 'rgba(6,8,16,0.78)' }}>
       <div className="absolute inset-0" style={{
         backgroundImage: 'linear-gradient(rgba(239,68,68,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(239,68,68,0.04) 1px, transparent 1px)',
         backgroundSize: '40px 40px'

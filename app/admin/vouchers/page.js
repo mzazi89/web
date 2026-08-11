@@ -75,7 +75,7 @@ export default function AdminVouchers() {
   const statusBg = (s) => s === 'active' ? 'rgba(74,222,128,0.1)' : s === 'used' ? 'rgba(100,116,139,0.1)' : 'rgba(251,146,60,0.1)';
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#060810' }}>
+    <div className="min-h-screen" style={{ backgroundColor: 'rgba(6,8,16,0.78)' }}>
       {/* Top bar */}
       <div style={{ backgroundColor: '#0a0c14', borderBottom: '1px solid #1e2030' }} className="sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">

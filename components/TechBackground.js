@@ -101,7 +101,7 @@ export default function TechBackground() {
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
-          opacity: 0.13,
+          opacity: 0.22,
           transition: 'background-image 0.6s ease',
         }}
       />

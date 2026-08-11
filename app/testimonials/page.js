@@ -76,7 +76,7 @@ export default function TestimonialsPage() {
   };
 
   return (
-    <div style={{ backgroundColor: '#0a0a0f' }}>
+    <div style={{ backgroundColor: 'rgba(10,10,15,0.72)' }}>
       {/* Hero + rating summary */}
       <section className="py-16" style={{ background: 'linear-gradient(180deg,#0a0a0f 0%,#071428 60%,#0a0a0f 100%)' }}>
         <div className="max-w-3xl mx-auto px-4 text-center">
@@ -157,7 +157,7 @@ export default function TestimonialsPage() {
                   placeholder="e.g. John Doe"
                   maxLength={100}
                   className="w-full px-4 py-3 rounded-xl text-sm outline-none"
-                  style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a', color: '#f0f4ff' }}
+                  style={{ backgroundColor: 'rgba(10,10,15,0.72)', border: '1px solid #1e2d4a', color: '#f0f4ff' }}
                 />
               </div>
               <div>
@@ -173,7 +173,7 @@ export default function TestimonialsPage() {
                   rows={4}
                   maxLength={1000}
                   className="w-full px-4 py-3 rounded-xl text-sm outline-none resize-none"
-                  style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a', color: '#f0f4ff' }}
+                  style={{ backgroundColor: 'rgba(10,10,15,0.72)', border: '1px solid #1e2d4a', color: '#f0f4ff' }}
                 />
               </div>
               <button type="submit" disabled={submitting || !form.rating || form.name.trim().length < 2 || form.message.trim().length < 10}

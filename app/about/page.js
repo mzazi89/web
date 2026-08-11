@@ -11,7 +11,7 @@ const values = [
 
 export default function AboutPage() {
   return (
-    <div style={{ backgroundColor: '#0a0a0f' }}>
+    <div style={{ backgroundColor: 'rgba(10,10,15,0.72)' }}>
       {/* Hero */}
       <section className="relative py-24 overflow-hidden" style={{ background: 'linear-gradient(180deg, #071428, #0a0a0f)' }}>
         <div className="absolute inset-0" style={{
@@ -36,7 +36,7 @@ export default function AboutPage() {
       </section>
 
       {/* Mission */}
-      <section className="py-20" style={{ backgroundColor: '#0a0a0f' }}>
+      <section className="py-20" style={{ backgroundColor: 'rgba(10,10,15,0.72)' }}>
         <div className="max-w-6xl mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div>
@@ -69,7 +69,7 @@ export default function AboutPage() {
       </section>
 
       {/* Values */}
-      <section className="py-20" style={{ backgroundColor: '#0d0d1a' }}>
+      <section className="py-20" style={{ backgroundColor: 'rgba(13,13,26,0.72)' }}>
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-14">
             <h2 className="text-3xl font-extrabold" style={{ color: '#f0f4ff' }}>Our Values</h2>
@@ -87,7 +87,7 @@ export default function AboutPage() {
       </section>
 
       {/* MZAZI API */}
-      <section className="py-20" style={{ backgroundColor: '#0a0a0f' }}>
+      <section className="py-20" style={{ backgroundColor: 'rgba(10,10,15,0.72)' }}>
         <div className="max-w-5xl mx-auto px-4">
           <div className="rounded-3xl p-8 sm:p-12 text-center" style={{ border: '1px solid rgba(37,99,235,0.25)', background: 'linear-gradient(135deg, rgba(37,99,235,0.12) 0%, rgba(10,10,15,0.9) 60%)' }}>
             <div className="text-4xl mb-4">🔌</div>
@@ -120,7 +120,7 @@ export default function AboutPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-20" style={{ backgroundColor: '#0a0a0f' }}>
+      <section className="py-20" style={{ backgroundColor: 'rgba(10,10,15,0.72)' }}>
         <div className="max-w-2xl mx-auto text-center px-4">
           <h2 className="text-3xl font-extrabold mb-4" style={{ color: '#f0f4ff' }}>Ready to get started?</h2>
           <p className="mb-8" style={{ color: '#64748b' }}>Join hundreds of customers worldwide already using MZAZI TECH for their hosting needs.</p>

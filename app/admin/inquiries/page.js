@@ -99,7 +99,7 @@ export default function AdminInquiries() {
   const openCount = inquiries.filter(i => i.status === 'open').length;
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#060810' }}>
+    <div className="min-h-screen" style={{ backgroundColor: 'rgba(6,8,16,0.78)' }}>
 
       {/* ── Top bar ── */}
       <div className="sticky top-0 z-40" style={{ backgroundColor: '#0a0c14', borderBottom: '1px solid #1e2030' }}>
@@ -176,7 +176,7 @@ export default function AdminInquiries() {
 
             {mobileView === 'list' && (
               <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-                <div className="px-4 py-3" style={{ borderBottom: '1px solid #1e2030', backgroundColor: '#060810', flexShrink: 0 }}>
+                <div className="px-4 py-3" style={{ borderBottom: '1px solid #1e2030', backgroundColor: 'rgba(6,8,16,0.78)', flexShrink: 0 }}>
                   <p className="text-xs font-bold uppercase tracking-wider" style={{ color: '#475569' }}>
                     {filtered.length} conversation{filtered.length !== 1 ? 's' : ''}
                   </p>
@@ -213,7 +213,7 @@ export default function AdminInquiries() {
           <div className="hidden md:flex" style={{ height: '620px' }}>
             {/* Left: thread list */}
             <div style={{ width: '280px', minWidth: '220px', borderRight: '1px solid #1e2030', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
-              <div className="px-4 py-3" style={{ borderBottom: '1px solid #1e2030', backgroundColor: '#060810', flexShrink: 0 }}>
+              <div className="px-4 py-3" style={{ borderBottom: '1px solid #1e2030', backgroundColor: 'rgba(6,8,16,0.78)', flexShrink: 0 }}>
                 <p className="text-xs font-bold uppercase tracking-wider" style={{ color: '#475569' }}>
                   {filtered.length} conversation{filtered.length !== 1 ? 's' : ''}
                 </p>
@@ -299,7 +299,7 @@ function AdminChatWindow({ selected, messages, msgLoading, reply, setReply, repl
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       {/* Header */}
       <div className="flex items-center justify-between gap-3 px-4 py-3"
-        style={{ borderBottom: '1px solid #1e2030', backgroundColor: '#060810', flexShrink: 0 }}>
+        style={{ borderBottom: '1px solid #1e2030', backgroundColor: 'rgba(6,8,16,0.78)', flexShrink: 0 }}>
         <div className="flex items-center gap-3 min-w-0">
           {showBack && (
             <button onClick={onBack}
@@ -333,7 +333,7 @@ function AdminChatWindow({ selected, messages, msgLoading, reply, setReply, repl
       </div>
 
       {/* Messages */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '12px 16px', backgroundColor: '#060810', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+      <div style={{ flex: 1, overflowY: 'auto', padding: '12px 16px', backgroundColor: 'rgba(6,8,16,0.78)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
         {msgLoading ? (
           <div className="flex items-center justify-center h-full">
             <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
@@ -379,7 +379,7 @@ function AdminChatWindow({ selected, messages, msgLoading, reply, setReply, repl
       </div>
 
       {/* Reply input */}
-      <div className="px-3 py-3" style={{ borderTop: '1px solid #1e2030', backgroundColor: '#060810', flexShrink: 0 }}>
+      <div className="px-3 py-3" style={{ borderTop: '1px solid #1e2030', backgroundColor: 'rgba(6,8,16,0.78)', flexShrink: 0 }}>
         {selected.status === 'closed' ? (
           <p className="text-xs text-center py-1" style={{ color: '#374151' }}>This inquiry is closed.</p>
         ) : (

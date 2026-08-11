@@ -68,7 +68,7 @@ function ContributorCard({ c }) {
         <div style={{
           position: 'absolute', bottom: 0, right: -4,
           width: '28px', height: '28px', borderRadius: '50%',
-          backgroundColor: '#0a0a0f', border: '2px solid #1e2d4a',
+          backgroundColor: 'rgba(10,10,15,0.72)', border: '2px solid #1e2d4a',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontSize: '14px',
         }}>

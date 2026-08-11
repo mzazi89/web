@@ -164,7 +164,7 @@ export default function ContactPage() {
   };
 
   return (
-    <div style={{ backgroundColor: '#0a0a0f', minHeight: '100vh' }}>
+    <div style={{ backgroundColor: 'rgba(10,10,15,0.72)', minHeight: '100vh' }}>
 
       {/* ── Hero ── */}
       <section className="relative py-14 sm:py-20" style={{ background: 'linear-gradient(180deg,#071428 0%,#0a0a0f 100%)' }}>
@@ -408,7 +408,7 @@ function ComposeForm({ newSubject, setNewSubject, newMsg, setNewMsg, sending, al
           <input type="text" value={newSubject} onChange={e => setNewSubject(e.target.value)}
             placeholder="e.g. Panel not starting, Billing issue…"
             required className="w-full px-4 py-3 rounded-xl text-sm outline-none"
-            style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a', color: '#f0f4ff' }}
+            style={{ backgroundColor: 'rgba(10,10,15,0.72)', border: '1px solid #1e2d4a', color: '#f0f4ff' }}
             onFocus={e => e.target.style.borderColor = '#2563eb'}
             onBlur={e => e.target.style.borderColor = '#1e2d4a'}
           />
@@ -418,7 +418,7 @@ function ComposeForm({ newSubject, setNewSubject, newMsg, setNewMsg, sending, al
           <textarea value={newMsg} onChange={e => setNewMsg(e.target.value)}
             placeholder="Describe your issue in detail…"
             required rows={5} className="w-full px-4 py-3 rounded-xl text-sm outline-none resize-none"
-            style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a', color: '#f0f4ff', width: '100%' }}
+            style={{ backgroundColor: 'rgba(10,10,15,0.72)', border: '1px solid #1e2d4a', color: '#f0f4ff', width: '100%' }}
             onFocus={e => e.target.style.borderColor = '#2563eb'}
             onBlur={e => e.target.style.borderColor = '#1e2d4a'}
           />

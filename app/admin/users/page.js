@@ -29,7 +29,7 @@ export default function AdminUsers() {
   const logout = async () => { await fetch('/api/admin/logout', { method: 'POST' }); router.push('/admin/login'); };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#060810' }}>
+    <div className="min-h-screen" style={{ backgroundColor: 'rgba(6,8,16,0.78)' }}>
       <div style={{ backgroundColor: '#0a0c14', borderBottom: '1px solid #1e2030' }} className="sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
           <div className="flex items-center space-x-3">

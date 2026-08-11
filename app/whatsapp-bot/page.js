@@ -69,7 +69,7 @@ function TelegramButton({ bot, size = 'lg' }) {
 
 export default function WhatsAppBotPage() {
   return (
-    <div style={{ backgroundColor: '#0a0a0f' }}>
+    <div style={{ backgroundColor: 'rgba(10,10,15,0.72)' }}>
       {/* Hero */}
       <section className="relative overflow-hidden py-20" style={{ background: 'linear-gradient(180deg, #0a0a0f 0%, #071428 50%, #0a0a0f 100%)' }}>
         <div className="absolute inset-0" style={{
@@ -107,7 +107,7 @@ export default function WhatsAppBotPage() {
       </section>
 
       {/* How to pair */}
-      <section className="py-20" style={{ backgroundColor: '#0d0d1a' }}>
+      <section className="py-20" style={{ backgroundColor: 'rgba(13,13,26,0.72)' }}>
         <div className="max-w-4xl mx-auto px-4">
           <div className="text-center mb-14">
             <h2 className="text-3xl font-extrabold mb-3" style={{ color: '#f0f4ff' }}>How to Link Your WhatsApp</h2>
@@ -194,7 +194,7 @@ export default function WhatsAppBotPage() {
       </section>
 
       {/* Features */}
-      <section className="py-20" style={{ backgroundColor: '#0a0a0f' }}>
+      <section className="py-20" style={{ backgroundColor: 'rgba(10,10,15,0.72)' }}>
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-14">
             <h2 className="text-3xl font-extrabold" style={{ color: '#f0f4ff' }}>Bot Features</h2>
@@ -213,7 +213,7 @@ export default function WhatsAppBotPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-16" style={{ backgroundColor: '#0d0d1a' }}>
+      <section className="py-16" style={{ backgroundColor: 'rgba(13,13,26,0.72)' }}>
         <div className="max-w-2xl mx-auto text-center px-4">
           <h2 className="text-3xl font-extrabold mb-4" style={{ color: '#f0f4ff' }}>Ready to connect?</h2>
           <p className="mb-8" style={{ color: '#64748b' }}>

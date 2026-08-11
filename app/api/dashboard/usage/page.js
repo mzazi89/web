@@ -94,7 +94,7 @@ export default function ApiUsage() {
           <label className="block text-[10px] font-bold uppercase tracking-wide mb-1.5" style={{ color: '#64748b' }}>Endpoint</label>
           <select value={filters.endpoint} onChange={e => setFilters(f => ({ ...f, endpoint: e.target.value, page: 1 }))}
             className="px-3 py-2 rounded-lg text-sm outline-none"
-            style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a', color: '#f0f4ff' }}>
+            style={{ backgroundColor: 'rgba(10,10,15,0.72)', border: '1px solid #1e2d4a', color: '#f0f4ff' }}>
             <option value="">All endpoints</option>
             {endpoints.map(e => <option key={e} value={e}>{e}</option>)}
           </select>
@@ -103,7 +103,7 @@ export default function ApiUsage() {
           <label className="block text-[10px] font-bold uppercase tracking-wide mb-1.5" style={{ color: '#64748b' }}>Status</label>
           <select value={filters.status} onChange={e => setFilters(f => ({ ...f, status: e.target.value, page: 1 }))}
             className="px-3 py-2 rounded-lg text-sm outline-none"
-            style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a', color: '#f0f4ff' }}>
+            style={{ backgroundColor: 'rgba(10,10,15,0.72)', border: '1px solid #1e2d4a', color: '#f0f4ff' }}>
             <option value="">All</option>
             <option value="success">Success (2xx/3xx)</option>
             <option value="failed">Failed (4xx/5xx)</option>
@@ -147,7 +147,7 @@ export default function ApiUsage() {
                     <code className="font-mono" style={{ color: '#e2e8f0' }}>{e.endpoint}</code>
                     <span style={{ color: '#94a3b8' }}>{e.count.toLocaleString()} · {e.avg_response_ms !== null ? `${Number(e.avg_response_ms).toFixed(0)}ms` : '—'}</span>
                   </div>
-                  <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: '#0a0a0f' }}>
+                  <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(10,10,15,0.72)' }}>
                     <div className="h-full rounded-full" style={{
                       width: `${Math.min(100, (e.count / Math.max(1, data.per_endpoint[0].count)) * 100)}%`,
                       background: 'linear-gradient(90deg,#2563eb,#60a5fa)',
