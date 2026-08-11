@@ -5,7 +5,7 @@ import { fmtMtc, fmtMtcValue, mtcToKsh } from '@/lib/currency';
 const values = [
   { icon: '⚡', title: 'Speed First', desc: 'Deploy servers in under 2 minutes. No waiting, no friction — just instant results.' },
   { icon: '🔒', title: 'Security', desc: 'Enterprise-grade security with encrypted connections and isolated server environments.' },
-  { icon: '🇰🇪', title: 'Kenya Focused', desc: 'Built for Kenyan businesses. M-Pesa payments, local support, MTC coin pricing.' },
+  { icon: '🌍', title: 'Worldwide', desc: 'Built for everyone. Mobile money (M-Pesa), card payments, global support, MTC coin pricing.' },
   { icon: '💬', title: '24/7 Support', desc: 'Our team is always available via Telegram to help you with any issue.' },
 ];
 
@@ -23,14 +23,14 @@ export default function AboutPage() {
             About Us
           </span>
           <h1 className="text-5xl font-extrabold mb-6" style={{ color: '#f0f4ff' }}>
-            We Power Kenya's
+            We Power the World's
             <br />
             <span style={{ background: 'linear-gradient(135deg, #60a5fa, #2563eb)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
               Digital Infrastructure
             </span>
           </h1>
           <p className="text-lg" style={{ color: '#64748b' }}>
-            MZAZI TECH INC is a Kenyan Tech Company specializing in game server hosting, WhatsApp automation, public APIs, and digital infrastructure solutions. We believe powerful technology should be affordable and accessible to everyone.
+            MZAZI TECH INC is a global tech company specializing in game server hosting, WhatsApp automation, public APIs, and digital infrastructure solutions. We believe powerful technology should be affordable and accessible to everyone, everywhere.
           </p>
         </div>
       </section>
@@ -42,7 +42,7 @@ export default function AboutPage() {
             <div>
               <h2 className="text-3xl font-extrabold mb-6" style={{ color: '#f0f4ff' }}>Our Mission</h2>
               <p className="text-lg mb-6" style={{ color: '#64748b' }}>
-                To democratize access to powerful cloud infrastructure for Kenyan businesses and individuals. We offer enterprise-level Pterodactyl panel hosting at prices anyone can afford — starting from just 5 MTC/month.
+                To democratize access to powerful cloud infrastructure for businesses and individuals worldwide. We offer enterprise-level Pterodactyl panel hosting at prices anyone can afford — starting from just 5 MTC/month.
               </p>
               <p className="text-lg" style={{ color: '#64748b' }}>
                 From small WhatsApp bots to large-scale game servers and pterodactyl panels for WhatsApp bots, we provide the infrastructure backbone so you can focus on what matters — building your product.
@@ -123,7 +123,7 @@ export default function AboutPage() {
       <section className="py-20" style={{ backgroundColor: '#0a0a0f' }}>
         <div className="max-w-2xl mx-auto text-center px-4">
           <h2 className="text-3xl font-extrabold mb-4" style={{ color: '#f0f4ff' }}>Ready to get started?</h2>
-          <p className="mb-8" style={{ color: '#64748b' }}>Join hundreds of Kenyans already using MZAZI TECH for their hosting needs.</p>
+          <p className="mb-8" style={{ color: '#64748b' }}>Join hundreds of customers worldwide already using MZAZI TECH for their hosting needs.</p>
           <AuthSwap
             signedOut={
               <div className="flex flex-col sm:flex-row gap-4 justify-center">

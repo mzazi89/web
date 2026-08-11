@@ -32,7 +32,7 @@ const FEATURES = [
   {
     icon: '💳',
     title: 'Wallet System',
-    desc: 'Top up via M-Pesa or card and deploy panels instantly — no repeated checkout, just one balance for everything.',
+    desc: 'Top up via mobile money (M-Pesa), card or crypto and deploy panels instantly — no repeated checkout, just one balance for everything.',
     href: '/wallet',
     cta: 'Top Up',
   },
@@ -110,7 +110,7 @@ export default async function Home() {
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-6 sm:mb-8"
             style={{ backgroundColor: 'rgba(37,99,235,0.1)', border: '1px solid rgba(37,99,235,0.3)' }}>
             <div className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
-            <span className="text-xs sm:text-sm font-semibold" style={{ color: '#60a5fa' }}>Kenya&apos;s #1 Panel Hosting Provider</span>
+            <span className="text-xs sm:text-sm font-semibold" style={{ color: '#60a5fa' }}>Trusted Panel Hosting Provider — Worldwide</span>
           </div>
 
           {/* Headline */}

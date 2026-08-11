@@ -18,7 +18,7 @@ const steps = [
   {
     step: '03',
     title: 'Pair Your WhatsApp',
-    desc: 'Use the /pair command followed by your Kenyan phone number in international format (254XXXXXXXXX) to generate a pairing code.',
+    desc: 'Use the /pair command followed by your WhatsApp phone number in international format (e.g. 254XXXXXXXXX for Kenya) to generate a pairing code.',
     icon: '🔗',
     code: '/pair 254712345678',
   },
@@ -35,7 +35,7 @@ const features = [
   { icon: '🤖', title: 'Bot Commands', desc: 'Manage your bot, send broadcasts, auto-reply messages, and run custom automation workflows.' },
   { icon: '🔒', title: 'Secure Connection', desc: 'Your WhatsApp is connected securely. No passwords are stored — only a session token.' },
   { icon: '📊', title: '24/7 Uptime', desc: 'Your bot runs on our high-availability infrastructure, ensuring it\'s always online.' },
-  { icon: '🌍', title: 'Kenya Numbers', desc: 'Optimized for Kenyan phone numbers (254XXXXXXXXX). Works on all Safaricom, Airtel & Telkom numbers.' },
+  { icon: '🌍', title: 'Any Number', desc: 'Works with WhatsApp numbers worldwide — pair in international format (e.g. 254XXXXXXXXX for Kenya).' },
   { icon: '💬', title: 'Multi-Group Support', desc: 'Manage multiple WhatsApp groups and broadcast lists from one dashboard.' },
 ];
 

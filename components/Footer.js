@@ -43,7 +43,7 @@ export default function Footer() {
               <Logo size={36} withText />
             </Link>
             <p className="text-sm leading-relaxed mb-5" style={{ color: '#475569' }}>
-              Kenya's trusted provider of Pterodactyl panel hosting, WhatsApp automation bots, and tech solutions.
+              A global provider of Pterodactyl panel hosting, WhatsApp automation bots, and tech solutions.
             </p>
             {/* Social / contact chips */}
             <div className="flex flex-wrap gap-2">

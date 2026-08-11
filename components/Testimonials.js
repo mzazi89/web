@@ -225,7 +225,7 @@ export default function Testimonials() {
           </div>
           <h2 style={{ color: '#f0f4ff', fontSize: '36px', fontWeight: 800, marginBottom: '12px' }}>What Our Clients Say</h2>
           <p style={{ color: '#64748b', fontSize: '16px', maxWidth: '480px', margin: '0 auto' }}>
-            Real experiences from real customers across Kenya and beyond.
+            Real experiences from real customers worldwide.
           </p>
         </div>
 

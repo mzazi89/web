@@ -6,7 +6,7 @@ import './globals.css';
 
 export const metadata = {
   title: 'MZAZI TECH INC - Technology & Automation Solutions',
-  description: 'Your trusted partner for WhatsApp bots, Pterodactyl panel hosting, and automation solutions in Kenya.',
+  description: 'Your trusted partner for WhatsApp bots, Pterodactyl panel hosting, and automation solutions — worldwide.',
   keywords: 'pterodactyl hosting, whatsapp bot, automation, kenya, game server',
   openGraph: {
     title: 'MZAZI TECH INC - Technology & Automation Solutions',
