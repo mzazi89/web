@@ -19,7 +19,7 @@ export async function POST(request) {
     const { amount } = await request.json();
 
     if (!amount || amount < 10) {
-      return NextResponse.json({ error: 'Minimum deposit is 1 MTC' }, { status: 400 });
+      return NextResponse.json({ error: 'Minimum deposit is 1 MTC (KSH 10)' }, { status: 400 });
     }
 
     const userRows = await sql`SELECT email FROM users WHERE id = ${decoded.userId}`;

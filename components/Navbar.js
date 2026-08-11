@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import Logo from './Logo';
+import { fmtMtc } from '@/lib/currency';
 
 const NAV_LINKS = [
   { href: '/',             label: 'Home' },
@@ -174,7 +175,7 @@ export default function Navbar() {
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                   </svg>
-                  KSH {parseFloat(walletBalance).toLocaleString()}
+                  {fmtMtc(walletBalance)}
                 </Link>
               )}
 
@@ -218,7 +219,7 @@ export default function Navbar() {
                 <Link href="/wallet"
                   className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold"
                   style={{ backgroundColor: 'rgba(37,99,235,0.1)', color: '#60a5fa', border: '1px solid rgba(37,99,235,0.2)', textDecoration: 'none' }}>
-                  💳 KSH {parseFloat(walletBalance).toLocaleString()}
+                  💳 {fmtMtc(walletBalance)}
                 </Link>
               )}
               <button
@@ -283,7 +284,7 @@ export default function Navbar() {
                   <Link href="/wallet"
                     className="flex items-center px-4 py-3 rounded-xl text-sm font-medium"
                     style={{ color: '#60a5fa', backgroundColor: 'rgba(37,99,235,0.08)', border: '1px solid rgba(37,99,235,0.2)', textDecoration: 'none' }}>
-                    💳 Wallet · KSH {walletBalance !== null ? parseFloat(walletBalance).toLocaleString() : '—'}
+                    💳 Wallet · {walletBalance !== null ? fmtMtc(walletBalance) : '—'}
                   </Link>
                   <button onClick={handleLogout}
                     className="w-full flex items-center px-4 py-3 rounded-xl text-sm font-medium"
