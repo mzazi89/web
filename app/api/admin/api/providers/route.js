@@ -12,7 +12,7 @@ export async function GET() {
   try {
     await requireAdmin();
     const rows = await sql`
-      SELECT p.id, p.name, p.base_url, p.api_key_configured, p.status,
+      SELECT p.id, p.name, p.display_name, p.base_url, p.api_key_configured, p.status,
              p.avg_response_ms, p.failure_rate, p.total_requests, p.total_failures,
              p.last_success_at, p.last_failure_at, p.last_error, p.updated_at,
              (SELECT response_time_ms FROM provider_health h WHERE h.provider_id = p.id ORDER BY h.checked_at DESC LIMIT 1) AS last_check_ms,

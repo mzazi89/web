@@ -381,7 +381,9 @@ function AdminInner() {
                       <code className="text-xs font-mono" style={{ color: '#e2e8f0' }}>{e.path}</code>
                     </td>
                     <td className="px-4 py-3 text-xs" style={{ color: '#94a3b8' }}>{e.category}</td>
-                    <td className="px-4 py-3 text-xs" style={{ color: '#64748b' }}>{e.provider || '—'}</td>
+                    <td className="px-4 py-3 text-xs" style={{ color: '#64748b' }}>
+                      {(providers?.providers?.find(p => p.name === e.provider)?.display_name) || e.provider || '—'}
+                    </td>
                     <td className="px-4 py-3">
                       <span className="text-xs font-bold" style={{ color: e.is_active ? '#4ade80' : '#64748b' }}>
                         {e.is_active ? 'ENABLED' : 'DISABLED'}
@@ -430,7 +432,7 @@ function AdminInner() {
                 <tbody>
                   {(providers?.providers || []).map(p => (
                     <tr key={p.id} style={{ borderBottom: '1px solid #0f1629' }}>
-                      <td className="px-4 py-3 text-xs font-bold" style={{ color: '#f0f4ff' }}>{p.name}</td>
+                      <td className="px-4 py-3 text-xs font-bold" style={{ color: '#f0f4ff' }}>{p.display_name || p.name}</td>
                       <td className="px-4 py-3 font-mono text-[10px] break-all" style={{ color: '#64748b' }}>{p.base_url}</td>
                       <td className="px-4 py-3">
                         <span className="text-xs font-bold" style={{ color: p.status === 'active' ? '#4ade80' : '#f87171' }}>{p.status.toUpperCase()}</span>

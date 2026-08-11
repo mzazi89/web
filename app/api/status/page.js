@@ -30,7 +30,7 @@ async function getData() {
   try {
     const sql = neon(process.env.DATABASE_URL);
     const [providers, activeEndpoints, avg, today] = await Promise.all([
-      sql`SELECT name, base_url, api_key_configured, status, avg_response_ms, failure_rate,
+      sql`SELECT name, display_name, base_url, api_key_configured, status, avg_response_ms, failure_rate,
                  total_requests, total_failures, last_success_at, last_failure_at, last_error
           FROM providers ORDER BY name`,
       sql`SELECT path, method, category, name, provider FROM endpoints WHERE is_active = true ORDER BY category, path`,
@@ -59,6 +59,10 @@ export default async function ApiStatus() {
   const { providers, activeEndpoints, avgMs, todayCount } = await getData();
 
   const fmt = (iso) => (iso ? new Date(iso).toLocaleString() : '—');
+  const providerLabel = (name) => {
+    const p = providers.find(x => x.name === name);
+    return (p && p.display_name) || name || '—';
+  };
 
   return (
     <div className="container-site py-12" style={{ minHeight: '70vh' }}>
@@ -111,7 +115,7 @@ export default async function ApiStatus() {
             <div className="flex items-center gap-3">
               <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: p.status === 'active' ? '#4ade80' : p.status === 'offline' ? '#f87171' : '#fbbf24' }} />
               <div>
-                <p className="text-sm font-bold" style={{ color: '#f0f4ff' }}>{p.name}</p>
+                <p className="text-sm font-bold" style={{ color: '#f0f4ff' }}>{p.display_name || p.name}</p>
                 <p className="text-xs font-mono" style={{ color: '#64748b' }}>{p.base_url}</p>
               </div>
             </div>
@@ -156,7 +160,7 @@ export default async function ApiStatus() {
                     <code className="text-xs font-mono" style={{ color: '#e2e8f0' }}>{e.path}</code>
                   </td>
                   <td className="px-5 py-3 text-xs" style={{ color: '#94a3b8' }}>{CATEGORY_LABELS[e.category] || e.category}</td>
-                  <td className="px-5 py-3 text-xs" style={{ color: '#64748b' }}>{e.provider || '—'}</td>
+                  <td className="px-5 py-3 text-xs" style={{ color: '#64748b' }}>{providerLabel(e.provider)}</td>
                   <td className="px-5 py-3">
                     <span className="flex items-center gap-1.5 text-xs font-semibold" style={{ color: '#4ade80' }}>
                       <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: '#4ade80' }} />Operational
