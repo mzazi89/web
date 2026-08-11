@@ -39,6 +39,38 @@ const PAGE_BACKGROUNDS = {
     url: 'https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?w=1920&q=70',
     label: 'code on screen',
   },
+  '/testimonials': {
+    url: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=1920&q=70',
+    label: 'team with laptops',
+  },
+  '/api': {
+    url: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1920&q=70',
+    label: 'code editor',
+  },
+  '/api/docs': {
+    url: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1920&q=70',
+    label: 'code on screen',
+  },
+  '/api/dashboard': {
+    url: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1920&q=70',
+    label: 'analytics dashboard',
+  },
+  '/api/dashboard/keys': {
+    url: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=1920&q=70',
+    label: 'matrix code',
+  },
+  '/api/status': {
+    url: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1920&q=70',
+    label: 'cyber tech',
+  },
+  '/api/explorer': {
+    url: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=1920&q=70',
+    label: 'circuit board',
+  },
+  '/admin': {
+    url: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=1920&q=70',
+    label: 'matrix code',
+  },
 };
 
 const DEFAULT_BG = {
@@ -69,7 +101,7 @@ export default function TechBackground() {
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
-          opacity: 0.09,
+          opacity: 0.13,
           transition: 'background-image 0.6s ease',
         }}
       />
