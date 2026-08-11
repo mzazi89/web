@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import AuthSwap from '@/components/AuthSwap';
 
 const values = [
   { icon: '⚡', title: 'Speed First', desc: 'Deploy servers in under 2 minutes. No waiting, no friction — just instant results.' },
@@ -122,12 +123,24 @@ export default function AboutPage() {
         <div className="max-w-2xl mx-auto text-center px-4">
           <h2 className="text-3xl font-extrabold mb-4" style={{ color: '#f0f4ff' }}>Ready to get started?</h2>
           <p className="mb-8" style={{ color: '#64748b' }}>Join hundreds of Kenyans already using MZAZI TECH for their hosting needs.</p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/signup" className="px-8 py-4 rounded-xl font-bold text-white inline-block"
-              style={{ background: 'linear-gradient(135deg, #2563eb, #1d4ed8)' }}>Get Started</Link>
-            <Link href="/contact" className="px-8 py-4 rounded-xl font-bold inline-block"
-              style={{ backgroundColor: 'rgba(37,99,235,0.1)', color: '#60a5fa', border: '1px solid rgba(37,99,235,0.3)' }}>Contact Us</Link>
-          </div>
+          <AuthSwap
+            signedOut={
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link href="/signup" className="px-8 py-4 rounded-xl font-bold text-white inline-block"
+                  style={{ background: 'linear-gradient(135deg, #2563eb, #1d4ed8)' }}>Get Started</Link>
+                <Link href="/contact" className="px-8 py-4 rounded-xl font-bold inline-block"
+                  style={{ backgroundColor: 'rgba(37,99,235,0.1)', color: '#60a5fa', border: '1px solid rgba(37,99,235,0.3)' }}>Contact Us</Link>
+              </div>
+            }
+            signedIn={
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link href="/dashboard" className="px-8 py-4 rounded-xl font-bold text-white inline-block"
+                  style={{ background: 'linear-gradient(135deg, #2563eb, #1d4ed8)' }}>Go to Dashboard</Link>
+                <Link href="/api/dashboard" className="px-8 py-4 rounded-xl font-bold inline-block"
+                  style={{ backgroundColor: 'rgba(167,139,250,0.1)', color: '#c084fc', border: '1px solid rgba(167,139,250,0.3)' }}>Open API Dashboard</Link>
+              </div>
+            }
+          />
         </div>
       </section>
     </div>

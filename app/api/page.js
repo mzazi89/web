@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { neon } from '@neondatabase/serverless';
 import ApiTester from '@/components/api/ApiTester';
+import AuthSwap from '@/components/AuthSwap';
 import { unstable_noStore as noStore } from 'next/cache';
 
 export const dynamic = 'force-dynamic';
@@ -115,11 +116,22 @@ export default async function ApiLanding() {
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-3">
-            <Link href="/signup"
-              className="px-6 py-3 rounded-xl font-semibold text-white transition-all hover:opacity-90"
-              style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', boxShadow: '0 0 24px rgba(37,99,235,0.35)', textDecoration: 'none' }}>
-              GET STARTED
-            </Link>
+            <AuthSwap
+              signedOut={
+                <Link href="/signup"
+                  className="px-6 py-3 rounded-xl font-semibold text-white transition-all hover:opacity-90"
+                  style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', boxShadow: '0 0 24px rgba(37,99,235,0.35)', textDecoration: 'none' }}>
+                  GET STARTED
+                </Link>
+              }
+              signedIn={
+                <Link href="/api/dashboard/keys"
+                  className="px-6 py-3 rounded-xl font-semibold text-white transition-all hover:opacity-90"
+                  style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', boxShadow: '0 0 24px rgba(37,99,235,0.35)', textDecoration: 'none' }}>
+                  CREATE API KEY
+                </Link>
+              }
+            />
             <Link href="/api/explorer"
               className="px-6 py-3 rounded-xl font-semibold transition-all"
               style={{ color: '#a78bfa', border: '1px solid rgba(167,139,250,0.35)', textDecoration: 'none' }}>
@@ -244,11 +256,22 @@ export default async function ApiLanding() {
             Create your free account, generate an API key, and make your first request in minutes.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
-            <Link href="/signup"
-              className="px-6 py-3 rounded-xl font-semibold text-white transition-all hover:opacity-90"
-              style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', textDecoration: 'none' }}>
-              Get Started Free
-            </Link>
+            <AuthSwap
+              signedOut={
+                <Link href="/signup"
+                  className="px-6 py-3 rounded-xl font-semibold text-white transition-all hover:opacity-90"
+                  style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', textDecoration: 'none' }}>
+                  Get Started Free
+                </Link>
+              }
+              signedIn={
+                <Link href="/api/dashboard"
+                  className="px-6 py-3 rounded-xl font-semibold text-white transition-all hover:opacity-90"
+                  style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', textDecoration: 'none' }}>
+                  Open API Dashboard
+                </Link>
+              }
+            />
             <Link href="/api/docs"
               className="px-6 py-3 rounded-xl font-semibold transition-all"
               style={{ color: '#60a5fa', border: '1px solid rgba(37,99,235,0.35)', textDecoration: 'none' }}>

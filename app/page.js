@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { neon } from '@neondatabase/serverless';
 import { unstable_noStore as noStore } from 'next/cache';
+import AuthSwap from '@/components/AuthSwap';
 
 export const dynamic = 'force-dynamic';
 
@@ -357,16 +358,36 @@ export default async function Home() {
             Create your free account, top up your wallet, and deploy your first panel in under 5 minutes.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
-            <Link href="/signup"
-              className="w-full sm:w-auto px-8 py-3.5 rounded-xl font-bold text-white text-base"
-              style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', boxShadow: '0 0 28px rgba(37,99,235,0.4)', textDecoration: 'none' }}>
-              Create Free Account
-            </Link>
-            <Link href="/contact"
-              className="w-full sm:w-auto px-8 py-3.5 rounded-xl font-semibold text-sm"
-              style={{ color: '#94a3b8', border: '1px solid #1e2d4a', textDecoration: 'none' }}>
-              Talk to Support
-            </Link>
+            <AuthSwap
+              signedOut={
+                <>
+                  <Link href="/signup"
+                    className="w-full sm:w-auto px-8 py-3.5 rounded-xl font-bold text-white text-base"
+                    style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', boxShadow: '0 0 28px rgba(37,99,235,0.4)', textDecoration: 'none' }}>
+                    Create Free Account
+                  </Link>
+                  <Link href="/contact"
+                    className="w-full sm:w-auto px-8 py-3.5 rounded-xl font-semibold text-sm"
+                    style={{ color: '#94a3b8', border: '1px solid #1e2d4a', textDecoration: 'none' }}>
+                    Talk to Support
+                  </Link>
+                </>
+              }
+              signedIn={
+                <>
+                  <Link href="/dashboard"
+                    className="w-full sm:w-auto px-8 py-3.5 rounded-xl font-bold text-white text-base"
+                    style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', boxShadow: '0 0 28px rgba(37,99,235,0.4)', textDecoration: 'none' }}>
+                    Go to Dashboard
+                  </Link>
+                  <Link href="/api/dashboard"
+                    className="w-full sm:w-auto px-8 py-3.5 rounded-xl font-semibold text-sm"
+                    style={{ color: '#a78bfa', border: '1px solid rgba(167,139,250,0.35)', textDecoration: 'none' }}>
+                    Open API Dashboard
+                  </Link>
+                </>
+              }
+            />
           </div>
         </div>
       </section>
