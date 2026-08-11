@@ -7,6 +7,7 @@ const NAV_LINKS = [
   { href: '/',             label: 'Home' },
   { href: '/products',     label: 'Panels' },
   { href: '/whatsapp-bot', label: 'WhatsApp Bot' },
+  { href: '/api',          label: 'API' },
   { href: '/about',        label: 'About' },
   { href: '/contact',      label: 'Contact' },
 ];
