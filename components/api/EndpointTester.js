@@ -8,8 +8,10 @@ const BASE_URL = typeof window !== 'undefined' ? window.location.origin : 'https
 // Live tester for a single registry endpoint — calls the REAL MZAZI API.
 // API key optional (see the JSON error without one, real result with one).
 export default function EndpointTester({ endpoint }) {
-  const required = (endpoint.params?.required || []).map(p => (typeof p === 'string' ? { name: p } : p));
-  const optional = (endpoint.params?.optional || []).map(p => (typeof p === 'string' ? { name: p } : p));
+  // registry field is `parameters` ({required:[{name,example}], optional:[...]})
+  const def = endpoint.parameters || endpoint.params || { required: [], optional: [] };
+  const required = (def.required || []).map(p => (typeof p === 'string' ? { name: p } : p));
+  const optional = (def.optional || []).map(p => (typeof p === 'string' ? { name: p } : p));
   const all = [...required, ...optional];
 
   const [key, setKey] = useState('');
