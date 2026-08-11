@@ -10,6 +10,7 @@ const NAV_LINKS = [
   { href: '/products',     label: 'Panels' },
   { href: '/whatsapp-bot', label: 'WhatsApp Bot' },
   { href: '/api',          label: 'API' },
+  { href: '/testimonials', label: 'Reviews' },
   { href: '/about',        label: 'About' },
   { href: '/contact',      label: 'Contact' },
 ];

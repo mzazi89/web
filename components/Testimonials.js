@@ -1,32 +1,8 @@
 'use client';
 import { useState, useEffect } from 'react';
+import StarRating from './StarRating';
+import Link from 'next/link';
 
-function StarRating({ value, onChange, readonly = false }) {
-  const [hovered, setHovered] = useState(0);
-  return (
-    <div className="flex gap-1">
-      {[1, 2, 3, 4, 5].map((star) => (
-        <button
-          key={star}
-          type="button"
-          disabled={readonly}
-          onClick={() => !readonly && onChange && onChange(star)}
-          onMouseEnter={() => !readonly && setHovered(star)}
-          onMouseLeave={() => !readonly && setHovered(0)}
-          style={{
-            background: 'none', border: 'none',
-            cursor: readonly ? 'default' : 'pointer',
-            padding: '2px',
-            fontSize: readonly ? '18px' : '24px',
-            color: star <= (hovered || value) ? '#facc15' : '#334155',
-            transition: 'color 0.15s',
-          }}
-          aria-label={`${star} star${star !== 1 ? 's' : ''}`}
-        >★</button>
-      ))}
-    </div>
-  );
-}
 
 function TestimonialCard({ testimonial }) {
   const date = new Date(testimonial.created_at).toLocaleDateString('en-KE', {
@@ -100,7 +76,7 @@ function TestimonialForm({ onSubmitted }) {
       <div style={{ backgroundColor: 'rgba(22,24,42,0.85)', backdropFilter: 'blur(8px)', border: '1px solid rgba(37,99,235,0.4)', borderRadius: '16px', padding: '40px', textAlign: 'center' }}>
         <div style={{ fontSize: '48px', marginBottom: '16px' }}>🎉</div>
         <h3 style={{ color: '#f0f4ff', fontSize: '20px', fontWeight: 700, marginBottom: '8px' }}>Thank You!</h3>
-        <p style={{ color: '#64748b' }}>Your testimonial has been submitted successfully.</p>
+        <p style={{ color: '#64748b' }}>Your testimonial has been submitted successfully. It will appear after a quick approval.</p>
         <button onClick={() => setSuccess(false)} style={{ marginTop: '20px', padding: '10px 24px', borderRadius: '10px', background: 'linear-gradient(135deg, #2563eb, #1d4ed8)', color: '#fff', fontWeight: 600, border: 'none', cursor: 'pointer' }}>
           Add Another
         </button>
@@ -227,6 +203,11 @@ export default function Testimonials() {
           <p style={{ color: '#64748b', fontSize: '16px', maxWidth: '480px', margin: '0 auto' }}>
             Real experiences from real customers worldwide.
           </p>
+          <div style={{ marginTop: '16px' }}>
+            <Link href="/testimonials" style={{ color: '#60a5fa', fontSize: '14px', fontWeight: 600, textDecoration: 'none' }}>
+              View all reviews →
+            </Link>
+          </div>
         </div>
 
         {/* Cards */}

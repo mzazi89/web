@@ -37,7 +37,16 @@ export async function GET(request) {
       LIMIT ${limit} OFFSET ${offset}
     `;
 
-    return NextResponse.json({ testimonials, total: count });
+    const [avg] = await sql`
+      SELECT ROUND(AVG(rating)::numeric, 2) AS avg, COUNT(*)::int AS total FROM testimonials WHERE approved = true
+    `;
+
+    return NextResponse.json({
+      testimonials,
+      total: count,
+      avg_rating: avg.avg !== null ? Number(avg.avg) : null,
+      rating_count: avg.total || 0,
+    });
   } catch (error) {
     console.error('Failed to fetch testimonials:', error);
     return NextResponse.json({ error: 'Failed to fetch testimonials' }, { status: 500 });
@@ -67,13 +76,14 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Message must be between 10 and 1000 characters.' }, { status: 400 });
     }
 
+    // New reviews start as pending — an admin approves them before they go live.
     const [testimonial] = await sql`
       INSERT INTO testimonials (name, rating, message, approved)
-      VALUES (${name.trim()}, ${ratingNum}, ${message.trim()}, true)
+      VALUES (${name.trim()}, ${ratingNum}, ${message.trim()}, false)
       RETURNING id, name, rating, message, created_at
     `;
 
-    return NextResponse.json({ testimonial, message: 'Thank you for your testimonial!' }, { status: 201 });
+    return NextResponse.json({ testimonial, message: 'Thank you! Your review has been submitted and will appear after approval.' }, { status: 201 });
   } catch (error) {
     console.error('Failed to save testimonial:', error);
     return NextResponse.json({ error: 'Failed to save testimonial.' }, { status: 500 });
