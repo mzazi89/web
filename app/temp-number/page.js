@@ -21,7 +21,6 @@ function pick(obj, keys, fallback = null) {
 }
 
 export default function TempNumberPage() {
-  const [apiKey, setApiKey] = useState('');
   const [provider, setProvider] = useState('receive-sms-online');
   const [numbers, setNumbers] = useState(null);       // array or null
   const [loadingNumbers, setLoadingNumbers] = useState(false);
@@ -36,7 +35,6 @@ export default function TempNumberPage() {
   const showStatus = (type, text) => setStatus({ type, text });
 
   const fetchNumbers = async () => {
-    if (!apiKey.trim()) { showStatus('error', 'Enter your MZAZI API key first.'); return; }
     setLoadingNumbers(true);
     setNumbers(null);
     setSelected(null);
@@ -44,7 +42,7 @@ export default function TempNumberPage() {
     setStatus(null);
     const started = Date.now();
     try {
-      const res = await fetch(`${BASE_URL}/api/tempnumber/${provider}/numbers?apikey=${encodeURIComponent(apiKey.trim())}`, { cache: 'no-store' });
+      const res = await fetch(`${BASE_URL}/api/temp-number?action=numbers&provider=${provider}`, { cache: 'no-store' });
       const d = await res.json();
       if (!res.ok) {
         showStatus('error', `${d.error || 'Error'}: ${d.message || res.status}`);
@@ -59,14 +57,13 @@ export default function TempNumberPage() {
   };
 
   const fetchMessages = useCallback(async (num) => {
-    if (!apiKey.trim()) return;
     setLoadingMsgs(true);
     const started = Date.now();
     try {
       const number = num || selected;
       if (!number) return;
       const raw = typeof number === 'string' ? number : (number.number || number.slug || '');
-      const res = await fetch(`${BASE_URL}/api/tempnumber/${provider}/inbox?number=${encodeURIComponent(raw)}&apikey=${encodeURIComponent(apiKey.trim())}`, { cache: 'no-store' });
+      const res = await fetch(`${BASE_URL}/api/temp-number?action=inbox&provider=${provider}&number=${encodeURIComponent(raw)}`, { cache: 'no-store' });
       const d = await res.json();
       if (!res.ok) {
         showStatus('error', `${d.error || 'Error'}: ${d.message || res.status}`);
@@ -77,7 +74,7 @@ export default function TempNumberPage() {
     } catch (e) {
       showStatus('error', `Request failed: ${e.message}`);
     } finally { setLoadingMsgs(false); }
-  }, [apiKey, provider, selected]);
+  }, [provider, selected]);
 
   // auto-refresh poll
   useEffect(() => {
@@ -102,23 +99,7 @@ export default function TempNumberPage() {
       </div>
 
       {/* Setup */}
-      <div className="card p-5 mb-6 grid grid-cols-1 lg:grid-cols-3 gap-3 items-end">
-        <div>
-          <label className="block text-[10px] font-bold uppercase tracking-wide mb-1.5" style={{ color: '#64748b' }}>
-            MZAZI API Key
-          </label>
-          <input
-            value={apiKey}
-            onChange={e => setApiKey(e.target.value)}
-            placeholder="mzazi_..."
-            type="password"
-            className="w-full px-3 py-2.5 rounded-lg text-sm font-mono outline-none"
-            style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a', color: '#f0f4ff' }}
-          />
-          <p className="text-[10px] mt-1" style={{ color: '#475569' }}>
-            Need one? <a href="/api/dashboard/keys" style={{ color: '#60a5fa' }}>Create a key here</a> (free).
-          </p>
-        </div>
+      <div className="card p-5 mb-6 grid grid-cols-1 lg:grid-cols-2 gap-3 items-end">
         <div>
           <label className="block text-[10px] font-bold uppercase tracking-wide mb-1.5" style={{ color: '#64748b' }}>Provider</label>
           <select value={provider} onChange={e => { setProvider(e.target.value); setNumbers(null); setSelected(null); setMessages(null); }}
@@ -244,8 +225,7 @@ export default function TempNumberPage() {
       <div className="card p-5 mt-6">
         <h3 className="text-sm font-bold mb-2" style={{ color: '#f0f4ff' }}>ℹ️ How it works</h3>
         <ol className="text-xs space-y-1.5 list-decimal list-inside" style={{ color: '#94a3b8' }}>
-          <li>Enter your MZAZI API key (create one free at <a href="/api/dashboard/keys" style={{ color: '#60a5fa' }}>/api/dashboard/keys</a>).</li>
-          <li>Pick a provider and click <strong style={{ color: '#93c5fd' }}>Get Numbers</strong> — available temporary numbers are listed.</li>
+          <li>Pick a provider and click <strong style={{ color: '#93c5fd' }}>Get Numbers</strong> — available temporary numbers are listed (no account or API key needed).</li>
           <li>Select a number and click <strong style={{ color: '#93c5fd' }}>Check Messages</strong> to read its SMS. Turn on auto-refresh to watch for new messages.</li>
           <li>Use the number anywhere for verification — OTPs and SMS land right here on this page.</li>
         </ol>
