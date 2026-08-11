@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { fmtMtc, fmtMtcValue, mtcToKsh } from '@/lib/currency';
 
 export default function AdminTransactions() {
   const [data, setData] = useState(null);
@@ -57,7 +58,7 @@ export default function AdminTransactions() {
         {data?.stats && (
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
             {[
-              { label: 'Total Revenue', value: `KSH ${parseFloat(data.stats.total_revenue || 0).toLocaleString()}`, color: '#4ade80' },
+              { label: 'Total Revenue', value: fmtMtc(data.stats.total_revenue || 0), color: '#4ade80' },
               { label: 'Completed Orders', value: data.stats.completed_orders || 0, color: '#3b82f6' },
               { label: 'Pending Orders', value: data.stats.pending_orders || 0, color: '#fb923c' },
             ].map(c => (
@@ -98,7 +99,7 @@ export default function AdminTransactions() {
                       <td className="px-5 py-4 text-xs font-mono" style={{ color: '#475569' }}>{(o.reference || '—').slice(-12)}</td>
                       <td className="px-5 py-4 text-sm" style={{ color: '#94a3b8' }}>{o.user_email}</td>
                       <td className="px-5 py-4 text-sm" style={{ color: '#f0f4ff' }}>{o.package_name}</td>
-                      <td className="px-5 py-4 text-sm font-semibold" style={{ color: '#4ade80' }}>KSH {parseFloat(o.amount || 0).toLocaleString()}</td>
+                      <td className="px-5 py-4 text-sm font-semibold" style={{ color: '#4ade80' }}>{fmtMtc(o.amount || 0)}</td>
                       <td className="px-5 py-4"><span className="text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: sb(o.status), color: sc(o.status) }}>{o.status}</span></td>
                       <td className="px-5 py-4 text-xs" style={{ color: '#475569' }}>{new Date(o.created_at).toLocaleDateString()}</td>
                     </tr>
@@ -120,7 +121,7 @@ export default function AdminTransactions() {
                     <tr key={t.id} style={{ borderBottom: i < txns.length - 1 ? '1px solid #1e2030' : 'none' }}>
                       <td className="px-5 py-4 text-sm" style={{ color: '#94a3b8' }}>{t.user_email}</td>
                       <td className="px-5 py-4 text-sm capitalize" style={{ color: '#f0f4ff' }}>{t.type}</td>
-                      <td className="px-5 py-4 text-sm font-semibold" style={{ color: t.type === 'debit' ? '#f87171' : '#4ade80' }}>{t.type === 'debit' ? '-' : '+'}KSH {parseFloat(t.amount).toLocaleString()}</td>
+                      <td className="px-5 py-4 text-sm font-semibold" style={{ color: t.type === 'debit' ? '#f87171' : '#4ade80' }}>{t.type === 'debit' ? '-' : '+'}{fmtMtc(t.amount)}</td>
                       <td className="px-5 py-4 text-xs max-w-xs truncate" style={{ color: '#64748b' }}>{t.description}</td>
                       <td className="px-5 py-4"><span className="text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: sb(t.status), color: sc(t.status) }}>{t.status}</span></td>
                       <td className="px-5 py-4 text-xs" style={{ color: '#475569' }}>{new Date(t.created_at).toLocaleDateString()}</td>

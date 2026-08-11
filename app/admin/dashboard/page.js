@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { fmtMtc, fmtMtcValue, mtcToKsh } from '@/lib/currency';
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState(null);
@@ -45,7 +46,7 @@ export default function AdminDashboard() {
 
   const cards = [
     { label: 'Total Users', value: stats.totalUsers, icon: '👥', color: '#3b82f6', bg: 'rgba(59,130,246,0.08)', border: 'rgba(59,130,246,0.2)', href: '/admin/users' },
-    { label: 'Total Revenue', value: `KSH ${parseFloat(stats.totalRevenue).toLocaleString()}`, icon: '💰', color: '#4ade80', bg: 'rgba(74,222,128,0.08)', border: 'rgba(74,222,128,0.2)', href: '/admin/transactions' },
+    { label: 'Total Revenue', value: fmtMtc(stats.totalRevenue), icon: '💰', color: '#4ade80', bg: 'rgba(74,222,128,0.08)', border: 'rgba(74,222,128,0.2)', href: '/admin/transactions' },
     { label: 'Completed Orders', value: stats.completedOrders, icon: '✅', color: '#a78bfa', bg: 'rgba(167,139,250,0.08)', border: 'rgba(167,139,250,0.2)', href: '/admin/transactions' },
     { label: 'Open Inquiries', value: stats.openInquiries, icon: '💬', color: '#fb923c', bg: 'rgba(251,146,60,0.08)', border: 'rgba(251,146,60,0.2)', href: '/admin/inquiries' },
   ];
@@ -147,7 +148,7 @@ export default function AdminDashboard() {
                       <p className="text-sm font-medium truncate" style={{ color: '#f0f4ff' }}>{u.fullname || ((u.firstname || '') + ' ' + (u.lastname || '')).trim()}</p>
                       <p className="text-xs truncate" style={{ color: '#64748b' }}>{u.email}</p>
                     </div>
-                    <span className="text-xs font-semibold" style={{ color: '#4ade80' }}>KSH {parseFloat(u.wallet_balance || 0).toLocaleString()}</span>
+                    <span className="text-xs font-semibold" style={{ color: '#4ade80' }}>{fmtMtc(u.wallet_balance || 0)}</span>
                   </div>
                 ))}
               </div>

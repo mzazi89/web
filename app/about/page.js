@@ -1,10 +1,11 @@
 import Link from 'next/link';
 import AuthSwap from '@/components/AuthSwap';
+import { fmtMtc, fmtMtcValue, mtcToKsh } from '@/lib/currency';
 
 const values = [
   { icon: '⚡', title: 'Speed First', desc: 'Deploy servers in under 2 minutes. No waiting, no friction — just instant results.' },
   { icon: '🔒', title: 'Security', desc: 'Enterprise-grade security with encrypted connections and isolated server environments.' },
-  { icon: '🇰🇪', title: 'Kenya Focused', desc: 'Built for Kenyan businesses. M-Pesa payments, local support, KSH pricing.' },
+  { icon: '🇰🇪', title: 'Kenya Focused', desc: 'Built for Kenyan businesses. M-Pesa payments, local support, MTC coin pricing.' },
   { icon: '💬', title: '24/7 Support', desc: 'Our team is always available via Telegram to help you with any issue.' },
 ];
 
@@ -41,7 +42,7 @@ export default function AboutPage() {
             <div>
               <h2 className="text-3xl font-extrabold mb-6" style={{ color: '#f0f4ff' }}>Our Mission</h2>
               <p className="text-lg mb-6" style={{ color: '#64748b' }}>
-                To democratize access to powerful cloud infrastructure for Kenyan businesses and individuals. We offer enterprise-level Pterodactyl panel hosting at prices anyone can afford — starting from just KSH 50/month.
+                To democratize access to powerful cloud infrastructure for Kenyan businesses and individuals. We offer enterprise-level Pterodactyl panel hosting at prices anyone can afford — starting from just 5 MTC/month.
               </p>
               <p className="text-lg" style={{ color: '#64748b' }}>
                 From small WhatsApp bots to large-scale game servers and pterodactyl panels for WhatsApp bots, we provide the infrastructure backbone so you can focus on what matters — building your product.

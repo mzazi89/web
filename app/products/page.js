@@ -2,6 +2,7 @@
 import { useState, useEffect, Fragment } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { fmtMtc, fmtMtcValue, mtcToKsh } from '@/lib/currency';
 
 function fmtCpu(v)  { const n = parseInt(v); return n === 0 ? 'Unlimited CPU'  : `${n}% CPU`; }
 function fmtRam(v)  { const n = parseInt(v); return n === 0 ? 'Unlimited RAM'  : n >= 1024 ? `${n / 1024} GB RAM`  : `${n} MB RAM`; }
@@ -70,7 +71,7 @@ export default function ProductsPage() {
       setError('All fields are required'); return;
     }
     if (balance < pkg.price) {
-      setError(`Insufficient balance. You need KSH ${pkg.price} but have KSH ${parseFloat(balance).toFixed(2)}. Please top up your wallet.`);
+      setError(`Insufficient balance. You need {fmtMtc(pkg.price)} but have {fmtMtc(balance)}. Please top up your wallet.`);
       return;
     }
     setError(''); setStep('confirm');
@@ -117,7 +118,7 @@ export default function ProductsPage() {
           {user && (
             <div className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm"
               style={{ backgroundColor: 'rgba(37,99,235,0.08)', border: '1px solid rgba(37,99,235,0.2)', color: '#60a5fa' }}>
-              💳 Wallet: <strong>KSH {parseFloat(balance).toLocaleString()}</strong>
+              💳 Wallet: <strong>{fmtMtc(balance)}</strong>
               {balance < 50 && (
                 <Link href="/wallet" className="ml-2 underline text-xs" style={{ color: '#f87171', textDecoration: 'underline' }}>Top up →</Link>
               )}
@@ -195,7 +196,7 @@ export default function ProductsPage() {
                     )}
                     <p className="font-bold text-base mb-1" style={{ color: '#f0f4ff' }}>{p.name}</p>
                     <div className="flex items-baseline gap-1 mb-3">
-                      <span className="font-extrabold text-3xl" style={{ color: p.popular ? p.accent : '#f0f4ff' }}>KSH {parseFloat(p.price).toLocaleString()}</span>
+                      <span className="font-extrabold text-3xl" style={{ color: p.popular ? p.accent : '#f0f4ff' }}>{fmtMtc(p.price)}</span>
                       <span className="text-xs" style={{ color: '#475569' }}>/mo</span>
                     </div>
                     <p className="text-xs leading-relaxed mb-4" style={{ color: '#64748b' }}>{p.description}</p>
@@ -307,7 +308,7 @@ export default function ProductsPage() {
                     <p className="font-bold" style={{ color: '#f0f4ff' }}>{pkg.name} Plan</p>
                     <p className="text-xs mt-0.5" style={{ color: '#64748b' }}>Monthly subscription</p>
                   </div>
-                  <p className="font-extrabold text-xl" style={{ color: '#3b82f6' }}>KSH {parseFloat(pkg.price).toLocaleString()}</p>
+                  <p className="font-extrabold text-xl" style={{ color: '#3b82f6' }}>{fmtMtc(pkg.price)}</p>
                 </div>
                 {[fmtCpu(pkg.cpu), fmtRam(pkg.ram), fmtDisk(pkg.disk)].map(s => (
                   <div key={s} className="flex items-center gap-2 py-1.5 text-sm" style={{ color: '#64748b' }}>
@@ -320,11 +321,11 @@ export default function ProductsPage() {
                 <div className="mt-4 pt-4" style={{ borderTop: '1px solid #1e2d4a' }}>
                   <div className="flex justify-between text-xs mb-1" style={{ color: '#475569' }}>
                     <span>Your balance</span>
-                    <span style={{ color: balance >= pkg.price ? '#4ade80' : '#f87171' }}>KSH {parseFloat(balance).toLocaleString()}</span>
+                    <span style={{ color: balance >= pkg.price ? '#4ade80' : '#f87171' }}>{fmtMtc(balance)}</span>
                   </div>
                   <div className="flex justify-between text-xs" style={{ color: '#475569' }}>
                     <span>After purchase</span>
-                    <span style={{ color: '#94a3b8' }}>KSH {Math.max(0, balance - pkg.price).toLocaleString()}</span>
+                    <span style={{ color: '#94a3b8' }}>{fmtMtc(Math.max(0, balance - pkg.price))}</span>
                   </div>
                 </div>
               </div>
@@ -337,7 +338,7 @@ export default function ProductsPage() {
           <div className="max-w-lg mx-auto rounded-2xl p-6 sm:p-8" style={{ backgroundColor: '#0f1629', border: '1px solid #1e2d4a' }}>
             <h2 className="font-bold text-xl mb-6" style={{ color: '#f0f4ff' }}>Confirm Order</h2>
             {[
-              { label: 'Plan',      value: `${pkg.name} — KSH ${parseFloat(pkg.price).toLocaleString()}/mo` },
+              { label: 'Plan',      value: `${pkg.name} — ${fmtMtc(pkg.price)}/mo` },
               { label: 'Resources', value: `${fmtCpu(pkg.cpu)} · ${fmtRam(pkg.ram)} · ${fmtDisk(pkg.disk)}` },
               { label: 'Username',  value: form.ptero_username },
               { label: 'Name',      value: `${form.firstname} ${form.lastname}` },
@@ -351,10 +352,10 @@ export default function ProductsPage() {
             ))}
             <div className="flex justify-between py-3 text-base font-bold" style={{ borderBottom: '1px solid #1e2d4a' }}>
               <span style={{ color: '#94a3b8' }}>Total Charge</span>
-              <span style={{ color: '#3b82f6' }}>KSH {parseFloat(pkg.price).toLocaleString()}</span>
+              <span style={{ color: '#3b82f6' }}>{fmtMtc(pkg.price)}</span>
             </div>
             <p className="text-xs mt-4 mb-6" style={{ color: '#475569' }}>
-              KSH {parseFloat(pkg.price).toLocaleString()} will be deducted from your wallet. Balance after: KSH {Math.max(0, balance - pkg.price).toLocaleString()}
+              {fmtMtc(pkg.price)} will be deducted from your wallet. Balance after: {fmtMtc(Math.max(0, balance - pkg.price))}
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
               <button onClick={() => setStep('configure')}

@@ -3,6 +3,7 @@ import { neon } from '@neondatabase/serverless';
 import { unstable_noStore as noStore } from 'next/cache';
 import AuthSwap from '@/components/AuthSwap';
 import PwaInstallButton from '@/components/PwaInstallButton';
+import { fmtMtc, fmtMtcValue, mtcToKsh } from '@/lib/currency';
 
 export const dynamic = 'force-dynamic';
 
@@ -312,7 +313,7 @@ export default async function Home() {
                   <p className="font-bold text-base sm:text-lg mb-1" style={{ color: '#f0f4ff' }}>{pkg.name}</p>
                   <div className="flex items-baseline gap-1">
                     <span className="font-extrabold" style={{ fontSize: 'clamp(1.8rem,5vw,2.25rem)', color: pkg.popular ? '#60a5fa' : '#f0f4ff' }}>
-                      KSH {pkg.price}
+                      {fmtMtc(pkg.price)}
                     </span>
                     <span className="text-xs" style={{ color: '#475569' }}>/mo</span>
                   </div>

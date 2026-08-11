@@ -1,6 +1,7 @@
 'use client';
 import React, { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { fmtMtc, fmtMtcValue, mtcToKsh } from '@/lib/currency';
 
 // ─── Receipt printer (no library needed) ────────────────────────────────────
 function downloadReceipt(t, userEmail, balance) {
@@ -116,7 +117,7 @@ function downloadReceipt(t, userEmail, balance) {
   <div class="body">
     <div class="amount-section">
       <div class="amount-label">Transaction Amount</div>
-      <div class="amount"><span class="currency">KSH </span>${sign}${parseFloat(t.amount).toLocaleString('en-KE', { minimumFractionDigits: 2 })}</div>
+      <div class="amount"><span class="currency">MTC </span>${sign}${(parseFloat(t.amount)/10).toLocaleString('en-KE', { minimumFractionDigits: 2 })}</div>
     </div>
     <div class="rows">
       <div class="row"><span class="row-label">Receipt No.</span><span class="row-value ref">#MZAZI-${String(t.id).padStart(6,'0')}</span></div>
@@ -126,7 +127,7 @@ function downloadReceipt(t, userEmail, balance) {
       <div class="row"><span class="row-label">Transaction Type</span><span class="row-value" style="text-transform:capitalize">${t.type}</span></div>
       <div class="row"><span class="row-label">Account</span><span class="row-value">${userEmail || '—'}</span></div>
       ${t.reference ? `<div class="row"><span class="row-label">Reference</span><span class="row-value ref">${t.reference}</span></div>` : ''}
-      <div class="row"><span class="row-label">Wallet Balance After</span><span class="row-value">KSH ${parseFloat(balance).toLocaleString('en-KE', { minimumFractionDigits: 2 })}</span></div>
+      <div class="row"><span class="row-label">Wallet Balance After</span><span class="row-value">MTC ${(parseFloat(balance)/10).toLocaleString('en-KE', { minimumFractionDigits: 2 })}</span></div>
     </div>
     <div class="warranty">
       <strong>🛡️ Panel Warranty Policy</strong>
@@ -176,7 +177,7 @@ function WalletInner() {
     const error = searchParams.get('error');
     const amount = searchParams.get('amount');
     if (success === 'credited') {
-      setMessage({ type: 'success', text: `KSH ${parseFloat(amount).toLocaleString()} has been added to your wallet!` });
+      setMessage({ type: 'success', text: `${fmtMtc(amount)} has been added to your wallet!` });
     } else if (success === 'already_credited') {
       setMessage({ type: 'info', text: 'Payment already credited to your wallet.' });
     } else if (error) {
@@ -209,7 +210,7 @@ function WalletInner() {
     e.preventDefault();
     const amount = parseFloat(depositAmount);
     if (!amount || amount < 10) {
-      setMessage({ type: 'error', text: 'Minimum deposit is KSH 10' });
+      setMessage({ type: 'error', text: 'Minimum deposit is 1 MTC' });
       return;
     }
     setDepositing(true);
@@ -218,7 +219,7 @@ function WalletInner() {
       const res = await fetch('/api/wallet/deposit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount }),
+        body: JSON.stringify({ amount: mtcToKsh(amount) }),
       });
       const data = await res.json();
       if (res.ok && data.authorization_url) {
@@ -332,7 +333,7 @@ function WalletInner() {
           <div className="rounded-2xl p-6" style={{ backgroundColor: '#0f1629', border: '1px solid #1e2d4a' }}>
             <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: '#475569' }}>Available Balance</p>
             <p className="text-4xl font-extrabold" style={{ color: '#3b82f6' }}>
-              KSH {parseFloat(balance).toLocaleString()}
+              {fmtMtc(balance)}
             </p>
             {user && (
               <p className="mt-3 text-sm" style={{ color: '#64748b' }}>
@@ -346,7 +347,7 @@ function WalletInner() {
             <p className="text-xs font-semibold uppercase tracking-wider mb-4" style={{ color: '#475569' }}>Deposit Funds</p>
             <form onSubmit={handleDeposit}>
               <div className="mb-3">
-                <label className="block text-xs mb-1" style={{ color: '#64748b' }}>Amount (KSH)</label>
+                <label className="block text-xs mb-1" style={{ color: '#64748b' }}>Amount (MTC)</label>
                 <input
                   type="number"
                   min="10"
@@ -367,7 +368,7 @@ function WalletInner() {
                       color: depositAmount === String(amt) ? '#fff' : '#94a3b8',
                       border: '1px solid #1e2d4a',
                     }}>
-                    KSH {amt}
+                    {fmtMtc(amt)}
                   </button>
                 ))}
               </div>
@@ -469,7 +470,7 @@ function WalletInner() {
                         </span>
                       </td>
                       <td className="py-3 pr-3 font-semibold whitespace-nowrap" style={{ color: t.type === 'deposit' ? '#4ade80' : '#f87171' }}>
-                        {t.type === 'deposit' ? '+' : '-'}KSH {parseFloat(t.amount).toLocaleString()}
+                        {t.type === 'deposit' ? '+' : '-'}{fmtMtc(t.amount)}
                       </td>
                       <td className="py-3 pr-3">
                         <span className="text-xs px-2 py-0.5 rounded-full" style={{

@@ -2,6 +2,7 @@
 import { useState, useEffect, Fragment } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { fmtMtc, fmtMtcValue, mtcToKsh } from '@/lib/currency';
 
 const EMPTY = { name: '', price: '', cpu: '', ram: '', disk: '', description: '', popular: false, accent: '#2563eb', active: true, sort_order: '', expires_after_hours: '' };
 
@@ -162,7 +163,7 @@ export default function AdminPackages() {
                             <span className="font-semibold" style={{ color: '#f0f4ff' }}>{pkg.name}</span>
                           </div>
                         </td>
-                        <td className="px-5 py-4 font-bold" style={{ color: '#4ade80' }}>KSH {parseFloat(pkg.price).toLocaleString()}</td>
+                        <td className="px-5 py-4 font-bold" style={{ color: '#4ade80' }}>{fmtMtc(pkg.price)}</td>
                         <td className="px-5 py-4" style={{ color: '#94a3b8' }}>{fmtCpu(pkg.cpu)}</td>
                         <td className="px-5 py-4" style={{ color: '#94a3b8' }}>{fmtRam(pkg.ram)}</td>
                         <td className="px-5 py-4" style={{ color: '#94a3b8' }}>{fmtDisk(pkg.disk)}</td>
@@ -212,7 +213,7 @@ export default function AdminPackages() {
                   <input style={inputStyle} required value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="e.g. Pro" />
                 </div>
                 <div>
-                  <label style={labelStyle}>Price (KSH/mo)</label>
+                  <label style={labelStyle}>Price (MTC/mo)</label>
                   <input style={inputStyle} type="number" min="0" step="0.01" required value={form.price} onChange={e => setForm(f => ({ ...f, price: e.target.value }))} placeholder="150" />
                 </div>
                 <div>
@@ -260,7 +261,7 @@ export default function AdminPackages() {
               <div className="rounded-xl p-4 mt-2" style={{ backgroundColor: '#0a0c14', border: `1px solid ${form.accent || '#1e2030'}` }}>
                 <p className="text-xs font-bold uppercase tracking-wider mb-2" style={{ color: '#475569' }}>Preview</p>
                 <p className="font-bold" style={{ color: '#f0f4ff' }}>{form.name || 'Package Name'}</p>
-                <p className="font-extrabold text-xl" style={{ color: form.accent }}>KSH {form.price || '0'}<span className="text-xs font-normal ml-1" style={{ color: '#475569' }}>/mo</span></p>
+                <p className="font-extrabold text-xl" style={{ color: form.accent }}>{fmtMtc(form.price || 0)}<span className="text-xs font-normal ml-1" style={{ color: '#475569' }}>/mo</span></p>
                 <p className="text-xs mt-1" style={{ color: '#64748b' }}>{fmtCpu(form.cpu || 0)} · {fmtRam(form.ram || 0)} · {fmtDisk(form.disk || 0)}</p>
               </div>
 

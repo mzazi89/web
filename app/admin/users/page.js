@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { fmtMtc, fmtMtcValue, mtcToKsh } from '@/lib/currency';
 
 export default function AdminUsers() {
   const [users, setUsers] = useState([]);
@@ -86,7 +87,7 @@ export default function AdminUsers() {
                         </div>
                       </td>
                       <td className="px-5 py-4 text-sm" style={{ color: '#94a3b8' }}>{u.email}</td>
-                      <td className="px-5 py-4 text-sm font-semibold" style={{ color: '#4ade80' }}>KSH {parseFloat(u.wallet_balance || 0).toLocaleString()}</td>
+                      <td className="px-5 py-4 text-sm font-semibold" style={{ color: '#4ade80' }}>{fmtMtc(u.wallet_balance || 0)}</td>
                       <td className="px-5 py-4 text-sm" style={{ color: '#94a3b8' }}>{u.total_orders}</td>
                       <td className="px-5 py-4 text-xs" style={{ color: '#475569' }}>{new Date(u.created_at).toLocaleDateString()}</td>
                     </tr>

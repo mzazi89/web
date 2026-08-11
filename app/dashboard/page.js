@@ -2,6 +2,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { fmtMtc, fmtMtcValue, mtcToKsh } from '@/lib/currency';
 
 export default function DashboardPage() {
   const [user, setUser]           = useState(null);
@@ -76,7 +77,7 @@ export default function DashboardPage() {
   const activePanels = panels.filter(p => p.status === 'active').length;
 
   const stats = [
-    { label: 'Wallet Balance', value: `KSH ${parseFloat(balance).toLocaleString()}`, icon: '💳', color: '#3b82f6', href: '/wallet' },
+    { label: 'Wallet Balance', value: fmtMtc(balance), icon: '💳', color: '#3b82f6', href: '/wallet' },
     { label: 'Active Panels',  value: activePanels,                                   icon: '🖥️', color: '#10b981', href: '/products' },
     { label: 'API Keys',       value: apiStats ? apiStats.keys : '—',                 icon: '🔑', color: '#a78bfa', href: '/api/dashboard/keys' },
     { label: 'API Requests',   value: apiStats ? apiStats.requests.toLocaleString() : '—', icon: '📡', color: '#f472b6', href: '/api/dashboard' },
@@ -166,7 +167,7 @@ export default function DashboardPage() {
                           {p.ptero_username || `Panel #${p.id}`}
                         </p>
                         <p className="text-xs mt-0.5" style={{ color: '#64748b' }}>
-                          {p.package_name} · KSH {parseFloat(p.package_price || 0).toLocaleString()}
+                          {p.package_name} · {fmtMtc(p.package_price || 0)}
                           {p.expires_at && (
                             <span className="ml-1" style={{ color: p.is_expired ? '#f87171' : '#a78bfa' }}>
                               · {p.is_expired ? '⏱ Expired' : `⏱ Expires ${new Date(p.expires_at).toLocaleString()}`}
@@ -212,7 +213,7 @@ export default function DashboardPage() {
                 <Link href="/wallet" className="text-xs" style={{ color: '#3b82f6', textDecoration: 'none' }}>Manage →</Link>
               </div>
               <p className="font-extrabold mb-1" style={{ fontSize: 'clamp(1.5rem,4vw,2rem)', color: '#3b82f6' }}>
-                KSH {parseFloat(balance).toLocaleString()}
+                {fmtMtc(balance)}
               </p>
               <p className="text-xs mb-4" style={{ color: '#475569' }}>Available balance</p>
               <Link href="/wallet"
@@ -246,7 +247,7 @@ export default function DashboardPage() {
                       </div>
                       <span className="text-xs font-bold flex-shrink-0"
                         style={{ color: t.type === 'deposit' ? '#4ade80' : '#f87171' }}>
-                        {t.type === 'deposit' ? '+' : '-'}KSH {parseFloat(t.amount).toLocaleString()}
+                        {t.type === 'deposit' ? '+' : '-'}{fmtMtc(t.amount)}
                       </span>
                     </div>
                   ))}
@@ -295,11 +296,11 @@ export default function DashboardPage() {
                 <div className="flex items-center justify-between mb-3">
                   <h2 className="font-bold text-sm sm:text-base" style={{ color: '#f0f4ff' }}>🎁 Refer &amp; Earn</h2>
                   <span className="text-[10px] font-bold px-2 py-0.5 rounded" style={{ backgroundColor: 'rgba(74,222,128,0.1)', color: '#4ade80' }}>
-                    KSH 20 / purchase
+                    2 MTC / purchase
                   </span>
                 </div>
                 <p className="text-xs leading-relaxed mb-3" style={{ color: '#64748b' }}>
-                  Share your link — when someone signs up and buys a panel, you get KSH 20 in your wallet.
+                  Share your link — when someone signs up and buys a panel, you get 2 MTC (KSH 20) in your wallet.
                 </p>
                 <div className="grid grid-cols-2 gap-2 mb-3">
                   <div className="p-2.5 rounded-xl" style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a' }}>
@@ -308,7 +309,7 @@ export default function DashboardPage() {
                   </div>
                   <div className="p-2.5 rounded-xl" style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a' }}>
                     <p className="text-[10px] uppercase tracking-wide" style={{ color: '#475569' }}>Earned</p>
-                    <p className="text-sm font-bold" style={{ color: '#fbbf24' }}>KSH {Number(referral.total_earned).toLocaleString()}</p>
+                    <p className="text-sm font-bold" style={{ color: '#fbbf24' }}>{fmtMtc(referral.total_earned)}</p>
                   </div>
                 </div>
                 <div className="flex gap-2 mb-2">

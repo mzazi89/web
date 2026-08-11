@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { fmtMtc, fmtMtcValue, mtcToKsh } from '@/lib/currency';
 
 export default function AdminVouchers() {
   const [vouchers, setVouchers] = useState([]);
@@ -47,7 +48,7 @@ export default function AdminVouchers() {
       });
       const data = await res.json();
       if (res.ok) {
-        setMessage({ type: 'success', text: `Voucher ${code.trim().toUpperCase()} activated for KSH ${parseFloat(amount).toLocaleString()}` });
+        setMessage({ type: 'success', text: `Voucher ${code.trim().toUpperCase()} activated for ${fmtMtc(amount)}` });
         setCode('');
         setAmount('');
         loadVouchers();
@@ -135,7 +136,7 @@ export default function AdminVouchers() {
                 <p className="mt-1 text-xs" style={{ color: '#374151' }}>{code.length}/6 characters</p>
               </div>
               <div>
-                <label className="block text-xs mb-1.5" style={{ color: '#64748b' }}>Amount (KSH)</label>
+                <label className="block text-xs mb-1.5" style={{ color: '#64748b' }}>Amount (MTC)</label>
                 <input
                   type="number"
                   min="1"
@@ -165,7 +166,7 @@ export default function AdminVouchers() {
 
             <div className="mt-6 p-3 rounded-xl text-xs" style={{ backgroundColor: 'rgba(74,222,128,0.06)', border: '1px solid rgba(74,222,128,0.15)', color: '#64748b', lineHeight: 1.6 }}>
               <span style={{ color: '#4ade80', fontWeight: 600 }}>How it works:</span><br />
-              Enter any 6-character code (letters/numbers), set the KSH amount, then click Activate Code. The code is immediately usable by one member to credit their wallet.
+              Enter any 6-character code (letters/numbers), set the amount in MTC, then click Activate Code. The code is immediately usable by one member to credit their wallet.
             </div>
           </div>
 
@@ -183,7 +184,7 @@ export default function AdminVouchers() {
             ))}
             <div className="sm:col-span-3 rounded-2xl p-5" style={{ backgroundColor: '#0f1117', border: '1px solid #1e2030' }}>
               <div className="text-2xl font-extrabold mb-1" style={{ color: '#a78bfa' }}>
-                KSH {vouchers.filter(v => v.status === 'used').reduce((s, v) => s + parseFloat(v.amount), 0).toLocaleString()}
+                {fmtMtc(vouchers.filter(v => v.status === 'used').reduce((s, v) => s + parseFloat(v.amount), 0))}
               </div>
               <div className="text-xs" style={{ color: '#64748b' }}>Total redeemed via vouchers</div>
             </div>
@@ -218,7 +219,7 @@ export default function AdminVouchers() {
                         <span className="font-mono font-bold text-sm tracking-widest" style={{ color: '#f0f4ff' }}>{v.code}</span>
                       </td>
                       <td className="px-5 py-4 text-sm font-semibold" style={{ color: '#4ade80' }}>
-                        KSH {parseFloat(v.amount).toLocaleString()}
+                        {fmtMtc(v.amount)}
                       </td>
                       <td className="px-5 py-4">
                         <span className="text-xs px-2 py-0.5 rounded-full font-medium"

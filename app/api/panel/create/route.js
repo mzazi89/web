@@ -61,7 +61,7 @@ export async function POST(request) {
 
     if (balance < parseFloat(pkg.price)) {
       return NextResponse.json({
-        error: `Insufficient wallet balance. You need KSH ${pkg.price} but have KSH ${balance.toFixed(2)}. Please top up your wallet.`,
+        error: `Insufficient wallet balance. You need ${(parseFloat(pkg.price) / 10).toLocaleString()} MTC but have ${(balance / 10).toFixed(2)} MTC. Please top up your wallet.`,
         need_topup: true,
       }, { status: 402 });
     }
