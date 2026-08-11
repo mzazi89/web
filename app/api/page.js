@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { neon } from '@neondatabase/serverless';
+import ApiTester from '@/components/api/ApiTester';
 
 export const dynamic = 'force-dynamic';
 
@@ -106,6 +107,22 @@ export default async function ApiLanding() {
               </pre>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* ── Try the API ── */}
+      <section className="container-site py-16">
+        <div className="text-center mb-8">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-2">
+            <span className="gradient-text">Try It Right Now</span>
+          </h2>
+          <p className="text-sm" style={{ color: '#94a3b8' }}>
+            Enter a song name and hit send. API key is <strong style={{ color: '#4ade80' }}>optional</strong> —
+            without one you'll see the JSON error, with one you get live results.
+          </p>
+        </div>
+        <div className="max-w-3xl mx-auto">
+          <ApiTester />
         </div>
       </section>
 

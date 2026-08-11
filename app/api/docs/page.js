@@ -1,8 +1,7 @@
 'use client';
-import { useState } from 'react';
 import Link from 'next/link';
 import CodeBlock from '@/components/api/CodeBlock';
-import CopyButton from '@/components/api/CopyButton';
+import ApiTester from '@/components/api/ApiTester';
 
 const BASE_URL = typeof window !== 'undefined'
   ? window.location.origin
@@ -59,31 +58,6 @@ function Section({ id, title, children }) {
 }
 
 export default function ApiDocs() {
-  const [tester, setTester] = useState({ key: '', query: 'Faded Alan Walker' });
-  const [testResult, setTestResult] = useState(null);
-  const [testing, setTesting] = useState(false);
-
-  const runTest = async () => {
-    setTesting(true);
-    setTestResult(null);
-    const started = Date.now();
-    const url = `${BASE_URL}/api/download/play?query=${encodeURIComponent(tester.query)}&apikey=${encodeURIComponent(tester.key)}`;
-    try {
-      const res = await fetch(url);
-      const json = await res.json();
-      setTestResult({
-        url,
-        status: res.status,
-        ok: res.ok,
-        ms: Date.now() - started,
-        body: JSON.stringify(json, null, 2),
-      });
-    } catch (e) {
-      setTestResult({ url, status: 0, ok: false, ms: Date.now() - started, body: `Network error: ${e.message}` });
-    }
-    setTesting(false);
-  };
-
   return (
     <div className="container-site py-12" style={{ minHeight: '70vh' }}>
       <div className="mb-8">
@@ -332,61 +306,12 @@ echo $data["result"]["title"]; // Faded - Alan Walker`} />
 
           {/* ── Live tester ── */}
           <Section id="tester" title="Live API Tester">
-            <div className="card p-6">
-              <p className="text-sm mb-4" style={{ color: '#94a3b8' }}>
-                Try the real endpoint right here — enter your API key and a query, then hit
-                <strong style={{ color: '#f0f4ff' }}> SEND REQUEST</strong>.
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-                <div>
-                  <label className="block text-xs font-bold mb-1.5 uppercase tracking-wide" style={{ color: '#64748b' }}>API Key</label>
-                  <input
-                    value={tester.key}
-                    onChange={e => setTester(t => ({ ...t, key: e.target.value }))}
-                    placeholder="mzazi_..."
-                    className="w-full px-3 py-2.5 rounded-lg text-sm font-mono outline-none"
-                    style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a', color: '#f0f4ff' }}
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold mb-1.5 uppercase tracking-wide" style={{ color: '#64748b' }}>Query</label>
-                  <input
-                    value={tester.query}
-                    onChange={e => setTester(t => ({ ...t, query: e.target.value }))}
-                    placeholder="e.g. Faded Alan Walker"
-                    className="w-full px-3 py-2.5 rounded-lg text-sm outline-none"
-                    style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a', color: '#f0f4ff' }}
-                  />
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <button onClick={runTest} disabled={testing}
-                  className="px-5 py-2.5 rounded-lg text-sm font-bold text-white transition-all"
-                  style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', opacity: testing ? 0.6 : 1, cursor: testing ? 'not-allowed' : 'pointer' }}>
-                  {testing ? 'SENDING…' : 'SEND REQUEST'}
-                </button>
-                <span className="text-xs font-mono" style={{ color: '#64748b' }}>
-                  {BASE_URL}/api/download/play
-                </span>
-              </div>
-
-              {testResult && (
-                <div className="mt-5 space-y-3">
-                  <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
-                    <span className="px-2 py-1 rounded font-bold" style={{
-                      backgroundColor: testResult.ok ? 'rgba(74,222,128,0.1)' : 'rgba(248,113,113,0.1)',
-                      color: testResult.ok ? '#4ade80' : '#f87171',
-                    }}>
-                      HTTP {testResult.status}
-                    </span>
-                    <span style={{ color: '#94a3b8' }}>{testResult.ms}ms</span>
-                    <span style={{ color: '#475569' }} className="break-all">{testResult.url}</span>
-                    <CopyButton text={testResult.url} label="Copy URL" />
-                  </div>
-                  <CodeBlock label="JSON response" code={testResult.body} />
-                </div>
-              )}
-            </div>
+            <p className="text-sm mb-4" style={{ color: '#94a3b8' }}>
+              Try the real endpoint right here — enter a song name and (optionally) your API key, then hit
+              <strong style={{ color: '#f0f4ff' }}> SEND REQUEST</strong>. Without a key you'll see the
+              proper JSON error; with your key you'll get live results.
+            </p>
+            <ApiTester />
           </Section>
 
         </div>
