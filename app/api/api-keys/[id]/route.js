@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 import { requireUser } from '../../../../lib/api/web-auth';
 import { generateApiKey, hashKey } from '../../../../lib/api/utils';
+import { unstable_noStore as noStore } from 'next/cache';
 
 export const dynamic = 'force-dynamic';
 const sql = neon(process.env.DATABASE_URL);
@@ -16,6 +17,7 @@ async function ownKey(userId, id) {
 
 // PUT /api/api-keys/[id] — actions: revoke | restore | regenerate | rename
 export async function PUT(request, { params }) {
+  noStore();
   try {
     const user = await requireUser();
     const key = await ownKey(user.id, params.id);
@@ -69,6 +71,7 @@ export async function PUT(request, { params }) {
 
 // DELETE /api/api-keys/[id] — permanently delete a key
 export async function DELETE(request, { params }) {
+  noStore();
   try {
     const user = await requireUser();
     const key = await ownKey(user.id, params.id);

@@ -2,12 +2,14 @@ import { NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 import { requireAdmin } from '@/lib/api/web-auth';
 import { safeInt } from '@/lib/api/utils';
+import { unstable_noStore as noStore } from 'next/cache';
 
 export const dynamic = 'force-dynamic';
 const sql = neon(process.env.DATABASE_URL);
 
 // GET /api/admin/api/keys — all API keys (hashes never returned)
 export async function GET(request) {
+  noStore();
   try {
     await requireAdmin();
     const url = new URL(request.url);
@@ -46,6 +48,7 @@ export async function GET(request) {
 
 // PUT /api/admin/api/keys — actions: revoke | restore | delete
 export async function PUT(request) {
+  noStore();
   try {
     await requireAdmin();
     const body = await request.json();

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { neon } from '@neondatabase/serverless';
+import { unstable_noStore as noStore } from 'next/cache';
 
 export const dynamic = 'force-dynamic';
 
@@ -58,6 +59,7 @@ async function getCategories() {
 }
 
 export default async function ApiExplorer() {
+  noStore();
   const categories = await getCategories();
 
   return (

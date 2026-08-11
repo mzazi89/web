@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 import { requireAdmin } from '@/lib/api/web-auth';
 import { safeInt } from '@/lib/api/utils';
+import { unstable_noStore as noStore } from 'next/cache';
 
 export const dynamic = 'force-dynamic';
 const sql = neon(process.env.DATABASE_URL);
@@ -9,6 +10,7 @@ const sql = neon(process.env.DATABASE_URL);
 // GET /api/admin/api/requests — platform request logs (paginated, filterable)
 // ?endpoint=&status=success|failed&provider_failure=1&page=&per_page=
 export async function GET(request) {
+  noStore();
   try {
     await requireAdmin();
     const url = new URL(request.url);

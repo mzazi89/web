@@ -1,12 +1,14 @@
 import { NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 import { requireAdmin } from '@/lib/api/web-auth';
+import { unstable_noStore as noStore } from 'next/cache';
 
 export const dynamic = 'force-dynamic';
 const sql = neon(process.env.DATABASE_URL);
 
 // GET /api/admin/api/settings — configurable platform settings (rate limits)
 export async function GET() {
+  noStore();
   try {
     await requireAdmin();
     const rows = await sql`SELECT key, value, updated_at FROM api_settings ORDER BY key ASC`;
@@ -23,6 +25,7 @@ export async function GET() {
 
 // PUT /api/admin/api/settings — { key: 'rate_limit.PREMIUM', value: '20000' }
 export async function PUT(request) {
+  noStore();
   try {
     await requireAdmin();
     const body = await request.json();

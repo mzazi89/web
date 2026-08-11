@@ -1,10 +1,13 @@
 import { neon } from '@neondatabase/serverless';
+import { unstable_noStore as noStore } from 'next/cache';
 import DocsApp from '@/components/api/DocsApp';
 
 export const dynamic = 'force-dynamic';
 
 // Registry-driven documentation — every endpoint below comes from the database
 async function getEndpoints() {
+  // disable request-level caching so registry changes are always reflected
+  noStore();
   try {
     const sql = neon(process.env.DATABASE_URL);
     const [rows, prov] = await Promise.all([

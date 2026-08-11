@@ -1,12 +1,14 @@
 import { NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 import { requireAdmin } from '@/lib/api/web-auth';
+import { unstable_noStore as noStore } from 'next/cache';
 
 export const dynamic = 'force-dynamic';
 const sql = neon(process.env.DATABASE_URL);
 
 // GET /api/admin/api/users — list users with plan + API platform stats
 export async function GET(request) {
+  noStore();
   try {
     await requireAdmin();
     const url = new URL(request.url);

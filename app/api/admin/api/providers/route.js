@@ -3,12 +3,14 @@ import { neon } from '@neondatabase/serverless';
 import { requireAdmin } from '@/lib/api/web-auth';
 import { safeInt } from '@/lib/api/utils';
 import { getProvider } from '@/lib/providers';
+import { unstable_noStore as noStore } from 'next/cache';
 
 export const dynamic = 'force-dynamic';
 const sql = neon(process.env.DATABASE_URL);
 
 // GET /api/admin/api/providers — provider registry + latest health checks
 export async function GET() {
+  noStore();
   try {
     await requireAdmin();
     const rows = await sql`
@@ -30,6 +32,7 @@ export async function GET() {
 
 // PUT /api/admin/api/providers — { id, status?, base_url? }
 export async function PUT(request) {
+  noStore();
   try {
     await requireAdmin();
     const body = await request.json();
@@ -57,6 +60,7 @@ export async function PUT(request) {
 
 // POST /api/admin/api/providers — { action: 'check', id } run a live health check
 export async function POST(request) {
+  noStore();
   try {
     await requireAdmin();
     const body = await request.json();

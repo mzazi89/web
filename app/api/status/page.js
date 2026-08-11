@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { neon } from '@neondatabase/serverless';
+import { unstable_noStore as noStore } from 'next/cache';
 
 export const dynamic = 'force-dynamic';
 
@@ -55,6 +56,7 @@ async function measureDb() {
 }
 
 export default async function ApiStatus() {
+  noStore();
   const db = await measureDb();
   const { providers, activeEndpoints, avgMs, todayCount } = await getData();
 

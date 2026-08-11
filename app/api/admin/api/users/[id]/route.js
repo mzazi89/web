@@ -1,12 +1,14 @@
 import { NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 import { requireAdmin } from '@/lib/api/web-auth';
+import { unstable_noStore as noStore } from 'next/cache';
 
 export const dynamic = 'force-dynamic';
 const sql = neon(process.env.DATABASE_URL);
 
 // PUT /api/admin/api/users/[id] — actions: suspend | ban | restore | set_plan
 export async function PUT(request, { params }) {
+  noStore();
   try {
     await requireAdmin();
     const body = await request.json();

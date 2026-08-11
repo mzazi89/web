@@ -4,12 +4,14 @@ import { requireUser } from '../../../lib/api/web-auth';
 import { generateApiKey, hashKey } from '../../../lib/api/utils';
 import { getPlanLimit, getDailyUsage, todayKey } from '../../../lib/api/rate-limit';
 import { MAX_KEYS_PER_USER } from '../../../lib/api/constants';
+import { unstable_noStore as noStore } from 'next/cache';
 
 export const dynamic = 'force-dynamic';
 const sql = neon(process.env.DATABASE_URL);
 
 // GET /api/api-keys — list the current user's API keys with live usage
 export async function GET() {
+  noStore();
   try {
     const user = await requireUser();
     const rows = await sql`
@@ -60,6 +62,7 @@ export async function GET() {
 
 // POST /api/api-keys — create a new API key (full key returned exactly once)
 export async function POST(request) {
+  noStore();
   try {
     const user = await requireUser();
 

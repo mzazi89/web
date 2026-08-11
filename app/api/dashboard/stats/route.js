@@ -2,12 +2,14 @@ import { NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 import { requireUser } from '../../../../lib/api/web-auth';
 import { getPlanLimit, getDailyUsage } from '../../../../lib/api/rate-limit';
+import { unstable_noStore as noStore } from 'next/cache';
 
 export const dynamic = 'force-dynamic';
 const sql = neon(process.env.DATABASE_URL);
 
 // GET /api/dashboard/stats — real usage statistics for the logged-in user
 export async function GET() {
+  noStore();
   try {
     const user = await requireUser();
 

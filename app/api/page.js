@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { neon } from '@neondatabase/serverless';
 import ApiTester from '@/components/api/ApiTester';
+import { unstable_noStore as noStore } from 'next/cache';
 
 export const dynamic = 'force-dynamic';
 
@@ -68,6 +69,7 @@ async function getStats() {
 }
 
 export default async function ApiLanding() {
+  noStore();
   const endpoints = await getEndpoints();
   const stats = await getStats();
   const activeEndpoints = endpoints.filter(e => e.is_active);
