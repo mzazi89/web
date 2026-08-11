@@ -15,6 +15,7 @@ export default function SignupPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
+  const [referralCode, setReferralCode] = useState('');
   const router = useRouter();
 
   // Already logged in? No sign-up needed — go to the dashboard.
@@ -22,6 +23,13 @@ export default function SignupPage() {
     fetch('/api/auth/me', { cache: 'no-store' })
       .then(r => { if (r.ok) router.replace('/dashboard'); })
       .catch(() => {});
+  }, []);
+
+  // Read ?ref=CODE from the referral link
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const ref = (params.get('ref') || '').trim();
+    if (ref) setReferralCode(ref);
   }, []);
 
   const handleChange = (e) => {
@@ -49,6 +57,7 @@ export default function SignupPage() {
           lastname: formData.lastname,
           email: formData.email,
           password: formData.password,
+          referral_code: referralCode || undefined,
         }),
       });
       const data = await response.json();
@@ -90,6 +99,12 @@ export default function SignupPage() {
             </div>
             <h2 className="text-2xl font-extrabold" style={{ color: '#f0f4ff' }}>Create Account</h2>
             <p className="text-sm mt-1" style={{ color: '#64748b' }}>Join MZAZI TECH — it's free</p>
+            {referralCode && (
+              <span className="inline-block mt-3 px-3 py-1.5 rounded-full text-xs font-bold"
+                style={{ backgroundColor: 'rgba(74,222,128,0.1)', color: '#4ade80', border: '1px solid rgba(74,222,128,0.3)' }}>
+                🎁 Invited with referral code: {referralCode}
+              </span>
+            )}
           </div>
 
           {error && (

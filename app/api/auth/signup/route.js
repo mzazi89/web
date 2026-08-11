@@ -25,6 +25,22 @@ async function ensureSchema() {
   await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS lastname  VARCHAR(255) NOT NULL DEFAULT ''`;
   await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS google_id VARCHAR(255)`;
 
+  // referral system
+  await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS referral_code VARCHAR(20)`;
+  await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS referred_by INTEGER REFERENCES users(id)`;
+  await sql`CREATE UNIQUE INDEX IF NOT EXISTS idx_users_referral_code ON users(referral_code)`;
+  await sql`
+    CREATE TABLE IF NOT EXISTS referral_commissions (
+      id SERIAL PRIMARY KEY,
+      referrer_user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      referred_user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      order_id INTEGER NOT NULL UNIQUE,
+      amount NUMERIC(10, 2) NOT NULL DEFAULT 20.00,
+      status VARCHAR(20) DEFAULT 'paid',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `;
+
   // wallet table
   await sql`
     CREATE TABLE IF NOT EXISTS wallet (
@@ -69,7 +85,7 @@ async function ensureSchema() {
 
 export async function POST(request) {
   try {
-    const { firstname, lastname, email, password } = await request.json();
+    const { firstname, lastname, email, password, referral_code } = await request.json();
 
     if (!firstname || !lastname || !email || !password) {
       return NextResponse.json({ error: 'All fields are required' }, { status: 400 });
@@ -91,9 +107,21 @@ export async function POST(request) {
     const hashedPassword = await bcrypt.hash(password, 12);
     const fullname = `${firstname} ${lastname}`;
 
+    // Resolve the referrer from their referral code (if provided)
+    const { resolveReferralCode, generateReferralCode } = await import('@/lib/api/referral');
+    const referredBy = referral_code ? await resolveReferralCode(referral_code) : null;
+
+    // New user's own referral code (unique)
+    let newCode = generateReferralCode();
+    for (let attempt = 0; attempt < 5; attempt++) {
+      const clash = await sql`SELECT id FROM users WHERE referral_code = ${newCode} LIMIT 1`;
+      if (clash.length === 0) break;
+      newCode = generateReferralCode();
+    }
+
     const result = await sql`
-      INSERT INTO users (firstname, lastname, fullname, email, password)
-      VALUES (${firstname}, ${lastname}, ${fullname}, ${email}, ${hashedPassword})
+      INSERT INTO users (firstname, lastname, fullname, email, password, referral_code, referred_by)
+      VALUES (${firstname}, ${lastname}, ${fullname}, ${email}, ${hashedPassword}, ${newCode}, ${referredBy})
       RETURNING id
     `;
 

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import https from 'https';
 import { neon } from '@neondatabase/serverless';
+import { creditReferralCommission } from '@/lib/api/referral';
 
 // Add this line to force dynamic rendering
 export const dynamic = 'force-dynamic';
@@ -59,6 +60,16 @@ export async function GET(request) {
         INSERT INTO payments (reference, amount, status, paid_at) 
         VALUES (${reference}, ${verificationResponse.data.amount / 100}, 'success', NOW())
       `;
+
+      // Referral commission: credit KSH 20 to the referrer when the buyer completes a purchase
+      const orderRow = await sql`SELECT id, user_id FROM orders WHERE reference = ${reference} LIMIT 1`;
+      if (orderRow.length > 0) {
+        await creditReferralCommission({
+          orderId: orderRow[0].id,
+          buyerUserId: orderRow[0].user_id,
+          reference,
+        });
+      }
 
       return NextResponse.json({
         status: true,

@@ -10,6 +10,8 @@ export default function DashboardPage() {
   const [balance, setBalance]     = useState(0);
   const [transactions, setTxns]   = useState([]);
   const [apiStats, setApiStats]   = useState(null); // { keys, requests }
+  const [referral, setReferral]   = useState(null); // { code, link, counts }
+  const [copied, setCopied]       = useState(false);
   const [credModal, setCredModal] = useState(null); // { panel } | null
   const router = useRouter();
 
@@ -21,10 +23,17 @@ export default function DashboardPage() {
       if (res.ok) {
         const data = await res.json();
         setUser(data.user);
-        await Promise.all([fetchPanels(), fetchWallet(), fetchApiStats()]);
+        await Promise.all([fetchPanels(), fetchWallet(), fetchApiStats(), fetchReferral()]);
       } else { router.push('/login'); }
     } catch { router.push('/login'); }
     finally { setLoading(false); }
+  };
+
+  const fetchReferral = async () => {
+    try {
+      const res = await fetch('/api/referral', { cache: 'no-store' });
+      if (res.ok) setReferral(await res.json());
+    } catch {}
   };
 
   const fetchApiStats = async () => {
@@ -279,6 +288,44 @@ export default function DashboardPage() {
                 </Link>
               </div>
             </div>
+
+            {/* Referral card */}
+            {referral && (
+              <div className="rounded-2xl p-5" style={{ backgroundColor: '#0f1629', border: '1px solid rgba(74,222,128,0.25)' }}>
+                <div className="flex items-center justify-between mb-3">
+                  <h2 className="font-bold text-sm sm:text-base" style={{ color: '#f0f4ff' }}>🎁 Refer &amp; Earn</h2>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded" style={{ backgroundColor: 'rgba(74,222,128,0.1)', color: '#4ade80' }}>
+                    KSH 20 / purchase
+                  </span>
+                </div>
+                <p className="text-xs leading-relaxed mb-3" style={{ color: '#64748b' }}>
+                  Share your link — when someone signs up and buys a panel, you get KSH 20 in your wallet.
+                </p>
+                <div className="grid grid-cols-2 gap-2 mb-3">
+                  <div className="p-2.5 rounded-xl" style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a' }}>
+                    <p className="text-[10px] uppercase tracking-wide" style={{ color: '#475569' }}>Referred</p>
+                    <p className="text-sm font-bold" style={{ color: '#4ade80' }}>{referral.referred_count}</p>
+                  </div>
+                  <div className="p-2.5 rounded-xl" style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a' }}>
+                    <p className="text-[10px] uppercase tracking-wide" style={{ color: '#475569' }}>Earned</p>
+                    <p className="text-sm font-bold" style={{ color: '#fbbf24' }}>KSH {Number(referral.total_earned).toLocaleString()}</p>
+                  </div>
+                </div>
+                <div className="flex gap-2 mb-2">
+                  <code className="flex-1 px-3 py-2 rounded-lg text-xs font-mono truncate"
+                    style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a', color: '#93c5fd' }}>
+                    {referral.link}
+                  </code>
+                  <button
+                    onClick={() => { navigator.clipboard.writeText(referral.link).then(() => setCopied(true)).catch(() => {}); setTimeout(() => setCopied(false), 2000); }}
+                    className="px-3 py-2 rounded-lg text-xs font-bold"
+                    style={{ backgroundColor: 'rgba(74,222,128,0.1)', color: '#4ade80', border: '1px solid rgba(74,222,128,0.3)', cursor: 'pointer' }}>
+                    Copy
+                  </button>
+                </div>
+                <p className="text-[10px] font-mono" style={{ color: '#475569' }}>Your code: <span style={{ color: '#4ade80' }}>{referral.code}</span></p>
+              </div>
+            )}
 
             {/* Quick links */}
             <div className="rounded-2xl p-5" style={{ backgroundColor: '#0f1629', border: '1px solid #1e2d4a' }}>
