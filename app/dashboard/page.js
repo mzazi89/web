@@ -9,6 +9,7 @@ export default function DashboardPage() {
   const [panels, setPanels]       = useState([]);
   const [balance, setBalance]     = useState(0);
   const [transactions, setTxns]   = useState([]);
+  const [apiStats, setApiStats]   = useState(null); // { keys, requests }
   const [credModal, setCredModal] = useState(null); // { panel } | null
   const router = useRouter();
 
@@ -20,10 +21,21 @@ export default function DashboardPage() {
       if (res.ok) {
         const data = await res.json();
         setUser(data.user);
-        await Promise.all([fetchPanels(), fetchWallet()]);
+        await Promise.all([fetchPanels(), fetchWallet(), fetchApiStats()]);
       } else { router.push('/login'); }
     } catch { router.push('/login'); }
     finally { setLoading(false); }
+  };
+
+  const fetchApiStats = async () => {
+    try {
+      const [keysRes, statsRes] = await Promise.all([fetch('/api/api-keys'), fetch('/api/dashboard/stats')]);
+      const keys = keysRes.ok ? (await keysRes.json()).keys || [] : [];
+      const stats = statsRes.ok ? await statsRes.json() : null;
+      const activeKeys = keys.filter(k => k.status === 'active').length;
+      const totalRequests = keys.reduce((a, k) => a + (k.total_requests || 0), 0);
+      setApiStats({ keys: activeKeys, requests: totalRequests, usage: stats?.stats });
+    } catch {}
   };
 
   const fetchPanels = async () => {
@@ -57,8 +69,8 @@ export default function DashboardPage() {
   const stats = [
     { label: 'Wallet Balance', value: `KSH ${parseFloat(balance).toLocaleString()}`, icon: '💳', color: '#3b82f6', href: '/wallet' },
     { label: 'Active Panels',  value: activePanels,                                   icon: '🖥️', color: '#10b981', href: '/products' },
-    { label: 'Total Panels',   value: panels.length,                                  icon: '📊', color: '#8b5cf6', href: null },
-    { label: 'Account',        value: 'Active',                                        icon: '✅', color: '#22c55e', href: null },
+    { label: 'API Keys',       value: apiStats ? apiStats.keys : '—',                 icon: '🔑', color: '#a78bfa', href: '/api/dashboard/keys' },
+    { label: 'API Requests',   value: apiStats ? apiStats.requests.toLocaleString() : '—', icon: '📡', color: '#f472b6', href: '/api/dashboard' },
   ];
 
   return (
@@ -233,6 +245,41 @@ export default function DashboardPage() {
               )}
             </div>
 
+            {/* MZAZI API card */}
+            <div className="rounded-2xl p-5 sm:p-6" style={{ backgroundColor: '#0f1629', border: '1px solid rgba(168,85,247,0.25)' }}>
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="font-bold text-sm sm:text-base" style={{ color: '#f0f4ff' }}>🔌 MZAZI API</h2>
+                <Link href="/api/dashboard" className="text-xs" style={{ color: '#a78bfa', textDecoration: 'none' }}>Dashboard →</Link>
+              </div>
+              <p className="text-xs leading-relaxed mb-3" style={{ color: '#64748b' }}>
+                Downloads, AI, search and 200+ more endpoints — one key, one envelope.
+              </p>
+              {apiStats && apiStats.usage && (
+                <div className="grid grid-cols-2 gap-2 mb-3">
+                  <div className="p-2.5 rounded-xl" style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a' }}>
+                    <p className="text-[10px] uppercase tracking-wide" style={{ color: '#475569' }}>Today</p>
+                    <p className="text-sm font-bold" style={{ color: '#93c5fd' }}>{apiStats.usage.requests_today.toLocaleString()}</p>
+                  </div>
+                  <div className="p-2.5 rounded-xl" style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a' }}>
+                    <p className="text-[10px] uppercase tracking-wide" style={{ color: '#475569' }}>Avg ms</p>
+                    <p className="text-sm font-bold" style={{ color: '#4ade80' }}>{apiStats.usage.avg_response_ms !== null ? `${Number(apiStats.usage.avg_response_ms).toFixed(0)}ms` : '—'}</p>
+                  </div>
+                </div>
+              )}
+              <div className="grid grid-cols-2 gap-2">
+                <Link href="/api/dashboard/keys"
+                  className="px-3 py-2 rounded-xl text-xs font-semibold text-center"
+                  style={{ backgroundColor: 'rgba(168,85,247,0.1)', color: '#c084fc', border: '1px solid rgba(168,85,247,0.25)', textDecoration: 'none' }}>
+                  + API Keys
+                </Link>
+                <Link href="/api/docs"
+                  className="px-3 py-2 rounded-xl text-xs font-semibold text-center"
+                  style={{ backgroundColor: 'rgba(37,99,235,0.1)', color: '#60a5fa', border: '1px solid rgba(37,99,235,0.25)', textDecoration: 'none' }}>
+                  Docs &amp; Tester
+                </Link>
+              </div>
+            </div>
+
             {/* Quick links */}
             <div className="rounded-2xl p-5" style={{ backgroundColor: '#0f1629', border: '1px solid #1e2d4a' }}>
               <p className="text-xs font-bold uppercase tracking-wider mb-3" style={{ color: '#475569' }}>Quick Links</p>
@@ -240,6 +287,7 @@ export default function DashboardPage() {
                 {[
                   { label: 'Deploy Panel',   href: '/products', icon: '🚀' },
                   { label: 'WhatsApp Bot',   href: '/whatsapp-bot', icon: '🤖' },
+                  { label: 'MZAZI API',      href: '/api',      icon: '🔌' },
                   { label: 'Contact Support',href: '/contact',  icon: '💬' },
                 ].map(l => (
                   <Link key={l.href} href={l.href}
