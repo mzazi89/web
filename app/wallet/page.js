@@ -19,10 +19,11 @@ function downloadReceipt(t, userEmail, balance) {
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Courier+Prime:wght@400;700&display=swap');
     * { margin:0; padding:0; box-sizing:border-box; }
-    body { background:#f5f5f5; display:flex; justify-content:center; align-items:flex-start; padding:30px; font-family:'Inter',sans-serif; }
+    body { background:#f5f5f5; display:flex; justify-content:center; align-items:flex-start; padding:clamp(12px, 4vw, 30px); font-family:'Inter',sans-serif; }
     .receipt {
       background:#fff;
-      width:380px;
+      width:100%;
+      max-width:380px;
       border-radius:12px;
       box-shadow:0 4px 24px rgba(0,0,0,0.15);
       overflow:hidden;

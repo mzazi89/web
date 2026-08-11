@@ -55,7 +55,7 @@ export default function AdminTransactions() {
           ))}
         </div>
         {data?.stats && (
-          <div className="grid grid-cols-3 gap-4 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
             {[
               { label: 'Total Revenue', value: `KSH ${parseFloat(data.stats.total_revenue || 0).toLocaleString()}`, color: '#4ade80' },
               { label: 'Completed Orders', value: data.stats.completed_orders || 0, color: '#3b82f6' },

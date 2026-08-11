@@ -8,6 +8,21 @@ export const metadata = {
   title: 'MZAZI TECH INC - Technology & Automation Solutions',
   description: 'Your trusted partner for WhatsApp bots, Pterodactyl panel hosting, and automation solutions in Kenya.',
   keywords: 'pterodactyl hosting, whatsapp bot, automation, kenya, game server',
+  openGraph: {
+    title: 'MZAZI TECH INC - Technology & Automation Solutions',
+    description: 'Game panels, WhatsApp bots, wallet and the MZAZI API platform — deploy in under 2 minutes.',
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://www.mzazi.shop',
+    siteName: 'MZAZI TECH',
+    images: [{ url: 'https://www.mzazi.shop/icons/icon-512.png', width: 512, height: 512, alt: 'MZAZI TECH' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'MZAZI TECH INC',
+    description: 'Game panels, WhatsApp bots and the MZAZI API platform.',
+    images: ['https://www.mzazi.shop/icons/icon-512.png'],
+  },
   manifest: '/manifest.webmanifest',
   appleWebApp: {
     capable: true,
