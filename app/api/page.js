@@ -17,10 +17,23 @@ const CATEGORY_LABELS = {
   DOWNLOAD: 'Download',
   SEARCH: 'Search',
   AI: 'AI',
-  SOCIAL: 'Social',
-  MEDIA: 'Media',
+  'AI MUSIC': 'AI Music',
+  ANIME: 'Anime',
+  CANVAS: 'Canvas',
+  FUN: 'Fun',
+  GAMES: 'Games',
+  'IMAGE GENERATION': 'Image Generation',
   TOOLS: 'Tools',
+  MEDIA: 'Media',
+  SOCIAL: 'Social',
   UTILITY: 'Utility',
+  MOVIES: 'Movies',
+  NEWS: 'News',
+  RANDOM: 'Random',
+  STALK: 'Stalk',
+  SPORTS: 'Sports',
+  UPLOADER: 'Uploader',
+  'URL SHORTENER': 'URL Shortener',
 };
 
 async function getEndpoints() {
@@ -36,8 +49,28 @@ async function getEndpoints() {
   }
 }
 
+async function getStats() {
+  try {
+    const sql = neon(process.env.DATABASE_URL);
+    const [counts, cats] = await Promise.all([
+      sql`SELECT COUNT(*) AS total, SUM(CASE WHEN is_active THEN 1 ELSE 0 END) AS active FROM endpoints`,
+      sql`SELECT category, COUNT(*) AS total, SUM(CASE WHEN is_active THEN 1 ELSE 0 END) AS active
+          FROM endpoints WHERE is_active = true GROUP BY category ORDER BY active DESC LIMIT 12`,
+    ]);
+    return {
+      total: parseInt(counts[0].total, 10) || 0,
+      active: parseInt(counts[0].active, 10) || 0,
+      categories: cats,
+    };
+  } catch {
+    return { total: 0, active: 0, categories: [] };
+  }
+}
+
 export default async function ApiLanding() {
   const endpoints = await getEndpoints();
+  const stats = await getStats();
+  const activeEndpoints = endpoints.filter(e => e.is_active);
 
   return (
     <div style={{ backgroundColor: '#0a0a0f' }}>
@@ -63,18 +96,32 @@ export default async function ApiLanding() {
             <span className="gradient-text">MZAZI API</span>
           </h1>
           <p className="text-lg sm:text-2xl font-medium mb-3" style={{ color: '#f0f4ff' }}>
-            Powerful APIs for developers
+            One API. Multiple services.
           </p>
-          <p className="text-sm sm:text-base max-w-2xl mx-auto mb-10" style={{ color: '#94a3b8' }}>
-            One platform for downloads, search, AI and utility APIs — with API key authentication,
-            usage analytics and reliable infrastructure. Built by MZAZI TECH.
+          <p className="text-sm sm:text-base max-w-2xl mx-auto mb-6" style={{ color: '#94a3b8' }}>
+            {stats.active} live endpoints across downloads, AI, search, tools, games, news and more —
+            one key, one envelope, real data. Built by MZAZI TECH.
           </p>
+          <div className="flex flex-wrap items-center justify-center gap-2 mb-10">
+            {stats.categories.map(c => (
+              <a key={c.category} href={`/api/docs#cat-${encodeURIComponent(c.category)}`}
+                className="px-3 py-1.5 rounded-full text-xs font-semibold"
+                style={{ color: '#60a5fa', border: '1px solid rgba(37,99,235,0.25)', backgroundColor: 'rgba(37,99,235,0.06)', textDecoration: 'none' }}>
+                {CATEGORY_LABELS[c.category] || c.category} · {parseInt(c.active, 10) || 0}
+              </a>
+            ))}
+          </div>
 
           <div className="flex flex-wrap items-center justify-center gap-3">
             <Link href="/signup"
               className="px-6 py-3 rounded-xl font-semibold text-white transition-all hover:opacity-90"
               style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', boxShadow: '0 0 24px rgba(37,99,235,0.35)', textDecoration: 'none' }}>
               GET STARTED
+            </Link>
+            <Link href="/api/explorer"
+              className="px-6 py-3 rounded-xl font-semibold transition-all"
+              style={{ color: '#a78bfa', border: '1px solid rgba(167,139,250,0.35)', textDecoration: 'none' }}>
+              EXPLORE APIs
             </Link>
             <Link href="/api/docs"
               className="px-6 py-3 rounded-xl font-semibold transition-all"
@@ -153,13 +200,13 @@ export default async function ApiLanding() {
           </Link>
         </div>
 
-        {endpoints.length === 0 ? (
+        {activeEndpoints.length === 0 ? (
           <div className="card p-10 text-center">
             <p className="text-sm" style={{ color: '#475569' }}>Endpoint registry unavailable — run database initialization first.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {endpoints.map(e => (
+            {activeEndpoints.map(e => (
               <div key={e.path} className="card p-5"
                 style={{ opacity: e.is_active ? 1 : 0.55 }}>
                 <div className="flex items-center justify-between mb-3">
@@ -167,10 +214,9 @@ export default async function ApiLanding() {
                     style={{ backgroundColor: 'rgba(37,99,235,0.12)', color: '#60a5fa', border: '1px solid rgba(37,99,235,0.2)' }}>
                     {CATEGORY_LABELS[e.category] || e.category}
                   </span>
-                  <span className={`flex items-center gap-1.5 text-[11px] font-semibold ${e.is_active ? '' : ''}`}
-                    style={{ color: e.is_active ? '#4ade80' : '#64748b' }}>
-                    <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: e.is_active ? '#4ade80' : '#475569' }} />
-                    {e.is_active ? 'LIVE' : 'SOON'}
+                  <span className="flex items-center gap-1.5 text-[11px] font-semibold" style={{ color: '#4ade80' }}>
+                    <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: '#4ade80' }} />
+                    LIVE
                   </span>
                 </div>
                 <div className="flex items-center gap-2 mb-1.5">

@@ -10,7 +10,7 @@ export async function GET() {
   try {
     await requireAdmin();
 
-    const [totals, today, avg, keys, endpoints, plans, subs, recent] = await Promise.all([
+    const [totals, today, avg, keys, endpoints, plans, subs, recent, topEndpoints, topCategories] = await Promise.all([
       sql`
         SELECT COUNT(*) AS total,
                SUM(CASE WHEN status_code < 400 THEN 1 ELSE 0 END) AS success,
@@ -47,6 +47,18 @@ export async function GET() {
         LEFT JOIN api_keys k ON k.id = r.api_key_id
         LEFT JOIN users u ON u.id = r.user_id
         ORDER BY r.created_at DESC LIMIT 10
+      `,
+      // top endpoints (last 14 days)
+      sql`
+        SELECT endpoint, category, SUM(requests) AS cnt, AVG(total_response_time_ms::numeric / NULLIF(requests, 0)) AS avg_ms
+        FROM endpoint_usage WHERE date >= CURRENT_DATE - 13
+        GROUP BY endpoint, category ORDER BY cnt DESC LIMIT 8
+      `,
+      // top categories (last 14 days)
+      sql`
+        SELECT category, SUM(requests) AS cnt, SUM(failed) AS failed
+        FROM endpoint_usage WHERE date >= CURRENT_DATE - 13 AND category IS NOT NULL
+        GROUP BY category ORDER BY cnt DESC LIMIT 10
       `,
     ]);
 
@@ -87,6 +99,17 @@ export async function GET() {
         by_plan: plans.map(p => ({ plan: p.plan, count: parseInt(p.cnt, 10) })),
       },
       recent_requests: recent,
+      top_endpoints: topEndpoints.map(e => ({
+        endpoint: e.endpoint,
+        category: e.category,
+        count: parseInt(e.cnt, 10) || 0,
+        avg_response_ms: e.avg_ms ? Number(e.avg_ms) : null,
+      })),
+      top_categories: topCategories.map(c => ({
+        category: c.category,
+        count: parseInt(c.cnt, 10) || 0,
+        failed: parseInt(c.failed, 10) || 0,
+      })),
     });
   } catch (e) {
     if (e.message === 'UNAUTHORIZED') return NextResponse.json({ error: 'Authentication required' }, { status: 401 });

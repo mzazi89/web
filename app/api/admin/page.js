@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ToastProvider, useToast } from '@/components/api/Toast';
 
-const TABS = ['Overview', 'Users', 'API Keys', 'Endpoints', 'Requests', 'Rate Limits'];
+const TABS = ['Overview', 'Users', 'API Keys', 'Endpoints', 'Providers', 'Requests', 'Rate Limits'];
 
 function fmtDate(iso) {
   if (!iso) return '—';
@@ -22,6 +22,7 @@ function AdminInner() {
   const [endpoints, setEndpoints] = useState(null);
   const [requests, setRequests] = useState(null);
   const [settings, setSettings] = useState(null);
+  const [providers, setProviders] = useState(null);
   const [page, setPage] = useState(1);
   const [reqFilter, setReqFilter] = useState('all'); // all | failed | provider
   const [busy, setBusy] = useState(false);
@@ -35,18 +36,20 @@ function AdminInner() {
 
   const loadAll = useCallback(async () => {
     try {
-      const [s, u, k, e, settingsData] = await Promise.all([
+      const [s, u, k, e, settingsData, p] = await Promise.all([
         api('/api/admin/api/stats'),
         api('/api/admin/api/users?per_page=50'),
         api('/api/admin/api/keys?per_page=50'),
         api('/api/admin/api/endpoints'),
         api('/api/admin/api/settings'),
+        api('/api/admin/api/providers'),
       ]);
       setStats(s);
       setUsers(u);
       setKeys(k);
       setEndpoints(e);
       setSettings(settingsData.settings || {});
+      setProviders(p);
     } catch (err) {
       if (String(err.message).includes('401') || err.message === 'Authentication required') {
         router.replace('/admin/login');
@@ -409,6 +412,80 @@ function AdminInner() {
               </tbody>
             </table>
           </div>
+        </div>
+      )}
+
+      {tab === 'Providers' && (
+        <div className="space-y-4">
+          <div className="card overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr style={{ backgroundColor: '#0f1629', borderBottom: '1px solid #1e2d4a' }}>
+                    {['Provider', 'Base URL', 'Status', 'Avg (ms)', 'Failures', 'Last OK', 'Last error', 'Actions'].map(h => (
+                      <th key={h} className="text-left px-4 py-2.5 text-xs font-bold uppercase" style={{ color: '#64748b' }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {(providers?.providers || []).map(p => (
+                    <tr key={p.id} style={{ borderBottom: '1px solid #0f1629' }}>
+                      <td className="px-4 py-3 text-xs font-bold" style={{ color: '#f0f4ff' }}>{p.name}</td>
+                      <td className="px-4 py-3 font-mono text-[10px] break-all" style={{ color: '#64748b' }}>{p.base_url}</td>
+                      <td className="px-4 py-3">
+                        <span className="text-xs font-bold" style={{ color: p.status === 'active' ? '#4ade80' : '#f87171' }}>{p.status.toUpperCase()}</span>
+                      </td>
+                      <td className="px-4 py-3 text-xs" style={{ color: '#94a3b8' }}>{p.avg_response_ms !== null ? Number(p.avg_response_ms).toFixed(0) : '—'}</td>
+                      <td className="px-4 py-3 text-xs" style={{ color: p.total_failures > 0 ? '#f87171' : '#94a3b8' }}>{p.total_failures}/{p.total_requests}</td>
+                      <td className="px-4 py-3 text-xs" style={{ color: '#64748b' }}>{p.last_success_at ? new Date(p.last_success_at).toLocaleString() : '—'}</td>
+                      <td className="px-4 py-3 text-xs" style={{ color: p.last_error ? '#fbbf24' : '#475569' }}>{p.last_error || '—'}</td>
+                      <td className="px-4 py-3">
+                        <div className="flex gap-1.5">
+                          <button disabled={busy} onClick={() => act(async () => {
+                            const res = await fetch('/api/admin/api/providers', {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ action: 'check', id: p.id }),
+                            });
+                            const d = await res.json();
+                            if (!res.ok) throw new Error(d.error || 'Check failed');
+                            if (!d.ok) throw new Error(`Provider unreachable: ${d.error || 'no response'} (${d.ms}ms)`);
+                          }, `Health check OK (${p.name})`)}
+                            className="px-2 py-1 rounded-md text-[11px] font-semibold"
+                            style={{ border: '1px solid rgba(37,99,235,0.3)', color: '#60a5fa', cursor: 'pointer' }}>
+                            Check
+                          </button>
+                          <select defaultValue="" onChange={e => {
+                            const st = e.target.value; if (!st) return;
+                            act(async () => {
+                              const res = await fetch('/api/admin/api/providers', {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ id: p.id, status: st }),
+                              });
+                              const d = await res.json();
+                              if (!res.ok) throw new Error(d.error || 'Update failed');
+                            }, `Provider ${st}`);
+                            e.target.value = '';
+                          }}
+                            className="px-2 py-1 rounded-md text-[11px] outline-none"
+                            style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a', color: '#94a3b8' }}>
+                            <option value="">Status…</option>
+                            <option value="active">Active</option>
+                            <option value="offline">Offline</option>
+                            <option value="disabled">Disabled</option>
+                          </select>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <p className="text-xs" style={{ color: '#475569' }}>
+            Health checks run automatically on every provider call; the Check button forces a live probe.
+          </p>
         </div>
       )}
 

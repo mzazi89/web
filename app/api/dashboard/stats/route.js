@@ -52,6 +52,29 @@ export async function GET() {
       `,
     ]);
 
+    // Platform endpoint stats (registry-driven counts)
+    const [endpointStats, topEndpoints, topCategories] = await Promise.all([
+      sql`
+        SELECT COUNT(*) AS total,
+               SUM(CASE WHEN is_active THEN 1 ELSE 0 END) AS active
+        FROM endpoints
+      `,
+      sql`
+        SELECT e.endpoint, e.category, SUM(e.requests) AS cnt
+        FROM endpoint_usage e
+        WHERE e.date >= CURRENT_DATE - 13
+        GROUP BY e.endpoint, e.category
+        ORDER BY cnt DESC LIMIT 5
+      `,
+      sql`
+        SELECT e.category, SUM(e.requests) AS cnt
+        FROM endpoint_usage e
+        WHERE e.date >= CURRENT_DATE - 13 AND e.category IS NOT NULL
+        GROUP BY e.category
+        ORDER BY cnt DESC LIMIT 8
+      `,
+    ]);
+
     // Quota per active key
     const keyRows = await sql`
       SELECT id, name, key_prefix, plan FROM api_keys
@@ -101,6 +124,19 @@ export async function GET() {
       quotas,
       recent_requests: recent,
       daily_series: series,
+      endpoints: {
+        total: parseInt(endpointStats[0].total, 10) || 0,
+        active: parseInt(endpointStats[0].active, 10) || 0,
+      },
+      top_endpoints: topEndpoints.map(e => ({
+        endpoint: e.endpoint,
+        category: e.category,
+        count: parseInt(e.cnt, 10) || 0,
+      })),
+      top_categories: topCategories.map(c => ({
+        category: c.category,
+        count: parseInt(c.cnt, 10) || 0,
+      })),
     });
   } catch (e) {
     if (e.message === 'UNAUTHORIZED' || e.message === 'FORBIDDEN') {

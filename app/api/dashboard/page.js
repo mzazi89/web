@@ -83,11 +83,17 @@ export default function ApiDashboard() {
       </div>
 
       {/* Stat cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
         <StatCard label="Total Requests" value={s.total_requests.toLocaleString()} color="#60a5fa" />
         <StatCard label="Requests Today" value={s.requests_today.toLocaleString()} sub={`${s.success_today} ok · ${s.failed_today} failed`} color="#93c5fd" />
         <StatCard label="Success Rate" value={s.total_requests ? `${Math.round(s.successful_requests / s.total_requests * 100)}%` : '—'} sub={`${s.successful_requests.toLocaleString()} succeeded`} color="#4ade80" />
         <StatCard label="Avg Response" value={fmtMs(s.avg_response_ms)} sub={`${s.failed_requests.toLocaleString()} failed total`} color="#fbbf24" />
+      </div>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <StatCard label="Total Endpoints" value={data.endpoints?.total ?? '—'} sub="in registry" color="#a78bfa" />
+        <StatCard label="Active Endpoints" value={data.endpoints?.active ?? '—'} sub={<Link href="/api/explorer" style={{ color: '#60a5fa', textDecoration: 'none' }}>explore all →</Link>} color="#4ade80" />
+        <StatCard label="Top Endpoint (14d)" value={data.top_endpoints?.[0]?.endpoint || '—'} sub={data.top_endpoints?.[0] ? `${data.top_endpoints[0].count.toLocaleString()} requests` : ''} color="#f472b6" />
+        <StatCard label="Top Category" value={data.top_categories?.[0]?.category || '—'} sub={data.top_categories?.[0] ? `${data.top_categories[0].count.toLocaleString()} requests` : ''} color="#34d399" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8">

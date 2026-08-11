@@ -23,7 +23,7 @@ export async function GET() {
   }
 }
 
-// PUT /api/admin/api/endpoints — enable / disable
+// PUT /api/admin/api/endpoints — enable / disable / change provider / change upstream
 export async function PUT(request) {
   try {
     await requireAdmin();
@@ -31,13 +31,23 @@ export async function PUT(request) {
     const id = safeInt(body.id, 0);
     if (!id) return NextResponse.json({ error: 'Endpoint id required' }, { status: 400 });
 
-    const isActive = Boolean(body.is_active);
-    await sql`UPDATE endpoints SET is_active = ${isActive} WHERE id = ${id}`;
+    const sets = [];
+    if (typeof body.is_active === 'boolean') sets.push(sql`is_active = ${body.is_active}`);
+    if (typeof body.provider === 'string' && body.provider.trim()) sets.push(sql`provider = ${body.provider.trim()}`);
+    if (typeof body.upstream === 'string' && body.upstream.trim()) sets.push(sql`upstream = ${body.upstream.trim()}`);
+    if (typeof body.parameters === 'object' && body.parameters !== null) sets.push(sql`parameters = ${JSON.stringify(body.parameters)}::jsonb`);
 
-    const rows = await sql`SELECT path FROM endpoints WHERE id = ${id} LIMIT 1`;
+    if (sets.length === 0) return NextResponse.json({ error: 'Nothing to update' }, { status: 400 });
+
+    let setSql = sql`${sets[0]}`;
+    for (let i = 1; i < sets.length; i++) setSql = sql`${setSql}, ${sets[i]}`;
+    await sql`UPDATE endpoints SET ${setSql} WHERE id = ${id}`;
+
+    const rows = await sql`SELECT path, is_active FROM endpoints WHERE id = ${id} LIMIT 1`;
     return NextResponse.json({
-      message: isActive ? 'Endpoint enabled' : 'Endpoint disabled',
+      message: 'Endpoint updated',
       path: rows[0]?.path,
+      is_active: rows[0]?.is_active,
     });
   } catch (e) {
     if (e.message === 'UNAUTHORIZED') return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
