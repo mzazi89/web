@@ -1,5 +1,5 @@
 'use client';
-import { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 
 const PwaContext = createContext(null);
 
@@ -8,14 +8,17 @@ export function usePwa() {
 }
 
 // PWA provider: captures the install prompt, registers the service worker,
-// and exposes requestInstall() so any button can trigger installation.
-// Shows the floating install card when not installed.
+// and exposes requestInstall(). The install card only appears when the
+// browser actually allows installation (beforeinstallprompt fired) or on iOS
+// (where the hint is the only option).
 export default function PwaProvider({ children }) {
   const [deferred, setDeferred] = useState(null);
   const [showCard, setShowCard] = useState(false);
   const [dismissed, setDismissed] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
+  const [noPrompt, setNoPrompt] = useState(false); // install event never fired
+  const dismissedRef = useRef(false);
 
   useEffect(() => {
     const standalone = window.matchMedia('(display-mode: standalone)').matches
@@ -29,6 +32,9 @@ export default function PwaProvider({ children }) {
     const onPrompt = (e) => {
       e.preventDefault();
       setDeferred(e);
+      setNoPrompt(false);
+      // show the card only when the browser says the app is installable
+      if (!dismissedRef.current) setShowCard(true);
     };
 
     const onInstalled = () => {
@@ -44,35 +50,33 @@ export default function PwaProvider({ children }) {
       navigator.serviceWorker.register('/sw.js').catch(() => {});
     }
 
-    // Auto-show the prompt card after a moment (unless already dismissed)
-    if (!ios) {
+    // iOS: no beforeinstallprompt exists — show the Add-to-Home-Screen hint
+    if (ios) {
       const t = setTimeout(() => {
-        setShowCard(prev => {
-          const show = prev; // keep any earlier manual state
-          return show;
-        });
-        // only auto-show if nothing dismissed and event available or may still come
-        if (!dismissed) setShowCard(true);
-      }, 3000);
+        if (!dismissedRef.current) setShowCard(true);
+      }, 2500);
       return () => {
         clearTimeout(t);
         window.removeEventListener('beforeinstallprompt', onPrompt);
         window.removeEventListener('appinstalled', onInstalled);
       };
     }
-    // iOS: hint card after a delay
-    const t = setTimeout(() => { if (!dismissed) setShowCard(true); }, 2500);
     return () => {
-      clearTimeout(t);
       window.removeEventListener('beforeinstallprompt', onPrompt);
       window.removeEventListener('appinstalled', onInstalled);
     };
-  }, [dismissed]);
+  }, []);
+
+  const dismiss = useCallback(() => {
+    dismissedRef.current = true;
+    setDismissed(true);
+    setShowCard(false);
+  }, []);
 
   const requestInstall = useCallback(async () => {
     if (deferred) {
       try {
-        deferred.prompt();
+        await deferred.prompt();
         const choice = await deferred.userChoice.catch(() => null);
         if (choice && choice.outcome === 'accepted') {
           setDeferred(null);
@@ -80,15 +84,21 @@ export default function PwaProvider({ children }) {
         }
         return;
       } catch {
-        // prompt already used — fall through to showing guidance
+        // prompt() was already used or the browser rejected it
       }
       setDeferred(null);
     }
-    // iOS or no native prompt: show the hint card
+    // No native install event available: show guidance instead of doing nothing
+    setNoPrompt(true);
     setShowCard(true);
   }, [deferred]);
 
-  const value = { canInstall: Boolean(deferred), isIOS, isStandalone, requestInstall, openCard: () => setShowCard(true) };
+  const value = {
+    canInstall: Boolean(deferred),
+    isIOS,
+    isStandalone,
+    requestInstall,
+  };
 
   return (
     <PwaContext.Provider value={value}>
@@ -102,30 +112,34 @@ export default function PwaProvider({ children }) {
               <img src="/icons/icon-192.png" alt="MZAZI TECH" width={44} height={44}
                 className="rounded-xl" style={{ display: 'block' }} />
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold" style={{ color: '#f0f4ff' }}>Install MZAZI TECH App</p>
+                <p className="text-sm font-bold" style={{ color: '#f0f4ff' }}>
+                  {noPrompt ? 'Install MZAZI TECH' : 'Install MZAZI TECH App'}
+                </p>
                 <p className="text-xs mt-0.5" style={{ color: '#94a3b8' }}>
-                  {isIOS
-                    ? 'Tap the Share button, then "Add to Home Screen" to install.'
-                    : 'Add MZAZI to your home screen for faster access — no app store needed.'}
+                  {noPrompt
+                    ? 'Tap the browser menu (⋮) and choose "Install app" or "Add to Home screen".'
+                    : isIOS
+                      ? 'Tap the Share button, then "Add to Home Screen" to install.'
+                      : 'Add MZAZI to your home screen for faster access — no app store needed.'}
                 </p>
               </div>
-              <button onClick={() => setDismissed(true)} aria-label="Dismiss"
+              <button onClick={dismiss} aria-label="Dismiss"
                 className="text-sm flex-shrink-0" style={{ color: '#475569', cursor: 'pointer', background: 'none', border: 'none' }}>
                 ✕
               </button>
             </div>
             <div className="flex gap-2 mt-3">
-              {!isIOS && (
+              {!noPrompt && !isIOS && (
                 <button onClick={requestInstall}
                   className="flex-1 py-2.5 rounded-xl text-sm font-bold text-white"
                   style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', cursor: 'pointer' }}>
                   Install App
                 </button>
               )}
-              <button onClick={() => setDismissed(true)}
+              <button onClick={dismiss}
                 className="flex-1 py-2.5 rounded-xl text-sm font-semibold"
                 style={{ color: '#94a3b8', border: '1px solid #1e2d4a', cursor: 'pointer' }}>
-                Not now
+                {noPrompt ? 'Got it' : 'Not now'}
               </button>
             </div>
           </div>
