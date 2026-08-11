@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { neon } from '@neondatabase/serverless';
 import { unstable_noStore as noStore } from 'next/cache';
 import AuthSwap from '@/components/AuthSwap';
+import PwaInstallButton from '@/components/PwaInstallButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -136,6 +137,7 @@ export default async function Home() {
               style={{ backgroundColor: 'rgba(255,255,255,0.05)', color: '#f0f4ff', border: '1px solid #1e2d4a', textDecoration: 'none' }}>
               🤖 WhatsApp Bot
             </Link>
+            <PwaInstallButton />
           </div>
 
           {/* Trust strip */}

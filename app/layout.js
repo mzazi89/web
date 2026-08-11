@@ -1,7 +1,7 @@
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import TechBackground from '../components/TechBackground';
-import PwaRegister from '../components/PwaRegister';
+import PwaProvider from '../components/PwaProvider';
 import './globals.css';
 
 export const metadata = {
@@ -33,17 +33,16 @@ export default function RootLayout({ children }) {
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
       <body className="flex flex-col min-h-screen" style={{ backgroundColor: '#0a0a0f', color: '#f0f4ff' }}>
-        {/* Fixed tech background — sits behind everything */}
-        <TechBackground />
+        <PwaProvider>
+          {/* Fixed tech background — sits behind everything */}
+          <TechBackground />
 
-        <Navbar />
-        <main className="flex-grow" style={{ position: 'relative', zIndex: 1 }}>
-          {children}
-        </main>
-        <Footer />
-
-        {/* PWA install prompt (only when not installed) */}
-        <PwaRegister />
+          <Navbar />
+          <main className="flex-grow" style={{ position: 'relative', zIndex: 1 }}>
+            {children}
+          </main>
+          <Footer />
+        </PwaProvider>
       </body>
     </html>
   );
