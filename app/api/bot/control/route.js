@@ -5,6 +5,7 @@
 import { NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { neon } from '@neondatabase/serverless';
+import { ensureDatabase } from '@/lib/database';
 
 export const dynamic = 'force-dynamic';
 
@@ -26,6 +27,7 @@ function authorized(request) {
 
 export async function GET(request) {
   if (!authorized(request)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  await ensureDatabase();
   try {
     const claimed = await sql`
       UPDATE bot_control SET status = 'claimed', claimed_at = CURRENT_TIMESTAMP
@@ -45,6 +47,7 @@ export async function GET(request) {
 
 export async function POST(request) {
   if (!authorized(request)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  await ensureDatabase();
   try {
     const body = await request.json();
     if (!body || !body.id) return NextResponse.json({ error: 'id is required' }, { status: 400 });

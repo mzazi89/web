@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { neon } from '@neondatabase/serverless';
+import { ensureDatabase } from '@/lib/database';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,6 +25,7 @@ async function verifyAdmin() {
 
 export async function GET() {
   if (!(await verifyAdmin())) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  await ensureDatabase();
   try {
     const rows = await sql`
       SELECT bot_id, online, version, uptime_seconds, telegram_online, whatsapp_sessions,

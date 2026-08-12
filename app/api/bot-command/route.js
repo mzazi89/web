@@ -8,6 +8,7 @@
 import { NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { neon } from '@neondatabase/serverless';
+import { ensureDatabase } from '@/lib/database';
 import { corsHeaders, handleOptions, mergeHeaders } from '@/lib/api/cors';
 
 export const dynamic = 'force-dynamic';
@@ -51,6 +52,7 @@ export async function GET(request) {
   const preflight = handleOptions(request);
   if (preflight) return preflight;
 
+  await ensureDatabase();
   try {
     const rows = await sql`SELECT * FROM bot_commands ORDER BY name ASC`;
     const meta = await sql`SELECT MAX(updated_at) AS max FROM bot_commands`;

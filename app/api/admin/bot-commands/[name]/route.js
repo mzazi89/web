@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { neon } from '@neondatabase/serverless';
+import { ensureDatabase } from '@/lib/database';
 
 export const dynamic = 'force-dynamic';
 
@@ -26,6 +27,7 @@ const NAME_RE = /^[a-z0-9_-]{1,64}$/;
 
 export async function PUT(request, { params }) {
   if (!(await verifyAdmin())) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  await ensureDatabase();
   try {
     const name = params.name;
     const body = await request.json();
@@ -76,6 +78,7 @@ export async function PUT(request, { params }) {
 
 export async function DELETE(request, { params }) {
   if (!(await verifyAdmin())) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  await ensureDatabase();
   try {
     const del = await sql`DELETE FROM bot_commands WHERE name = ${params.name} RETURNING id`;
     if (!del.length) return NextResponse.json({ error: 'Command not found' }, { status: 404 });

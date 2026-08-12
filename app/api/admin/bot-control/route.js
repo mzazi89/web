@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { neon } from '@neondatabase/serverless';
+import { ensureDatabase } from '@/lib/database';
 
 export const dynamic = 'force-dynamic';
 
@@ -25,6 +26,7 @@ async function verifyAdmin() {
 
 export async function GET() {
   if (!(await verifyAdmin())) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  await ensureDatabase();
   try {
     const rows = await sql`
       SELECT id, action, payload, status, result, created_at, claimed_at, done_at
@@ -50,6 +52,7 @@ export async function GET() {
 
 export async function POST(request) {
   if (!(await verifyAdmin())) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  await ensureDatabase();
   try {
     const body = await request.json();
     if (!body || !ACTIONS.includes(body.action)) {

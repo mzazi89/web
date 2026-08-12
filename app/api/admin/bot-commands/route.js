@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { neon } from '@neondatabase/serverless';
+import { ensureDatabase } from '@/lib/database';
 
 export const dynamic = 'force-dynamic';
 
@@ -39,6 +40,7 @@ function validateCommand(body) {
 
 export async function GET(request) {
   if (!(await verifyAdmin())) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  await ensureDatabase();
   try {
     const { searchParams } = new URL(request.url);
     const q = (searchParams.get('q') || '').toLowerCase();
@@ -82,6 +84,7 @@ export async function GET(request) {
 
 export async function POST(request) {
   if (!(await verifyAdmin())) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  await ensureDatabase();
   try {
     const body = await request.json();
     const err = validateCommand(body);

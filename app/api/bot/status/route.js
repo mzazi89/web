@@ -4,6 +4,7 @@
 import { NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { neon } from '@neondatabase/serverless';
+import { ensureDatabase } from '@/lib/database';
 
 export const dynamic = 'force-dynamic';
 
@@ -25,6 +26,7 @@ export async function POST(request) {
   }
 
   try {
+    await ensureDatabase();
     const body = await request.json();
     const botId = body.botId || 'main';
 
