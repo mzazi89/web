@@ -53,7 +53,15 @@ export async function GET(request) {
   const preflight = handleOptions(request);
   if (preflight) return preflight;
 
-  await ensureDatabase();
+  try {
+    await ensureDatabase();
+  } catch (e) {
+    console.error('[bot-command] init error:', e?.message);
+    return NextResponse.json(
+      { ok: false, error: `init: ${e?.message || e}` },
+      { status: 500, headers: corsHeaders(request) }
+    );
+  }
   const BOT_API_KEY = (await getBotApiKey()) || ENV_BOT_API_KEY;
   try {
     const rows = await sql`SELECT * FROM bot_commands ORDER BY name ASC`;
