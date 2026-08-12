@@ -1,43 +1,33 @@
 // MZAZI API — /api/bot-command
-// Command registry served to the WhatsApp bot (and public metadata for the site).
+// Command registry served to the WhatsApp bot.
+//   GET  no auth        → public metadata only
+//   GET  Bearer key     → full payload incl. executable `code` + X-Mzazi-Signature HMAC
 //
-//   GET /api/bot-command/
-//     No auth        → public metadata only (name, aliases, description, category, usage, flags)
-//     Bearer key     → full payload including executable `code` for each enabled command
-//                      plus X-Mzazi-Signature: sha256=<hmac(body, BOT_API_KEY)> for the bot to verify.
-//
-// Commands live in data/bot-commands.json (committed to this repo). Edit that file,
-// push, and Vercel redeploys — the bot picks the changes up on its next sync.
+// The registry now lives in the Neon `bot_commands` table (admin-editable from
+// /admin/commands). It is seeded from data/bot-commands.json on first run.
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
 import crypto from 'crypto';
+import { neon } from '@neondatabase/serverless';
 import { corsHeaders, handleOptions, mergeHeaders } from '@/lib/api/cors';
 
 export const dynamic = 'force-dynamic';
 
-const REGISTRY_PATH = path.join(process.cwd(), 'data', 'bot-commands.json');
+const sql = neon(process.env.DATABASE_URL);
 const BOT_API_KEY = process.env.BOT_API_KEY || '';
 
-function loadRegistry() {
-  const raw = fs.readFileSync(REGISTRY_PATH, 'utf8');
-  return JSON.parse(raw);
-}
+const toMetadata = (r) => ({
+  name: r.name,
+  aliases: Array.isArray(r.aliases) ? r.aliases : [],
+  description: r.description || '',
+  category: r.category || 'General',
+  usage: r.usage || '',
+  ownerOnly: !!r.owner_only,
+  adminOnly: !!r.admin_only,
+  groupOnly: !!r.group_only,
+  enabled: r.enabled !== false,
+});
 
-// Public metadata — strip anything sensitive/executable
-function toMetadata(cmd) {
-  return {
-    name: cmd.name,
-    aliases: Array.isArray(cmd.aliases) ? cmd.aliases : [],
-    description: cmd.description || '',
-    category: cmd.category || 'General',
-    usage: cmd.usage || '',
-    ownerOnly: !!cmd.ownerOnly,
-    adminOnly: !!cmd.adminOnly,
-    groupOnly: !!cmd.groupOnly,
-    enabled: cmd.enabled !== false,
-  };
-}
+const toFull = (r) => ({ ...toMetadata(r), code: r.code || '' });
 
 function safeEqual(a, b) {
   const ba = Buffer.from(String(a));
@@ -62,8 +52,9 @@ export async function GET(request) {
   if (preflight) return preflight;
 
   try {
-    const registry = loadRegistry();
-    const commands = Array.isArray(registry.commands) ? registry.commands : [];
+    const rows = await sql`SELECT * FROM bot_commands ORDER BY name ASC`;
+    const meta = await sql`SELECT MAX(updated_at) AS max FROM bot_commands`;
+    const updatedAt = meta[0]?.max || new Date().toISOString();
 
     const key = clientKey(request);
     const authorized = BOT_API_KEY && safeEqual(key, BOT_API_KEY);
@@ -72,31 +63,27 @@ export async function GET(request) {
       const body = JSON.stringify({
         ok: true,
         source: 'mzazi.shop',
-        schemaVersion: registry.meta?.schemaVersion || 1,
-        updatedAt: registry.meta?.updatedAt || new Date().toISOString(),
-        commands: commands.filter((c) => c.enabled !== false),
+        schemaVersion: 1,
+        updatedAt,
+        commands: rows.filter((r) => r.enabled !== false).map(toFull),
       });
-
-      const signature = sign(body, BOT_API_KEY);
-
       return new NextResponse(body, {
         status: 200,
         headers: mergeHeaders(corsHeaders(request), {
           'Content-Type': 'application/json',
           'Cache-Control': 'no-store',
-          'X-Mzazi-Signature': `sha256=${signature}`,
+          'X-Mzazi-Signature': `sha256=${sign(body, BOT_API_KEY)}`,
         }),
       });
     }
 
-    // Public: metadata only (used by menus / command showcase)
     return NextResponse.json(
       {
         ok: true,
         source: 'mzazi.shop',
-        schemaVersion: registry.meta?.schemaVersion || 1,
-        updatedAt: registry.meta?.updatedAt || new Date().toISOString(),
-        commands: commands.map(toMetadata),
+        schemaVersion: 1,
+        updatedAt,
+        commands: rows.map(toMetadata),
       },
       { headers: mergeHeaders(corsHeaders(request), { 'Cache-Control': 'no-store' }) }
     );
