@@ -100,10 +100,75 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-16">
 
-            {/* Logo */}
-            <Link href="/" className="flex items-center gap-2.5 flex-shrink-0" style={{ textDecoration: 'none' }}>
-              <Logo size={34} withText />
-            </Link>
+            {/* Logo + mobile menu (☰ on the LEFT) */}
+            <div className="flex items-center gap-2 flex-shrink-0 relative">
+              <button
+                onClick={() => setMenuOpen(o => !o)}
+                className="lg:hidden w-10 h-10 flex flex-col items-center justify-center gap-1.5 rounded-lg"
+                style={{ border: '1px solid #1e2d4a', backgroundColor: menuOpen ? 'rgba(37,99,235,0.12)' : 'transparent' }}
+                aria-label="Menu"
+                aria-expanded={menuOpen}
+              >
+                <span className="block w-5 h-0.5 transition-all duration-300"
+                  style={{ backgroundColor: '#94a3b8', transform: menuOpen ? 'translateY(6px) rotate(45deg)' : 'none' }} />
+                <span className="block w-5 h-0.5 transition-all duration-300"
+                  style={{ backgroundColor: '#94a3b8', opacity: menuOpen ? 0 : 1 }} />
+                <span className="block w-5 h-0.5 transition-all duration-300"
+                  style={{ backgroundColor: '#94a3b8', transform: menuOpen ? 'translateY(-6px) rotate(-45deg)' : 'none' }} />
+              </button>
+              <Link href="/" className="flex items-center gap-2.5" style={{ textDecoration: 'none' }}>
+                <Logo size={34} withText />
+              </Link>
+
+              {/* ── Mobile portrait dropdown (left-aligned under the ☰ button) ── */}
+              {menuOpen && (
+                <div className="absolute left-0 top-14 w-64 rounded-2xl p-2 z-50 lg:hidden max-h-[70vh] overflow-y-auto"
+                  style={{ backgroundColor: '#0d1117', border: '1px solid #1e2d4a', boxShadow: '0 10px 34px rgba(0,0,0,0.55)' }}>
+                  <div className="px-3 py-2 mb-1 text-[10px] font-bold uppercase tracking-wider" style={{ color: '#475569' }}>
+                    Menu
+                  </div>
+                  {NAV_LINKS.map(l => (
+                    <Link key={l.href} href={l.href}
+                      className="flex items-center px-3 py-2.5 rounded-lg text-sm font-medium"
+                      style={{
+                        color: isActive(l.href) ? '#60a5fa' : '#94a3b8',
+                        backgroundColor: isActive(l.href) ? 'rgba(37,99,235,0.12)' : 'transparent',
+                        textDecoration: 'none',
+                      }}>
+                      {l.label}
+                    </Link>
+                  ))}
+                  <div className="pt-2 mt-1 border-t" style={{ borderColor: '#1e2d4a' }}>
+                    {user ? (
+                      <div className="space-y-1.5">
+                        <div className="px-3 py-2.5 rounded-lg" style={{ backgroundColor: '#0f1629', border: '1px solid #1e2d4a' }}>
+                          <p className="text-sm font-semibold truncate" style={{ color: '#f0f4ff' }}>
+                            {user.firstname ? `${user.firstname} ${user.lastname || ''}`.trim() : user.email}
+                          </p>
+                          <p className="text-xs truncate" style={{ color: '#475569' }}>{user.email}</p>
+                        </div>
+                        <Link href="/dashboard" className="flex items-center px-3 py-2.5 rounded-lg text-sm font-medium"
+                          style={{ color: '#94a3b8', textDecoration: 'none' }}>📊 Dashboard</Link>
+                        <Link href="/wallet" className="flex items-center px-3 py-2.5 rounded-lg text-sm font-medium"
+                          style={{ color: '#60a5fa', textDecoration: 'none' }}>💳 Wallet · {walletBalance !== null ? fmtMtc(walletBalance) : '—'}</Link>
+                        <button onClick={handleLogout}
+                          className="w-full flex items-center px-3 py-2.5 rounded-lg text-sm font-medium"
+                          style={{ color: '#f87171', background: 'transparent', border: 'none', textAlign: 'left', cursor: 'pointer' }}>
+                          🚪 Logout
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col gap-1.5 pt-1">
+                        <Link href="/login" className="flex items-center justify-center px-3 py-2.5 rounded-lg text-sm font-semibold"
+                          style={{ color: '#94a3b8', border: '1px solid #1e2d4a', textDecoration: 'none' }}>Log In</Link>
+                        <Link href="/signup" className="flex items-center justify-center px-3 py-2.5 rounded-lg text-sm font-semibold text-white"
+                          style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', textDecoration: 'none' }}>Get Started — Free</Link>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
 
             {/* Desktop nav links */}
             <div className="hidden lg:flex items-center gap-1">
@@ -223,90 +288,6 @@ export default function Navbar() {
                   style={{ backgroundColor: 'rgba(37,99,235,0.1)', color: '#60a5fa', border: '1px solid rgba(37,99,235,0.2)', textDecoration: 'none' }}>
                   💳 {fmtMtc(walletBalance)}
                 </Link>
-              )}
-              <button
-                onClick={() => setMenuOpen(o => !o)}
-                className="w-10 h-10 flex flex-col items-center justify-center gap-1.5 rounded-lg"
-                style={{ border: '1px solid #1e2d4a' }}
-                aria-label="Toggle menu"
-              >
-                <span className="block w-5 h-0.5 transition-all duration-300"
-                  style={{ backgroundColor: '#94a3b8', transform: menuOpen ? 'translateY(6px) rotate(45deg)' : 'none' }} />
-                <span className="block w-5 h-0.5 transition-all duration-300"
-                  style={{ backgroundColor: '#94a3b8', opacity: menuOpen ? 0 : 1 }} />
-                <span className="block w-5 h-0.5 transition-all duration-300"
-                  style={{ backgroundColor: '#94a3b8', transform: menuOpen ? 'translateY(-6px) rotate(-45deg)' : 'none' }} />
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* ── Mobile menu dropdown ── */}
-        <div
-          className="lg:hidden overflow-hidden transition-all duration-300"
-          style={{
-            maxHeight: menuOpen ? '600px' : '0',
-            borderTop: menuOpen ? '1px solid #1e2d4a' : 'none',
-          }}
-        >
-          <div className="px-4 py-4 space-y-1" style={{ backgroundColor: 'rgba(10,10,15,0.72)' }}>
-            {NAV_LINKS.map(l => (
-              <Link key={l.href} href={l.href}
-                className="flex items-center px-4 py-3 rounded-xl text-sm font-medium transition-all"
-                style={{
-                  color: isActive(l.href) ? '#3b82f6' : '#94a3b8',
-                  backgroundColor: isActive(l.href) ? 'rgba(37,99,235,0.1)' : 'transparent',
-                }}>
-                {l.label}
-              </Link>
-            ))}
-
-            <div className="pt-3 border-t" style={{ borderColor: '#1e2d4a' }}>
-              {user ? (
-                <div className="space-y-2">
-                  {/* User info */}
-                  <div className="flex items-center gap-3 px-4 py-3 rounded-xl"
-                    style={{ backgroundColor: '#0f1629', border: '1px solid #1e2d4a' }}>
-                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold"
-                      style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', color: '#fff' }}>
-                      {(user.firstname || user.email || 'U')[0].toUpperCase()}
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold" style={{ color: '#f0f4ff' }}>
-                        {user.firstname ? `${user.firstname} ${user.lastname || ''}`.trim() : user.email}
-                      </p>
-                      <p className="text-xs" style={{ color: '#475569' }}>{user.email}</p>
-                    </div>
-                  </div>
-                  <Link href="/dashboard"
-                    className="flex items-center px-4 py-3 rounded-xl text-sm font-medium"
-                    style={{ color: '#94a3b8', backgroundColor: '#0f1629', border: '1px solid #1e2d4a', textDecoration: 'none' }}>
-                    📊 Dashboard
-                  </Link>
-                  <Link href="/wallet"
-                    className="flex items-center px-4 py-3 rounded-xl text-sm font-medium"
-                    style={{ color: '#60a5fa', backgroundColor: 'rgba(37,99,235,0.08)', border: '1px solid rgba(37,99,235,0.2)', textDecoration: 'none' }}>
-                    💳 Wallet · {walletBalance !== null ? fmtMtc(walletBalance) : '—'}
-                  </Link>
-                  <button onClick={handleLogout}
-                    className="w-full flex items-center px-4 py-3 rounded-xl text-sm font-medium"
-                    style={{ color: '#f87171', backgroundColor: 'rgba(248,113,113,0.06)', border: '1px solid rgba(248,113,113,0.15)' }}>
-                    🚪 Logout
-                  </button>
-                </div>
-              ) : (
-                <div className="flex flex-col gap-2">
-                  <Link href="/login"
-                    className="flex items-center justify-center px-4 py-3 rounded-xl text-sm font-semibold"
-                    style={{ color: '#94a3b8', border: '1px solid #1e2d4a', textDecoration: 'none' }}>
-                    Log In
-                  </Link>
-                  <Link href="/signup"
-                    className="flex items-center justify-center px-4 py-3 rounded-xl text-sm font-semibold text-white"
-                    style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', textDecoration: 'none' }}>
-                    Get Started — Free
-                  </Link>
-                </div>
               )}
             </div>
           </div>
