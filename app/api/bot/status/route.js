@@ -22,13 +22,13 @@ function safeEqual(a, b) {
 export async function POST(request) {
   const auth = request.headers.get('authorization') || '';
   const key = auth.startsWith('Bearer ') ? auth.slice(7).trim() : '';
+  await ensureDatabase();
+  const BOT_API_KEY = (await getBotApiKey()) || ENV_BOT_API_KEY;
   if (!BOT_API_KEY || !safeEqual(key, BOT_API_KEY)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
-    await ensureDatabase();
-    const BOT_API_KEY = (await getBotApiKey()) || ENV_BOT_API_KEY;
     const body = await request.json();
     const botId = body.botId || 'main';
 

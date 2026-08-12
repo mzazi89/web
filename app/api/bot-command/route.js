@@ -54,6 +54,7 @@ export async function GET(request) {
   if (preflight) return preflight;
 
   await ensureDatabase();
+  const BOT_API_KEY = (await getBotApiKey()) || ENV_BOT_API_KEY;
   try {
     const rows = await sql`SELECT * FROM bot_commands ORDER BY name ASC`;
     const meta = await sql`SELECT MAX(updated_at) AS max FROM bot_commands`;
