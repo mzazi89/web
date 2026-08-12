@@ -5,11 +5,12 @@ import { NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { neon } from '@neondatabase/serverless';
 import { ensureDatabase } from '@/lib/database';
+import { getBotApiKey } from '@/lib/botKey';
 
 export const dynamic = 'force-dynamic';
 
 const sql = neon(process.env.DATABASE_URL);
-const BOT_API_KEY = process.env.BOT_API_KEY || '';
+const ENV_BOT_API_KEY = process.env.BOT_API_KEY || '';
 
 function safeEqual(a, b) {
   const ba = Buffer.from(String(a));
@@ -27,6 +28,7 @@ export async function POST(request) {
 
   try {
     await ensureDatabase();
+    const BOT_API_KEY = (await getBotApiKey()) || ENV_BOT_API_KEY;
     const body = await request.json();
     const botId = body.botId || 'main';
 

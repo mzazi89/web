@@ -6,11 +6,12 @@ import { NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { neon } from '@neondatabase/serverless';
 import { ensureDatabase } from '@/lib/database';
+import { getBotApiKey } from '@/lib/botKey';
 
 export const dynamic = 'force-dynamic';
 
 const sql = neon(process.env.DATABASE_URL);
-const BOT_API_KEY = process.env.BOT_API_KEY || '';
+const ENV_BOT_API_KEY = process.env.BOT_API_KEY || '';
 
 function safeEqual(a, b) {
   const ba = Buffer.from(String(a));
@@ -19,14 +20,15 @@ function safeEqual(a, b) {
   return crypto.timingSafeEqual(ba, bb);
 }
 
-function authorized(request) {
+async function authorized(request) {
   const auth = request.headers.get('authorization') || '';
   const key = auth.startsWith('Bearer ') ? auth.slice(7).trim() : '';
+  const BOT_API_KEY = (await getBotApiKey()) || ENV_BOT_API_KEY;
   return BOT_API_KEY && safeEqual(key, BOT_API_KEY);
 }
 
 export async function GET(request) {
-  if (!authorized(request)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!(await authorized(request))) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   await ensureDatabase();
   try {
     const claimed = await sql`
@@ -46,7 +48,7 @@ export async function GET(request) {
 }
 
 export async function POST(request) {
-  if (!authorized(request)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!(await authorized(request))) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   await ensureDatabase();
   try {
     const body = await request.json();

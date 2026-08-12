@@ -9,12 +9,13 @@ import { NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { neon } from '@neondatabase/serverless';
 import { ensureDatabase } from '@/lib/database';
+import { getBotApiKey } from '@/lib/botKey';
 import { corsHeaders, handleOptions, mergeHeaders } from '@/lib/api/cors';
 
 export const dynamic = 'force-dynamic';
 
 const sql = neon(process.env.DATABASE_URL);
-const BOT_API_KEY = process.env.BOT_API_KEY || '';
+const ENV_BOT_API_KEY = process.env.BOT_API_KEY || '';
 
 const toMetadata = (r) => ({
   name: r.name,

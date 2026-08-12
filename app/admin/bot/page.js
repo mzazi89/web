@@ -52,6 +52,8 @@ function fmtUptime(s) {
 export default function BotControlPage() {
   const [status, setStatus] = useState(null);
   const [controls, setControls] = useState([]);
+  const [apiKeyCfg, setApiKeyCfg] = useState({ configured: false, key: '' });
+  const [apiKeyInput, setApiKeyInput] = useState('');
   const [msg, setMsg] = useState('');
   const [botName, setBotName] = useState('');
   const [busy, setBusy] = useState(false);
@@ -59,9 +61,10 @@ export default function BotControlPage() {
 
   const load = useCallback(async () => {
     try {
-      const [sRes, cRes] = await Promise.all([
+      const [sRes, cRes, kRes] = await Promise.all([
         fetch('/api/admin/bot-status'),
         fetch('/api/admin/bot-control'),
+        fetch('/api/admin/bot-config'),
       ]);
       if (sRes.ok) {
         const s = await sRes.json();
@@ -71,6 +74,10 @@ export default function BotControlPage() {
         const c = await cRes.json();
         setControls(c.controls || []);
       }
+      if (kRes.ok) {
+        const k = await kRes.json();
+        setApiKeyCfg({ configured: !!k.configured, key: k.key || '' });
+      }
     } catch {}
   }, []);
 
@@ -79,6 +86,29 @@ export default function BotControlPage() {
     const t = setInterval(load, 10000);
     return () => clearInterval(t);
   }, [load]);
+
+  const saveApiKey = async () => {
+    if (!apiKeyInput.trim()) return;
+    setBusy(true);
+    setNotice('');
+    try {
+      const res = await fetch('/api/admin/bot-config', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key: apiKeyInput.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to save key');
+      setApiKeyCfg({ configured: true, key: apiKeyInput.trim() });
+      setApiKeyInput('');
+      setNotice(`🔑 Bot API key saved. The bot will authenticate on its next sync (or restart the bot to apply immediately).`);
+      load();
+    } catch (e) {
+      setNotice(`❌ ${e.message}`);
+    } finally {
+      setBusy(false);
+    }
+  };
 
   const issue = async (action, payload = {}, successMsg) => {
     setBusy(true);
@@ -144,6 +174,35 @@ export default function BotControlPage() {
         <div style={{ marginTop: 14, fontSize: 13, color: '#64748b' }}>
           Last command sync: {status?.lastSyncAt ? new Date(status.lastSyncAt).toLocaleString() : 'never'}
           {status?.lastSyncError && <span style={{ color: '#f87171' }}> — ⚠️ {status.lastSyncError}</span>}
+        </div>
+      </div>
+
+      {/* Bot API key */}
+      <div style={{ ...card, marginBottom: 20 }}>
+        <h3 style={{ color: '#f1f5f9', fontSize: 15, fontWeight: 700, marginBottom: 4 }}>🔑 Bot API Key</h3>
+        <p style={{ color: '#64748b', fontSize: 13, marginBottom: 12 }}>
+          Shared secret between the website and the bot. {apiKeyCfg.configured
+            ? <span style={{ color: '#4ade80', fontWeight: 600 }}>✓ configured</span>
+            : <span style={{ color: '#f87171', fontWeight: 600 }}>⚠ not set — the bot cannot download its commands!</span>}
+        </p>
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
+          <input
+            value={apiKeyInput}
+            onChange={(e) => setApiKeyInput(e.target.value)}
+            placeholder={apiKeyCfg.configured ? 'Type a new key to replace…' : 'Paste the BOT_API_KEY from your bot\'s .env'}
+            style={{ ...inputStyle, maxWidth: 380 }}
+          />
+          <button onClick={saveApiKey} disabled={busy || !apiKeyInput.trim()} style={{ ...btnPrimary, opacity: busy || !apiKeyInput.trim() ? 0.5 : 1 }}>
+            {busy ? 'Saving…' : 'Save Key'}
+          </button>
+          {apiKeyCfg.configured && (
+            <button
+              onClick={() => { navigator.clipboard.writeText(apiKeyCfg.key); setNotice('🔑 Key copied — paste it into the bot\'s .env if needed.'); }}
+              style={btnGhost}
+            >
+              Copy key
+            </button>
+          )}
         </div>
       </div>
 
