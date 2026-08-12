@@ -82,7 +82,7 @@ export default function CommandsPage() {
     setForm(EMPTY);
     setModal({ mode: 'add' });
   };
-  const openEdit = (cmd) => {
+  const openEdit = async (cmd) => {
     setForm({
       name: cmd.name,
       aliases: (cmd.aliases || []).join(', '),
@@ -95,7 +95,26 @@ export default function CommandsPage() {
       enabled: cmd.enabled,
       code: '',
     });
-    setModal({ mode: 'edit', name: cmd.name });
+    setModal({ mode: 'edit', name: cmd.name, loadingCode: true });
+    try {
+      const res = await fetch(`/api/admin/bot-commands/${encodeURIComponent(cmd.name)}`);
+      const data = await res.json();
+      if (res.ok && data.command) {
+        setForm((f) => ({
+          ...f,
+          aliases: (data.command.aliases || []).join(', '),
+          description: data.command.description || '',
+          category: data.command.category || 'General',
+          usage: data.command.usage || '',
+          ownerOnly: data.command.ownerOnly,
+          adminOnly: data.command.adminOnly,
+          groupOnly: data.command.groupOnly,
+          enabled: data.command.enabled !== false,
+          code: data.command.code || '',
+        }));
+      }
+    } catch {}
+    setModal((m) => ({ ...m, loadingCode: false }));
   };
 
   const save = async () => {
@@ -296,13 +315,14 @@ export default function CommandsPage() {
             </div>
 
             <label style={{ color: '#94a3b8', fontSize: 12, marginBottom: 4, display: 'block' }}>
-              Handler code {modal.mode === 'edit' && <span style={{ color: '#475569' }}>— paste the full updated code</span>}
+              Handler code {modal.mode === 'edit' && <span style={{ color: '#475569' }}>— the command's current code is loaded, edit as needed</span>}
             </label>
             <textarea
-              value={form.code}
+              value={modal.loadingCode ? 'Loading current code…' : form.code}
               onChange={(e) => setForm({ ...form, code: e.target.value })}
               rows={10}
-              placeholder={'await mzazireply(\'Hello from the website! 🎉\');'}
+              placeholder={modal.mode === 'edit' ? '// loading…' : "await mzazireply('Hello from the website! 🎉');"}
+              readOnly={!!modal.loadingCode}
               style={{ ...inputStyle, fontFamily: 'monospace', fontSize: 13, marginBottom: 16, resize: 'vertical' }}
             />
 

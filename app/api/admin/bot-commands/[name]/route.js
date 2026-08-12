@@ -25,6 +25,36 @@ async function verifyAdmin() {
 
 const NAME_RE = /^[a-z0-9_-]{1,64}$/;
 
+export async function GET(request, { params }) {
+  if (!(await verifyAdmin())) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  try {
+    await ensureDatabase();
+    const rows = await sql`
+      SELECT name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code, updated_at
+      FROM bot_commands WHERE name = ${params.name}
+    `;
+    if (!rows.length) return NextResponse.json({ error: 'Command not found' }, { status: 404 });
+    const r = rows[0];
+    return NextResponse.json({
+      command: {
+        name: r.name,
+        aliases: Array.isArray(r.aliases) ? r.aliases : [],
+        description: r.description || '',
+        category: r.category || 'General',
+        usage: r.usage || '',
+        ownerOnly: !!r.owner_only,
+        adminOnly: !!r.admin_only,
+        groupOnly: !!r.group_only,
+        enabled: r.enabled !== false,
+        code: r.code || '',
+      },
+    });
+  } catch (error) {
+    console.error('Admin bot-command get error:', error);
+    return NextResponse.json({ error: 'Failed to fetch command' }, { status: 500 });
+  }
+}
+
 export async function PUT(request, { params }) {
   if (!(await verifyAdmin())) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   await ensureDatabase();
