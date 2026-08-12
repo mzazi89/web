@@ -207,7 +207,7 @@ export default function AdminPackages() {
             <h2 className="text-lg font-bold mb-6" style={{ color: '#f0f4ff' }}>{modal === 'add' ? 'Add Package' : 'Edit Package'}</h2>
             {error && <div className="mb-4 p-3 rounded-xl text-sm" style={{ backgroundColor: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: '#f87171' }}>{error}</div>}
             <form onSubmit={handleSave} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="col-span-2">
                   <label style={labelStyle}>Package Name</label>
                   <input style={inputStyle} required value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="e.g. Pro" />

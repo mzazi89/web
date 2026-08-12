@@ -136,7 +136,7 @@ export default function BotControlPage() {
   const statusColor = online ? '#4ade80' : '#f87171';
 
   return (
-    <div style={{ padding: '24px 28px', maxWidth: 1000, margin: '0 auto' }}>
+    <div className="page-pad" style={{ maxWidth: 1000, margin: '0 auto' }}>
       <h1 style={{ fontSize: 24, fontWeight: 800, color: '#f1f5f9', marginBottom: 4 }}>🤖 Bot Control</h1>
       <p style={{ color: '#64748b', fontSize: 14, marginBottom: 24 }}>
         Live status from the running bot (heartbeat every 30s) and remote control actions.
@@ -250,7 +250,8 @@ export default function BotControlPage() {
         {controls.length === 0 ? (
           <p style={{ color: '#64748b', fontSize: 13 }}>No controls issued yet.</p>
         ) : (
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+          <div className="scroll-x">
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, minWidth: 640 }}>
             <thead>
               <tr style={{ color: '#64748b', textAlign: 'left' }}>
                 <th style={{ padding: '8px 10px' }}>Action</th>
@@ -274,6 +275,7 @@ export default function BotControlPage() {
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </div>
     </div>

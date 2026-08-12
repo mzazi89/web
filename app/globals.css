@@ -158,3 +158,25 @@ a { color: inherit; }
 @media (min-width: 1024px) {
   .container-site { padding-left: 2rem; padding-right: 2rem; }
 }
+
+/* ─── Admin responsive helpers ───────────────────────── */
+.scroll-x {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.scroll-x::-webkit-scrollbar { height: 8px; }
+.scroll-x::-webkit-scrollbar-thumb { background: #1e2030; border-radius: 8px; }
+
+/* fluid page padding: tight on phones, roomy on desktop */
+.page-pad { padding: 16px; }
+@media (min-width: 768px) { .page-pad { padding: 24px 28px; } }
+
+/* modal/form 2-column grid that collapses to 1 column on phones */
+.grid-2-responsive {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+@media (min-width: 640px) {
+  .grid-2-responsive { grid-template-columns: 1fr 1fr; }
+}

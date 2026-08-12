@@ -197,7 +197,7 @@ export default function CommandsPage() {
   };
 
   const page = (
-    <div style={{ padding: '24px 28px', maxWidth: 1200, margin: '0 auto' }}>
+    <div className="page-pad" style={{ maxWidth: 1200, margin: '0 auto' }}>
       <h1 style={{ fontSize: 24, fontWeight: 800, color: '#f1f5f9', marginBottom: 4 }}>🤖 Bot Commands</h1>
       <p style={{ color: '#64748b', fontSize: 14, marginBottom: 24 }}>
         {commands.length} commands hosted on mzazi.shop — the bot imports these automatically. Edit, then the bot picks changes up on its next sync (or use Bot Control → Sync).
@@ -221,7 +221,8 @@ export default function CommandsPage() {
       </div>
 
       <div style={{ background: 'rgba(30,32,48,0.5)', border: '1px solid #1e2030', borderRadius: 16, overflow: 'hidden' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
+        <div className="scroll-x">
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14, minWidth: 720 }}>
           <thead>
             <tr style={{ background: '#0d1117', color: '#64748b', textAlign: 'left' }}>
               <th style={{ padding: '12px 16px' }}>Command</th>
@@ -269,6 +270,7 @@ export default function CommandsPage() {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
 
       {modal && (
@@ -278,7 +280,7 @@ export default function CommandsPage() {
               {modal.mode === 'add' ? '➕ Add Command' : `✏️ Edit .${modal.name}`}
             </h2>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
+            <div className="grid-2-responsive" style={{ marginBottom: 12 }}>
               <div>
                 <label style={{ color: '#94a3b8', fontSize: 12, marginBottom: 4, display: 'block' }}>Name (a-z, 0-9, _ -)</label>
                 <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} style={inputStyle} disabled={modal.mode === 'edit'} placeholder="mycommand" />
