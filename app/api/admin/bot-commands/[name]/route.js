@@ -41,7 +41,7 @@ export async function PUT(request, { params }) {
     const upd = body.code && String(body.code).trim()
       ? await sql`
           UPDATE bot_commands SET
-            aliases = ${Array.isArray(body.aliases) ? body.aliases : []},
+            aliases = ${JSON.stringify(Array.isArray(body.aliases) ? body.aliases : [])}::jsonb,
             description = ${typeof body.description === 'string' ? body.description : ''},
             category = ${typeof body.category === 'string' && body.category ? body.category : 'General'},
             usage = ${typeof body.usage === 'string' ? body.usage : ''},
@@ -56,7 +56,7 @@ export async function PUT(request, { params }) {
         `
       : await sql`
           UPDATE bot_commands SET
-            aliases = ${Array.isArray(body.aliases) ? body.aliases : []},
+            aliases = ${JSON.stringify(Array.isArray(body.aliases) ? body.aliases : [])}::jsonb,
             description = ${typeof body.description === 'string' ? body.description : ''},
             category = ${typeof body.category === 'string' && body.category ? body.category : 'General'},
             usage = ${typeof body.usage === 'string' ? body.usage : ''},

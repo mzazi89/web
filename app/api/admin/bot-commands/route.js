@@ -95,7 +95,7 @@ export async function POST(request) {
 
     const ins = await sql`
       INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code)
-      VALUES (${body.name}, ${body.aliases || []}, ${body.description || ''}, ${body.category || 'General'},
+      VALUES (${body.name}, ${JSON.stringify(body.aliases || [])}::jsonb, ${body.description || ''}, ${body.category || 'General'},
               ${body.usage || ''}, ${!!body.ownerOnly}, ${!!body.adminOnly}, ${!!body.groupOnly},
               ${body.enabled !== false}, ${body.code})
       RETURNING id, name, enabled
