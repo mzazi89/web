@@ -22,9 +22,9 @@ async function verifyAdmin() {
   }
 }
 
-export const NAME_RE = /^[a-z0-9_-]{1,64}$/;
+const NAME_RE = /^[a-z0-9_-]{1,64}$/;
 
-export function validateCommand(body) {
+function validateCommand(body) {
   if (!body || typeof body !== 'object') return 'Invalid body';
   if (typeof body.name !== 'string' || !NAME_RE.test(body.name)) {
     return 'Invalid name — use a-z, 0-9, _ or - (max 64 chars)';
