@@ -61,6 +61,12 @@ export async function GET(request) {
     const key = clientKey(request);
     const authorized = BOT_API_KEY && safeEqual(key, BOT_API_KEY);
 
+    // Diagnostic for the admin: tells us whether the env var exists at runtime.
+    // Check Vercel → project → Logs → Function logs for this line.
+    console.log(
+      `[bot-command] BOT_API_KEY configured on server: ${!!BOT_API_KEY} | request authorized: ${!!authorized}`
+    );
+
     if (authorized) {
       const body = JSON.stringify({
         ok: true,
