@@ -1,0 +1,44 @@
+{
+  "meta": {
+    "schemaVersion": 1,
+    "updatedAt": "2026-08-12T00:00:00Z"
+  },
+  "commands": [
+    {
+      "name": "webinfo",
+      "aliases": ["site", "shopinfo"],
+      "description": "Shows MZAZI TECH website info and links.",
+      "category": "Info",
+      "usage": ".webinfo",
+      "ownerOnly": false,
+      "adminOnly": false,
+      "groupOnly": false,
+      "enabled": true,
+      "code": "const links = [\n  '🌐 Website: https://mzazi.shop',\n  '📢 Channel: https://t.me/mzazidev',\n  '⚡ API Docs: https://mzazi.shop/api',\n];\nawait mzazireply('🧿 *MZAZI TECH*\\n\\n' + links.join('\\n') + '\\n\\n_Powered by MZAZI TECH QUARTZ BOT_');"
+    },
+    {
+      "name": "botping",
+      "aliases": ["pong", "latency"],
+      "description": "Checks bot responsiveness and latency.",
+      "category": "Utility",
+      "usage": ".botping",
+      "ownerOnly": false,
+      "adminOnly": false,
+      "groupOnly": false,
+      "enabled": true,
+      "code": "const ts = m.key && m.key.timestamp ? Number(m.key.timestamp) * 1000 : Date.now();\nconst ms = Date.now() - ts;\nawait mzazireply('⚡ *Pong!* ' + Math.max(0, ms) + 'ms');"
+    },
+    {
+      "name": "adminhelp",
+      "aliases": ["support"],
+      "description": "Owner-only: shows admin contact and support info.",
+      "category": "Admin",
+      "usage": ".adminhelp",
+      "ownerOnly": true,
+      "adminOnly": false,
+      "groupOnly": false,
+      "enabled": true,
+      "code": "await mzazireply('🛠️ *Support*\\n\\n👤 Owner: @mzazi89\\n📢 Channel: https://t.me/mzazidev\\n🌐 Site: https://mzazi.shop');"
+    }
+  ]
+}
