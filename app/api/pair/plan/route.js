@@ -10,6 +10,7 @@ export const dynamic = 'force-dynamic';
 const sql = neon(process.env.DATABASE_URL);
 
 export async function POST(request) {
+  let deducted = false;
   try {
     const user = await auth();
     if (!user) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
@@ -45,6 +46,7 @@ export async function POST(request) {
     if (!upd.length) {
       return NextResponse.json({ error: 'Insufficient wallet balance.' }, { status: 402 });
     }
+    deducted = true;
 
     await sql`
       INSERT INTO wallet_transactions (user_id, type, amount, description, status)
@@ -57,14 +59,15 @@ export async function POST(request) {
     const endDate = new Date(Date.now() + plan.days * 24 * 60 * 60 * 1000);
 
     const subRows = await sql`
-      INSERT INTO "Subscription" ("userId", "plan", "maxDevices", "startDate", "endDate", "status")
-      VALUES (${account.id}, ${plan.key}, ${plan.maxDevices}, CURRENT_TIMESTAMP, ${endDate.toISOString()}::timestamp, 'ACTIVE')
+      INSERT INTO "Subscription" ("userId", "plan", "maxDevices", "startDate", "endDate", "status", "updatedAt")
+      VALUES (${account.id}, ${plan.key}, ${plan.maxDevices}, CURRENT_TIMESTAMP, ${endDate.toISOString()}::timestamp, 'ACTIVE', CURRENT_TIMESTAMP)
       ON CONFLICT ("userId") DO UPDATE SET
         "plan" = EXCLUDED."plan",
         "maxDevices" = EXCLUDED."maxDevices",
         "startDate" = EXCLUDED."startDate",
         "endDate" = EXCLUDED."endDate",
-        "status" = 'ACTIVE'
+        "status" = 'ACTIVE',
+        "updatedAt" = CURRENT_TIMESTAMP
       RETURNING "plan", "maxDevices", "endDate"
     `;
 
@@ -82,6 +85,25 @@ export async function POST(request) {
     });
   } catch (e) {
     console.error('Pair plan error:', e.message);
-    return NextResponse.json({ error: 'Failed to buy plan. Try again.' }, { status: 500 });
+    // Never let a failed activation keep the user's money: refund the charge.
+    if (deducted) {
+      try {
+        await sql`
+          UPDATE wallet SET balance = balance + ${plan.priceKsh}, updated_at = CURRENT_TIMESTAMP
+          WHERE user_id = ${Number(user.userId)}
+        `;
+        await sql`
+          INSERT INTO wallet_transactions (user_id, type, amount, description, status)
+          VALUES (${Number(user.userId)}, 'refund', ${plan.priceKsh},
+                  ${`Refund — WhatsApp Bot plan activation failed (${plan.name})`}, 'done')
+        `;
+      } catch (e2) {
+        console.error('Pair plan refund failed:', e2.message);
+      }
+    }
+    return NextResponse.json(
+      { error: 'Failed to buy plan. Try again.', refunded: deducted },
+      { status: 500 }
+    );
   }
 }
