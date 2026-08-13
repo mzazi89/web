@@ -1,4 +1,6 @@
+'use client';
 import Link from 'next/link';
+import PairingPanel from './PairingPanel';
 
 const BOTS = [
   { handle: 'mzazitechquartzbot',   name: 'Bot 1', desc: 'Recommended — start here', recommended: true },
@@ -190,6 +192,17 @@ export default function WhatsAppBotPage() {
               💡 International format: country code + number without leading 0 or +. Kenya: 254712345678 · Nigeria: 2348012345678 · US: 14155552671
             </p>
           </div>
+        </div>
+      </section>
+
+      {/* Pair online — no Telegram needed */}
+      <section className="py-20" style={{ backgroundColor: 'rgba(10,10,15,0.72)' }}>
+        <div className="max-w-5xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-extrabold mb-3" style={{ color: '#f0f4ff' }}>Pair Directly Here — No Telegram Needed</h2>
+            <p style={{ color: '#64748b' }}>Enter your number, get the code, link your WhatsApp. Manage your devices and plans from your wallet.</p>
+          </div>
+          <PairingPanel />
         </div>
       </section>
 
