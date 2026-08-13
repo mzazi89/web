@@ -1,12 +1,12 @@
+// MZAZI API — POST /api/auth/login
+// Email + password are verified by Supabase Auth; on success we map the
+// Supabase user to the site's users row and mint the session cookie.
 import { NextResponse } from 'next/server';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import { cookies } from 'next/headers';
 import { neon } from '@neondatabase/serverless';
+import { supabase, isSupabaseConfigured, findOrCreateAppUser, mintSessionCookie } from '@/lib/supabaseAuth';
 
 export const dynamic = 'force-dynamic';
 const sql = neon(process.env.DATABASE_URL);
-const JWT_SECRET = process.env.JWT_SECRET || 'mzazi-tech-secret-2024';
 
 export async function POST(request) {
   try {
@@ -16,36 +16,21 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Email and password are required' }, { status: 400 });
     }
 
-    const rows = await sql`SELECT * FROM users WHERE email = ${email}`;
-    const user = rows[0];
+    if (!isSupabaseConfigured) {
+      return NextResponse.json({ error: 'Authentication is not configured yet. Please try again later.' }, { status: 503 });
+    }
 
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error || !data.user) {
+      return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 });
+    }
+
+    const user = await findOrCreateAppUser(data.user);
     if (!user) {
-      return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 });
+      return NextResponse.json({ error: 'Login failed' }, { status: 500 });
     }
 
-    if (!user.password) {
-      return NextResponse.json({ error: 'This account uses Google Sign-In. Please login with Google.' }, { status: 401 });
-    }
-
-    const isValid = await bcrypt.compare(password, user.password);
-    if (!isValid) {
-      return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 });
-    }
-
-    const token = jwt.sign(
-      { userId: user.id, email: user.email },
-      JWT_SECRET,
-      { expiresIn: '7d' }
-    );
-
-    const cookieStore = await cookies();
-    cookieStore.set('token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60,
-      path: '/',
-    });
+    mintSessionCookie(user);
 
     return NextResponse.json({
       message: 'Login successful',
@@ -53,6 +38,6 @@ export async function POST(request) {
     });
   } catch (error) {
     console.error('Login error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 });
   }
 }

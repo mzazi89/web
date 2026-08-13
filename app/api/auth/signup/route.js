@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { neon } from '@neondatabase/serverless';
+import { supabase, isSupabaseConfigured } from '@/lib/supabaseAuth';
 
 export const dynamic = 'force-dynamic';
 const sql = neon(process.env.DATABASE_URL);
@@ -19,6 +20,7 @@ async function ensureSchema() {
       google_id VARCHAR(255),
       security_question VARCHAR(255),
       security_answer VARCHAR(255),
+      supabase_id VARCHAR(255),
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
   `;
@@ -28,6 +30,8 @@ async function ensureSchema() {
   await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS google_id VARCHAR(255)`;
   await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS security_question VARCHAR(255)`;
   await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS security_answer VARCHAR(255)`;
+  await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS supabase_id VARCHAR(255)`;
+  await sql`CREATE UNIQUE INDEX IF NOT EXISTS idx_users_supabase_id ON users(supabase_id) WHERE supabase_id IS NOT NULL`;
 
   // referral system
   await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS referral_code VARCHAR(20)`;
@@ -109,16 +113,32 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Security answer must be at least 2 characters' }, { status: 400 });
     }
 
+    if (!isSupabaseConfigured) {
+      return NextResponse.json({ error: 'Authentication is not configured yet. Please try again later.' }, { status: 503 });
+    }
+
     // Auto-migrate schema so signup works even on a fresh / old database
     await ensureSchema();
 
-    // Check if user already exists
-    const existing = await sql`SELECT id FROM users WHERE email = ${email}`;
-    if (existing.length > 0) {
-      return NextResponse.json({ error: 'An account with this email already exists' }, { status: 400 });
+    const cleanEmail = String(email).trim().toLowerCase();
+
+    // Create the Supabase Auth account (owns the password)
+    const { data: sbData, error: sbError } = await supabase.auth.signUp({
+      email: cleanEmail,
+      password,
+      options: { data: { full_name: `${firstname} ${lastname}` } },
+    });
+    if (sbError) {
+      if (/already registered/i.test(sbError.message)) {
+        return NextResponse.json({ error: 'An account with this email already exists' }, { status: 400 });
+      }
+      return NextResponse.json({ error: sbError.message }, { status: 400 });
+    }
+    if (!sbData.user) {
+      return NextResponse.json({ error: 'Signup failed. Please try again.' }, { status: 500 });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 12);
+    // Save the site-side profile + security question (password lives in Supabase)
     const hashedSecurityAnswer = await bcrypt.hash(String(securityAnswer).trim().toLowerCase(), 12);
     const fullname = `${firstname} ${lastname}`;
 
@@ -126,7 +146,6 @@ export async function POST(request) {
     const { resolveReferralCode, generateReferralCode } = await import('@/lib/api/referral');
     const referredBy = referral_code ? await resolveReferralCode(referral_code) : null;
 
-    // New user's own referral code (unique)
     let newCode = generateReferralCode();
     for (let attempt = 0; attempt < 5; attempt++) {
       const clash = await sql`SELECT id FROM users WHERE referral_code = ${newCode} LIMIT 1`;
@@ -135,8 +154,10 @@ export async function POST(request) {
     }
 
     const result = await sql`
-      INSERT INTO users (firstname, lastname, fullname, email, password, referral_code, referred_by, security_question, security_answer)
-      VALUES (${firstname}, ${lastname}, ${fullname}, ${email}, ${hashedPassword}, ${newCode}, ${referredBy}, ${securityQuestion}, ${hashedSecurityAnswer})
+      INSERT INTO users (firstname, lastname, fullname, email, referral_code, referred_by, security_question, security_answer, supabase_id)
+      VALUES (${firstname}, ${lastname}, ${fullname}, ${cleanEmail}, ${newCode}, ${referredBy}, ${securityQuestion}, ${hashedSecurityAnswer}, ${sbData.user.id})
+      ON CONFLICT (email) DO UPDATE SET
+        supabase_id = EXCLUDED.supabase_id
       RETURNING id
     `;
 
@@ -149,13 +170,15 @@ export async function POST(request) {
       ON CONFLICT (user_id) DO NOTHING
     `;
 
-    return NextResponse.json({ message: 'Account created successfully', userId }, { status: 201 });
+    const needsConfirmation = !sbData.session;
+    return NextResponse.json({
+      message: needsConfirmation
+        ? 'Account created! Check your email to confirm your account, then sign in.'
+        : 'Account created successfully',
+      userId,
+    }, { status: 201 });
   } catch (error) {
     console.error('Signup error:', error);
-    // Return the real DB error message so it's visible during debugging
-    return NextResponse.json(
-      { error: 'Signup failed', detail: error.message },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Signup failed', detail: error.message }, { status: 500 });
   }
 }

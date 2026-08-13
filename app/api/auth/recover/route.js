@@ -1,8 +1,9 @@
 // MZAZI API — POST /api/auth/recover
-// Answer the security question correctly to set a new password.
+// Answer the security question correctly → update the password in Supabase Auth.
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { neon } from '@neondatabase/serverless';
+import { supabaseAdmin, isSupabaseConfigured } from '@/lib/supabaseAuth';
 
 export const dynamic = 'force-dynamic';
 const sql = neon(process.env.DATABASE_URL);
@@ -19,9 +20,12 @@ export async function POST(request) {
     if (String(newPassword).length < 6) {
       return NextResponse.json({ error: 'New password must be at least 6 characters' }, { status: 400 });
     }
+    if (!isSupabaseConfigured) {
+      return NextResponse.json({ error: 'Authentication is not configured yet. Please try again later.' }, { status: 503 });
+    }
 
     const rows = await sql`
-      SELECT id, google_id, security_question, security_answer
+      SELECT id, supabase_id, security_question, security_answer
       FROM users WHERE email = ${cleanEmail} LIMIT 1
     `;
     if (!rows.length) {
@@ -34,14 +38,25 @@ export async function POST(request) {
         { status: 400 }
       );
     }
+    if (!user.supabase_id) {
+      return NextResponse.json(
+        { error: 'This account is not linked to the new login system yet. Please contact support.' },
+        { status: 400 }
+      );
+    }
 
     const answerOk = await bcrypt.compare(cleanAnswer, user.security_answer);
     if (!answerOk) {
       return NextResponse.json({ error: 'Incorrect answer. Please try again.' }, { status: 401 });
     }
 
-    const hashed = await bcrypt.hash(String(newPassword), 12);
-    await sql`UPDATE users SET password = ${hashed} WHERE id = ${user.id}`;
+    const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(user.supabase_id, {
+      password: String(newPassword),
+    });
+    if (updateError) {
+      console.error('Recover password update error:', updateError.message);
+      return NextResponse.json({ error: 'Failed to update password. Please try again.' }, { status: 500 });
+    }
 
     return NextResponse.json({ message: 'Password updated. You can now sign in with your new password.' });
   } catch (e) {

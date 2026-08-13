@@ -12,13 +12,13 @@ export async function GET(request) {
     const email = String(searchParams.get('email') || '').trim().toLowerCase();
     if (!email) return NextResponse.json({ error: 'Email is required' }, { status: 400 });
 
-    const rows = await sql`SELECT email, google_id, security_question FROM users WHERE email = ${email} LIMIT 1`;
+    const rows = await sql`SELECT email, google_id, supabase_id, security_question FROM users WHERE email = ${email} LIMIT 1`;
     if (!rows.length) {
       return NextResponse.json({ error: 'No account found with this email.' }, { status: 404 });
     }
 
     const user = rows[0];
-    if (user.google_id && !user.security_question) {
+    if ((user.google_id || user.supabase_id) && !user.security_question) {
       return NextResponse.json(
         { error: 'This account uses Google Sign-In — please sign in with Google.' },
         { status: 400 }
