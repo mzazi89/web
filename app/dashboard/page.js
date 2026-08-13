@@ -14,6 +14,11 @@ export default function DashboardPage() {
   const [referral, setReferral]   = useState(null); // { code, link, counts }
   const [copied, setCopied]       = useState(false);
   const [credModal, setCredModal] = useState(null); // { panel } | null
+  // WhatsApp pairing (same flow as the Telegram bot's /pair)
+  const [pairNumber, setPairNumber] = useState('');
+  const [pairPhase, setPairPhase]   = useState('idle'); // idle | requesting | waiting | done | error
+  const [pairCode, setPairCode]     = useState('');
+  const [pairError, setPairError]   = useState('');
   const router = useRouter();
 
   useEffect(() => { checkAuth(); }, []);
@@ -60,6 +65,78 @@ export default function DashboardPage() {
       const res = await fetch('/api/wallet/balance');
       if (res.ok) { const d = await res.json(); setBalance(d.balance || 0); setTxns(d.transactions || []); }
     } catch {}
+  };
+
+  // ── WhatsApp pairing (mirrors the Telegram bot /pair flow) ────────────────
+  const pollPairRef = useRef(null);
+
+  const pollPair = (requestId) => {
+    if (pollPairRef.current) clearInterval(pollPairRef.current);
+    let attempts = 0;
+    const check = async () => {
+      attempts++;
+      try {
+        const res = await fetch(`/api/pair?requestId=${requestId}`, { cache: 'no-store' });
+        const data = await res.json();
+        if (data.status === 'done') {
+          clearInterval(pollPairRef.current);
+          setPairCode(data.result?.code || '');
+          setPairPhase(data.result?.code ? 'done' : 'error');
+          if (!data.result?.code) setPairError('Pairing finished but no code was returned.');
+          return;
+        }
+        if (data.status === 'failed') {
+          clearInterval(pollPairRef.current);
+          setPairPhase('error');
+          setPairError(data.error || 'Pairing failed. Try again.');
+          return;
+        }
+      } catch {}
+      if (attempts >= 40) { // ~2 minutes
+        clearInterval(pollPairRef.current);
+        setPairPhase('error');
+        setPairError('The bot is taking too long. Try again in a moment.');
+      }
+    };
+    check();
+    pollPairRef.current = setInterval(check, 3000);
+  };
+
+  const startPair = async () => {
+    const digits = pairNumber.replace(/\D/g, '');
+    if (digits.length < 10 || digits.length > 15) {
+      setPairPhase('error');
+      setPairError('Enter a valid phone number, e.g. 254785016388.');
+      return;
+    }
+    setPairPhase('requesting');
+    setPairError('');
+    setPairCode('');
+    try {
+      const res = await fetch('/api/pair', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ number: digits }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setPairPhase('error');
+        setPairError(data.error || 'Failed to start pairing.');
+        return;
+      }
+      setPairPhase('waiting');
+      pollPair(data.requestId);
+    } catch {
+      setPairPhase('error');
+      setPairError('Connection error. Try again.');
+    }
+  };
+
+  const resetPair = () => {
+    if (pollPairRef.current) clearInterval(pollPairRef.current);
+    setPairPhase('idle');
+    setPairError('');
+    setPairCode('');
   };
 
   if (loading) {
@@ -122,6 +199,74 @@ export default function DashboardPage() {
               )}
             </div>
           ))}
+        </div>
+
+        {/* ── WhatsApp Bot Pairing ── */}
+        <div className="rounded-2xl p-5 sm:p-6 mb-5 sm:mb-6" style={{ backgroundColor: '#0f1629', border: '1px solid #1e2d4a' }}>
+          <div className="flex items-center justify-between mb-1">
+            <h2 className="font-bold text-base sm:text-lg" style={{ color: '#f0f4ff' }}>🤖 Pair WhatsApp Bot</h2>
+            {pairPhase === 'done' && (
+              <button onClick={resetPair} className="text-xs px-3 py-1.5 rounded-lg font-semibold"
+                style={{ color: '#94a3b8', border: '1px solid #1e2d4a', cursor: 'pointer', background: 'none' }}>
+                Pair another number
+              </button>
+            )}
+          </div>
+          <p className="text-xs mb-4" style={{ color: '#64748b' }}>
+            Enter the WhatsApp number you want the bot to run on — we send you the pairing code, exactly like the Telegram bot's /pair.
+          </p>
+
+          {pairPhase === 'done' ? (
+            <div className="p-4 sm:p-5 rounded-xl text-center" style={{ backgroundColor: 'rgba(34,197,94,0.07)', border: '1px solid rgba(34,197,94,0.3)' }}>
+              <p className="text-sm font-semibold mb-1" style={{ color: '#4ade80' }}>✅ Pairing code ready</p>
+              <p className="text-3xl sm:text-4xl font-extrabold tracking-[0.2em] my-3 font-mono" style={{ color: '#f0f4ff' }}>{pairCode}</p>
+              <p className="text-xs leading-relaxed" style={{ color: '#94a3b8' }}>
+                On your phone: <b style={{ color: '#f0f4ff' }}>WhatsApp → Settings → Linked Devices → Link a Device → Pair with a code</b>, then enter the code above.
+                The bot connects automatically once you do. The code is valid for about an hour.
+              </p>
+            </div>
+          ) : (
+            <div>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <input
+                  value={pairNumber}
+                  onChange={(e) => setPairNumber(e.target.value.replace(/[^\d+]/g, ''))}
+                  placeholder="254785016388"
+                  inputMode="tel"
+                  disabled={pairPhase === 'requesting' || pairPhase === 'waiting'}
+                  className="flex-1 w-full px-4 py-3 rounded-xl text-sm outline-none font-mono"
+                  style={{ backgroundColor: 'rgba(10,10,15,0.72)', border: '1px solid #1e2d4a', color: '#f0f4ff' }}
+                />
+                <button
+                  onClick={startPair}
+                  disabled={pairPhase === 'requesting' || pairPhase === 'waiting'}
+                  className="px-5 py-3 rounded-xl text-sm font-bold text-white whitespace-nowrap"
+                  style={{
+                    background: 'linear-gradient(135deg,#22c55e,#15803d)',
+                    opacity: pairPhase === 'requesting' || pairPhase === 'waiting' ? 0.55 : 1,
+                    cursor: pairPhase === 'requesting' || pairPhase === 'waiting' ? 'not-allowed' : 'pointer',
+                  }}>
+                  {pairPhase === 'requesting' ? 'Requesting…' : pairPhase === 'waiting' ? 'Waiting for code…' : '🔗 Pair Number'}
+                </button>
+              </div>
+
+              {(pairPhase === 'requesting' || pairPhase === 'waiting') && (
+                <div className="flex items-center gap-2.5 mt-3 text-sm" style={{ color: '#94a3b8' }}>
+                  <div className="w-4 h-4 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
+                  {pairPhase === 'requesting'
+                    ? 'Requesting the pairing code…'
+                    : 'The bot is generating your code — it appears here in a few seconds…'}
+                </div>
+              )}
+
+              {pairPhase === 'error' && (
+                <div className="mt-3 p-3 rounded-xl text-sm" style={{ backgroundColor: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: '#f87171' }}>
+                  ❌ {pairError}
+                  <button onClick={resetPair} className="ml-2 underline" style={{ cursor: 'pointer', background: 'none', border: 'none', color: '#f87171' }}>Try again</button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
