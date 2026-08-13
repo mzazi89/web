@@ -17,6 +17,8 @@ async function ensureSchema() {
       email     VARCHAR(255) UNIQUE NOT NULL,
       password  VARCHAR(255),
       google_id VARCHAR(255),
+      security_question VARCHAR(255),
+      security_answer VARCHAR(255),
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
   `;
@@ -24,6 +26,8 @@ async function ensureSchema() {
   await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS firstname VARCHAR(255) NOT NULL DEFAULT ''`;
   await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS lastname  VARCHAR(255) NOT NULL DEFAULT ''`;
   await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS google_id VARCHAR(255)`;
+  await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS security_question VARCHAR(255)`;
+  await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS security_answer VARCHAR(255)`;
 
   // referral system
   await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS referral_code VARCHAR(20)`;
@@ -85,7 +89,7 @@ async function ensureSchema() {
 
 export async function POST(request) {
   try {
-    const { firstname, lastname, email, password, referral_code } = await request.json();
+    const { firstname, lastname, email, password, referral_code, securityQuestion, securityAnswer } = await request.json();
 
     if (!firstname || !lastname || !email || !password) {
       return NextResponse.json({ error: 'All fields are required' }, { status: 400 });
@@ -93,6 +97,16 @@ export async function POST(request) {
 
     if (password.length < 6) {
       return NextResponse.json({ error: 'Password must be at least 6 characters' }, { status: 400 });
+    }
+
+    if (!securityQuestion || !securityAnswer) {
+      return NextResponse.json(
+        { error: 'Please choose a security question and answer — you need it to recover a forgotten password.' },
+        { status: 400 }
+      );
+    }
+    if (String(securityAnswer).length < 2) {
+      return NextResponse.json({ error: 'Security answer must be at least 2 characters' }, { status: 400 });
     }
 
     // Auto-migrate schema so signup works even on a fresh / old database
@@ -105,6 +119,7 @@ export async function POST(request) {
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
+    const hashedSecurityAnswer = await bcrypt.hash(String(securityAnswer).trim().toLowerCase(), 12);
     const fullname = `${firstname} ${lastname}`;
 
     // Resolve the referrer from their referral code (if provided)
@@ -120,8 +135,8 @@ export async function POST(request) {
     }
 
     const result = await sql`
-      INSERT INTO users (firstname, lastname, fullname, email, password, referral_code, referred_by)
-      VALUES (${firstname}, ${lastname}, ${fullname}, ${email}, ${hashedPassword}, ${newCode}, ${referredBy})
+      INSERT INTO users (firstname, lastname, fullname, email, password, referral_code, referred_by, security_question, security_answer)
+      VALUES (${firstname}, ${lastname}, ${fullname}, ${email}, ${hashedPassword}, ${newCode}, ${referredBy}, ${securityQuestion}, ${hashedSecurityAnswer})
       RETURNING id
     `;
 

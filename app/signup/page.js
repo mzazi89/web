@@ -11,6 +11,8 @@ export default function SignupPage() {
     email: '',
     password: '',
     confirmPassword: '',
+    securityQuestion: '',
+    securityAnswer: '',
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -58,6 +60,8 @@ export default function SignupPage() {
           email: formData.email,
           password: formData.password,
           referral_code: referralCode || undefined,
+          securityQuestion: formData.securityQuestion,
+          securityAnswer: formData.securityAnswer,
         }),
       });
       const data = await response.json();
@@ -170,6 +174,32 @@ export default function SignupPage() {
                     onFocus={e => e.target.style.borderColor = '#2563eb'} onBlur={e => e.target.style.borderColor = '#1e2d4a'} />
                 </div>
               ))}
+            </div>
+
+            {/* Security question — used to recover a forgotten password */}
+            <div className="mb-6 p-4 rounded-xl" style={{ backgroundColor: 'rgba(37,99,235,0.05)', border: '1px solid rgba(37,99,235,0.2)' }}>
+              <label className="block text-sm font-medium mb-2" style={{ color: '#94a3b8' }}>Security Question</label>
+              <select name="securityQuestion" required value={formData.securityQuestion} onChange={handleChange}
+                className="w-full rounded-xl px-4 py-3 text-sm outline-none mb-3"
+                style={{ backgroundColor: '#0d1117', border: '1px solid #1e2d4a', color: '#f0f4ff' }}>
+                <option value="" disabled style={{ color: '#64748b' }}>Choose a question…</option>
+                {[
+                  "What is your mother's maiden name?",
+                  'What was the name of your first pet?',
+                  'What city were you born in?',
+                  'What was the name of your primary school?',
+                  'What is your favourite food?',
+                ].map((q) => (
+                  <option key={q} value={q} style={{ color: '#f0f4ff' }}>{q}</option>
+                ))}
+              </select>
+              <input type="text" name="securityAnswer" required value={formData.securityAnswer} onChange={handleChange}
+                className="w-full rounded-xl px-4 py-3 text-sm outline-none" placeholder="Your answer"
+                style={{ backgroundColor: '#0d1117', border: '1px solid #1e2d4a', color: '#f0f4ff' }}
+                onFocus={e => e.target.style.borderColor = '#2563eb'} onBlur={e => e.target.style.borderColor = '#1e2d4a'} />
+              <p className="text-[11px] mt-2" style={{ color: '#475569' }}>
+                You'll answer this question to reset your password if you ever forget it.
+              </p>
             </div>
 
             <button type="submit" disabled={loading} className="w-full py-3 rounded-xl font-bold text-white text-sm transition-all"

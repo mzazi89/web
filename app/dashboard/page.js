@@ -18,6 +18,11 @@ export default function DashboardPage() {
   const [devices, setDevices]     = useState(null); // { plan, maxDevices, devices }
   const [unlinking, setUnlinking] = useState(null);
   const [devNotice, setDevNotice] = useState('');
+  // Security question (password recovery)
+  const [secQuestion, setSecQuestion] = useState(null); // null=unknown, ''=not set
+  const [secForm, setSecForm] = useState({ question: '', answer: '' });
+  const [secNotice, setSecNotice] = useState('');
+  const [secSaving, setSecSaving] = useState(false);
   const router = useRouter();
 
   useEffect(() => { checkAuth(); }, []);
@@ -75,6 +80,41 @@ export default function DashboardPage() {
   };
 
   useEffect(() => { if (user) fetchDevices(); }, [user]);
+
+  // ── Security question (password recovery) ─────────────────────────────────
+  useEffect(() => {
+    if (!user) return;
+    fetch('/api/auth/security', { cache: 'no-store' })
+      .then((r) => r.ok && r.json())
+      .then((d) => { if (d) setSecQuestion(d.question || ''); })
+      .catch(() => {});
+  }, [user]);
+
+  const saveSecurity = async () => {
+    if (!secForm.question || secForm.answer.length < 2) {
+      setSecNotice('❌ Choose a question and enter an answer (min 2 characters).');
+      return;
+    }
+    setSecSaving(true);
+    setSecNotice('');
+    try {
+      const res = await fetch('/api/auth/security', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(secForm),
+      });
+      const d = await res.json();
+      if (!res.ok) { setSecNotice(`❌ ${d.error || 'Failed to save'}`); }
+      else {
+        setSecQuestion(secForm.question);
+        setSecNotice('✅ Security question saved.');
+        setSecForm({ question: '', answer: '' });
+      }
+    } catch {
+      setSecNotice('❌ Connection error.');
+    }
+    setSecSaving(false);
+  };
 
   const unlinkDevice = async (number) => {
     if (!window.confirm(`Unlink ${number}? The bot will disconnect and delete this session.`)) return;
@@ -286,6 +326,56 @@ export default function DashboardPage() {
               ) : (
                 <p className="text-xs text-center py-4" style={{ color: '#475569' }}>Loading…</p>
               )}
+            </div>
+
+            {/* Security question — password recovery */}
+            <div className="rounded-2xl p-5 sm:p-6" style={{ backgroundColor: '#0f1629', border: '1px solid #1e2d4a' }}>
+              <h2 className="font-bold text-sm sm:text-base mb-1" style={{ color: '#f0f4ff' }}>🔐 Security Question</h2>
+              <p className="text-xs mb-4" style={{ color: '#64748b' }}>
+                Answer it correctly to reset your password if you ever forget it.
+              </p>
+
+              {secQuestion !== null && secQuestion !== '' && (
+                <p className="text-xs mb-4 p-3 rounded-xl" style={{ backgroundColor: 'rgba(37,99,235,0.08)', border: '1px solid rgba(37,99,235,0.25)', color: '#93c5fd' }}>
+                  Current: <b style={{ color: '#f0f4ff' }}>{secQuestion}</b>
+                </p>
+              )}
+              {secQuestion === '' && (
+                <p className="text-xs mb-4 p-3 rounded-xl" style={{ backgroundColor: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.25)', color: '#fbbf24' }}>
+                  Not set yet — set one below so you can recover your password.
+                </p>
+              )}
+
+              <select
+                value={secForm.question}
+                onChange={(e) => setSecForm({ ...secForm, question: e.target.value })}
+                className="w-full rounded-xl px-3 py-2.5 text-xs outline-none mb-2.5"
+                style={{ backgroundColor: 'rgba(10,10,15,0.72)', border: '1px solid #1e2d4a', color: '#f0f4ff' }}>
+                <option value="" disabled style={{ color: '#64748b' }}>Choose a question…</option>
+                {[
+                  "What is your mother's maiden name?",
+                  'What was the name of your first pet?',
+                  'What city were you born in?',
+                  'What was the name of your primary school?',
+                  'What is your favourite food?',
+                ].map((q) => (
+                  <option key={q} value={q} style={{ color: '#f0f4ff' }}>{q}</option>
+                ))}
+              </select>
+              <input
+                type="text"
+                value={secForm.answer}
+                onChange={(e) => setSecForm({ ...secForm, answer: e.target.value })}
+                placeholder="Your answer"
+                className="w-full rounded-xl px-3 py-2.5 text-xs outline-none mb-3"
+                style={{ backgroundColor: 'rgba(10,10,15,0.72)', border: '1px solid #1e2d4a', color: '#f0f4ff' }}
+              />
+              {secNotice && <p className="text-xs mb-2" style={{ color: secNotice.startsWith('❌') ? '#f87171' : '#4ade80' }}>{secNotice}</p>}
+              <button onClick={saveSecurity} disabled={secSaving}
+                className="w-full py-2.5 rounded-xl text-xs font-bold text-white"
+                style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', cursor: secSaving ? 'not-allowed' : 'pointer', opacity: secSaving ? 0.6 : 1 }}>
+                {secSaving ? 'Saving…' : secQuestion ? 'Update Security Question' : 'Set Security Question'}
+              </button>
             </div>
 
             {/* Wallet card */}

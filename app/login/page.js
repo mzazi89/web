@@ -46,6 +46,22 @@ export default function LoginPage() {
     window.location.href = '/api/auth/google';
   };
 
+  // Show a message if Google redirected back with an error
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const err = params.get('error');
+    if (err === 'google_not_configured') {
+      setError('Google Sign-In is not configured yet. Please use your email and password.');
+    } else if (err === 'google_failed') {
+      setError('Google Sign-In failed. Please try again or use your email and password.');
+    } else if (err) {
+      setError('Login failed. Please try again.');
+    }
+    if (params.get('reset') === 'ok') {
+      setError('Your password was reset. Sign in with your new password.');
+    }
+  }, []);
+
   return (
     <div className="min-h-screen flex items-center justify-center py-12 px-4" style={{ backgroundColor: 'rgba(10,10,15,0.72)' }}>
       {/* Background glow */}
@@ -119,6 +135,11 @@ export default function LoginPage() {
                 onFocus={e => e.target.style.borderColor = '#2563eb'}
                 onBlur={e => e.target.style.borderColor = '#1e2d4a'}
               />
+              <div className="text-right mt-1.5">
+                <Link href="/forgot-password" className="text-xs hover:underline" style={{ color: '#60a5fa' }}>
+                  Forgot password?
+                </Link>
+              </div>
             </div>
             <button
               type="submit"
