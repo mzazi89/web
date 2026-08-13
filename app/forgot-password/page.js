@@ -1,34 +1,30 @@
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useSignIn } from '@clerk/nextjs';
 import Logo from '@/components/Logo';
 
 export default function ForgotPasswordPage() {
-  const [step, setStep] = useState(1); // 1 = email, 2 = code + new password, 3 = done
+  const [step, setStep] = useState(1); // 1 = email, 2 = question, 3 = done
   const [email, setEmail] = useState('');
-  const [code, setCode] = useState('');
+  const [question, setQuestion] = useState('');
+  const [answer, setAnswer] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
-  const { isLoaded, signIn, setActive } = useSignIn();
 
-  const sendCode = async (e) => {
+  const findAccount = async (e) => {
     e.preventDefault();
     setError('');
-    if (!isLoaded) return;
     setLoading(true);
     try {
-      // Start a sign-in flow for this email, then request a reset code
-      await signIn.create({ identifier: email });
-      await signIn.prepareFirstFactor({ strategy: 'reset_password_email_code' });
+      const res = await fetch(`/api/auth/forgot?email=${encodeURIComponent(email)}`, { cache: 'no-store' });
+      const data = await res.json();
+      if (!res.ok) { setError(data.error || 'Failed'); return; }
+      setQuestion(data.question);
       setStep(2);
-    } catch (err) {
-      const message = err?.errors?.[0]?.longMessage || err?.errors?.[0]?.message || err?.message;
-      setError(message || 'Failed to send reset code. Please try again.');
+    } catch {
+      setError('Network error. Try again.');
     } finally {
       setLoading(false);
     }
@@ -39,29 +35,18 @@ export default function ForgotPasswordPage() {
     setError('');
     if (newPassword !== confirmPassword) { setError('Passwords do not match'); return; }
     if (newPassword.length < 6) { setError('Password must be at least 6 characters'); return; }
-    if (!isLoaded) return;
     setLoading(true);
     try {
-      const result = await signIn.attemptFirstFactor({
-        strategy: 'reset_password_email_code',
-        code,
-        password: newPassword,
+      const res = await fetch('/api/auth/recover', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, answer, newPassword }),
       });
-
-      if (result.status === 'complete' && signIn.createdSessionId) {
-        // Session created — sync the site cookie and go to the dashboard.
-        await setActive({ session: signIn.createdSessionId });
-        try {
-          await fetch('/api/auth/sync', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
-        } catch (e) { /* will retry on /api/auth/me */ }
-        router.push('/dashboard');
-        router.refresh();
-      } else {
-        setStep(3);
-      }
-    } catch (err) {
-      const message = err?.errors?.[0]?.longMessage || err?.errors?.[0]?.message || err?.message;
-      setError(message || 'Invalid code. Please try again.');
+      const data = await res.json();
+      if (!res.ok) { setError(data.error || 'Failed'); return; }
+      setStep(3);
+    } catch {
+      setError('Network error. Try again.');
     } finally {
       setLoading(false);
     }
@@ -85,11 +70,11 @@ export default function ForgotPasswordPage() {
               <Logo size={56} />
             </div>
             <h2 className="text-2xl font-extrabold" style={{ color: '#f0f4ff' }}>
-              {step === 1 ? 'Forgot Password' : step === 2 ? 'Check Your Email' : 'Password Reset'}
+              {step === 1 ? 'Forgot Password' : step === 2 ? 'Answer Security Question' : 'Password Reset'}
             </h2>
             <p className="text-sm mt-1" style={{ color: '#64748b' }}>
-              {step === 1 && 'Enter your account email and we’ll send you a reset code'}
-              {step === 2 && `A 6-digit reset code was sent to ${email}`}
+              {step === 1 && 'Enter your account email to recover your password'}
+              {step === 2 && `Hi — answer the security question to set a new password`}
               {step === 3 && 'Your password has been reset'}
             </p>
           </div>
@@ -101,25 +86,30 @@ export default function ForgotPasswordPage() {
           )}
 
           {step === 1 && (
-            <form onSubmit={sendCode}>
+            <form onSubmit={findAccount}>
               <label className="block text-sm font-medium mb-2" style={{ color: '#94a3b8' }}>Email Address</label>
               <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
                 className="w-full rounded-xl px-4 py-3 text-sm outline-none mb-6"
                 style={inputStyle} />
-              <button type="submit" disabled={loading || !isLoaded} className="w-full py-3 rounded-xl font-bold text-white text-sm"
+              <button type="submit" disabled={loading} className="w-full py-3 rounded-xl font-bold text-white text-sm"
                 style={{ background: 'linear-gradient(135deg, #2563eb, #1d4ed8)', cursor: loading ? 'not-allowed' : 'pointer' }}>
-                {loading ? 'Sending…' : 'Send Reset Code'}
+                {loading ? 'Checking…' : 'Continue'}
               </button>
             </form>
           )}
 
           {step === 2 && (
             <form onSubmit={resetPassword}>
-              <label className="block text-sm font-medium mb-2" style={{ color: '#94a3b8' }}>Reset Code</label>
-              <input type="text" required value={code} onChange={(e) => setCode(e.target.value)}
-                placeholder="6-digit code"
-                className="w-full rounded-xl px-4 py-3 text-sm outline-none mb-4 text-center tracking-[0.4em]"
+              <div className="p-4 rounded-xl mb-4" style={{ backgroundColor: 'rgba(37,99,235,0.08)', border: '1px solid rgba(37,99,235,0.25)' }}>
+                <p className="text-xs font-semibold mb-1" style={{ color: '#60a5fa' }}>Security Question</p>
+                <p className="text-sm" style={{ color: '#f0f4ff' }}>{question}</p>
+              </div>
+
+              <label className="block text-sm font-medium mb-2" style={{ color: '#94a3b8' }}>Your Answer</label>
+              <input type="text" required value={answer} onChange={(e) => setAnswer(e.target.value)}
+                placeholder="Answer"
+                className="w-full rounded-xl px-4 py-3 text-sm outline-none mb-4"
                 style={inputStyle} />
 
               <label className="block text-sm font-medium mb-2" style={{ color: '#94a3b8' }}>New Password</label>
@@ -134,7 +124,7 @@ export default function ForgotPasswordPage() {
                 className="w-full rounded-xl px-4 py-3 text-sm outline-none mb-6"
                 style={inputStyle} />
 
-              <button type="submit" disabled={loading || !isLoaded} className="w-full py-3 rounded-xl font-bold text-white text-sm"
+              <button type="submit" disabled={loading} className="w-full py-3 rounded-xl font-bold text-white text-sm"
                 style={{ background: 'linear-gradient(135deg, #2563eb, #1d4ed8)', cursor: loading ? 'not-allowed' : 'pointer' }}>
                 {loading ? 'Resetting…' : 'Reset Password'}
               </button>

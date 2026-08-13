@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useSignIn } from '@clerk/nextjs';
 import Logo from '@/components/Logo';
 
 export default function LoginPage() {
@@ -11,7 +10,6 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const { isLoaded, signIn, setActive } = useSignIn();
 
   // Already logged in? Redirect to the dashboard.
   useEffect(() => {
@@ -20,66 +18,33 @@ export default function LoginPage() {
       .catch(() => {});
   }, []);
 
-  // Sync the site session cookie after a successful Clerk sign-in.
-  const syncSession = async () => {
-    try {
-      await fetch('/api/auth/sync', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
-    } catch (e) {
-      console.warn('Session sync failed (will retry on /api/auth/me):', e);
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    if (!isLoaded) return;
     setLoading(true);
     try {
-      const result = await signIn.create({ identifier: email, password });
-
-      if (result.status === 'complete') {
-        await setActive({ session: result.createdSessionId });
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        router.push('/dashboard');
+        router.refresh();
       } else {
-        // Email/password accounts: the password is the first factor.
-        await signIn.attemptFirstFactor({ strategy: 'password', password });
-        await setActive({ session: signIn.createdSessionId });
+        setError(data.error || 'Login failed. Check your credentials.');
       }
-
-      await syncSession();
-      router.push('/dashboard');
-      router.refresh();
     } catch (err) {
-      const message = err?.errors?.[0]?.longMessage || err?.errors?.[0]?.message || err?.message;
-      setError(message || 'Login failed. Check your credentials.');
+      setError('Network error. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleGoogleLogin = async () => {
-    if (!isLoaded) return;
-    try {
-      await signIn.authenticateWithRedirect({
-        strategy: 'oauth_google',
-        redirectUrl: '/login',
-        redirectUrlComplete: '/dashboard',
-      });
-    } catch (err) {
-      setError('Google Sign-In failed. Please try again or use your email and password.');
-    }
-  };
-
-  // Show a message if Google redirected back with an error
+  // Show a message if redirected back with a status
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const err = params.get('error');
-    if (err === 'google_not_configured') {
-      setError('Google Sign-In is not configured yet. Please use your email and password.');
-    } else if (err === 'google_failed') {
-      setError('Google Sign-In failed. Please try again or use your email and password.');
-    } else if (err) {
-      setError('Login failed. Please try again.');
-    }
     if (params.get('reset') === 'ok') {
       setError('Your password was reset. Sign in with your new password.');
     }
@@ -108,27 +73,6 @@ export default function LoginPage() {
               {error}
             </div>
           )}
-
-          {/* Google Button */}
-          <button
-            onClick={handleGoogleLogin}
-            className="w-full flex items-center justify-center space-x-3 py-3 rounded-xl font-semibold text-sm mb-6 transition-all"
-            style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid #1e2d4a', color: '#f0f4ff' }}
-          >
-            <svg className="w-5 h-5" viewBox="0 0 24 24">
-              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-            </svg>
-            <span>Continue with Google</span>
-          </button>
-
-          <div className="flex items-center mb-6">
-            <div className="flex-1 h-px" style={{ backgroundColor: '#1e2d4a' }} />
-            <span className="px-4 text-xs" style={{ color: '#475569' }}>or sign in with email</span>
-            <div className="flex-1 h-px" style={{ backgroundColor: '#1e2d4a' }} />
-          </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
@@ -166,7 +110,7 @@ export default function LoginPage() {
             </div>
             <button
               type="submit"
-              disabled={loading || !isLoaded}
+              disabled={loading}
               className="w-full py-3 rounded-xl font-bold text-white text-sm transition-all"
               style={{ background: loading ? '#1e2d4a' : 'linear-gradient(135deg, #2563eb, #1d4ed8)', cursor: loading ? 'not-allowed' : 'pointer' }}
             >
