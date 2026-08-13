@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { neon } from '@neondatabase/serverless';
 import { ensureDatabase } from '@/lib/database';
+import { requestBotCommandSync } from '@/lib/botSync';
 
 export const dynamic = 'force-dynamic';
 
@@ -100,6 +101,9 @@ export async function POST(request) {
               ${body.enabled !== false}, ${body.code})
       RETURNING id, name, enabled
     `;
+
+    // Push the change to the running bot immediately (~15s).
+    await requestBotCommandSync();
 
     return NextResponse.json({ ok: true, command: ins[0] }, { status: 201 });
   } catch (error) {

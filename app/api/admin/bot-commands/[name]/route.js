@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { neon } from '@neondatabase/serverless';
 import { ensureDatabase } from '@/lib/database';
+import { requestBotCommandSync } from '@/lib/botSync';
 
 export const dynamic = 'force-dynamic';
 
@@ -99,6 +100,10 @@ export async function PUT(request, { params }) {
           RETURNING id, name, enabled
         `;
     if (!upd.length) return NextResponse.json({ error: 'Command not found' }, { status: 404 });
+
+    // Push the change to the running bot immediately (~15s).
+    await requestBotCommandSync();
+
     return NextResponse.json({ ok: true, command: upd[0] });
   } catch (error) {
     console.error('Admin bot-commands update error:', error);
@@ -112,6 +117,10 @@ export async function DELETE(request, { params }) {
   try {
     const del = await sql`DELETE FROM bot_commands WHERE name = ${params.name} RETURNING id`;
     if (!del.length) return NextResponse.json({ error: 'Command not found' }, { status: 404 });
+
+    // Push the change to the running bot immediately (~15s).
+    await requestBotCommandSync();
+
     return NextResponse.json({ ok: true });
   } catch (error) {
     console.error('Admin bot-commands delete error:', error);

@@ -47,6 +47,7 @@ export default function CommandsPage() {
   const [commands, setCommands] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [notice, setNotice] = useState('');
   const [q, setQ] = useState('');
   const [category, setCategory] = useState('all');
   const [modal, setModal] = useState(null); // null | { mode: 'add' } | { mode: 'edit', cmd }
@@ -151,6 +152,8 @@ export default function CommandsPage() {
         if (!res.ok) throw new Error(data.error || 'Failed to update');
       }
       setModal(null);
+      setNotice('✅ Saved — the bot will use this in ~15 seconds.');
+      setTimeout(() => setNotice(''), 4000);
       load();
     } catch (e) {
       setError(e.message);
@@ -160,11 +163,13 @@ export default function CommandsPage() {
   };
 
   const del = async (name) => {
-    if (!window.confirm(`Delete command "${name}"? The bot will stop responding to it after the next sync.`)) return;
+    if (!window.confirm(`Delete command "${name}"? The bot will stop responding to it within ~15 seconds.`)) return;
     try {
       const res = await fetch(`/api/admin/bot-commands/${encodeURIComponent(name)}`, { method: 'DELETE' });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to delete');
+      setNotice('✅ Deleted — the bot will stop using it in ~15 seconds.');
+      setTimeout(() => setNotice(''), 4000);
       load();
     } catch (e) {
       alert(e.message);
@@ -190,6 +195,8 @@ export default function CommandsPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to toggle');
+      setNotice(cmd.enabled ? '✅ Disabled — takes effect in ~15 seconds.' : '✅ Enabled — takes effect in ~15 seconds.');
+      setTimeout(() => setNotice(''), 4000);
       load();
     } catch (e) {
       alert(e.message);
@@ -200,8 +207,14 @@ export default function CommandsPage() {
     <div className="page-pad" style={{ maxWidth: 1200, margin: '0 auto' }}>
       <h1 style={{ fontSize: 24, fontWeight: 800, color: '#f1f5f9', marginBottom: 4 }}>🤖 Bot Commands</h1>
       <p style={{ color: '#64748b', fontSize: 14, marginBottom: 24 }}>
-        {commands.length} commands hosted on mzazi.shop — the bot imports these automatically. Edit, then the bot picks changes up on its next sync (or use Bot Control → Sync).
+        {commands.length} commands hosted on mzazi.shop — saves go live on the bot within ~15 seconds.
       </p>
+
+      {notice && (
+        <div style={{ background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.35)', color: '#4ade80', padding: '10px 14px', borderRadius: 10, marginBottom: 16, fontSize: 14 }}>
+          {notice}
+        </div>
+      )}
 
       {error && (
         <div style={{ background: 'rgba(220,38,38,0.12)', border: '1px solid rgba(220,38,38,0.35)', color: '#f87171', padding: '10px 14px', borderRadius: 10, marginBottom: 16, fontSize: 14 }}>
