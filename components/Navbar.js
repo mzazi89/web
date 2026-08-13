@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
+import { useClerk } from '@clerk/nextjs';
 import Logo from './Logo';
 import { fmtMtc } from '@/lib/currency';
 
@@ -28,6 +29,7 @@ export default function Navbar() {
   const router   = useRouter();
   const pathname = usePathname();
   const chatRef  = useRef(null);
+  const { signOut } = useClerk();
 
   // Close mobile menu on route change
   useEffect(() => { setMenuOpen(false); }, [pathname]);
@@ -65,6 +67,7 @@ export default function Navbar() {
   }, []);
 
   const handleLogout = async () => {
+    try { await signOut(); } catch (e) { /* session may already be gone */ }
     await fetch('/api/auth/logout', { method: 'POST' });
     setUser(null); setWallet(null); setMenuOpen(false);
     router.push('/');

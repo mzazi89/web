@@ -2,6 +2,7 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import TechBackground from '../components/TechBackground';
 import PwaProvider from '../components/PwaProvider';
+import { ClerkProvider } from '@clerk/nextjs';
 import './globals.css';
 
 export const metadata = {
@@ -48,16 +49,18 @@ export default function RootLayout({ children }) {
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
       <body className="flex flex-col min-h-screen" style={{ backgroundColor: 'rgba(10,10,15,0.72)', color: '#f0f4ff' }}>
-        <PwaProvider>
-          {/* Fixed tech background — sits behind everything */}
-          <TechBackground />
+        <ClerkProvider>
+          <PwaProvider>
+            {/* Fixed tech background — sits behind everything */}
+            <TechBackground />
 
-          <Navbar />
-          <main className="flex-grow" style={{ position: 'relative', zIndex: 1 }}>
-            {children}
-          </main>
-          <Footer />
-        </PwaProvider>
+            <Navbar />
+            <main className="flex-grow" style={{ position: 'relative', zIndex: 1 }}>
+              {children}
+            </main>
+            <Footer />
+          </PwaProvider>
+        </ClerkProvider>
       </body>
     </html>
   );

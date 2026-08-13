@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useSignIn } from '@clerk/nextjs';
 import Logo from '@/components/Logo';
 
 export default function LoginPage() {
@@ -10,6 +11,7 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { isLoaded, signIn, setActive } = useSignIn();
 
   // Already logged in? Redirect to the dashboard.
   useEffect(() => {
@@ -18,32 +20,53 @@ export default function LoginPage() {
       .catch(() => {});
   }, []);
 
+  // Sync the site session cookie after a successful Clerk sign-in.
+  const syncSession = async () => {
+    try {
+      await fetch('/api/auth/sync', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+    } catch (e) {
+      console.warn('Session sync failed (will retry on /api/auth/me):', e);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    if (!isLoaded) return;
     setLoading(true);
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-      const data = await response.json();
-      if (response.ok) {
-        router.push('/dashboard');
-        router.refresh();
+      const result = await signIn.create({ identifier: email, password });
+
+      if (result.status === 'complete') {
+        await setActive({ session: result.createdSessionId });
       } else {
-        setError(data.error || 'Login failed. Check your credentials.');
+        // Email/password accounts: the password is the first factor.
+        await signIn.attemptFirstFactor({ strategy: 'password', password });
+        await setActive({ session: signIn.createdSessionId });
       }
+
+      await syncSession();
+      router.push('/dashboard');
+      router.refresh();
     } catch (err) {
-      setError('Network error. Please try again.');
+      const message = err?.errors?.[0]?.longMessage || err?.errors?.[0]?.message || err?.message;
+      setError(message || 'Login failed. Check your credentials.');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleGoogleLogin = () => {
-    window.location.href = '/api/auth/google';
+  const handleGoogleLogin = async () => {
+    if (!isLoaded) return;
+    try {
+      await signIn.authenticateWithRedirect({
+        strategy: 'oauth_google',
+        redirectUrl: '/login',
+        redirectUrlComplete: '/dashboard',
+      });
+    } catch (err) {
+      setError('Google Sign-In failed. Please try again or use your email and password.');
+    }
   };
 
   // Show a message if Google redirected back with an error
@@ -143,7 +166,7 @@ export default function LoginPage() {
             </div>
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || !isLoaded}
               className="w-full py-3 rounded-xl font-bold text-white text-sm transition-all"
               style={{ background: loading ? '#1e2d4a' : 'linear-gradient(135deg, #2563eb, #1d4ed8)', cursor: loading ? 'not-allowed' : 'pointer' }}
             >
