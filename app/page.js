@@ -1,77 +1,12 @@
 import Link from 'next/link';
 import TypingHeading from '@/components/TypingHeading';
-import { neon } from '@neondatabase/serverless';
-import { unstable_noStore as noStore } from 'next/cache';
-import AuthSwap from '@/components/AuthSwap';
-import PwaInstallButton from '@/components/PwaInstallButton';
+import Logo from '@/components/Logo';
 
-export const dynamic = 'force-dynamic';
-
-const STATS = [
-  { value: '500+',   label: 'Active Panels' },
-  { value: '99.9%',  label: 'Uptime' },
-  { value: '24/7',   label: 'Support' },
-  { value: '1,000+', label: 'Happy Clients' },
-];
-
-const FEATURES = [
-  {
-    icon: '🖥️',
-    title: 'Pterodactyl Panels',
-    desc: 'Deploy game servers instantly with full Pterodactyl panel access. Choose your resources and go live in minutes.',
-    href: '/products',
-    cta: 'View Plans',
-  },
-  {
-    icon: '🤖',
-    title: 'WhatsApp Bot',
-    desc: 'Link your WhatsApp via Telegram bot pairing. Send /pair 254XXXXXXXXX to connect your number instantly.',
-    href: '/whatsapp-bot',
-    cta: 'Learn More',
-  },
-  {
-    icon: '💳',
-    title: 'Wallet System',
-    desc: 'Top up via mobile money (M-Pesa), card or crypto and deploy panels instantly — no repeated checkout, just one balance for everything.',
-    href: '/wallet',
-    cta: 'Top Up',
-  },
-  {
-    icon: '🔌',
-    title: 'MZAZI API',
-    desc: 'One API. Multiple services. Downloads, AI, search, tools and more — 200+ live endpoints with one key.',
-    href: '/api',
-    cta: 'Explore API',
-  },
-];
-
-async function getApiStats() {
-  try {
-    const sql = neon(process.env.DATABASE_URL);
-    const [endpoints, requests, providers] = await Promise.all([
-      sql`SELECT COUNT(*) AS total, SUM(CASE WHEN is_active THEN 1 ELSE 0 END) AS active FROM endpoints`,
-      sql`SELECT COUNT(*) AS cnt FROM api_requests`,
-      sql`SELECT COUNT(*) AS cnt FROM providers WHERE status = 'active'`,
-    ]);
-    return {
-      endpoints: parseInt(endpoints[0].active, 10) || 0,
-      total: parseInt(endpoints[0].total, 10) || 0,
-      requests: parseInt(requests[0].cnt, 10) || 0,
-      providers: parseInt(providers[0].cnt, 10) || 0,
-    };
-  } catch {
-    return { endpoints: 0, total: 0, requests: 0, providers: 0 };
-  }
-}
-
-export default async function Home() {
-  noStore();
-  const api = await getApiStats();
-
+export default function Home() {
   return (
     <div style={{ backgroundColor: 'rgba(2,4,9,0.45)' }}>
 
-      {/* ─── Hero ─── */}
+      {/* ─── Hero / About ─── */}
       <section className="relative overflow-hidden"
         style={{ background: 'linear-gradient(180deg,rgba(7,20,40,0.98) 0%,rgba(2,4,9,1) 100%)' }}>
         {/* Grid overlay */}
@@ -85,220 +20,109 @@ export default async function Home() {
         <div className="absolute bottom-0 right-1/4 w-56 sm:w-80 h-56 sm:h-80 rounded-full pointer-events-none"
           style={{ background: 'radial-gradient(circle,rgba(29,78,216,0.12) 0%,transparent 70%)', filter: 'blur(48px)' }} />
 
-        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 py-20 sm:py-28 lg:py-36 text-center">
+        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 py-20 sm:py-28 lg:py-32 text-center">
+          {/* Logo */}
+          <div className="mx-auto mb-8 flex justify-center">
+            <Logo size={80} />
+          </div>
+
           {/* Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-6 sm:mb-8"
             style={{ backgroundColor: 'rgba(37,99,235,0.1)', border: '1px solid rgba(37,99,235,0.3)' }}>
             <div className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
-            <span className="text-xs sm:text-sm font-semibold" style={{ color: '#60a5fa' }}>Trusted Panel Hosting Provider — Worldwide</span>
+            <span className="text-xs sm:text-sm font-semibold" style={{ color: '#60a5fa' }}>MZAZI TECH — About Us</span>
           </div>
 
           {/* Headline */}
-          <h1 className="font-extrabold mb-5 sm:mb-6 leading-tight"
-            style={{ fontSize: 'clamp(2.2rem, 7vw, 4.5rem)', color: '#f0f4ff' }}>
-            <TypingHeading as="span" text="Power Your Digital World" speed={70} highlight="Digital World" />
+          <h1 className="font-extrabold mb-6 leading-tight"
+            style={{ fontSize: 'clamp(2.2rem, 6.5vw, 4rem)', color: '#f0f4ff' }}>
+            <TypingHeading as="span" text="Power Your Digital World" speed={65} highlight="Digital World" />
           </h1>
 
-          <p className="mb-8 sm:mb-10 max-w-2xl mx-auto text-base sm:text-lg leading-relaxed px-2" style={{ color: '#64748b' }}>
-            Pterodactyl panel hosting, WhatsApp automation bots, and tech solutions — all under one roof. Powered by Mzazi Tech Inc.
+          <p className="mb-10 max-w-2xl mx-auto text-base sm:text-lg leading-relaxed px-2" style={{ color: '#94a3b8' }}>
+            Mzazi Tech Inc is a technology company built on one belief — world-class digital
+            infrastructure should be within everyone&apos;s reach. From Pterodactyl panel hosting and
+            WhatsApp automation to developer APIs, we power ideas, businesses and dreams.
           </p>
 
-          {/* CTA buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center px-4 sm:px-0">
-            <Link href="/products"
-              className="w-full sm:w-auto px-7 py-3.5 rounded-xl font-bold text-white text-base transition-all"
-              style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', boxShadow: '0 0 28px rgba(37,99,235,0.45)', textDecoration: 'none' }}>
-              🚀 Deploy a Panel
+          {/* Get Started */}
+          <div className="flex justify-center px-4 sm:px-0">
+            <Link href="/signup"
+              className="w-full sm:w-auto px-10 py-4 rounded-xl font-bold text-white text-base transition-all"
+              style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', boxShadow: '0 0 32px rgba(37,99,235,0.5)', textDecoration: 'none', display: 'inline-block' }}>
+              🚀 Get Started
             </Link>
-            <Link href="/whatsapp-bot"
-              className="w-full sm:w-auto px-7 py-3.5 rounded-xl font-semibold text-sm transition-all"
-              style={{ backgroundColor: 'rgba(255,255,255,0.05)', color: '#f0f4ff', border: '1px solid #1e3a8a', textDecoration: 'none' }}>
-              🤖 WhatsApp Bot
-            </Link>
-            <PwaInstallButton />
-          </div>
-
-          {/* Trust strip */}
-          <div className="mt-10 sm:mt-14 flex flex-wrap justify-center gap-4 sm:gap-8">
-            {[
-              { icon: '⚡', text: 'Instant Deployment' },
-              { icon: '🔒', text: 'Secure & Reliable' },
-              { icon: '💬', text: '24/7 Support' },
-            ].map(t => (
-              <div key={t.text} className="flex items-center gap-2 text-xs sm:text-sm" style={{ color: '#475569' }}>
-                <span>{t.icon}</span>
-                <span>{t.text}</span>
-              </div>
-            ))}
           </div>
         </div>
       </section>
 
-      {/* ─── Stats ─── */}
-      <section className="py-10 sm:py-14" style={{ backgroundColor: 'rgba(2,4,9,0.45)', borderTop: '1px solid #0d1120', borderBottom: '1px solid #0d1120' }}>
-        <div className="max-w-4xl mx-auto px-4 sm:px-6">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-8 text-center">
-            {STATS.map(s => (
-              <div key={s.label}>
-                <p className="font-extrabold mb-1" style={{ fontSize: 'clamp(1.6rem,4vw,2rem)', color: '#f0f4ff' }}>{s.value}</p>
-                <p className="text-xs sm:text-sm" style={{ color: '#475569' }}>{s.label}</p>
-              </div>
-            ))}
-          </div>
+      {/* ─── About Us ─── */}
+      <section className="py-16 sm:py-24">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6">
+          <h2 className="section-title text-3xl sm:text-4xl mb-6" style={{ color: '#f0f4ff' }}>
+            About Us
+            <span className="bar" />
+          </h2>
+          <p className="text-base sm:text-lg leading-relaxed" style={{ color: '#94a3b8' }}>
+            Mzazi Tech Inc is a Kenya-born technology company delivering reliable digital services
+            to customers around the world. We specialise in Pterodactyl panel hosting, WhatsApp
+            automation bots, developer APIs and instant digital tools — everything you need to
+            build, run and scale, all under one roof. Our platform is powered by modern
+            infrastructure, secured by design, and supported by a team that is available around the
+            clock.
+          </p>
         </div>
       </section>
 
-      {/* ─── Features ─── */}
-      <section className="py-16 sm:py-24" style={{ backgroundColor: 'rgba(2,4,9,0.45)' }}>
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-12 sm:mb-16">
-            <p className="text-xs sm:text-sm font-semibold uppercase tracking-widest mb-3" style={{ color: '#3b82f6' }}>What We Offer</p>
-            <h2 className="font-extrabold mb-4" style={{ fontSize: 'clamp(1.6rem,4vw,2.5rem)', color: '#f0f4ff' }}>
-              Everything You Need
+      {/* ─── Vision ─── */}
+      <section className="py-16 sm:py-20" style={{ backgroundColor: 'rgba(37,99,235,0.04)' }}>
+        <div className="max-w-3xl mx-auto px-4 sm:px-6">
+          <div className="glow-card p-8 sm:p-10">
+            <div className="text-4xl mb-4">🔭</div>
+            <h2 className="section-title text-3xl sm:text-4xl mb-4" style={{ color: '#f0f4ff' }}>
+              Our Vision
+              <span className="bar" />
             </h2>
-            <p className="text-sm sm:text-base max-w-xl mx-auto" style={{ color: '#64748b' }}>
-              From game servers to WhatsApp bots — deploy, manage, and scale your digital infrastructure in minutes.
+            <p className="text-base sm:text-lg leading-relaxed" style={{ color: '#94a3b8' }}>
+              To be Africa&apos;s leading digital infrastructure provider — a platform where any
+              individual or business can access world-class technology, without barriers.
             </p>
           </div>
+        </div>
+      </section>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
-            {FEATURES.map(f => (
-              <div key={f.title}
-                className="rounded-2xl p-6 sm:p-7 transition-all duration-300 hover:-translate-y-1 group"
-                style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a' }}>
-                <div className="text-3xl mb-4">{f.icon}</div>
-                <h3 className="font-bold text-base sm:text-lg mb-2" style={{ color: '#f0f4ff' }}>{f.title}</h3>
-                <p className="text-sm leading-relaxed mb-5" style={{ color: '#64748b' }}>{f.desc}</p>
-                <Link href={f.href}
-                  className="inline-flex items-center gap-1 text-sm font-semibold transition-all"
-                  style={{ color: '#3b82f6', textDecoration: 'none' }}>
-                  {f.cta} <span className="group-hover:translate-x-1 transition-transform inline-block">→</span>
-                </Link>
-              </div>
-            ))}
+      {/* ─── Mission ─── */}
+      <section className="py-16 sm:py-20">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6">
+          <div className="glow-card p-8 sm:p-10">
+            <div className="text-4xl mb-4">🎯</div>
+            <h2 className="section-title text-3xl sm:text-4xl mb-4" style={{ color: '#f0f4ff' }}>
+              Our Mission
+              <span className="bar" />
+            </h2>
+            <p className="text-base sm:text-lg leading-relaxed" style={{ color: '#94a3b8' }}>
+              To deliver reliable, affordable and innovative hosting and automation solutions —
+              backed by honest pricing and 24/7 support — so our customers can focus on what
+              truly matters: building their future.
+            </p>
           </div>
         </div>
       </section>
 
-      {/* ─── MZAZI API ─── */}
-      <section className="py-16 sm:py-24" style={{ backgroundColor: 'rgba(2,4,9,0.45)' }}>
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="rounded-3xl overflow-hidden" style={{ border: '1px solid rgba(37,99,235,0.25)', background: 'linear-gradient(135deg, rgba(37,99,235,0.12) 0%, rgba(2,4,9,0.60) 55%)' }}>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 p-8 sm:p-12 items-center">
-              <div>
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-5"
-                  style={{ backgroundColor: 'rgba(74,222,128,0.1)', border: '1px solid rgba(74,222,128,0.3)' }}>
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  <span className="text-xs font-semibold" style={{ color: '#4ade80' }}>MZAZI API · One API. Multiple services.</span>
-                </div>
-                <h2 className="font-extrabold mb-4" style={{ fontSize: 'clamp(1.6rem,4vw,2.5rem)', color: '#f0f4ff' }}>
-                  Power Your Apps with{' '}
-                  <span style={{ background: 'linear-gradient(135deg,#60a5fa,#818cf8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>200+ Live APIs</span>
-                </h2>
-                <p className="text-sm sm:text-base leading-relaxed mb-6" style={{ color: '#94a3b8' }}>
-                  Downloads, AI chat, image generation, search, games, news, tools and more — behind one key,
-                  one JSON envelope, with rate limits, usage analytics and a full developer dashboard.
-                </p>
-                <ul className="grid grid-cols-2 gap-3 mb-8">
-                  {[
-                    { icon: '⚡', label: `${api.endpoints} live endpoints` },
-                    { icon: '🤖', label: `${api.providers} providers integrated` },
-                    { icon: '🔑', label: 'API key authentication' },
-                    { icon: '📊', label: `${api.requests.toLocaleString()}+ requests served` },
-                  ].map(x => (
-                    <li key={x.label} className="flex items-center gap-2 text-sm" style={{ color: '#cbd5e1' }}>
-                      <span>{x.icon}</span><span>{x.label}</span>
-                    </li>
-                  ))}
-                </ul>
-                <div className="flex flex-wrap gap-3">
-                  <Link href="/api"
-                    className="px-6 py-3 rounded-xl font-bold text-white text-sm"
-                    style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', textDecoration: 'none' }}>
-                    Explore MZAZI API
-                  </Link>
-                  <Link href="/api/docs"
-                    className="px-6 py-3 rounded-xl font-semibold text-sm"
-                    style={{ color: '#60a5fa', border: '1px solid rgba(37,99,235,0.35)', textDecoration: 'none' }}>
-                    Documentation
-                  </Link>
-                  <Link href="/api/dashboard/keys"
-                    className="px-6 py-3 rounded-xl font-semibold text-sm"
-                    style={{ color: '#4ade80', border: '1px solid rgba(74,222,128,0.3)', textDecoration: 'none' }}>
-                    + Get an API Key
-                  </Link>
-                </div>
-              </div>
-
-              {/* Code preview */}
-              <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: 'rgba(2,4,9,0.45)', border: '1px solid #1e3a8a' }}>
-                <div className="flex items-center gap-2 px-4 py-2.5" style={{ borderBottom: '1px solid #1e3a8a' }}>
-                  <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: '#f87171' }} />
-                  <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: '#fbbf24' }} />
-                  <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: '#4ade80' }} />
-                  <span className="ml-2 text-xs font-mono" style={{ color: '#475569' }}>GET /api/download/play</span>
-                </div>
-                <pre className="p-5 overflow-x-auto text-xs leading-relaxed font-mono" style={{ color: '#cbd5e1' }}>
-{`{
-  "status": true,
-  "creator": "MZAZI TECH",
-  "result": {
-    "title": "Alan Walker - Faded",
-    "duration": "3:33",
-    "views": 4010656945,
-    "download_url": "https://...",
-    "video_url": "https://..."
-  }
-}`}
-                </pre>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ─── CTA Banner ─── */}
-      <section className="py-16 sm:py-20"
-        style={{ background: 'linear-gradient(135deg,rgba(37,99,235,0.15) 0%,rgba(2,4,9,1) 100%)' }}>
+      {/* ─── Motto ─── */}
+      <section className="py-16 sm:py-24">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
-          <h2 className="font-extrabold mb-4" style={{ fontSize: 'clamp(1.5rem,4vw,2.2rem)', color: '#f0f4ff' }}>
-            Ready to get started?
+          <div className="text-4xl mb-4">⚡</div>
+          <h2 className="section-title text-3xl sm:text-4xl mb-6" style={{ color: '#f0f4ff' }}>
+            Our Motto
+            <span className="bar" style={{ marginLeft: 'auto', marginRight: 'auto' }} />
           </h2>
-          <p className="mb-8 text-sm sm:text-base" style={{ color: '#64748b' }}>
-            Create your free account, top up your wallet, and deploy your first panel in under 5 minutes.
+          <blockquote className="text-2xl sm:text-3xl font-extrabold leading-snug gradient-text">
+            &ldquo;Power Your Digital World.&rdquo;
+          </blockquote>
+          <p className="mt-6 text-sm" style={{ color: '#64748b' }}>
+            Mzazi Tech Inc — trusted by hundreds of customers worldwide.
           </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
-            <AuthSwap
-              signedOut={
-                <>
-                  <Link href="/signup"
-                    className="w-full sm:w-auto px-8 py-3.5 rounded-xl font-bold text-white text-base"
-                    style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', boxShadow: '0 0 28px rgba(37,99,235,0.4)', textDecoration: 'none' }}>
-                    Create Free Account
-                  </Link>
-                  <Link href="/contact"
-                    className="w-full sm:w-auto px-8 py-3.5 rounded-xl font-semibold text-sm"
-                    style={{ color: '#94a3b8', border: '1px solid #1e3a8a', textDecoration: 'none' }}>
-                    Talk to Support
-                  </Link>
-                </>
-              }
-              signedIn={
-                <>
-                  <Link href="/dashboard"
-                    className="w-full sm:w-auto px-8 py-3.5 rounded-xl font-bold text-white text-base"
-                    style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', boxShadow: '0 0 28px rgba(37,99,235,0.4)', textDecoration: 'none' }}>
-                    Go to Dashboard
-                  </Link>
-                  <Link href="/api/dashboard"
-                    className="w-full sm:w-auto px-8 py-3.5 rounded-xl font-semibold text-sm"
-                    style={{ color: '#a78bfa', border: '1px solid rgba(167,139,250,0.35)', textDecoration: 'none' }}>
-                    Open API Dashboard
-                  </Link>
-                </>
-              }
-            />
-          </div>
         </div>
       </section>
 
