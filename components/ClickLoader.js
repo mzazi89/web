@@ -20,7 +20,7 @@ export default function ClickLoader() {
       timerRef.current = setTimeout(() => {
         setLeaving(true);
         fadeRef.current = setTimeout(() => setVisible(false), 450);
-      }, 5000);
+      }, 2000);
     };
 
     document.addEventListener('click', show);

@@ -198,7 +198,7 @@ a { color: inherit; }
 }
 .loader-ring-rev { animation-name: loader-rotate-rev; }
 .loader-bar {
-  animation: loader-bar 5s linear forwards;
+  animation: loader-bar 2s linear forwards;
 }
 .loader-pulse { animation: loader-pulse 1.2s ease-in-out infinite; }
 
