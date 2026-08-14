@@ -115,11 +115,11 @@ export default function Footer() {
                 {l.label}
               </Link>
             ))}
-            <Link href="/admin/login"
+            <a href="https://admin.mzazi.shop"
               className="text-xs transition-colors hover:text-red-400"
               style={{ color: '#1f2937', textDecoration: 'none' }}>
               Admin
-            </Link>
+            </a>
           </div>
         </div>
       </div>
