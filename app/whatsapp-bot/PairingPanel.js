@@ -266,6 +266,10 @@ export default function PairingPanel() {
         {pairPhase === 'done' ? (
           <div className="p-4 sm:p-5 rounded-xl text-center" style={{ backgroundColor: 'rgba(34,197,94,0.07)', border: '1px solid rgba(34,197,94,0.3)' }}>
             <p className="text-sm font-semibold mb-1" style={{ color: '#4ade80' }}>✅ Pairing code ready</p>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-3"
+              style={{ backgroundColor: 'rgba(37,99,235,0.12)', border: '1px solid rgba(37,99,235,0.35)' }}>
+              <span className="text-xs font-extrabold tracking-widest" style={{ color: '#60a5fa' }}>MZAZIBOT</span>
+            </div>
             <p className="text-3xl sm:text-4xl font-extrabold tracking-[0.2em] my-3 font-mono" style={{ color: '#f0f4ff' }}>{pairCode}</p>
             <p className="text-xs leading-relaxed" style={{ color: '#94a3b8' }}>
               On your phone: <b style={{ color: '#f0f4ff' }}>WhatsApp → Settings → Linked Devices → Link a Device → Pair with a code</b>, then enter the code above.
