@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect, useCallback } from 'react';
+import TypingHeading from '@/components/TypingHeading';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import CopyButton from '@/components/api/CopyButton';
@@ -110,7 +111,7 @@ function KeysInner() {
     <div className="container-site py-12" style={{ minHeight: '70vh' }}>
       <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-extrabold"><span className="gradient-text">API Keys</span></h1>
+          <h1 className="text-3xl font-extrabold"><TypingHeading as="span" text="API Keys" speed={45} className="gradient-text" /></h1>
           <p className="text-sm mt-1" style={{ color: '#94a3b8' }}>
             Generate, copy, revoke and rotate your API keys. Full keys are shown only once.
           </p>

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import TypingHeading from '@/components/TypingHeading';
 import { neon } from '@neondatabase/serverless';
 import { unstable_noStore as noStore } from 'next/cache';
 
@@ -70,7 +71,7 @@ export default async function ApiStatus() {
     <div className="container-site py-12" style={{ minHeight: '70vh' }}>
       <div className="mb-8">
         <Link href="/api" className="text-xs font-semibold" style={{ color: '#475569', textDecoration: 'none' }}>← Back to API</Link>
-        <h1 className="text-3xl font-extrabold mt-2"><span className="gradient-text">MZAZI API Status</span></h1>
+        <h1 className="text-3xl font-extrabold mt-2"><TypingHeading as="span" text="MZAZI API Status" speed={45} className="gradient-text" /></h1>
         <p className="text-sm mt-1" style={{ color: '#94a3b8' }}>System health, provider and endpoint status.</p>
       </div>
 

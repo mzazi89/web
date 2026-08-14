@@ -24,9 +24,7 @@ export default function AboutPage() {
             About Us
           </span>
           <h1 className="text-5xl font-extrabold mb-6" style={{ color: '#f0f4ff' }}>
-            <TypingHeading as="span" text="We Power the World's" speed={70} />
-            <br />
-            <TypingHeading as="span" text="Digital Infrastructure" speed={70} delay={1500} className="gradient-text" />
+            <TypingHeading as="span" text="We Power the World's Digital Infrastructure" speed={70} highlight="Digital Infrastructure" />
           </h1>
           <p className="text-lg" style={{ color: '#64748b' }}>
             MZAZI TECH INC is a global tech company specializing in game server hosting, WhatsApp automation, public APIs, and digital infrastructure solutions. We believe powerful technology should be affordable and accessible to everyone, everywhere.

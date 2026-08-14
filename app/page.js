@@ -117,8 +117,7 @@ export default async function Home() {
           {/* Headline */}
           <h1 className="font-extrabold mb-5 sm:mb-6 leading-tight"
             style={{ fontSize: 'clamp(2.2rem, 7vw, 4.5rem)', color: '#f0f4ff' }}>
-            <TypingHeading as="span" text="Power Your " speed={70} />
-            <TypingHeading as="span" text="Digital World" speed={70} delay={1240} className="gradient-text" />
+            <TypingHeading as="span" text="Power Your Digital World" speed={70} highlight="Digital World" />
           </h1>
 
           <p className="mb-8 sm:mb-10 max-w-2xl mx-auto text-base sm:text-lg leading-relaxed px-2" style={{ color: '#64748b' }}>

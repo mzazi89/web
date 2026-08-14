@@ -1,10 +1,11 @@
 import Link from 'next/link';
+import TypingHeading from '@/components/TypingHeading';
 
 export default function TermsPage() {
   return (
     <div className="container-site py-12 max-w-3xl" style={{ minHeight: '70vh' }}>
       <Link href="/" className="text-xs font-semibold" style={{ color: '#475569', textDecoration: 'none' }}>← Back to Home</Link>
-      <h1 className="text-3xl font-extrabold mt-3 mb-6"><span className="gradient-text">Terms of Service</span></h1>
+      <h1 className="text-3xl font-extrabold mt-3 mb-6"><TypingHeading as="span" text="Terms of Service" speed={45} className="gradient-text" /></h1>
       <p className="text-xs mb-8" style={{ color: '#64748b' }}>Last updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
 
       <div className="space-y-6 text-sm leading-relaxed" style={{ color: '#94a3b8' }}>

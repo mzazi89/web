@@ -83,8 +83,7 @@ export default function TestimonialsPage() {
         <div className="max-w-3xl mx-auto px-4 text-center">
           <Link href="/" className="text-xs font-semibold" style={{ color: '#475569', textDecoration: 'none' }}>← Back to Home</Link>
           <h1 className="text-3xl sm:text-5xl font-extrabold mt-3 mb-4" style={{ color: '#f0f4ff' }}>
-            <TypingHeading as="span" text="What Our Customers " speed={55} />
-            <TypingHeading as="span" text="Say" speed={55} delay={1600} className="gradient-text" />
+            <TypingHeading as="span" text="What Our Customers Say" speed={55} highlight="Say" />
           </h1>
           <p className="text-sm sm:text-base mb-8" style={{ color: '#94a3b8' }}>
             Real reviews from real customers. Have you used MZAZI TECH? Leave your own review below.

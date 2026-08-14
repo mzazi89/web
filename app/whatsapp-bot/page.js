@@ -89,10 +89,9 @@ export default function WhatsAppBotPage() {
           </div>
 
           <h1 className="text-4xl md:text-6xl font-extrabold mb-6" style={{ color: '#f0f4ff' }}>
-            <TypingHeading as="span" text="Connect Your" speed={70} />
-            <br />
-            <TypingHeading as="span" text="WhatsApp Bot" speed={70} delay={1200}
-              style={{ background: 'linear-gradient(135deg, #25D366, #128C7E)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }} />
+            <TypingHeading as="span" text="Connect Your WhatsApp Bot" speed={70}
+              highlight="WhatsApp Bot"
+              highlightStyle={{ background: 'linear-gradient(135deg, #25D366, #128C7E)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }} />
           </h1>
 
           <p className="text-lg mb-8 max-w-2xl mx-auto" style={{ color: '#64748b' }}>

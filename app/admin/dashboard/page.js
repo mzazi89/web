@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import TypingHeading from '@/components/TypingHeading';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { fmtMtc, fmtMtcValue, mtcToKsh } from '@/lib/currency';
@@ -89,7 +90,7 @@ export default function AdminDashboard() {
           ))}
         </div>
 
-        <h1 className="text-2xl font-extrabold mb-6" style={{ color: '#f0f4ff' }}>Dashboard Overview</h1>
+        <TypingHeading as="h1" text="Dashboard Overview" speed={55} className="text-2xl font-extrabold mb-6" style={{ color: '#f0f4ff' }} />
 
         {/* Stat cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
