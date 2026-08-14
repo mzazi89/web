@@ -286,7 +286,7 @@ export default function PairingPanel() {
                 inputMode="tel"
                 disabled={pairPhase === 'requesting' || pairPhase === 'waiting'}
                 className="flex-1 w-full px-4 py-3 rounded-xl text-sm outline-none font-mono"
-                style={{ backgroundColor: 'rgba(2,4,9,0.92)', border: '1px solid #1e3a8a', color: '#f0f4ff' }}
+                style={{ backgroundColor: 'rgba(2,4,9,0.45)', border: '1px solid #1e3a8a', color: '#f0f4ff' }}
               />
               <button
                 onClick={startPair}
@@ -327,7 +327,7 @@ export default function PairingPanel() {
           <div className="space-y-2.5">
             {devices.map((d) => (
               <div key={d.number} className="flex items-center justify-between gap-3 p-3.5 rounded-xl"
-                style={{ backgroundColor: 'rgba(2,4,9,0.92)', border: '1px solid #1e3a8a' }}>
+                style={{ backgroundColor: 'rgba(2,4,9,0.45)', border: '1px solid #1e3a8a' }}>
                 <div className="min-w-0">
                   <p className="font-mono font-bold text-sm truncate" style={{ color: '#f0f4ff' }}>{d.number}</p>
                   <p className="text-xs" style={{ color: '#475569' }}>

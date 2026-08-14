@@ -98,7 +98,7 @@ export default function ProductsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'rgba(2,4,9,0.92)' }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'rgba(2,4,9,0.45)' }}>
         <div className="w-10 h-10 rounded-full border-2 animate-spin" style={{ borderColor: '#1e3a8a', borderTopColor: '#3b82f6' }} />
       </div>
     );
@@ -107,7 +107,7 @@ export default function ProductsPage() {
   const stepIndex = { select: 0, configure: 1, confirm: 2, creating: 2, done: 3 }[step] ?? 0;
 
   return (
-    <div className="min-h-screen py-8 sm:py-12" style={{ backgroundColor: 'rgba(2,4,9,0.92)' }}>
+    <div className="min-h-screen py-8 sm:py-12" style={{ backgroundColor: 'rgba(2,4,9,0.45)' }}>
       <div className="max-w-5xl mx-auto px-4 sm:px-6">
 
         {/* ── Page header ── */}
@@ -242,7 +242,7 @@ export default function ProductsPage() {
                       <input type="text" value={form[f.key]} onChange={e => setForm(x => ({ ...x, [f.key]: e.target.value }))}
                         placeholder={f.placeholder} required
                         className="w-full px-4 py-3 rounded-xl text-sm outline-none"
-                        style={{ backgroundColor: 'rgba(2,4,9,0.92)', border: '1px solid #1e3a8a', color: '#f0f4ff' }}
+                        style={{ backgroundColor: 'rgba(2,4,9,0.45)', border: '1px solid #1e3a8a', color: '#f0f4ff' }}
                         onFocus={e => e.target.style.borderColor='#2563eb'} onBlur={e => e.target.style.borderColor='#1e3a8a'} />
                     </div>
                   ))}
@@ -258,7 +258,7 @@ export default function ProductsPage() {
                     <input type={f.type} value={form[f.key]} onChange={e => setForm(x => ({ ...x, [f.key]: e.target.value }))}
                       placeholder={f.placeholder} required
                       className="w-full px-4 py-3 rounded-xl text-sm outline-none"
-                      style={{ backgroundColor: 'rgba(2,4,9,0.92)', border: '1px solid #1e3a8a', color: '#f0f4ff' }}
+                      style={{ backgroundColor: 'rgba(2,4,9,0.45)', border: '1px solid #1e3a8a', color: '#f0f4ff' }}
                       onFocus={e => e.target.style.borderColor='#2563eb'} onBlur={e => e.target.style.borderColor='#1e3a8a'} />
                   </div>
                 ))}
@@ -268,7 +268,7 @@ export default function ProductsPage() {
                   <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: '#475569' }}>Server Type (Nest)</label>
                   <select value={form.nest_id} onChange={e => handleNestChange(e.target.value)} required
                     className="w-full px-4 py-3 rounded-xl text-sm outline-none"
-                    style={{ backgroundColor: 'rgba(2,4,9,0.92)', border: '1px solid #1e3a8a', color: form.nest_id ? '#f0f4ff' : '#475569' }}>
+                    style={{ backgroundColor: 'rgba(2,4,9,0.45)', border: '1px solid #1e3a8a', color: form.nest_id ? '#f0f4ff' : '#475569' }}>
                     <option value="">{loadingNests ? 'Loading nests…' : '— Select a nest —'}</option>
                     {nests.map(n => <option key={n.id} value={n.id}>{n.name}</option>)}
                   </select>
@@ -279,7 +279,7 @@ export default function ProductsPage() {
                   <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: '#475569' }}>Server Software (Egg)</label>
                   <select value={form.egg_id} onChange={e => setForm(f => ({ ...f, egg_id: e.target.value }))} required disabled={!form.nest_id}
                     className="w-full px-4 py-3 rounded-xl text-sm outline-none"
-                    style={{ backgroundColor: 'rgba(2,4,9,0.92)', border: '1px solid #1e3a8a', color: form.egg_id ? '#f0f4ff' : '#475569', opacity: !form.nest_id ? 0.5 : 1 }}>
+                    style={{ backgroundColor: 'rgba(2,4,9,0.45)', border: '1px solid #1e3a8a', color: form.egg_id ? '#f0f4ff' : '#475569', opacity: !form.nest_id ? 0.5 : 1 }}>
                     <option value="">{loadingEggs ? 'Loading eggs…' : !form.nest_id ? '— Select a nest first —' : '— Select software —'}</option>
                     {eggs.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}
                   </select>
@@ -394,7 +394,7 @@ export default function ProductsPage() {
               </div>
 
               {/* Credentials box */}
-              <div className="rounded-xl p-4 mb-4 text-left space-y-3" style={{ backgroundColor: 'rgba(2,4,9,0.92)', border: '1px solid #1e3a8a' }}>
+              <div className="rounded-xl p-4 mb-4 text-left space-y-3" style={{ backgroundColor: 'rgba(2,4,9,0.45)', border: '1px solid #1e3a8a' }}>
                 <p className="text-xs font-bold uppercase tracking-wider mb-1" style={{ color: '#475569' }}>Login Credentials</p>
                 {[
                   { label: '🌐 Panel URL',  value: result.panel_url || 'https://public.mzazi.shop', link: result.panel_url || 'https://public.mzazi.shop' },

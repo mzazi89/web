@@ -92,7 +92,7 @@ export default function Navbar() {
       <nav
         className="sticky top-0 z-50 transition-shadow duration-300"
         style={{
-          backgroundColor: 'rgba(2,4,9,0.94)',
+          backgroundColor: 'rgba(2,4,9,0.60)',
           borderBottom: '1px solid #1e3a8a',
           boxShadow: '0 1px 0 rgba(59,130,246,0.35), 0 4px 28px rgba(0,0,0,0.6)',
         }}
@@ -217,11 +217,11 @@ export default function Navbar() {
                           <input value={chatMsg.subject} onChange={e => setChatMsg(m => ({ ...m, subject: e.target.value }))}
                             placeholder="Subject" required
                             className="w-full px-3 py-2 rounded-lg text-sm outline-none"
-                            style={{ backgroundColor: 'rgba(2,4,9,0.92)', border: '1px solid #1e3a8a', color: '#f0f4ff' }} />
+                            style={{ backgroundColor: 'rgba(2,4,9,0.45)', border: '1px solid #1e3a8a', color: '#f0f4ff' }} />
                           <textarea value={chatMsg.message} onChange={e => setChatMsg(m => ({ ...m, message: e.target.value }))}
                             placeholder="Your message..." required rows={3}
                             className="w-full px-3 py-2 rounded-lg text-sm outline-none resize-none"
-                            style={{ backgroundColor: 'rgba(2,4,9,0.92)', border: '1px solid #1e3a8a', color: '#f0f4ff' }} />
+                            style={{ backgroundColor: 'rgba(2,4,9,0.45)', border: '1px solid #1e3a8a', color: '#f0f4ff' }} />
                           <button type="submit" disabled={chatLoading}
                             className="w-full py-2 rounded-lg text-sm font-semibold text-white"
                             style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', opacity: chatLoading ? 0.7 : 1 }}>

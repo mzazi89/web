@@ -60,7 +60,7 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-12 px-4" style={{ backgroundColor: 'rgba(2,4,9,0.92)' }}>
+    <div className="min-h-screen flex items-center justify-center py-12 px-4" style={{ backgroundColor: 'rgba(2,4,9,0.45)' }}>
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full pointer-events-none"
         style={{ background: 'radial-gradient(circle, rgba(37,99,235,0.1) 0%, transparent 70%)', filter: 'blur(40px)' }} />
 

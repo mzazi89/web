@@ -77,7 +77,7 @@ export default function TestimonialsPage() {
   };
 
   return (
-    <div style={{ backgroundColor: 'rgba(2,4,9,0.92)' }}>
+    <div style={{ backgroundColor: 'rgba(2,4,9,0.45)' }}>
       {/* Hero + rating summary */}
       <section className="py-16" style={{ background: 'linear-gradient(180deg,#020409 0%,#071428 60%,#020409 100%)' }}>
         <div className="max-w-3xl mx-auto px-4 text-center">
@@ -90,7 +90,7 @@ export default function TestimonialsPage() {
           </p>
 
           <div className="inline-flex flex-wrap items-center justify-center gap-x-6 gap-y-2 px-6 py-4 rounded-2xl"
-            style={{ backgroundColor: 'rgba(2,4,9,0.92)', border: '1px solid #1e3a8a' }}>
+            style={{ backgroundColor: 'rgba(2,4,9,0.45)', border: '1px solid #1e3a8a' }}>
             <div className="flex items-center gap-2">
               <span className="text-3xl font-extrabold" style={{ color: '#facc15' }}>{avg !== null ? avg : '—'}</span>
               <div>
@@ -158,7 +158,7 @@ export default function TestimonialsPage() {
                   placeholder="e.g. John Doe"
                   maxLength={100}
                   className="w-full px-4 py-3 rounded-xl text-sm outline-none"
-                  style={{ backgroundColor: 'rgba(2,4,9,0.92)', border: '1px solid #1e3a8a', color: '#f0f4ff' }}
+                  style={{ backgroundColor: 'rgba(2,4,9,0.45)', border: '1px solid #1e3a8a', color: '#f0f4ff' }}
                 />
               </div>
               <div>
@@ -174,7 +174,7 @@ export default function TestimonialsPage() {
                   rows={4}
                   maxLength={1000}
                   className="w-full px-4 py-3 rounded-xl text-sm outline-none resize-none"
-                  style={{ backgroundColor: 'rgba(2,4,9,0.92)', border: '1px solid #1e3a8a', color: '#f0f4ff' }}
+                  style={{ backgroundColor: 'rgba(2,4,9,0.45)', border: '1px solid #1e3a8a', color: '#f0f4ff' }}
                 />
               </div>
               <button type="submit" disabled={submitting || !form.rating || form.name.trim().length < 2 || form.message.trim().length < 10}

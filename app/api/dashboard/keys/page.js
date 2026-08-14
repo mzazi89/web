@@ -131,7 +131,7 @@ function KeysInner() {
             onChange={e => setKeyName(e.target.value)}
             placeholder="e.g. WhatsApp Bot"
             className="flex-1 px-3 py-2.5 rounded-lg text-sm outline-none"
-            style={{ backgroundColor: 'rgba(2,4,9,0.92)', border: '1px solid #1e3a8a', color: '#f0f4ff' }}
+            style={{ backgroundColor: 'rgba(2,4,9,0.45)', border: '1px solid #1e3a8a', color: '#f0f4ff' }}
             onKeyDown={e => { if (e.key === 'Enter') createKey(); }}
           />
           <button onClick={createKey} disabled={creating}
@@ -251,7 +251,7 @@ function KeysInner() {
             </p>
             <div className="flex items-center gap-2 mb-4">
               <code className="flex-1 px-3 py-2.5 rounded-lg text-xs font-mono break-all"
-                style={{ backgroundColor: 'rgba(2,4,9,0.92)', border: '1px solid #1e3a8a', color: '#93c5fd' }}>
+                style={{ backgroundColor: 'rgba(2,4,9,0.45)', border: '1px solid #1e3a8a', color: '#93c5fd' }}>
                 {newKey}
               </code>
               <CopyButton text={newKey} label="Copy" />

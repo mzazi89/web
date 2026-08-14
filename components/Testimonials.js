@@ -86,7 +86,7 @@ function TestimonialForm({ onSubmitted }) {
 
   const inputStyle = {
     width: '100%', padding: '12px 16px', borderRadius: '10px',
-    backgroundColor: 'rgba(2,4,9,0.9)', backdropFilter: 'blur(6px)',
+    backgroundColor: 'rgba(2,4,9,0.70)', backdropFilter: 'blur(6px)',
     border: '1px solid #1e3a8a', color: '#f0f4ff', fontSize: '15px',
     outline: 'none', transition: 'border-color 0.2s',
   };

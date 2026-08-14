@@ -90,7 +90,7 @@ export default async function Home() {
   const api = await getApiStats();
 
   return (
-    <div style={{ backgroundColor: 'rgba(2,4,9,0.92)' }}>
+    <div style={{ backgroundColor: 'rgba(2,4,9,0.45)' }}>
 
       {/* ─── Hero ─── */}
       <section className="relative overflow-hidden"
@@ -156,7 +156,7 @@ export default async function Home() {
       </section>
 
       {/* ─── Stats ─── */}
-      <section className="py-10 sm:py-14" style={{ backgroundColor: 'rgba(2,4,9,0.92)', borderTop: '1px solid #0d1120', borderBottom: '1px solid #0d1120' }}>
+      <section className="py-10 sm:py-14" style={{ backgroundColor: 'rgba(2,4,9,0.45)', borderTop: '1px solid #0d1120', borderBottom: '1px solid #0d1120' }}>
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-8 text-center">
             {STATS.map(s => (
@@ -170,7 +170,7 @@ export default async function Home() {
       </section>
 
       {/* ─── Features ─── */}
-      <section className="py-16 sm:py-24" style={{ backgroundColor: 'rgba(2,4,9,0.92)' }}>
+      <section className="py-16 sm:py-24" style={{ backgroundColor: 'rgba(2,4,9,0.45)' }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-12 sm:mb-16">
             <p className="text-xs sm:text-sm font-semibold uppercase tracking-widest mb-3" style={{ color: '#3b82f6' }}>What We Offer</p>
@@ -202,9 +202,9 @@ export default async function Home() {
       </section>
 
       {/* ─── MZAZI API ─── */}
-      <section className="py-16 sm:py-24" style={{ backgroundColor: 'rgba(2,4,9,0.92)' }}>
+      <section className="py-16 sm:py-24" style={{ backgroundColor: 'rgba(2,4,9,0.45)' }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="rounded-3xl overflow-hidden" style={{ border: '1px solid rgba(37,99,235,0.25)', background: 'linear-gradient(135deg, rgba(37,99,235,0.12) 0%, rgba(2,4,9,0.96) 55%)' }}>
+          <div className="rounded-3xl overflow-hidden" style={{ border: '1px solid rgba(37,99,235,0.25)', background: 'linear-gradient(135deg, rgba(37,99,235,0.12) 0%, rgba(2,4,9,0.60) 55%)' }}>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 p-8 sm:p-12 items-center">
               <div>
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-5"
@@ -252,7 +252,7 @@ export default async function Home() {
               </div>
 
               {/* Code preview */}
-              <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: 'rgba(2,4,9,0.92)', border: '1px solid #1e3a8a' }}>
+              <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: 'rgba(2,4,9,0.45)', border: '1px solid #1e3a8a' }}>
                 <div className="flex items-center gap-2 px-4 py-2.5" style={{ borderBottom: '1px solid #1e3a8a' }}>
                   <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: '#f87171' }} />
                   <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: '#fbbf24' }} />
@@ -279,7 +279,7 @@ export default async function Home() {
       </section>
 
       {/* ─── Pricing ─── */}
-      <section className="py-16 sm:py-24" style={{ backgroundColor: 'rgba(2,4,9,0.92)' }}>
+      <section className="py-16 sm:py-24" style={{ backgroundColor: 'rgba(2,4,9,0.45)' }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-12 sm:mb-16">
             <p className="text-xs sm:text-sm font-semibold uppercase tracking-widest mb-3" style={{ color: '#3b82f6' }}>Panel Plans</p>

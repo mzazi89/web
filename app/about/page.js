@@ -12,7 +12,7 @@ const values = [
 
 export default function AboutPage() {
   return (
-    <div style={{ backgroundColor: 'rgba(2,4,9,0.92)' }}>
+    <div style={{ backgroundColor: 'rgba(2,4,9,0.45)' }}>
       {/* Hero */}
       <section className="relative py-24 overflow-hidden" style={{ background: 'linear-gradient(180deg, #071428, #020409)' }}>
         <div className="absolute inset-0" style={{
@@ -33,7 +33,7 @@ export default function AboutPage() {
       </section>
 
       {/* Mission */}
-      <section className="py-20" style={{ backgroundColor: 'rgba(2,4,9,0.92)' }}>
+      <section className="py-20" style={{ backgroundColor: 'rgba(2,4,9,0.45)' }}>
         <div className="max-w-6xl mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div>
@@ -66,7 +66,7 @@ export default function AboutPage() {
       </section>
 
       {/* Values */}
-      <section className="py-20" style={{ backgroundColor: 'rgba(2,4,9,0.92)' }}>
+      <section className="py-20" style={{ backgroundColor: 'rgba(2,4,9,0.45)' }}>
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-14">
             <h2 className="text-3xl font-extrabold" style={{ color: '#f0f4ff' }}>Our Values</h2>
@@ -84,9 +84,9 @@ export default function AboutPage() {
       </section>
 
       {/* MZAZI API */}
-      <section className="py-20" style={{ backgroundColor: 'rgba(2,4,9,0.92)' }}>
+      <section className="py-20" style={{ backgroundColor: 'rgba(2,4,9,0.45)' }}>
         <div className="max-w-5xl mx-auto px-4">
-          <div className="rounded-3xl p-8 sm:p-12 text-center" style={{ border: '1px solid rgba(37,99,235,0.25)', background: 'linear-gradient(135deg, rgba(37,99,235,0.12) 0%, rgba(2,4,9,0.96) 60%)' }}>
+          <div className="rounded-3xl p-8 sm:p-12 text-center" style={{ border: '1px solid rgba(37,99,235,0.25)', background: 'linear-gradient(135deg, rgba(37,99,235,0.12) 0%, rgba(2,4,9,0.60) 60%)' }}>
             <div className="text-4xl mb-4">🔌</div>
             <h2 className="text-3xl font-extrabold mb-3" style={{ color: '#f0f4ff' }}>MZAZI API</h2>
             <p className="text-sm sm:text-base max-w-2xl mx-auto mb-8" style={{ color: '#94a3b8' }}>
@@ -100,7 +100,7 @@ export default function AboutPage() {
                 { n: '2',    l: 'Providers' },
                 { n: '24/7', l: 'Availability' },
               ].map(s => (
-                <div key={s.l} className="p-5 rounded-2xl" style={{ backgroundColor: 'rgba(2,4,9,0.85)', border: '1px solid #1e3a8a' }}>
+                <div key={s.l} className="p-5 rounded-2xl" style={{ backgroundColor: 'rgba(2,4,9,0.60)', border: '1px solid #1e3a8a' }}>
                   <div className="text-2xl font-extrabold mb-1" style={{ color: '#60a5fa' }}>{s.n}</div>
                   <div className="text-xs" style={{ color: '#64748b' }}>{s.l}</div>
                 </div>
@@ -117,7 +117,7 @@ export default function AboutPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-20" style={{ backgroundColor: 'rgba(2,4,9,0.92)' }}>
+      <section className="py-20" style={{ backgroundColor: 'rgba(2,4,9,0.45)' }}>
         <div className="max-w-2xl mx-auto text-center px-4">
           <h2 className="text-3xl font-extrabold mb-4" style={{ color: '#f0f4ff' }}>Ready to get started?</h2>
           <p className="mb-8" style={{ color: '#64748b' }}>Join hundreds of customers worldwide already using MZAZI TECH for their hosting needs.</p>

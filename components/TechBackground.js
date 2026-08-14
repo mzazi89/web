@@ -123,7 +123,7 @@ export default function TechBackground() {
           objectFit: 'cover',
           zIndex: 0,
           pointerEvents: 'none',
-          opacity: 0.32,
+          opacity: 0.4,
         }}
       >
         <source src="/videos/background.mp4" type="video/mp4" />
@@ -184,7 +184,7 @@ export default function TechBackground() {
           zIndex: 0,
           pointerEvents: 'none',
           background:
-            'radial-gradient(ellipse at center, transparent 40%, rgba(2,4,9,0.92) 100%)',
+            'radial-gradient(ellipse at center, transparent 40%, rgba(2,4,9,0.45) 100%)',
         }}
       />
     </>

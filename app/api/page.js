@@ -77,7 +77,7 @@ export default async function ApiLanding() {
   const activeEndpoints = endpoints.filter(e => e.is_active);
 
   return (
-    <div style={{ backgroundColor: 'rgba(2,4,9,0.92)' }}>
+    <div style={{ backgroundColor: 'rgba(2,4,9,0.45)' }}>
 
       {/* ── Hero ── */}
       <section className="relative overflow-hidden"
@@ -251,7 +251,7 @@ export default async function ApiLanding() {
       {/* ── CTA ── */}
       <section className="container-site py-16 pb-24">
         <div className="card p-10 sm:p-14 text-center"
-          style={{ background: 'linear-gradient(135deg,rgba(37,99,235,0.08),rgba(2,4,9,0.96))' }}>
+          style={{ background: 'linear-gradient(135deg,rgba(37,99,235,0.08),rgba(2,4,9,0.60))' }}>
           <h2 className="text-2xl sm:text-3xl font-bold mb-3">Start building with MZAZI API</h2>
           <p className="text-sm mb-8" style={{ color: '#94a3b8' }}>
             Create your free account, generate an API key, and make your first request in minutes.

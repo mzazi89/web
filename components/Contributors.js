@@ -68,7 +68,7 @@ function ContributorCard({ c }) {
         <div style={{
           position: 'absolute', bottom: 0, right: -4,
           width: '28px', height: '28px', borderRadius: '50%',
-          backgroundColor: 'rgba(2,4,9,0.92)', border: '2px solid #1e3a8a',
+          backgroundColor: 'rgba(2,4,9,0.45)', border: '2px solid #1e3a8a',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontSize: '14px',
         }}>
@@ -88,7 +88,7 @@ function ContributorCard({ c }) {
 
 export default function Contributors() {
   return (
-    <section className="py-20" style={{ backgroundColor: 'rgba(2,4,9,0.95)', backdropFilter: 'blur(4px)' }}>
+    <section className="py-20" style={{ backgroundColor: 'rgba(2,4,9,0.55)', backdropFilter: 'blur(4px)' }}>
       <div className="max-w-5xl mx-auto px-4">
         <div className="text-center mb-14">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-6"

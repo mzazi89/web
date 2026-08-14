@@ -267,14 +267,14 @@ function WalletInner() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'rgba(2,4,9,0.92)' }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'rgba(2,4,9,0.45)' }}>
         <div className="w-10 h-10 rounded-full border-2 animate-spin" style={{ borderColor: '#1e3a8a', borderTopColor: '#3b82f6' }} />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen py-10" style={{ backgroundColor: 'rgba(2,4,9,0.92)' }}>
+    <div className="min-h-screen py-10" style={{ backgroundColor: 'rgba(2,4,9,0.45)' }}>
       <div className="max-w-4xl mx-auto px-4">
 
         {/* ── Header ── */}
@@ -356,7 +356,7 @@ function WalletInner() {
                   onChange={e => setDepositAmount(e.target.value)}
                   placeholder="Enter amount..."
                   className="w-full px-3 py-2 rounded-lg text-sm outline-none"
-                  style={{ backgroundColor: 'rgba(2,4,9,0.92)', border: '1px solid #1e3a8a', color: '#f0f4ff' }}
+                  style={{ backgroundColor: 'rgba(2,4,9,0.45)', border: '1px solid #1e3a8a', color: '#f0f4ff' }}
                   required
                 />
               </div>
@@ -408,7 +408,7 @@ function WalletInner() {
                   placeholder="Enter 6-character code..."
                   maxLength={6}
                   className="w-full px-3 py-2.5 rounded-lg text-sm outline-none font-mono tracking-widest"
-                  style={{ backgroundColor: 'rgba(2,4,9,0.92)', border: '1px solid #1e3a8a', color: '#f0f4ff' }}
+                  style={{ backgroundColor: 'rgba(2,4,9,0.45)', border: '1px solid #1e3a8a', color: '#f0f4ff' }}
                   required
                   autoFocus
                 />
@@ -553,7 +553,7 @@ function WalletInner() {
 export default function WalletPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'rgba(2,4,9,0.92)' }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'rgba(2,4,9,0.45)' }}>
         <div className="w-10 h-10 rounded-full border-2 animate-spin" style={{ borderColor: '#1e3a8a', borderTopColor: '#3b82f6' }} />
       </div>
     }>
