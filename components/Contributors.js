@@ -6,7 +6,7 @@ const contributors = [
     role: 'Founder',
     company: 'Mzazi Tech',
     initials: 'DM',
-    color: 'linear-gradient(135deg, #2563eb, #1d4ed8)',
+    color: 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
     glow: 'rgba(37,99,235,0.35)',
     badge: '🚀',
   },
@@ -36,7 +36,7 @@ function ContributorCard({ c }) {
       style={{
         backgroundColor: 'rgba(22,24,42,0.85)',
         backdropFilter: 'blur(8px)',
-        border: '1px solid #1e2d4a',
+        border: '1px solid #1e3a8a',
         borderRadius: '20px',
         padding: '36px 28px',
         textAlign: 'center',
@@ -50,7 +50,7 @@ function ContributorCard({ c }) {
       onMouseLeave={e => {
         e.currentTarget.style.transform = 'translateY(0)';
         e.currentTarget.style.boxShadow = 'none';
-        e.currentTarget.style.borderColor = '#1e2d4a';
+        e.currentTarget.style.borderColor = '#1e3a8a';
       }}
     >
       {/* Avatar */}
@@ -68,7 +68,7 @@ function ContributorCard({ c }) {
         <div style={{
           position: 'absolute', bottom: 0, right: -4,
           width: '28px', height: '28px', borderRadius: '50%',
-          backgroundColor: 'rgba(10,10,15,0.72)', border: '2px solid #1e2d4a',
+          backgroundColor: 'rgba(2,4,9,0.92)', border: '2px solid #1e3a8a',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontSize: '14px',
         }}>
@@ -88,7 +88,7 @@ function ContributorCard({ c }) {
 
 export default function Contributors() {
   return (
-    <section className="py-20" style={{ backgroundColor: 'rgba(10,10,15,0.88)', backdropFilter: 'blur(4px)' }}>
+    <section className="py-20" style={{ backgroundColor: 'rgba(2,4,9,0.95)', backdropFilter: 'blur(4px)' }}>
       <div className="max-w-5xl mx-auto px-4">
         <div className="text-center mb-14">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-6"

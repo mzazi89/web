@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import TypingHeading from '@/components/TypingHeading';
 import Link from 'next/link';
 import Logo from '@/components/Logo';
 
@@ -53,25 +54,23 @@ export default function ForgotPasswordPage() {
   };
 
   const inputStyle = {
-    backgroundColor: '#0d1117',
-    border: '1px solid #1e2d4a',
+    backgroundColor: '#02040a',
+    border: '1px solid #1e3a8a',
     color: '#f0f4ff',
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-12 px-4" style={{ backgroundColor: 'rgba(10,10,15,0.72)' }}>
+    <div className="min-h-screen flex items-center justify-center py-12 px-4" style={{ backgroundColor: 'rgba(2,4,9,0.92)' }}>
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full pointer-events-none"
         style={{ background: 'radial-gradient(circle, rgba(37,99,235,0.1) 0%, transparent 70%)', filter: 'blur(40px)' }} />
 
       <div className="relative w-full max-w-md">
-        <div className="rounded-2xl p-8" style={{ backgroundColor: '#16182a', border: '1px solid #1e2d4a', boxShadow: '0 25px 50px rgba(0,0,0,0.5)' }}>
+        <div className="rounded-2xl p-8" style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a', boxShadow: '0 25px 50px rgba(0,0,0,0.5)' }}>
           <div className="text-center mb-8">
             <div className="mx-auto mb-4 flex justify-center">
               <Logo size={56} />
             </div>
-            <h2 className="text-2xl font-extrabold" style={{ color: '#f0f4ff' }}>
-              {step === 1 ? 'Forgot Password' : step === 2 ? 'Answer Security Question' : 'Password Reset'}
-            </h2>
+            <TypingHeading as="h2" text={step === 1 ? 'Forgot Password' : step === 2 ? 'Answer Security Question' : 'Password Reset'} speed={45} className="text-2xl font-extrabold" style={{ color: '#f0f4ff' }} />
             <p className="text-sm mt-1" style={{ color: '#64748b' }}>
               {step === 1 && 'Enter your account email to recover your password'}
               {step === 2 && `Hi — answer the security question to set a new password`}
@@ -93,7 +92,7 @@ export default function ForgotPasswordPage() {
                 className="w-full rounded-xl px-4 py-3 text-sm outline-none mb-6"
                 style={inputStyle} />
               <button type="submit" disabled={loading} className="w-full py-3 rounded-xl font-bold text-white text-sm"
-                style={{ background: 'linear-gradient(135deg, #2563eb, #1d4ed8)', cursor: loading ? 'not-allowed' : 'pointer' }}>
+                style={{ background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)', cursor: loading ? 'not-allowed' : 'pointer' }}>
                 {loading ? 'Checking…' : 'Continue'}
               </button>
             </form>
@@ -125,7 +124,7 @@ export default function ForgotPasswordPage() {
                 style={inputStyle} />
 
               <button type="submit" disabled={loading} className="w-full py-3 rounded-xl font-bold text-white text-sm"
-                style={{ background: 'linear-gradient(135deg, #2563eb, #1d4ed8)', cursor: loading ? 'not-allowed' : 'pointer' }}>
+                style={{ background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)', cursor: loading ? 'not-allowed' : 'pointer' }}>
                 {loading ? 'Resetting…' : 'Reset Password'}
               </button>
               <button type="button" onClick={() => setStep(1)} className="w-full py-2 mt-2 text-xs"

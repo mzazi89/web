@@ -11,7 +11,7 @@ export function BarChart({ data, height = 160, color = '#3b82f6', valueKey = 're
     <svg viewBox={`0 0 ${w} ${height + 28}`} className="w-full" style={{ display: 'block' }}>
       {[0.25, 0.5, 0.75, 1].map(f => (
         <line key={f} x1={0} x2={w} y1={height - height * f} y2={height - height * f}
-          stroke="#1e2d4a" strokeWidth={1} strokeDasharray="4 4" />
+          stroke="#1e3a8a" strokeWidth={1} strokeDasharray="4 4" />
       ))}
       {data.map((d, i) => {
         const h = Math.max(2, (d[valueKey] ?? 0) / max * height);

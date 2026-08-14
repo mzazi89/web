@@ -2,13 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ─── CSS variables ─────────────────────────────────── */
+/* ─── CSS variables — BLACK + BLUE design system ──────── */
 :root {
-  --bg-base:    #0a0a0f;
-  --bg-card:    #0f1629;
-  --bg-nav:     #0a0a0f;
-  --border:     #1e2d4a;
+  --bg-base:    #020409;   /* pure near-black */
+  --bg-card:    #060b16;   /* near-black card with blue tint */
+  --bg-nav:     #020409;
+  --border:     #1e3a8a;   /* blue-900 borders */
   --blue-main:  #2563eb;
+  --blue-bright:#3b82f6;
+  --blue-deep:  #1d4ed8;
   --blue-light: #60a5fa;
   --text-main:  #f0f4ff;
   --text-sub:   #94a3b8;
@@ -42,39 +44,71 @@ input, select, textarea {
 
 /* ─── Scrollbar ─────────────────────────────────────── */
 ::-webkit-scrollbar       { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: #0a0a0f; }
-::-webkit-scrollbar-thumb { background: #1e2d4a; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #2563eb; }
+::-webkit-scrollbar-track { background: #020409; }
+::-webkit-scrollbar-thumb { background: #1e3a8a; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
 
 /* ─── Selection ─────────────────────────────────────── */
-::selection { background: rgba(37,99,235,0.3); color: #f0f4ff; }
+::selection { background: rgba(59,130,246,0.35); color: #f0f4ff; }
 
 /* ─── Focus ring ────────────────────────────────────── */
 :focus-visible {
-  outline: 2px solid #2563eb;
+  outline: 2px solid #3b82f6;
   outline-offset: 2px;
 }
 
 /* ─── Links ─────────────────────────────────────────── */
 a { color: inherit; }
 
+/* ─── Typing animation ──────────────────────────────── */
+@keyframes blink-caret {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0; }
+}
+.typing-caret {
+  display: inline-block;
+  width: 3px;
+  height: 0.95em;
+  margin-left: 3px;
+  vertical-align: -0.08em;
+  background: #3b82f6;
+  box-shadow: 0 0 10px rgba(59,130,246,0.8);
+  animation: blink-caret 0.8s step-end infinite;
+}
+
 /* ─── Utility helpers ───────────────────────────────── */
 .grid-bg {
   background-image:
-    linear-gradient(rgba(37,99,235,0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(37,99,235,0.05) 1px, transparent 1px);
+    linear-gradient(rgba(59,130,246,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59,130,246,0.06) 1px, transparent 1px);
   background-size: 40px 40px;
 }
 
 .gradient-text {
-  background: linear-gradient(135deg, #60a5fa, #2563eb, #818cf8);
+  background: linear-gradient(135deg, #60a5fa, #3b82f6, #818cf8);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .glow-blue {
-  box-shadow: 0 0 20px rgba(37,99,235,0.3);
+  box-shadow: 0 0 20px rgba(59,130,246,0.35);
+}
+
+/* ─── Section heading with blue underline bar ───────── */
+.section-title {
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+.section-title .bar {
+  display: block;
+  width: 64px;
+  height: 4px;
+  margin-top: 12px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+  box-shadow: 0 0 14px rgba(59,130,246,0.6);
 }
 
 /* ─── Card ──────────────────────────────────────────── */
@@ -84,14 +118,49 @@ a { color: inherit; }
   border-radius: 1rem;
 }
 
+/* Hover-glow card */
+.glow-card {
+  background: linear-gradient(180deg, #060b16 0%, #04070f 100%);
+  border: 1px solid #1e3a8a;
+  border-radius: 1rem;
+  transition: all 0.3s ease;
+}
+.glow-card:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 0 28px rgba(59,130,246,0.22), inset 0 0 28px rgba(37,99,235,0.05);
+  transform: translateY(-2px);
+}
+
+/* ─── Primary blue button ───────────────────────────── */
+.btn-blue {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: #fff;
+  border: none;
+  border-radius: 0.75rem;
+  padding: 12px 24px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 18px rgba(37,99,235,0.35);
+  display: inline-block;
+  text-align: center;
+  text-decoration: none;
+}
+.btn-blue:hover {
+  box-shadow: 0 6px 28px rgba(59,130,246,0.5);
+  transform: translateY(-1px);
+}
+.btn-blue:disabled { opacity: 0.6; cursor: not-allowed; }
+
 /* ─── Animations ────────────────────────────────────── */
 @keyframes float {
   0%, 100% { transform: translateY(0); }
   50%       { transform: translateY(-8px); }
 }
 @keyframes pulse-blue {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(37,99,235,0.4); }
-  50%       { box-shadow: 0 0 0 8px rgba(37,99,235,0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(59,130,246,0.4); }
+  50%       { box-shadow: 0 0 0 8px rgba(59,130,246,0); }
 }
 @keyframes shimmer {
   0%   { background-position: -1000px 0; }
@@ -108,7 +177,7 @@ a { color: inherit; }
 /* ─── Spinner ───────────────────────────────────────── */
 .spinner {
   width: 40px; height: 40px;
-  border: 2px solid #1e2d4a;
+  border: 2px solid #1e3a8a;
   border-top-color: #3b82f6;
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
@@ -123,8 +192,8 @@ a { color: inherit; }
     margin-bottom: 1rem;
     padding: 0.75rem;
     border-radius: 0.75rem;
-    background: #0f1629;
-    border: 1px solid #1e2d4a;
+    background: #060b16;
+    border: 1px solid #1e3a8a;
   }
   .table-responsive td {
     display: flex;
@@ -165,7 +234,7 @@ a { color: inherit; }
   -webkit-overflow-scrolling: touch;
 }
 .scroll-x::-webkit-scrollbar { height: 8px; }
-.scroll-x::-webkit-scrollbar-thumb { background: #1e2030; border-radius: 8px; }
+.scroll-x::-webkit-scrollbar-thumb { background: #1e3a8a; border-radius: 8px; }
 
 /* fluid page padding: tight on phones, roomy on desktop */
 .page-pad { padding: 16px; }

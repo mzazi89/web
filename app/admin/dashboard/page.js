@@ -34,7 +34,7 @@ export default function AdminDashboard() {
 
   if (loading) return (
     <div className="min-h-screen" style={{ backgroundColor: 'rgba(6,8,16,0.78)' }}>
-      <div style={{ backgroundColor: '#0a0c14', borderBottom: '1px solid #1e2030' }} className="h-14" />
+      <div style={{ backgroundColor: '#04070f', borderBottom: '1px solid #1e3a8a' }} className="h-14" />
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
           <div className="w-10 h-10 border-2 border-red-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
@@ -54,7 +54,7 @@ export default function AdminDashboard() {
   return (
     <div className="min-h-screen" style={{ backgroundColor: 'rgba(6,8,16,0.78)' }}>
       {/* Top bar */}
-      <div style={{ backgroundColor: '#0a0c14', borderBottom: '1px solid #1e2030' }} className="sticky top-0 z-40">
+      <div style={{ backgroundColor: '#04070f', borderBottom: '1px solid #1e3a8a' }} className="sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #dc2626, #b91c1c)' }}>
@@ -83,7 +83,7 @@ export default function AdminDashboard() {
             { href: '/admin/vouchers', label: 'Vouchers & Recoveries' },
           ].map(n => (
             <Link key={n.href} href={n.href} className="px-4 py-2 rounded-xl text-sm font-medium"
-              style={{ backgroundColor: n.active ? 'rgba(220,38,38,0.15)' : 'rgba(30,32,48,0.5)', color: n.active ? '#f87171' : '#64748b', border: n.active ? '1px solid rgba(220,38,38,0.3)' : '1px solid #1e2030' }}>
+              style={{ backgroundColor: n.active ? 'rgba(220,38,38,0.15)' : 'rgba(30,32,48,0.5)', color: n.active ? '#f87171' : '#64748b', border: n.active ? '1px solid rgba(220,38,38,0.3)' : '1px solid #1e3a8a' }}>
               {n.label}
             </Link>
           ))}
@@ -105,7 +105,7 @@ export default function AdminDashboard() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Recent Inquiries */}
-          <div className="rounded-2xl p-6" style={{ backgroundColor: '#0f1117', border: '1px solid #1e2030' }}>
+          <div className="rounded-2xl p-6" style={{ backgroundColor: '#0f1117', border: '1px solid #1e3a8a' }}>
             <div className="flex items-center justify-between mb-5">
               <h2 className="font-bold text-sm" style={{ color: '#f0f4ff' }}>Recent Inquiries</h2>
               <Link href="/admin/inquiries" className="text-xs" style={{ color: '#3b82f6' }}>View all →</Link>
@@ -113,7 +113,7 @@ export default function AdminDashboard() {
             {stats.recentInquiries.length > 0 ? (
               <div className="space-y-3">
                 {stats.recentInquiries.map(inq => (
-                  <div key={inq.id} className="p-3 rounded-xl" style={{ backgroundColor: '#0a0c14', border: '1px solid #1e2030' }}>
+                  <div key={inq.id} className="p-3 rounded-xl" style={{ backgroundColor: '#04070f', border: '1px solid #1e3a8a' }}>
                     <div className="flex items-start justify-between">
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium truncate" style={{ color: '#f0f4ff' }}>{inq.subject}</p>
@@ -131,7 +131,7 @@ export default function AdminDashboard() {
           </div>
 
           {/* Recent Users */}
-          <div className="rounded-2xl p-6" style={{ backgroundColor: '#0f1117', border: '1px solid #1e2030' }}>
+          <div className="rounded-2xl p-6" style={{ backgroundColor: '#0f1117', border: '1px solid #1e3a8a' }}>
             <div className="flex items-center justify-between mb-5">
               <h2 className="font-bold text-sm" style={{ color: '#f0f4ff' }}>Recent Sign-ups</h2>
               <Link href="/admin/users" className="text-xs" style={{ color: '#3b82f6' }}>View all →</Link>
@@ -139,9 +139,9 @@ export default function AdminDashboard() {
             {stats.recentUsers.length > 0 ? (
               <div className="space-y-3">
                 {stats.recentUsers.map(u => (
-                  <div key={u.id} className="flex items-center space-x-3 p-3 rounded-xl" style={{ backgroundColor: '#0a0c14', border: '1px solid #1e2030' }}>
+                  <div key={u.id} className="flex items-center space-x-3 p-3 rounded-xl" style={{ backgroundColor: '#04070f', border: '1px solid #1e3a8a' }}>
                     <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
-                      style={{ background: 'linear-gradient(135deg, #2563eb, #1d4ed8)', color: '#fff' }}>
+                      style={{ background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)', color: '#fff' }}>
                       {(u.firstname || u.email || 'U')[0].toUpperCase()}
                     </div>
                     <div className="flex-1 min-w-0">

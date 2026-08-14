@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
+import TypingHeading from '@/components/TypingHeading';
 import Link from 'next/link';
 
 const channels = [
@@ -164,10 +165,10 @@ export default function ContactPage() {
   };
 
   return (
-    <div style={{ backgroundColor: 'rgba(10,10,15,0.72)', minHeight: '100vh' }}>
+    <div style={{ backgroundColor: 'rgba(2,4,9,0.92)', minHeight: '100vh' }}>
 
       {/* ── Hero ── */}
-      <section className="relative py-14 sm:py-20" style={{ background: 'linear-gradient(180deg,#071428 0%,#0a0a0f 100%)' }}>
+      <section className="relative py-14 sm:py-20" style={{ background: 'linear-gradient(180deg,#071428 0%,#020409 100%)' }}>
         <div className="absolute inset-0 pointer-events-none" style={{
           backgroundImage: 'linear-gradient(rgba(37,99,235,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(37,99,235,0.05) 1px,transparent 1px)',
           backgroundSize: '40px 40px',
@@ -177,7 +178,7 @@ export default function ContactPage() {
             style={{ backgroundColor: 'rgba(37,99,235,0.1)', color: '#60a5fa', border: '1px solid rgba(37,99,235,0.2)' }}>
             💬 24/7 Support Available
           </div>
-          <h1 className="text-3xl sm:text-5xl font-extrabold mb-3" style={{ color: '#f0f4ff' }}>Contact Us</h1>
+          <TypingHeading as="h1" text="Contact Us" speed={55} className="text-3xl sm:text-5xl font-extrabold mb-3" style={{ color: '#f0f4ff' }} />
           <p className="text-sm sm:text-lg" style={{ color: '#64748b' }}>
             Reach out through any channel or message us directly below.
           </p>
@@ -191,7 +192,7 @@ export default function ContactPage() {
           {channels.map(c => (
             <a key={c.title} href={c.href} target="_blank" rel="noopener noreferrer"
               className="flex flex-col items-center p-3 sm:p-5 rounded-2xl transition-all hover:scale-[1.02] text-center no-underline"
-              style={{ backgroundColor: '#0f1629', border: '1px solid #1e2d4a', textDecoration: 'none' }}>
+              style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a', textDecoration: 'none' }}>
               <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center mb-2 sm:mb-3"
                 style={{ backgroundColor: `${c.color}18`, color: c.color, border: `1px solid ${c.color}30` }}>
                 {c.icon}
@@ -209,10 +210,10 @@ export default function ContactPage() {
         {/* ── Chat Section ── */}
         {authLoading ? (
           <div className="flex items-center justify-center py-16">
-            <div className="w-8 h-8 rounded-full border-2 animate-spin" style={{ borderColor: '#1e2d4a', borderTopColor: '#3b82f6' }} />
+            <div className="w-8 h-8 rounded-full border-2 animate-spin" style={{ borderColor: '#1e3a8a', borderTopColor: '#3b82f6' }} />
           </div>
         ) : !user ? (
-          <div className="rounded-2xl p-8 sm:p-10 text-center" style={{ backgroundColor: '#0f1629', border: '1px solid #1e2d4a' }}>
+          <div className="rounded-2xl p-8 sm:p-10 text-center" style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a' }}>
             <div className="text-5xl mb-4">🔒</div>
             <p className="font-bold text-lg mb-2" style={{ color: '#f0f4ff' }}>Login to Send Inquiries</p>
             <p className="text-sm mb-6" style={{ color: '#64748b' }}>Log in to chat with our support team directly from here.</p>
@@ -220,11 +221,11 @@ export default function ContactPage() {
               <Link href="/login" className="px-5 py-2.5 rounded-xl text-sm font-bold text-white"
                 style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', textDecoration: 'none' }}>Log In</Link>
               <Link href="/signup" className="px-5 py-2.5 rounded-xl text-sm font-semibold"
-                style={{ backgroundColor: '#1e2d4a', color: '#94a3b8', textDecoration: 'none' }}>Sign Up</Link>
+                style={{ backgroundColor: '#1e3a8a', color: '#94a3b8', textDecoration: 'none' }}>Sign Up</Link>
             </div>
           </div>
         ) : (
-          <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: '#0f1629', border: '1px solid #1e2d4a' }}>
+          <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a' }}>
 
             {/* ─────────── MOBILE layout ─────────── */}
             <div className="block md:hidden" style={{ height: 'calc(100dvh - 280px)', minHeight: '480px', display: 'flex', flexDirection: 'column' }}>
@@ -232,7 +233,7 @@ export default function ContactPage() {
               {mobileView === 'list' && (
                 <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                   {/* Mobile list header */}
-                  <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: '1px solid #1e2d4a', backgroundColor: '#0a0c16', flexShrink: 0 }}>
+                  <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: '1px solid #1e3a8a', backgroundColor: '#0a0c16', flexShrink: 0 }}>
                     <p className="font-bold text-sm" style={{ color: '#f0f4ff' }}>Support Chat</p>
                     <button onClick={openCompose}
                       className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold"
@@ -285,8 +286,8 @@ export default function ContactPage() {
             {/* ─────────── DESKTOP layout ─────────── */}
             <div className="hidden md:flex" style={{ height: '620px' }}>
               {/* Left: thread list */}
-              <div style={{ width: '300px', minWidth: '240px', borderRight: '1px solid #1e2d4a', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
-                <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: '1px solid #1e2d4a', backgroundColor: '#0a0c16', flexShrink: 0 }}>
+              <div style={{ width: '300px', minWidth: '240px', borderRight: '1px solid #1e3a8a', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
+                <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: '1px solid #1e3a8a', backgroundColor: '#0a0c16', flexShrink: 0 }}>
                   <p className="font-bold text-sm" style={{ color: '#f0f4ff' }}>Support Chat</p>
                   <button onClick={openCompose}
                     className="w-8 h-8 rounded-xl flex items-center justify-center text-base"
@@ -386,7 +387,7 @@ function ComposeForm({ newSubject, setNewSubject, newMsg, setNewMsg, sending, al
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       {/* Header */}
       <div className="flex items-center gap-3 px-4 sm:px-5 py-3"
-        style={{ borderBottom: '1px solid #1e2d4a', backgroundColor: '#0a0c16', flexShrink: 0 }}>
+        style={{ borderBottom: '1px solid #1e3a8a', backgroundColor: '#0a0c16', flexShrink: 0 }}>
         <button onClick={onBack}
           className="flex items-center gap-1 text-sm"
           style={{ color: '#64748b', background: 'none', border: 'none', cursor: 'pointer' }}>
@@ -408,9 +409,9 @@ function ComposeForm({ newSubject, setNewSubject, newMsg, setNewMsg, sending, al
           <input type="text" value={newSubject} onChange={e => setNewSubject(e.target.value)}
             placeholder="e.g. Panel not starting, Billing issue…"
             required className="w-full px-4 py-3 rounded-xl text-sm outline-none"
-            style={{ backgroundColor: 'rgba(10,10,15,0.72)', border: '1px solid #1e2d4a', color: '#f0f4ff' }}
+            style={{ backgroundColor: 'rgba(2,4,9,0.92)', border: '1px solid #1e3a8a', color: '#f0f4ff' }}
             onFocus={e => e.target.style.borderColor = '#2563eb'}
-            onBlur={e => e.target.style.borderColor = '#1e2d4a'}
+            onBlur={e => e.target.style.borderColor = '#1e3a8a'}
           />
         </div>
         <div style={{ flex: 1 }}>
@@ -418,14 +419,14 @@ function ComposeForm({ newSubject, setNewSubject, newMsg, setNewMsg, sending, al
           <textarea value={newMsg} onChange={e => setNewMsg(e.target.value)}
             placeholder="Describe your issue in detail…"
             required rows={5} className="w-full px-4 py-3 rounded-xl text-sm outline-none resize-none"
-            style={{ backgroundColor: 'rgba(10,10,15,0.72)', border: '1px solid #1e2d4a', color: '#f0f4ff', width: '100%' }}
+            style={{ backgroundColor: 'rgba(2,4,9,0.92)', border: '1px solid #1e3a8a', color: '#f0f4ff', width: '100%' }}
             onFocus={e => e.target.style.borderColor = '#2563eb'}
-            onBlur={e => e.target.style.borderColor = '#1e2d4a'}
+            onBlur={e => e.target.style.borderColor = '#1e3a8a'}
           />
         </div>
         <button type="submit" disabled={sending}
           className="w-full py-3 rounded-xl font-bold text-sm text-white"
-          style={{ background: sending ? '#1e2d4a' : 'linear-gradient(135deg,#2563eb,#1d4ed8)', cursor: sending ? 'not-allowed' : 'pointer', border: 'none' }}>
+          style={{ background: sending ? '#1e3a8a' : 'linear-gradient(135deg,#2563eb,#1d4ed8)', cursor: sending ? 'not-allowed' : 'pointer', border: 'none' }}>
           {sending ? 'Sending…' : '📨 Send Inquiry'}
         </button>
       </form>
@@ -438,7 +439,7 @@ function ChatWindow({ thread, messages, msgLoading, newMsg, setNewMsg, sending, 
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       {/* Header */}
       <div className="flex items-center gap-3 px-4 py-3"
-        style={{ borderBottom: '1px solid #1e2d4a', backgroundColor: '#0a0c16', flexShrink: 0 }}>
+        style={{ borderBottom: '1px solid #1e3a8a', backgroundColor: '#0a0c16', flexShrink: 0 }}>
         {showBack && (
           <button onClick={onBack}
             className="flex items-center justify-center w-8 h-8 rounded-xl flex-shrink-0"
@@ -460,7 +461,7 @@ function ChatWindow({ thread, messages, msgLoading, newMsg, setNewMsg, sending, 
       <div style={{ flex: 1, overflowY: 'auto', padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
         {msgLoading ? (
           <div className="flex items-center justify-center h-full">
-            <div className="w-6 h-6 rounded-full border-2 animate-spin" style={{ borderColor: '#1e2d4a', borderTopColor: '#3b82f6' }} />
+            <div className="w-6 h-6 rounded-full border-2 animate-spin" style={{ borderColor: '#1e3a8a', borderTopColor: '#3b82f6' }} />
           </div>
         ) : messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full gap-2">
@@ -506,7 +507,7 @@ function ChatWindow({ thread, messages, msgLoading, newMsg, setNewMsg, sending, 
       </div>
 
       {/* Input */}
-      <div className="px-3 py-3" style={{ borderTop: '1px solid #1e2d4a', backgroundColor: '#0a0c16', flexShrink: 0 }}>
+      <div className="px-3 py-3" style={{ borderTop: '1px solid #1e3a8a', backgroundColor: '#0a0c16', flexShrink: 0 }}>
         {thread.status === 'closed' ? (
           <p className="text-xs text-center py-1" style={{ color: '#475569' }}>
             This inquiry is closed. Start a new one to contact support.
@@ -522,14 +523,14 @@ function ChatWindow({ thread, messages, msgLoading, newMsg, setNewMsg, sending, 
               rows={1}
               className="flex-1 px-4 py-2.5 rounded-2xl text-sm outline-none"
               style={{
-                backgroundColor: '#111827', border: '1px solid #1e2d4a', color: '#f0f4ff',
+                backgroundColor: '#111827', border: '1px solid #1e3a8a', color: '#f0f4ff',
                 resize: 'none', maxHeight: '100px', lineHeight: '1.5',
               }}
             />
             <button type="submit" disabled={sending || !newMsg.trim()}
               className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
               style={{
-                background: sending || !newMsg.trim() ? '#1e2d4a' : 'linear-gradient(135deg,#2563eb,#1d4ed8)',
+                background: sending || !newMsg.trim() ? '#1e3a8a' : 'linear-gradient(135deg,#2563eb,#1d4ed8)',
                 cursor: sending || !newMsg.trim() ? 'not-allowed' : 'pointer', border: 'none',
               }}>
               {sending

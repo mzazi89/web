@@ -38,11 +38,11 @@ export default function AdminLayout({ children }) {
   if (isLogin) return <>{children}</>;
 
   return (
-    <div style={{ backgroundColor: '#0a0a0f', minHeight: '100vh' }}>
+    <div style={{ backgroundColor: '#020409', minHeight: '100vh' }}>
       <div className="flex min-h-screen">
         {/* Sidebar */}
         <aside className="hidden md:flex flex-col w-60 flex-shrink-0 sticky top-0 h-screen p-4"
-          style={{ backgroundColor: '#0d1117', borderRight: '1px solid #1e2d4a' }}>
+          style={{ backgroundColor: '#02040a', borderRight: '1px solid #1e3a8a' }}>
           <Link href="/" className="flex items-center gap-2 mb-6" style={{ textDecoration: 'none' }}>
             <span className="text-lg">⚡</span>
             <span className="font-extrabold" style={{ background: 'linear-gradient(135deg,#60a5fa,#3b82f6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
@@ -73,7 +73,7 @@ export default function AdminLayout({ children }) {
         {/* Mobile top nav */}
         <div className="md:hidden w-full">
           <div className="sticky top-0 z-40 px-4 py-3 flex items-center justify-between"
-            style={{ backgroundColor: '#0d1117', borderBottom: '1px solid #1e2d4a' }}>
+            style={{ backgroundColor: '#02040a', borderBottom: '1px solid #1e3a8a' }}>
             <span className="font-extrabold text-sm" style={{ color: '#f0f4ff' }}>⚡ MZAZI Admin</span>
             {/* ☰ button on the RIGHT */}
             <div className="relative" ref={menuRef}>
@@ -82,14 +82,14 @@ export default function AdminLayout({ children }) {
                 aria-label="Admin menu"
                 aria-expanded={menuOpen}
                 className="flex items-center gap-1.5 text-sm px-3 py-2 rounded-lg cursor-pointer"
-                style={{ color: '#94a3b8', border: '1px solid #1e2d4a', backgroundColor: menuOpen ? 'rgba(37,99,235,0.12)' : 'transparent' }}>
+                style={{ color: '#94a3b8', border: '1px solid #1e3a8a', backgroundColor: menuOpen ? 'rgba(37,99,235,0.12)' : 'transparent' }}>
                 <span className="text-base leading-none">☰</span>
                 <span className="text-xs font-semibold">Menu</span>
               </button>
               {/* portrait dropdown — small rectangle below the button, right-aligned */}
               {menuOpen && (
                 <div className="absolute right-0 top-12 w-56 rounded-2xl p-2 z-50"
-                  style={{ backgroundColor: '#0d1117', border: '1px solid #1e2d4a', boxShadow: '0 10px 34px rgba(0,0,0,0.55)' }}>
+                  style={{ backgroundColor: '#02040a', border: '1px solid #1e3a8a', boxShadow: '0 10px 34px rgba(0,0,0,0.55)' }}>
                   <div className="px-3 py-2 mb-1 text-[10px] font-bold uppercase tracking-wider" style={{ color: '#475569' }}>
                     Admin Menu
                   </div>
@@ -106,7 +106,7 @@ export default function AdminLayout({ children }) {
                     </Link>
                   ))}
                   <Link href="/" className="block px-3 py-2 mt-1 rounded-lg text-xs"
-                    style={{ color: '#475569', textDecoration: 'none', borderTop: '1px solid #1e2d4a' }}>
+                    style={{ color: '#475569', textDecoration: 'none', borderTop: '1px solid #1e3a8a' }}>
                     ← Back to site
                   </Link>
                 </div>

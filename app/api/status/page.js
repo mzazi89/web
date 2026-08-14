@@ -145,7 +145,7 @@ export default async function ApiStatus() {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr style={{ backgroundColor: '#0f1629', borderBottom: '1px solid #1e2d4a' }}>
+              <tr style={{ backgroundColor: '#060b16', borderBottom: '1px solid #1e3a8a' }}>
                 {['Endpoint', 'Category', 'Provider', 'Status'].map(h => (
                   <th key={h} className="text-left px-5 py-3 text-xs font-bold uppercase tracking-wide" style={{ color: '#64748b' }}>{h}</th>
                 ))}
@@ -156,7 +156,7 @@ export default async function ApiStatus() {
                 <tr><td colSpan={4} className="px-5 py-8 text-center text-sm" style={{ color: '#64748b' }}>No active endpoints yet.</td></tr>
               )}
               {activeEndpoints.map(e => (
-                <tr key={e.path} style={{ borderBottom: '1px solid #0f1629' }}>
+                <tr key={e.path} style={{ borderBottom: '1px solid #060b16' }}>
                   <td className="px-5 py-3">
                     <span className="text-[10px] font-bold px-1.5 py-0.5 rounded mr-2" style={{ backgroundColor: '#1e3a8a', color: '#93c5fd' }}>{e.method}</span>
                     <code className="text-xs font-mono" style={{ color: '#e2e8f0' }}>{e.path}</code>

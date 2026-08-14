@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect, useCallback } from 'react';
+import TypingHeading from '@/components/TypingHeading';
 import Link from 'next/link';
 import StarRating from '@/components/StarRating';
 
@@ -14,7 +15,7 @@ function Stars({ value, size = 18 }) {
 function TestimonialCard({ t }) {
   const initials = t.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
   return (
-    <div className="p-6 rounded-2xl flex flex-col" style={{ backgroundColor: '#0f1629', border: '1px solid #1e2d4a' }}>
+    <div className="p-6 rounded-2xl flex flex-col" style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a' }}>
       <div className="flex items-center gap-3 mb-4">
         <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0"
           style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', color: '#fff' }}>
@@ -76,20 +77,21 @@ export default function TestimonialsPage() {
   };
 
   return (
-    <div style={{ backgroundColor: 'rgba(10,10,15,0.72)' }}>
+    <div style={{ backgroundColor: 'rgba(2,4,9,0.92)' }}>
       {/* Hero + rating summary */}
-      <section className="py-16" style={{ background: 'linear-gradient(180deg,#0a0a0f 0%,#071428 60%,#0a0a0f 100%)' }}>
+      <section className="py-16" style={{ background: 'linear-gradient(180deg,#020409 0%,#071428 60%,#020409 100%)' }}>
         <div className="max-w-3xl mx-auto px-4 text-center">
           <Link href="/" className="text-xs font-semibold" style={{ color: '#475569', textDecoration: 'none' }}>← Back to Home</Link>
           <h1 className="text-3xl sm:text-5xl font-extrabold mt-3 mb-4" style={{ color: '#f0f4ff' }}>
-            What Our Customers <span className="gradient-text">Say</span>
+            <TypingHeading as="span" text="What Our Customers " speed={55} />
+            <TypingHeading as="span" text="Say" speed={55} delay={1600} className="gradient-text" />
           </h1>
           <p className="text-sm sm:text-base mb-8" style={{ color: '#94a3b8' }}>
             Real reviews from real customers. Have you used MZAZI TECH? Leave your own review below.
           </p>
 
           <div className="inline-flex flex-wrap items-center justify-center gap-x-6 gap-y-2 px-6 py-4 rounded-2xl"
-            style={{ backgroundColor: 'rgba(15,22,41,0.8)', border: '1px solid #1e2d4a' }}>
+            style={{ backgroundColor: 'rgba(2,4,9,0.92)', border: '1px solid #1e3a8a' }}>
             <div className="flex items-center gap-2">
               <span className="text-3xl font-extrabold" style={{ color: '#facc15' }}>{avg !== null ? avg : '—'}</span>
               <div>
@@ -97,7 +99,7 @@ export default function TestimonialsPage() {
                 <p className="text-xs mt-0.5" style={{ color: '#64748b' }}>{total} review{total !== 1 ? 's' : ''}</p>
               </div>
             </div>
-            <span className="hidden sm:block w-px h-8" style={{ backgroundColor: '#1e2d4a' }} />
+            <span className="hidden sm:block w-px h-8" style={{ backgroundColor: '#1e3a8a' }} />
             <p className="text-xs" style={{ color: '#64748b' }}>
               ⭐★★★★★ rated · powered by real customers worldwide
             </p>
@@ -136,7 +138,7 @@ export default function TestimonialsPage() {
       {/* Submit form */}
       <section className="pb-20">
         <div className="max-w-xl mx-auto px-4">
-          <div className="p-6 sm:p-8 rounded-2xl" style={{ backgroundColor: '#0f1629', border: '1px solid rgba(37,99,235,0.35)' }}>
+          <div className="p-6 sm:p-8 rounded-2xl" style={{ backgroundColor: '#060b16', border: '1px solid rgba(37,99,235,0.35)' }}>
             <h2 className="text-xl font-bold mb-1" style={{ color: '#f0f4ff' }}>Leave a Review</h2>
             <p className="text-xs mb-5" style={{ color: '#64748b' }}>
               Tell others about your experience. Reviews appear after a quick approval.
@@ -157,7 +159,7 @@ export default function TestimonialsPage() {
                   placeholder="e.g. John Doe"
                   maxLength={100}
                   className="w-full px-4 py-3 rounded-xl text-sm outline-none"
-                  style={{ backgroundColor: 'rgba(10,10,15,0.72)', border: '1px solid #1e2d4a', color: '#f0f4ff' }}
+                  style={{ backgroundColor: 'rgba(2,4,9,0.92)', border: '1px solid #1e3a8a', color: '#f0f4ff' }}
                 />
               </div>
               <div>
@@ -173,7 +175,7 @@ export default function TestimonialsPage() {
                   rows={4}
                   maxLength={1000}
                   className="w-full px-4 py-3 rounded-xl text-sm outline-none resize-none"
-                  style={{ backgroundColor: 'rgba(10,10,15,0.72)', border: '1px solid #1e2d4a', color: '#f0f4ff' }}
+                  style={{ backgroundColor: 'rgba(2,4,9,0.92)', border: '1px solid #1e3a8a', color: '#f0f4ff' }}
                 />
               </div>
               <button type="submit" disabled={submitting || !form.rating || form.name.trim().length < 2 || form.message.trim().length < 10}

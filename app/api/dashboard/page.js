@@ -52,7 +52,7 @@ export default function ApiDashboard() {
     <div className="container-site py-24 text-center">
       <p className="text-sm mb-4" style={{ color: '#f87171' }}>{error}</p>
       <button onClick={() => location.reload()} className="px-4 py-2 rounded-lg text-sm font-semibold"
-        style={{ border: '1px solid #1e2d4a', color: '#94a3b8', cursor: 'pointer' }}>Retry</button>
+        style={{ border: '1px solid #1e3a8a', color: '#94a3b8', cursor: 'pointer' }}>Retry</button>
     </div>
   );
 
@@ -143,7 +143,7 @@ export default function ApiDashboard() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr style={{ backgroundColor: '#0f1629', borderBottom: '1px solid #1e2d4a' }}>
+                <tr style={{ backgroundColor: '#060b16', borderBottom: '1px solid #1e3a8a' }}>
                   {['Name', 'Key', 'Plan', 'Used today', 'Daily limit', 'Remaining'].map(h => (
                     <th key={h} className="text-left px-4 py-2.5 text-xs font-bold uppercase tracking-wide" style={{ color: '#64748b' }}>{h}</th>
                   ))}
@@ -151,7 +151,7 @@ export default function ApiDashboard() {
               </thead>
               <tbody>
                 {data.quotas.map(q => (
-                  <tr key={q.id} style={{ borderBottom: '1px solid #0f1629' }}>
+                  <tr key={q.id} style={{ borderBottom: '1px solid #060b16' }}>
                     <td className="px-4 py-3 text-xs font-semibold" style={{ color: '#f0f4ff' }}>{q.name}</td>
                     <td className="px-4 py-3 font-mono text-xs" style={{ color: '#94a3b8' }}>{q.prefix}</td>
                     <td className="px-4 py-3">
@@ -186,7 +186,7 @@ export default function ApiDashboard() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr style={{ backgroundColor: '#0f1629', borderBottom: '1px solid #1e2d4a' }}>
+                <tr style={{ backgroundColor: '#060b16', borderBottom: '1px solid #1e3a8a' }}>
                   {['Request ID', 'Endpoint', 'Status', 'Time', 'When'].map(h => (
                     <th key={h} className="text-left px-4 py-2.5 text-xs font-bold uppercase tracking-wide" style={{ color: '#64748b' }}>{h}</th>
                   ))}
@@ -194,7 +194,7 @@ export default function ApiDashboard() {
               </thead>
               <tbody>
                 {data.recent_requests.map(r => (
-                  <tr key={r.request_id} style={{ borderBottom: '1px solid #0f1629' }}>
+                  <tr key={r.request_id} style={{ borderBottom: '1px solid #060b16' }}>
                     <td className="px-4 py-3 font-mono text-xs" style={{ color: '#64748b' }}>{r.request_id}</td>
                     <td className="px-4 py-3 font-mono text-xs" style={{ color: '#e2e8f0' }}>{r.endpoint}</td>
                     <td className="px-4 py-3">

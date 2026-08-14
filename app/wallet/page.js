@@ -1,5 +1,6 @@
 'use client';
 import React, { Suspense, useEffect, useState } from 'react';
+import TypingHeading from '@/components/TypingHeading';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { fmtMtc, fmtMtcValue, mtcToKsh } from '@/lib/currency';
 
@@ -266,20 +267,20 @@ function WalletInner() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'rgba(10,10,15,0.72)' }}>
-        <div className="w-10 h-10 rounded-full border-2 animate-spin" style={{ borderColor: '#1e2d4a', borderTopColor: '#3b82f6' }} />
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'rgba(2,4,9,0.92)' }}>
+        <div className="w-10 h-10 rounded-full border-2 animate-spin" style={{ borderColor: '#1e3a8a', borderTopColor: '#3b82f6' }} />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen py-10" style={{ backgroundColor: 'rgba(10,10,15,0.72)' }}>
+    <div className="min-h-screen py-10" style={{ backgroundColor: 'rgba(2,4,9,0.92)' }}>
       <div className="max-w-4xl mx-auto px-4">
 
         {/* ── Header ── */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-extrabold" style={{ color: '#f0f4ff' }}>My Wallet</h1>
+            <TypingHeading as="h1" text="My Wallet" speed={60} className="text-3xl font-extrabold" style={{ color: '#f0f4ff' }} />
             <p className="mt-1 text-sm" style={{ color: '#64748b' }}>Deposit funds and use them to deploy panels instantly</p>
           </div>
           {/* Telegram support button */}
@@ -330,7 +331,7 @@ function WalletInner() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* ── Balance Card ── */}
-          <div className="rounded-2xl p-6" style={{ backgroundColor: '#0f1629', border: '1px solid #1e2d4a' }}>
+          <div className="rounded-2xl p-6" style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a' }}>
             <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: '#475569' }}>Available Balance</p>
             <p className="text-4xl font-extrabold" style={{ color: '#3b82f6' }}>
               {fmtMtc(balance)}
@@ -343,7 +344,7 @@ function WalletInner() {
           </div>
 
           {/* ── Deposit Form ── */}
-          <div className="rounded-2xl p-6" style={{ backgroundColor: '#0f1629', border: '1px solid #1e2d4a' }}>
+          <div className="rounded-2xl p-6" style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a' }}>
             <p className="text-xs font-semibold uppercase tracking-wider mb-4" style={{ color: '#475569' }}>Deposit Funds</p>
             <form onSubmit={handleDeposit}>
               <div className="mb-3">
@@ -355,7 +356,7 @@ function WalletInner() {
                   onChange={e => setDepositAmount(e.target.value)}
                   placeholder="Enter amount..."
                   className="w-full px-3 py-2 rounded-lg text-sm outline-none"
-                  style={{ backgroundColor: 'rgba(10,10,15,0.72)', border: '1px solid #1e2d4a', color: '#f0f4ff' }}
+                  style={{ backgroundColor: 'rgba(2,4,9,0.92)', border: '1px solid #1e3a8a', color: '#f0f4ff' }}
                   required
                 />
               </div>
@@ -364,9 +365,9 @@ function WalletInner() {
                   <button key={amt} type="button" onClick={() => setDepositAmount(String(amt))}
                     className="text-xs px-3 py-1 rounded-lg transition-colors"
                     style={{
-                      backgroundColor: depositAmount === String(amt) ? '#2563eb' : '#1e2d4a',
+                      backgroundColor: depositAmount === String(amt) ? '#2563eb' : '#1e3a8a',
                       color: depositAmount === String(amt) ? '#fff' : '#94a3b8',
-                      border: '1px solid #1e2d4a',
+                      border: '1px solid #1e3a8a',
                     }}>
                     {fmtMtc(amt)}
                   </button>
@@ -382,7 +383,7 @@ function WalletInner() {
         </div>
 
         {/* ── Voucher Top-Up ── */}
-        <div className="mt-6 rounded-2xl p-6" style={{ backgroundColor: '#0f1629', border: '1px solid #1e2d4a' }}>
+        <div className="mt-6 rounded-2xl p-6" style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a' }}>
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#475569' }}>Top Up with Voucher</p>
@@ -407,7 +408,7 @@ function WalletInner() {
                   placeholder="Enter 6-character code..."
                   maxLength={6}
                   className="w-full px-3 py-2.5 rounded-lg text-sm outline-none font-mono tracking-widest"
-                  style={{ backgroundColor: 'rgba(10,10,15,0.72)', border: '1px solid #1e2d4a', color: '#f0f4ff' }}
+                  style={{ backgroundColor: 'rgba(2,4,9,0.92)', border: '1px solid #1e3a8a', color: '#f0f4ff' }}
                   required
                   autoFocus
                 />
@@ -430,10 +431,10 @@ function WalletInner() {
         </div>
 
         {/* ── Transaction History ── */}
-        <div className="mt-8 rounded-2xl p-6" style={{ backgroundColor: '#0f1629', border: '1px solid #1e2d4a' }}>
+        <div className="mt-8 rounded-2xl p-6" style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a' }}>
           <div className="flex items-center justify-between mb-5">
             <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#475569' }}>Transaction History</p>
-            <span className="text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: '#1e2d4a', color: '#64748b' }}>
+            <span className="text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: '#1e3a8a', color: '#64748b' }}>
               {transactions.length} record{transactions.length !== 1 ? 's' : ''}
             </span>
           </div>
@@ -447,7 +448,7 @@ function WalletInner() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr style={{ borderBottom: '1px solid #1e2d4a' }}>
+                  <tr style={{ borderBottom: '1px solid #1e3a8a' }}>
                     {['Date', 'Description', 'Type', 'Amount', 'Status', 'Receipt'].map(h => (
                       <th key={h} className="text-left pb-3 pr-3 text-xs font-semibold uppercase tracking-wider" style={{ color: '#475569' }}>{h}</th>
                     ))}
@@ -520,7 +521,7 @@ function WalletInner() {
 
         {/* ── Bottom support strip ── */}
         <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-3 p-4 rounded-xl"
-          style={{ backgroundColor: '#0f1629', border: '1px solid #1e2d4a' }}>
+          style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a' }}>
           <p className="text-xs" style={{ color: '#475569' }}>
             Need help with a transaction or a panel issue?
           </p>
@@ -552,8 +553,8 @@ function WalletInner() {
 export default function WalletPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'rgba(10,10,15,0.72)' }}>
-        <div className="w-10 h-10 rounded-full border-2 animate-spin" style={{ borderColor: '#1e2d4a', borderTopColor: '#3b82f6' }} />
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'rgba(2,4,9,0.92)' }}>
+        <div className="w-10 h-10 rounded-full border-2 animate-spin" style={{ borderColor: '#1e3a8a', borderTopColor: '#3b82f6' }} />
       </div>
     }>
       <WalletInner />

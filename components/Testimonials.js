@@ -15,7 +15,7 @@ function TestimonialCard({ testimonial }) {
       style={{
         backgroundColor: 'rgba(22,24,42,0.85)',
         backdropFilter: 'blur(8px)',
-        border: '1px solid #1e2d4a',
+        border: '1px solid #1e3a8a',
         borderRadius: '16px',
         padding: '28px',
         display: 'flex',
@@ -29,10 +29,10 @@ function TestimonialCard({ testimonial }) {
       <div style={{ color: '#2563eb', fontSize: '32px', lineHeight: 1, opacity: 0.6 }}>"</div>
       <p style={{ color: '#94a3b8', fontSize: '15px', lineHeight: '1.7', flex: 1 }}>{testimonial.message}</p>
       <StarRating value={testimonial.rating} readonly />
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', paddingTop: '8px', borderTop: '1px solid #1e2d4a' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', paddingTop: '8px', borderTop: '1px solid #1e3a8a' }}>
         <div style={{
           width: '40px', height: '40px', borderRadius: '50%',
-          background: 'linear-gradient(135deg, #2563eb, #1d4ed8)',
+          background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontWeight: 700, fontSize: '14px', color: '#fff', flexShrink: 0,
         }}>{initials}</div>
@@ -77,7 +77,7 @@ function TestimonialForm({ onSubmitted }) {
         <div style={{ fontSize: '48px', marginBottom: '16px' }}>🎉</div>
         <h3 style={{ color: '#f0f4ff', fontSize: '20px', fontWeight: 700, marginBottom: '8px' }}>Thank You!</h3>
         <p style={{ color: '#64748b' }}>Your testimonial has been submitted successfully. It will appear after a quick approval.</p>
-        <button onClick={() => setSuccess(false)} style={{ marginTop: '20px', padding: '10px 24px', borderRadius: '10px', background: 'linear-gradient(135deg, #2563eb, #1d4ed8)', color: '#fff', fontWeight: 600, border: 'none', cursor: 'pointer' }}>
+        <button onClick={() => setSuccess(false)} style={{ marginTop: '20px', padding: '10px 24px', borderRadius: '10px', background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)', color: '#fff', fontWeight: 600, border: 'none', cursor: 'pointer' }}>
           Add Another
         </button>
       </div>
@@ -86,13 +86,13 @@ function TestimonialForm({ onSubmitted }) {
 
   const inputStyle = {
     width: '100%', padding: '12px 16px', borderRadius: '10px',
-    backgroundColor: 'rgba(10,10,20,0.7)', backdropFilter: 'blur(6px)',
-    border: '1px solid #1e2d4a', color: '#f0f4ff', fontSize: '15px',
+    backgroundColor: 'rgba(2,4,9,0.9)', backdropFilter: 'blur(6px)',
+    border: '1px solid #1e3a8a', color: '#f0f4ff', fontSize: '15px',
     outline: 'none', transition: 'border-color 0.2s',
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ backgroundColor: 'rgba(22,24,42,0.85)', backdropFilter: 'blur(8px)', border: '1px solid #1e2d4a', borderRadius: '16px', padding: '32px' }}>
+    <form onSubmit={handleSubmit} style={{ backgroundColor: 'rgba(22,24,42,0.85)', backdropFilter: 'blur(8px)', border: '1px solid #1e3a8a', borderRadius: '16px', padding: '32px' }}>
       <h3 style={{ color: '#f0f4ff', fontSize: '20px', fontWeight: 700, marginBottom: '24px' }}>Share Your Experience</h3>
 
       {error && (
@@ -106,7 +106,7 @@ function TestimonialForm({ onSubmitted }) {
         <input type="text" placeholder="e.g. John Kamau" value={form.name} required
           onChange={e => setForm({ ...form, name: e.target.value })} style={inputStyle}
           onFocus={e => e.target.style.borderColor = '#2563eb'}
-          onBlur={e => e.target.style.borderColor = '#1e2d4a'} />
+          onBlur={e => e.target.style.borderColor = '#1e3a8a'} />
       </div>
 
       <div style={{ marginBottom: '20px' }}>
@@ -120,13 +120,13 @@ function TestimonialForm({ onSubmitted }) {
           onChange={e => setForm({ ...form, message: e.target.value })}
           style={{ ...inputStyle, resize: 'vertical', minHeight: '120px' }}
           onFocus={e => e.target.style.borderColor = '#2563eb'}
-          onBlur={e => e.target.style.borderColor = '#1e2d4a'} />
+          onBlur={e => e.target.style.borderColor = '#1e3a8a'} />
         <div style={{ color: '#475569', fontSize: '12px', marginTop: '6px', textAlign: 'right' }}>{form.message.length} / 1000</div>
       </div>
 
       <button type="submit" disabled={loading} style={{
         width: '100%', padding: '14px', borderRadius: '12px',
-        background: loading ? '#1e2d4a' : 'linear-gradient(135deg, #2563eb, #1d4ed8)',
+        background: loading ? '#1e3a8a' : 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
         color: loading ? '#64748b' : '#fff', fontWeight: 700, fontSize: '16px',
         border: 'none', cursor: loading ? 'not-allowed' : 'pointer',
         boxShadow: loading ? 'none' : '0 0 24px rgba(37,99,235,0.35)', transition: 'all 0.2s',
@@ -214,7 +214,7 @@ export default function Testimonials() {
         {loading ? (
           <div style={{ textAlign: 'center', color: '#475569', padding: '40px 0' }}>Loading testimonials…</div>
         ) : testimonials.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '48px', backgroundColor: 'rgba(22,24,42,0.85)', backdropFilter: 'blur(8px)', border: '1px solid #1e2d4a', borderRadius: '16px', marginBottom: '48px', color: '#64748b' }}>
+          <div style={{ textAlign: 'center', padding: '48px', backgroundColor: 'rgba(22,24,42,0.85)', backdropFilter: 'blur(8px)', border: '1px solid #1e3a8a', borderRadius: '16px', marginBottom: '48px', color: '#64748b' }}>
             <div style={{ fontSize: '40px', marginBottom: '12px' }}>💬</div>
             <p>No testimonials yet — be the first to share your experience!</p>
           </div>

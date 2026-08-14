@@ -42,12 +42,12 @@ export default function RootLayout({ children }) {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-        <meta name="theme-color" content="#0a0a0f" />
+        <meta name="theme-color" content="#020409" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
-      <body className="flex flex-col min-h-screen" style={{ backgroundColor: 'rgba(10,10,15,0.72)', color: '#f0f4ff' }}>
+      <body className="flex flex-col min-h-screen" style={{ backgroundColor: 'rgba(2,4,9,0.92)', color: '#f0f4ff' }}>
         <PwaProvider>
           {/* Fixed tech background — sits behind everything */}
           <TechBackground />

@@ -14,7 +14,7 @@ export default function NotFound() {
         <Link href="/api" className="px-6 py-3 rounded-xl font-semibold text-sm"
           style={{ color: '#60a5fa', border: '1px solid rgba(37,99,235,0.35)', textDecoration: 'none' }}>Explore the API</Link>
         <Link href="/contact" className="px-6 py-3 rounded-xl font-semibold text-sm"
-          style={{ color: '#94a3b8', border: '1px solid #1e2d4a', textDecoration: 'none' }}>Contact Support</Link>
+          style={{ color: '#94a3b8', border: '1px solid #1e3a8a', textDecoration: 'none' }}>Contact Support</Link>
       </div>
     </div>
   );

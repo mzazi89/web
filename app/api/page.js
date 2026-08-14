@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import TypingHeading from '@/components/TypingHeading';
 import { neon } from '@neondatabase/serverless';
 import ApiTester from '@/components/api/ApiTester';
 import AuthSwap from '@/components/AuthSwap';
@@ -76,11 +77,11 @@ export default async function ApiLanding() {
   const activeEndpoints = endpoints.filter(e => e.is_active);
 
   return (
-    <div style={{ backgroundColor: 'rgba(10,10,15,0.72)' }}>
+    <div style={{ backgroundColor: 'rgba(2,4,9,0.92)' }}>
 
       {/* ── Hero ── */}
       <section className="relative overflow-hidden"
-        style={{ background: 'linear-gradient(180deg,rgba(7,20,40,0.98) 0%,rgba(10,10,15,1) 100%)' }}>
+        style={{ background: 'linear-gradient(180deg,rgba(7,20,40,0.98) 0%,rgba(2,4,9,1) 100%)' }}>
         <div className="absolute inset-0 pointer-events-none" style={{
           backgroundImage: 'linear-gradient(rgba(37,99,235,0.06) 1px,transparent 1px),linear-gradient(90deg,rgba(37,99,235,0.06) 1px,transparent 1px)',
           backgroundSize: '40px 40px',
@@ -96,7 +97,7 @@ export default async function ApiLanding() {
           </div>
 
           <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight mb-4">
-            <span className="gradient-text">MZAZI API</span>
+            <TypingHeading as="span" text="MZAZI API" speed={80} className="gradient-text" />
           </h1>
           <p className="text-lg sm:text-2xl font-medium mb-3" style={{ color: '#f0f4ff' }}>
             One API. Multiple services.
@@ -144,7 +145,7 @@ export default async function ApiLanding() {
             </Link>
             <Link href="/api/dashboard"
               className="px-6 py-3 rounded-xl font-semibold transition-all"
-              style={{ color: '#94a3b8', border: '1px solid #1e2d4a', textDecoration: 'none' }}>
+              style={{ color: '#94a3b8', border: '1px solid #1e3a8a', textDecoration: 'none' }}>
               DASHBOARD
             </Link>
             <Link href="/api/dashboard/keys"
@@ -156,8 +157,8 @@ export default async function ApiLanding() {
 
           {/* Live example */}
           <div className="mt-12 text-left max-w-2xl mx-auto">
-            <div className="rounded-xl overflow-hidden" style={{ backgroundColor: '#0f1629', border: '1px solid #1e2d4a' }}>
-              <div className="px-4 py-2 flex items-center gap-2 border-b" style={{ borderColor: '#1e2d4a' }}>
+            <div className="rounded-xl overflow-hidden" style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a' }}>
+              <div className="px-4 py-2 flex items-center gap-2 border-b" style={{ borderColor: '#1e3a8a' }}>
                 <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: '#f87171' }} />
                 <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: '#fbbf24' }} />
                 <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: '#4ade80' }} />
@@ -250,7 +251,7 @@ export default async function ApiLanding() {
       {/* ── CTA ── */}
       <section className="container-site py-16 pb-24">
         <div className="card p-10 sm:p-14 text-center"
-          style={{ background: 'linear-gradient(135deg,rgba(37,99,235,0.08),rgba(10,10,15,0.9))' }}>
+          style={{ background: 'linear-gradient(135deg,rgba(37,99,235,0.08),rgba(2,4,9,0.96))' }}>
           <h2 className="text-2xl sm:text-3xl font-bold mb-3">Start building with MZAZI API</h2>
           <p className="text-sm mb-8" style={{ color: '#94a3b8' }}>
             Create your free account, generate an API key, and make your first request in minutes.

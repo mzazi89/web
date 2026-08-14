@@ -160,7 +160,7 @@ export default function PairingPanel() {
   // ── not logged in ─────────────────────────────────────────────────────────
   if (authed === false) {
     return (
-      <div className="rounded-2xl p-6 sm:p-8 text-center" style={{ backgroundColor: '#0f1629', border: '1px solid #1e2d4a' }}>
+      <div className="rounded-2xl p-6 sm:p-8 text-center" style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a' }}>
         <div className="text-4xl mb-3">🔐</div>
         <h3 className="font-bold text-lg mb-1" style={{ color: '#f0f4ff' }}>Login to pair from the website</h3>
         <p className="text-sm mb-5" style={{ color: '#64748b' }}>
@@ -172,7 +172,7 @@ export default function PairingPanel() {
             Login
           </Link>
           <Link href="/signup" className="px-5 py-2.5 rounded-xl text-sm font-semibold"
-            style={{ color: '#94a3b8', border: '1px solid #1e2d4a', textDecoration: 'none' }}>
+            style={{ color: '#94a3b8', border: '1px solid #1e3a8a', textDecoration: 'none' }}>
             Create account
           </Link>
         </div>
@@ -193,7 +193,7 @@ export default function PairingPanel() {
     <div className="space-y-6">
       {/* device usage + plans */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="md:col-span-1 rounded-2xl p-5" style={{ backgroundColor: '#0f1629', border: '1px solid #1e2d4a' }}>
+        <div className="md:col-span-1 rounded-2xl p-5" style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a' }}>
           <p className="text-xs font-bold uppercase tracking-wider mb-2" style={{ color: '#475569' }}>Linked devices</p>
           <p className="font-extrabold text-2xl" style={{ color: '#4ade80' }}>
             {devices.length} <span className="text-sm font-semibold" style={{ color: '#64748b' }}>/ {maxDevices === 999 ? '∞' : maxDevices}</span>
@@ -214,8 +214,8 @@ export default function PairingPanel() {
             const isCurrent = plan === p.key;
             return (
               <div key={p.key} className="rounded-2xl p-4 flex flex-col justify-between" style={{
-                backgroundColor: isCurrent ? 'rgba(34,197,94,0.08)' : '#0f1629',
-                border: `1px solid ${isCurrent ? 'rgba(34,197,94,0.4)' : '#1e2d4a'}`,
+                backgroundColor: isCurrent ? 'rgba(34,197,94,0.08)' : '#060b16',
+                border: `1px solid ${isCurrent ? 'rgba(34,197,94,0.4)' : '#1e3a8a'}`,
               }}>
                 <div>
                   <p className="font-bold text-sm" style={{ color: '#f0f4ff' }}>{p.name}</p>
@@ -257,7 +257,7 @@ export default function PairingPanel() {
       )}
 
       {/* pairing card */}
-      <div className="rounded-2xl p-5 sm:p-6" style={{ backgroundColor: '#0f1629', border: '1px solid #1e2d4a' }}>
+      <div className="rounded-2xl p-5 sm:p-6" style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a' }}>
         <h3 className="font-bold text-base" style={{ color: '#f0f4ff' }}>🔗 Pair a new number</h3>
         <p className="text-xs mb-4 mt-1" style={{ color: '#64748b' }}>
           Enter the WhatsApp number you want the bot to run on — your pairing code appears here in seconds.
@@ -272,7 +272,7 @@ export default function PairingPanel() {
               The bot connects automatically once you do. Valid for about an hour.
             </p>
             <button onClick={resetPair} className="mt-4 px-4 py-2 rounded-lg text-xs font-semibold"
-              style={{ color: '#94a3b8', border: '1px solid #1e2d4a', cursor: 'pointer', background: 'none' }}>
+              style={{ color: '#94a3b8', border: '1px solid #1e3a8a', cursor: 'pointer', background: 'none' }}>
               Pair another number
             </button>
           </div>
@@ -286,7 +286,7 @@ export default function PairingPanel() {
                 inputMode="tel"
                 disabled={pairPhase === 'requesting' || pairPhase === 'waiting'}
                 className="flex-1 w-full px-4 py-3 rounded-xl text-sm outline-none font-mono"
-                style={{ backgroundColor: 'rgba(10,10,15,0.72)', border: '1px solid #1e2d4a', color: '#f0f4ff' }}
+                style={{ backgroundColor: 'rgba(2,4,9,0.92)', border: '1px solid #1e3a8a', color: '#f0f4ff' }}
               />
               <button
                 onClick={startPair}
@@ -319,7 +319,7 @@ export default function PairingPanel() {
       </div>
 
       {/* linked devices */}
-      <div className="rounded-2xl p-5 sm:p-6" style={{ backgroundColor: '#0f1629', border: '1px solid #1e2d4a' }}>
+      <div className="rounded-2xl p-5 sm:p-6" style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a' }}>
         <h3 className="font-bold text-base mb-4" style={{ color: '#f0f4ff' }}>📱 Your linked devices</h3>
         {devices.length === 0 ? (
           <p className="text-sm text-center py-6" style={{ color: '#475569' }}>No devices linked yet. Pair your first number above.</p>
@@ -327,7 +327,7 @@ export default function PairingPanel() {
           <div className="space-y-2.5">
             {devices.map((d) => (
               <div key={d.number} className="flex items-center justify-between gap-3 p-3.5 rounded-xl"
-                style={{ backgroundColor: 'rgba(10,10,15,0.72)', border: '1px solid #1e2d4a' }}>
+                style={{ backgroundColor: 'rgba(2,4,9,0.92)', border: '1px solid #1e3a8a' }}>
                 <div className="min-w-0">
                   <p className="font-mono font-bold text-sm truncate" style={{ color: '#f0f4ff' }}>{d.number}</p>
                   <p className="text-xs" style={{ color: '#475569' }}>

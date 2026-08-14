@@ -33,7 +33,7 @@ const sections = [
 
 export default function Footer() {
   return (
-    <footer style={{ backgroundColor: 'rgba(6,8,16,0.78)', borderTop: '1px solid #1e2d4a' }}>
+    <footer style={{ backgroundColor: 'rgba(2,4,9,0.9)', borderTop: '1px solid #1e3a8a', boxShadow: '0 -1px 0 rgba(59,130,246,0.25), 0 -14px 44px rgba(37,99,235,0.07)' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
         {/* Top row */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
@@ -53,7 +53,7 @@ export default function Footer() {
               ].map(s => (
                 <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer"
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
-                  style={{ backgroundColor: '#0f1629', color: '#64748b', border: '1px solid #1e2d4a', textDecoration: 'none' }}>
+                  style={{ backgroundColor: '#060b16', color: '#64748b', border: '1px solid #1e3a8a', textDecoration: 'none' }}>
                   {s.icon} {s.label}
                 </a>
               ))}
@@ -99,7 +99,7 @@ export default function Footer() {
 
         {/* Bottom bar */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-8"
-          style={{ borderTop: '1px solid #1e2d4a' }}>
+          style={{ borderTop: '1px solid #1e3a8a' }}>
           <p className="text-xs text-center sm:text-left" style={{ color: '#374151' }}>
             © {new Date().getFullYear()} Mzazi Tech Inc. All rights reserved.
           </p>

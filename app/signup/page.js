@@ -1,5 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
+import TypingHeading from '@/components/TypingHeading';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Logo from '@/components/Logo';
@@ -87,23 +88,23 @@ export default function SignupPage() {
   ];
 
   const inputStyle = {
-    backgroundColor: '#0d1117',
-    border: '1px solid #1e2d4a',
+    backgroundColor: '#02040a',
+    border: '1px solid #1e3a8a',
     color: '#f0f4ff',
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-12 px-4" style={{ backgroundColor: 'rgba(10,10,15,0.72)' }}>
+    <div className="min-h-screen flex items-center justify-center py-12 px-4" style={{ backgroundColor: 'rgba(2,4,9,0.92)' }}>
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full pointer-events-none"
         style={{ background: 'radial-gradient(circle, rgba(37,99,235,0.1) 0%, transparent 70%)', filter: 'blur(40px)' }} />
 
       <div className="relative w-full max-w-md">
-        <div className="rounded-2xl p-8" style={{ backgroundColor: '#16182a', border: '1px solid #1e2d4a', boxShadow: '0 25px 50px rgba(0,0,0,0.5)' }}>
+        <div className="rounded-2xl p-8" style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a', boxShadow: '0 25px 50px rgba(0,0,0,0.5)' }}>
           <div className="text-center mb-8">
             <div className="mx-auto mb-4 flex justify-center">
               <Logo size={56} />
             </div>
-            <h2 className="text-2xl font-extrabold" style={{ color: '#f0f4ff' }}>Create Account</h2>
+            <TypingHeading as="h2" text="Create Account" speed={50} className="text-2xl font-extrabold" style={{ color: '#f0f4ff' }} />
             <p className="text-sm mt-1" style={{ color: '#64748b' }}>Join MZAZI TECH — it's free</p>
             {referralCode && (
               <span className="inline-block mt-3 px-3 py-1.5 rounded-full text-xs font-bold"
@@ -131,14 +132,14 @@ export default function SignupPage() {
                 <input type="text" name="firstname" required value={formData.firstname} onChange={handleChange}
                   className="w-full rounded-xl px-4 py-3 text-sm outline-none" placeholder="John"
                   style={inputStyle}
-                  onFocus={e => e.target.style.borderColor = '#2563eb'} onBlur={e => e.target.style.borderColor = '#1e2d4a'} />
+                  onFocus={e => e.target.style.borderColor = '#2563eb'} onBlur={e => e.target.style.borderColor = '#1e3a8a'} />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-2" style={{ color: '#94a3b8' }}>Last Name</label>
                 <input type="text" name="lastname" required value={formData.lastname} onChange={handleChange}
                   className="w-full rounded-xl px-4 py-3 text-sm outline-none" placeholder="Doe"
                   style={inputStyle}
-                  onFocus={e => e.target.style.borderColor = '#2563eb'} onBlur={e => e.target.style.borderColor = '#1e2d4a'} />
+                  onFocus={e => e.target.style.borderColor = '#2563eb'} onBlur={e => e.target.style.borderColor = '#1e3a8a'} />
               </div>
             </div>
 
@@ -149,7 +150,7 @@ export default function SignupPage() {
                   <input type={f.type} name={f.name} required value={formData[f.name]} onChange={handleChange}
                     className="w-full rounded-xl px-4 py-3 text-sm outline-none" placeholder={f.placeholder}
                     style={inputStyle}
-                    onFocus={e => e.target.style.borderColor = '#2563eb'} onBlur={e => e.target.style.borderColor = '#1e2d4a'} />
+                    onFocus={e => e.target.style.borderColor = '#2563eb'} onBlur={e => e.target.style.borderColor = '#1e3a8a'} />
                 </div>
               ))}
             </div>
@@ -174,14 +175,14 @@ export default function SignupPage() {
               <input type="text" name="securityAnswer" required value={formData.securityAnswer} onChange={handleChange}
                 className="w-full rounded-xl px-4 py-3 text-sm outline-none" placeholder="Your answer"
                 style={inputStyle}
-                onFocus={e => e.target.style.borderColor = '#2563eb'} onBlur={e => e.target.style.borderColor = '#1e2d4a'} />
+                onFocus={e => e.target.style.borderColor = '#2563eb'} onBlur={e => e.target.style.borderColor = '#1e3a8a'} />
               <p className="text-[11px] mt-2" style={{ color: '#475569' }}>
                 You'll answer this question to reset your password if you ever forget it.
               </p>
             </div>
 
             <button type="submit" disabled={loading} className="w-full py-3 rounded-xl font-bold text-white text-sm transition-all"
-              style={{ background: loading ? '#1e2d4a' : 'linear-gradient(135deg, #2563eb, #1d4ed8)', cursor: loading ? 'not-allowed' : 'pointer' }}>
+              style={{ background: loading ? '#1e3a8a' : 'linear-gradient(135deg, #3b82f6, #1d4ed8)', cursor: loading ? 'not-allowed' : 'pointer' }}>
               {loading ? (
                 <span className="flex items-center justify-center space-x-2">
                   <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">

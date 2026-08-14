@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import TypingHeading from '@/components/TypingHeading';
 import { neon } from '@neondatabase/serverless';
 import { unstable_noStore as noStore } from 'next/cache';
 import AuthSwap from '@/components/AuthSwap';
@@ -89,11 +90,11 @@ export default async function Home() {
   const api = await getApiStats();
 
   return (
-    <div style={{ backgroundColor: 'rgba(10,10,15,0.72)' }}>
+    <div style={{ backgroundColor: 'rgba(2,4,9,0.92)' }}>
 
       {/* ─── Hero ─── */}
       <section className="relative overflow-hidden"
-        style={{ background: 'linear-gradient(180deg,rgba(7,20,40,0.98) 0%,rgba(10,10,15,1) 100%)' }}>
+        style={{ background: 'linear-gradient(180deg,rgba(7,20,40,0.98) 0%,rgba(2,4,9,1) 100%)' }}>
         {/* Grid overlay */}
         <div className="absolute inset-0 pointer-events-none" style={{
           backgroundImage: 'linear-gradient(rgba(37,99,235,0.06) 1px,transparent 1px),linear-gradient(90deg,rgba(37,99,235,0.06) 1px,transparent 1px)',
@@ -116,10 +117,8 @@ export default async function Home() {
           {/* Headline */}
           <h1 className="font-extrabold mb-5 sm:mb-6 leading-tight"
             style={{ fontSize: 'clamp(2.2rem, 7vw, 4.5rem)', color: '#f0f4ff' }}>
-            Power Your{' '}
-            <span style={{ background: 'linear-gradient(135deg,#60a5fa,#2563eb,#818cf8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              Digital World
-            </span>
+            <TypingHeading as="span" text="Power Your " speed={70} />
+            <TypingHeading as="span" text="Digital World" speed={70} delay={1240} className="gradient-text" />
           </h1>
 
           <p className="mb-8 sm:mb-10 max-w-2xl mx-auto text-base sm:text-lg leading-relaxed px-2" style={{ color: '#64748b' }}>
@@ -135,7 +134,7 @@ export default async function Home() {
             </Link>
             <Link href="/whatsapp-bot"
               className="w-full sm:w-auto px-7 py-3.5 rounded-xl font-semibold text-sm transition-all"
-              style={{ backgroundColor: 'rgba(255,255,255,0.05)', color: '#f0f4ff', border: '1px solid #1e2d4a', textDecoration: 'none' }}>
+              style={{ backgroundColor: 'rgba(255,255,255,0.05)', color: '#f0f4ff', border: '1px solid #1e3a8a', textDecoration: 'none' }}>
               🤖 WhatsApp Bot
             </Link>
             <PwaInstallButton />
@@ -158,7 +157,7 @@ export default async function Home() {
       </section>
 
       {/* ─── Stats ─── */}
-      <section className="py-10 sm:py-14" style={{ backgroundColor: 'rgba(10,10,15,0.72)', borderTop: '1px solid #0d1120', borderBottom: '1px solid #0d1120' }}>
+      <section className="py-10 sm:py-14" style={{ backgroundColor: 'rgba(2,4,9,0.92)', borderTop: '1px solid #0d1120', borderBottom: '1px solid #0d1120' }}>
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-8 text-center">
             {STATS.map(s => (
@@ -172,7 +171,7 @@ export default async function Home() {
       </section>
 
       {/* ─── Features ─── */}
-      <section className="py-16 sm:py-24" style={{ backgroundColor: 'rgba(10,10,15,0.72)' }}>
+      <section className="py-16 sm:py-24" style={{ backgroundColor: 'rgba(2,4,9,0.92)' }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-12 sm:mb-16">
             <p className="text-xs sm:text-sm font-semibold uppercase tracking-widest mb-3" style={{ color: '#3b82f6' }}>What We Offer</p>
@@ -188,7 +187,7 @@ export default async function Home() {
             {FEATURES.map(f => (
               <div key={f.title}
                 className="rounded-2xl p-6 sm:p-7 transition-all duration-300 hover:-translate-y-1 group"
-                style={{ backgroundColor: '#0f1629', border: '1px solid #1e2d4a' }}>
+                style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a' }}>
                 <div className="text-3xl mb-4">{f.icon}</div>
                 <h3 className="font-bold text-base sm:text-lg mb-2" style={{ color: '#f0f4ff' }}>{f.title}</h3>
                 <p className="text-sm leading-relaxed mb-5" style={{ color: '#64748b' }}>{f.desc}</p>
@@ -204,9 +203,9 @@ export default async function Home() {
       </section>
 
       {/* ─── MZAZI API ─── */}
-      <section className="py-16 sm:py-24" style={{ backgroundColor: 'rgba(13,13,26,0.72)' }}>
+      <section className="py-16 sm:py-24" style={{ backgroundColor: 'rgba(2,4,9,0.92)' }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="rounded-3xl overflow-hidden" style={{ border: '1px solid rgba(37,99,235,0.25)', background: 'linear-gradient(135deg, rgba(37,99,235,0.12) 0%, rgba(10,10,15,0.9) 55%)' }}>
+          <div className="rounded-3xl overflow-hidden" style={{ border: '1px solid rgba(37,99,235,0.25)', background: 'linear-gradient(135deg, rgba(37,99,235,0.12) 0%, rgba(2,4,9,0.96) 55%)' }}>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 p-8 sm:p-12 items-center">
               <div>
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-5"
@@ -254,8 +253,8 @@ export default async function Home() {
               </div>
 
               {/* Code preview */}
-              <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: 'rgba(10,10,15,0.72)', border: '1px solid #1e2d4a' }}>
-                <div className="flex items-center gap-2 px-4 py-2.5" style={{ borderBottom: '1px solid #1e2d4a' }}>
+              <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: 'rgba(2,4,9,0.92)', border: '1px solid #1e3a8a' }}>
+                <div className="flex items-center gap-2 px-4 py-2.5" style={{ borderBottom: '1px solid #1e3a8a' }}>
                   <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: '#f87171' }} />
                   <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: '#fbbf24' }} />
                   <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: '#4ade80' }} />
@@ -281,7 +280,7 @@ export default async function Home() {
       </section>
 
       {/* ─── Pricing ─── */}
-      <section className="py-16 sm:py-24" style={{ backgroundColor: 'rgba(10,10,15,0.72)' }}>
+      <section className="py-16 sm:py-24" style={{ backgroundColor: 'rgba(2,4,9,0.92)' }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-12 sm:mb-16">
             <p className="text-xs sm:text-sm font-semibold uppercase tracking-widest mb-3" style={{ color: '#3b82f6' }}>Panel Plans</p>
@@ -296,8 +295,8 @@ export default async function Home() {
               <div key={pkg.id}
                 className="relative rounded-2xl p-5 sm:p-6 transition-all duration-300 hover:-translate-y-1"
                 style={{
-                  backgroundColor: pkg.popular ? '#0f1a35' : '#0f1629',
-                  border: `1px solid ${pkg.popular ? (pkg.accent || '#2563eb') : '#1e2d4a'}`,
+                  backgroundColor: pkg.popular ? '#0f1a35' : '#060b16',
+                  border: `1px solid ${pkg.popular ? (pkg.accent || '#2563eb') : '#1e3a8a'}`,
                   boxShadow: pkg.popular ? `0 0 30px rgba(37,99,235,0.2)` : 'none',
                 }}>
                 {pkg.popular && (
@@ -352,7 +351,7 @@ export default async function Home() {
 
       {/* ─── CTA Banner ─── */}
       <section className="py-16 sm:py-20"
-        style={{ background: 'linear-gradient(135deg,rgba(37,99,235,0.15) 0%,rgba(10,10,15,1) 100%)' }}>
+        style={{ background: 'linear-gradient(135deg,rgba(37,99,235,0.15) 0%,rgba(2,4,9,1) 100%)' }}>
         <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
           <h2 className="font-extrabold mb-4" style={{ fontSize: 'clamp(1.5rem,4vw,2.2rem)', color: '#f0f4ff' }}>
             Ready to get started?
@@ -371,7 +370,7 @@ export default async function Home() {
                   </Link>
                   <Link href="/contact"
                     className="w-full sm:w-auto px-8 py-3.5 rounded-xl font-semibold text-sm"
-                    style={{ color: '#94a3b8', border: '1px solid #1e2d4a', textDecoration: 'none' }}>
+                    style={{ color: '#94a3b8', border: '1px solid #1e3a8a', textDecoration: 'none' }}>
                     Talk to Support
                   </Link>
                 </>

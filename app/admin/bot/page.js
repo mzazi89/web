@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 
 const card = {
   background: 'rgba(30,32,48,0.5)',
-  border: '1px solid #1e2030',
+  border: '1px solid #1e3a8a',
   borderRadius: 16,
   padding: 20,
 };
@@ -11,9 +11,9 @@ const inputStyle = {
   width: '100%',
   padding: '10px 12px',
   borderRadius: '10px',
-  background: '#0d1117',
+  background: '#02040a',
   color: '#e2e8f0',
-  border: '1px solid #1e2030',
+  border: '1px solid #1e3a8a',
   fontSize: '14px',
   outline: 'none',
 };
@@ -29,7 +29,7 @@ const btnPrimary = {
 const btnGhost = {
   background: 'rgba(30,32,48,0.5)',
   color: '#94a3b8',
-  border: '1px solid #1e2030',
+  border: '1px solid #1e3a8a',
   padding: '8px 14px',
   borderRadius: '10px',
   cursor: 'pointer',
@@ -165,7 +165,7 @@ export default function BotControlPage() {
             ['WhatsApp sessions', String(status?.whatsappSessions ?? '—')],
             ['Command count', String(status?.commandCount ?? '—')],
           ].map(([label, value]) => (
-            <div key={label} style={{ background: '#0d1117', borderRadius: 12, padding: '12px 14px' }}>
+            <div key={label} style={{ background: '#02040a', borderRadius: 12, padding: '12px 14px' }}>
               <div style={{ color: '#64748b', fontSize: 12, marginBottom: 4 }}>{label}</div>
               <div style={{ color: '#e2e8f0', fontWeight: 700, fontSize: 15 }}>{value}</div>
             </div>
@@ -263,7 +263,7 @@ export default function BotControlPage() {
             </thead>
             <tbody>
               {controls.map((c) => (
-                <tr key={c.id} style={{ borderTop: '1px solid #1e2030' }}>
+                <tr key={c.id} style={{ borderTop: '1px solid #1e3a8a' }}>
                   <td style={{ padding: '8px 10px', color: '#e2e8f0', fontWeight: 600 }}>{c.action}</td>
                   <td style={{ padding: '8px 10px', color: '#94a3b8' }}>{JSON.stringify(c.payload).slice(0, 60)}</td>
                   <td style={{ padding: '8px 10px' }}>

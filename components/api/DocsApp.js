@@ -95,7 +95,7 @@ export default function DocsApp({ endpoints }) {
             style={{
               backgroundColor: tab === id ? 'rgba(37,99,235,0.15)' : 'transparent',
               color: tab === id ? '#60a5fa' : '#94a3b8',
-              border: `1px solid ${tab === id ? 'rgba(37,99,235,0.4)' : '#1e2d4a'}`,
+              border: `1px solid ${tab === id ? 'rgba(37,99,235,0.4)' : '#1e3a8a'}`,
               cursor: 'pointer',
             }}>
             {label}
@@ -131,7 +131,7 @@ export default function DocsApp({ endpoints }) {
                 onChange={e => setSearch(e.target.value)}
                 placeholder="Search endpoints… (youtube, download, ai)"
                 className="w-full px-3 py-2 rounded-lg text-sm outline-none mb-3"
-                style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a', color: '#f0f4ff' }}
+                style={{ backgroundColor: '#020409', border: '1px solid #1e3a8a', color: '#f0f4ff' }}
               />
               <button onClick={() => { setActiveCategory('ALL'); setSearch(''); }}
                 className="w-full text-left px-3 py-2 rounded-lg text-sm font-semibold"
@@ -188,7 +188,7 @@ export default function DocsApp({ endpoints }) {
                         </button>
 
                         {isOpen && (
-                          <div className="px-5 pb-5 space-y-4" style={{ borderTop: '1px solid #0f1629' }}>
+                          <div className="px-5 pb-5 space-y-4" style={{ borderTop: '1px solid #060b16' }}>
                             <p className="text-sm pt-4" style={{ color: '#94a3b8' }}>
                               {e.description || e.name} · Provider: <code className="text-xs" style={{ color: '#93c5fd' }}>{e.provider || '—'}</code>
                             </p>
@@ -197,7 +197,7 @@ export default function DocsApp({ endpoints }) {
                               <div className="overflow-x-auto">
                                 <table className="w-full text-sm">
                                   <thead>
-                                    <tr style={{ borderBottom: '1px solid #1e2d4a' }}>
+                                    <tr style={{ borderBottom: '1px solid #1e3a8a' }}>
                                       <th className="text-left px-3 py-2 text-xs font-bold uppercase" style={{ color: '#64748b' }}>Parameter</th>
                                       <th className="text-left px-3 py-2 text-xs font-bold uppercase" style={{ color: '#64748b' }}>Required</th>
                                       <th className="text-left px-3 py-2 text-xs font-bold uppercase" style={{ color: '#64748b' }}>Example</th>
@@ -208,7 +208,7 @@ export default function DocsApp({ endpoints }) {
                                       const def = (e.parameters?.required || []).concat(e.parameters?.optional || []).find(p => (typeof p === 'string' ? p : p.name) === n);
                                       const example = typeof def === 'object' ? def.example : null;
                                       return (
-                                        <tr key={n} style={{ borderBottom: '1px solid #0f1629' }}>
+                                        <tr key={n} style={{ borderBottom: '1px solid #060b16' }}>
                                           <td className="px-3 py-2 font-mono text-xs" style={{ color: '#e2e8f0' }}>{n}</td>
                                           <td className="px-3 py-2 text-xs" style={{ color: isReq ? '#f87171' : '#64748b' }}>{isReq ? 'Yes' : 'No'}</td>
                                           <td className="px-3 py-2 font-mono text-xs break-all" style={{ color: '#64748b' }}>{example || '—'}</td>

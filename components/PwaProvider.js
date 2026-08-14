@@ -106,7 +106,7 @@ export default function PwaProvider({ children }) {
 
       {showCard && !dismissed && !isStandalone && (
         <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-[100] w-[calc(100%-2rem)] max-w-md">
-          <div className="p-4 rounded-2xl shadow-2xl animate-fade-in" style={{ backgroundColor: '#0f1629', border: '1px solid rgba(37,99,235,0.4)' }}>
+          <div className="p-4 rounded-2xl shadow-2xl animate-fade-in" style={{ backgroundColor: '#060b16', border: '1px solid rgba(37,99,235,0.4)' }}>
             <div className="flex items-start gap-3">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/icons/icon-192.png" alt="MZAZI TECH" width={44} height={44}
@@ -138,7 +138,7 @@ export default function PwaProvider({ children }) {
               )}
               <button onClick={dismiss}
                 className="flex-1 py-2.5 rounded-xl text-sm font-semibold"
-                style={{ color: '#94a3b8', border: '1px solid #1e2d4a', cursor: 'pointer' }}>
+                style={{ color: '#94a3b8', border: '1px solid #1e3a8a', cursor: 'pointer' }}>
                 {noPrompt ? 'Got it' : 'Not now'}
               </button>
             </div>

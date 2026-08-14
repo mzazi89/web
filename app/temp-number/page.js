@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect, useRef, useCallback } from 'react';
+import TypingHeading from '@/components/TypingHeading';
 
 const BASE_URL = typeof window !== 'undefined' ? window.location.origin : 'https://mzazi.shop';
 
@@ -92,7 +93,7 @@ export default function TempNumberPage() {
     <div className="container-site py-12" style={{ minHeight: '70vh' }}>
       <div className="mb-8">
         <a href="/api" className="text-xs font-semibold" style={{ color: '#475569', textDecoration: 'none' }}>← Back to API</a>
-        <h1 className="text-3xl font-extrabold mt-2"><span className="gradient-text">Temporary Phone Numbers</span></h1>
+        <h1 className="text-3xl font-extrabold mt-2"><TypingHeading as="span" text="Temporary Phone Numbers" speed={45} className="gradient-text" /></h1>
         <p className="text-sm mt-1" style={{ color: '#94a3b8' }}>
           Get a temporary virtual number and read its SMS messages right here — no phone needed.
         </p>
@@ -104,7 +105,7 @@ export default function TempNumberPage() {
           <label className="block text-[10px] font-bold uppercase tracking-wide mb-1.5" style={{ color: '#64748b' }}>Provider</label>
           <select value={provider} onChange={e => { setProvider(e.target.value); setNumbers(null); setSelected(null); setMessages(null); }}
             className="w-full px-3 py-2.5 rounded-lg text-sm outline-none"
-            style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a', color: '#f0f4ff' }}>
+            style={{ backgroundColor: '#020409', border: '1px solid #1e3a8a', color: '#f0f4ff' }}>
             {PROVIDERS.map(p => <option key={p.id} value={p.id}>{p.label}</option>)}
           </select>
         </div>
@@ -154,8 +155,8 @@ export default function TempNumberPage() {
                   <button key={i} onClick={() => { setSelected(num); setMessages(null); }}
                     className="w-full flex items-center justify-between gap-2 px-4 py-3 rounded-xl text-left transition-all"
                     style={{
-                      backgroundColor: isSel ? 'rgba(37,99,235,0.15)' : '#0a0a0f',
-                      border: `1px solid ${isSel ? 'rgba(37,99,235,0.5)' : '#1e2d4a'}`,
+                      backgroundColor: isSel ? 'rgba(37,99,235,0.15)' : '#020409',
+                      border: `1px solid ${isSel ? 'rgba(37,99,235,0.5)' : '#1e3a8a'}`,
                       cursor: 'pointer',
                     }}>
                     <span className="flex items-center gap-2 min-w-0">
@@ -207,7 +208,7 @@ export default function TempNumberPage() {
               ) : (
                 <div className="space-y-2 max-h-[480px] overflow-y-auto pr-1">
                   {messages.map((m, i) => (
-                    <div key={i} className="p-3.5 rounded-xl" style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a' }}>
+                    <div key={i} className="p-3.5 rounded-xl" style={{ backgroundColor: '#020409', border: '1px solid #1e3a8a' }}>
                       <div className="flex items-center justify-between mb-1.5">
                         <span className="text-xs font-bold" style={{ color: '#93c5fd' }}>📩 {msgFrom(m)}</span>
                         {msgTime(m) && <span className="text-[10px]" style={{ color: '#475569' }}>{String(msgTime(m))}</span>}

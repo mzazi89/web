@@ -16,7 +16,7 @@ export default function GlobalError({ error, reset }) {
           Try Again
         </button>
         <a href="/" className="px-6 py-3 rounded-xl font-semibold text-sm"
-          style={{ color: '#94a3b8', border: '1px solid #1e2d4a', textDecoration: 'none' }}>Back to Home</a>
+          style={{ color: '#94a3b8', border: '1px solid #1e3a8a', textDecoration: 'none' }}>Back to Home</a>
       </div>
     </div>
   );

@@ -131,7 +131,7 @@ function AdminInner() {
             style={{
               backgroundColor: tab === t ? 'rgba(37,99,235,0.15)' : 'transparent',
               color: tab === t ? '#60a5fa' : '#94a3b8',
-              border: `1px solid ${tab === t ? 'rgba(37,99,235,0.4)' : '#1e2d4a'}`,
+              border: `1px solid ${tab === t ? 'rgba(37,99,235,0.4)' : '#1e3a8a'}`,
               cursor: 'pointer',
             }}>
             {t}
@@ -160,7 +160,7 @@ function AdminInner() {
                   {p.plan}: {p.count}
                 </span>
               ))}
-              <span className="px-3 py-1.5 rounded-lg text-xs font-bold" style={{ backgroundColor: '#0f1629', color: '#94a3b8', border: '1px solid #1e2d4a' }}>
+              <span className="px-3 py-1.5 rounded-lg text-xs font-bold" style={{ backgroundColor: '#060b16', color: '#94a3b8', border: '1px solid #1e3a8a' }}>
                 Provider failures: {stats.stats.provider_failures.toLocaleString()}
               </span>
             </div>
@@ -170,7 +170,7 @@ function AdminInner() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr style={{ borderBottom: '1px solid #1e2d4a' }}>
+                  <tr style={{ borderBottom: '1px solid #1e3a8a' }}>
                     {['Request', 'User', 'Endpoint', 'Status', 'Time', 'When'].map(h => (
                       <th key={h} className="text-left px-3 py-2 text-xs font-bold uppercase" style={{ color: '#64748b' }}>{h}</th>
                     ))}
@@ -178,7 +178,7 @@ function AdminInner() {
                 </thead>
                 <tbody>
                   {stats.recent_requests.map(r => (
-                    <tr key={r.request_id} style={{ borderBottom: '1px solid #0f1629' }}>
+                    <tr key={r.request_id} style={{ borderBottom: '1px solid #060b16' }}>
                       <td className="px-3 py-2.5 font-mono text-xs" style={{ color: '#64748b' }}>{r.request_id}</td>
                       <td className="px-3 py-2.5 text-xs" style={{ color: '#94a3b8' }}>{r.user_email || '—'}</td>
                       <td className="px-3 py-2.5 font-mono text-xs" style={{ color: '#e2e8f0' }}>{r.endpoint}</td>
@@ -199,7 +199,7 @@ function AdminInner() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr style={{ backgroundColor: '#0f1629', borderBottom: '1px solid #1e2d4a' }}>
+                <tr style={{ backgroundColor: '#060b16', borderBottom: '1px solid #1e3a8a' }}>
                   {['User', 'Plan', 'Status', 'Keys', 'Requests', 'Joined', 'Actions'].map(h => (
                     <th key={h} className="text-left px-4 py-2.5 text-xs font-bold uppercase" style={{ color: '#64748b' }}>{h}</th>
                   ))}
@@ -207,7 +207,7 @@ function AdminInner() {
               </thead>
               <tbody>
                 {users.users.map(u => (
-                  <tr key={u.id} style={{ borderBottom: '1px solid #0f1629' }}>
+                  <tr key={u.id} style={{ borderBottom: '1px solid #060b16' }}>
                     <td className="px-4 py-3">
                       <p className="text-xs font-semibold" style={{ color: '#f0f4ff' }}>{u.fullname || u.firstname || u.email}</p>
                       <p className="text-[10px]" style={{ color: '#64748b' }}>{u.email}</p>
@@ -240,7 +240,7 @@ function AdminInner() {
                             e.target.value = '';
                           }}
                           className="px-2 py-1 rounded-md text-[11px] outline-none"
-                          style={{ backgroundColor: 'rgba(10,10,15,0.72)', border: '1px solid #1e2d4a', color: '#94a3b8' }}>
+                          style={{ backgroundColor: 'rgba(2,4,9,0.92)', border: '1px solid #1e3a8a', color: '#94a3b8' }}>
                           <option value="">Status…</option>
                           <option value="suspend">Suspend</option>
                           <option value="ban">Ban</option>
@@ -263,7 +263,7 @@ function AdminInner() {
                             e.target.value = '';
                           }}
                           className="px-2 py-1 rounded-md text-[11px] outline-none"
-                          style={{ backgroundColor: 'rgba(10,10,15,0.72)', border: '1px solid #1e2d4a', color: '#94a3b8' }}>
+                          style={{ backgroundColor: 'rgba(2,4,9,0.92)', border: '1px solid #1e3a8a', color: '#94a3b8' }}>
                           <option value="">Plan…</option>
                           <option value="FREE">Free</option>
                           <option value="PREMIUM">Premium</option>
@@ -285,7 +285,7 @@ function AdminInner() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr style={{ backgroundColor: '#0f1629', borderBottom: '1px solid #1e2d4a' }}>
+                <tr style={{ backgroundColor: '#060b16', borderBottom: '1px solid #1e3a8a' }}>
                   {['Key', 'User', 'Plan', 'Status', 'Requests', 'Last Used', 'Actions'].map(h => (
                     <th key={h} className="text-left px-4 py-2.5 text-xs font-bold uppercase" style={{ color: '#64748b' }}>{h}</th>
                   ))}
@@ -293,7 +293,7 @@ function AdminInner() {
               </thead>
               <tbody>
                 {keys.keys.map(k => (
-                  <tr key={k.id} style={{ borderBottom: '1px solid #0f1629', opacity: k.status === 'revoked' ? 0.55 : 1 }}>
+                  <tr key={k.id} style={{ borderBottom: '1px solid #060b16', opacity: k.status === 'revoked' ? 0.55 : 1 }}>
                     <td className="px-4 py-3">
                       <p className="text-xs font-semibold" style={{ color: '#f0f4ff' }}>{k.name}</p>
                       <p className="font-mono text-[10px]" style={{ color: '#64748b' }}>{k.key_prefix}</p>
@@ -367,7 +367,7 @@ function AdminInner() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr style={{ backgroundColor: '#0f1629', borderBottom: '1px solid #1e2d4a' }}>
+                <tr style={{ backgroundColor: '#060b16', borderBottom: '1px solid #1e3a8a' }}>
                   {['Path', 'Category', 'Provider', 'Status', 'Toggle'].map(h => (
                     <th key={h} className="text-left px-4 py-2.5 text-xs font-bold uppercase" style={{ color: '#64748b' }}>{h}</th>
                   ))}
@@ -375,7 +375,7 @@ function AdminInner() {
               </thead>
               <tbody>
                 {endpoints.endpoints.map(e => (
-                  <tr key={e.id} style={{ borderBottom: '1px solid #0f1629' }}>
+                  <tr key={e.id} style={{ borderBottom: '1px solid #060b16' }}>
                     <td className="px-4 py-3">
                       <span className="text-[10px] font-bold px-1.5 py-0.5 rounded mr-2" style={{ backgroundColor: '#1e3a8a', color: '#93c5fd' }}>{e.method}</span>
                       <code className="text-xs font-mono" style={{ color: '#e2e8f0' }}>{e.path}</code>
@@ -423,7 +423,7 @@ function AdminInner() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr style={{ backgroundColor: '#0f1629', borderBottom: '1px solid #1e2d4a' }}>
+                  <tr style={{ backgroundColor: '#060b16', borderBottom: '1px solid #1e3a8a' }}>
                     {['Provider', 'Base URL', 'Status', 'Avg (ms)', 'Failures', 'Last OK', 'Last error', 'Actions'].map(h => (
                       <th key={h} className="text-left px-4 py-2.5 text-xs font-bold uppercase" style={{ color: '#64748b' }}>{h}</th>
                     ))}
@@ -431,7 +431,7 @@ function AdminInner() {
                 </thead>
                 <tbody>
                   {(providers?.providers || []).map(p => (
-                    <tr key={p.id} style={{ borderBottom: '1px solid #0f1629' }}>
+                    <tr key={p.id} style={{ borderBottom: '1px solid #060b16' }}>
                       <td className="px-4 py-3 text-xs font-bold" style={{ color: '#f0f4ff' }}>{p.display_name || p.name}</td>
                       <td className="px-4 py-3 font-mono text-[10px] break-all" style={{ color: '#64748b' }}>{p.base_url}</td>
                       <td className="px-4 py-3">
@@ -471,7 +471,7 @@ function AdminInner() {
                             e.target.value = '';
                           }}
                             className="px-2 py-1 rounded-md text-[11px] outline-none"
-                            style={{ backgroundColor: 'rgba(10,10,15,0.72)', border: '1px solid #1e2d4a', color: '#94a3b8' }}>
+                            style={{ backgroundColor: 'rgba(2,4,9,0.92)', border: '1px solid #1e3a8a', color: '#94a3b8' }}>
                             <option value="">Status…</option>
                             <option value="active">Active</option>
                             <option value="offline">Offline</option>
@@ -500,7 +500,7 @@ function AdminInner() {
                 style={{
                   backgroundColor: reqFilter === v ? 'rgba(37,99,235,0.15)' : 'transparent',
                   color: reqFilter === v ? '#60a5fa' : '#94a3b8',
-                  border: `1px solid ${reqFilter === v ? 'rgba(37,99,235,0.4)' : '#1e2d4a'}`,
+                  border: `1px solid ${reqFilter === v ? 'rgba(37,99,235,0.4)' : '#1e3a8a'}`,
                   cursor: 'pointer',
                 }}>
                 {l}
@@ -511,7 +511,7 @@ function AdminInner() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr style={{ backgroundColor: '#0f1629', borderBottom: '1px solid #1e2d4a' }}>
+                  <tr style={{ backgroundColor: '#060b16', borderBottom: '1px solid #1e3a8a' }}>
                     {['Request', 'User', 'Key', 'Endpoint', 'Status', 'Time', 'Error', 'IP', 'When'].map(h => (
                       <th key={h} className="text-left px-3 py-2.5 text-xs font-bold uppercase" style={{ color: '#64748b' }}>{h}</th>
                     ))}
@@ -522,7 +522,7 @@ function AdminInner() {
                     <tr><td colSpan={9} className="px-3 py-12 text-center text-sm" style={{ color: '#64748b' }}>No requests found.</td></tr>
                   ) : (
                     requests?.requests?.map(r => (
-                      <tr key={r.request_id} style={{ borderBottom: '1px solid #0f1629' }}>
+                      <tr key={r.request_id} style={{ borderBottom: '1px solid #060b16' }}>
                         <td className="px-3 py-2.5 font-mono text-xs" style={{ color: '#64748b' }}>{r.request_id}</td>
                         <td className="px-3 py-2.5 text-xs" style={{ color: '#94a3b8' }}>{r.user_email || '—'}</td>
                         <td className="px-3 py-2.5 text-xs" style={{ color: '#64748b' }}>{r.key_name || '—'}</td>
@@ -547,10 +547,10 @@ function AdminInner() {
               <div className="flex gap-2">
                 <button disabled={page <= 1} onClick={() => setPage(p => p - 1)}
                   className="px-3 py-1.5 rounded-lg text-xs font-semibold"
-                  style={{ border: '1px solid #1e2d4a', color: page <= 1 ? '#475569' : '#94a3b8', cursor: 'pointer' }}>← Prev</button>
+                  style={{ border: '1px solid #1e3a8a', color: page <= 1 ? '#475569' : '#94a3b8', cursor: 'pointer' }}>← Prev</button>
                 <button disabled={page >= (requests.meta.total_pages || 1)} onClick={() => setPage(p => p + 1)}
                   className="px-3 py-1.5 rounded-lg text-xs font-semibold"
-                  style={{ border: '1px solid #1e2d4a', color: page >= (requests.meta.total_pages || 1) ? '#475569' : '#94a3b8', cursor: 'pointer' }}>Next →</button>
+                  style={{ border: '1px solid #1e3a8a', color: page >= (requests.meta.total_pages || 1) ? '#475569' : '#94a3b8', cursor: 'pointer' }}>Next →</button>
               </div>
             </div>
           )}
@@ -575,7 +575,7 @@ function AdminInner() {
                   defaultValue={settings[k]?.value ?? ''}
                   placeholder="requests/day"
                   className="w-36 px-3 py-1.5 rounded-lg text-sm outline-none"
-                  style={{ backgroundColor: 'rgba(10,10,15,0.72)', border: '1px solid #1e2d4a', color: '#f0f4ff' }}
+                  style={{ backgroundColor: 'rgba(2,4,9,0.92)', border: '1px solid #1e3a8a', color: '#f0f4ff' }}
                 />
                 <button disabled={busy} onClick={() => {
                   const el = document.getElementById(`input-${k}`);

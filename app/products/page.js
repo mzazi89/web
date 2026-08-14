@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect, Fragment } from 'react';
+import TypingHeading from '@/components/TypingHeading';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { fmtMtc, fmtMtcValue, mtcToKsh } from '@/lib/currency';
@@ -97,8 +98,8 @@ export default function ProductsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'rgba(10,10,15,0.72)' }}>
-        <div className="w-10 h-10 rounded-full border-2 animate-spin" style={{ borderColor: '#1e2d4a', borderTopColor: '#3b82f6' }} />
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'rgba(2,4,9,0.92)' }}>
+        <div className="w-10 h-10 rounded-full border-2 animate-spin" style={{ borderColor: '#1e3a8a', borderTopColor: '#3b82f6' }} />
       </div>
     );
   }
@@ -106,12 +107,12 @@ export default function ProductsPage() {
   const stepIndex = { select: 0, configure: 1, confirm: 2, creating: 2, done: 3 }[step] ?? 0;
 
   return (
-    <div className="min-h-screen py-8 sm:py-12" style={{ backgroundColor: 'rgba(10,10,15,0.72)' }}>
+    <div className="min-h-screen py-8 sm:py-12" style={{ backgroundColor: 'rgba(2,4,9,0.92)' }}>
       <div className="max-w-5xl mx-auto px-4 sm:px-6">
 
         {/* ── Page header ── */}
         <div className="mb-8 sm:mb-10">
-          <h1 className="text-2xl sm:text-3xl font-extrabold mb-2" style={{ color: '#f0f4ff' }}>Deploy a Panel</h1>
+          <TypingHeading as="h1" text="Deploy a Panel" speed={60} className="text-2xl sm:text-3xl font-extrabold mb-2" style={{ color: '#f0f4ff' }} />
           <p className="text-sm" style={{ color: '#64748b' }}>
             Choose a plan, configure your server, and go live in minutes.
           </p>
@@ -134,7 +135,7 @@ export default function ProductsPage() {
                 <div className="flex flex-col items-center flex-shrink-0">
                   <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all"
                     style={{
-                      backgroundColor: i < stepIndex ? '#22c55e' : i === stepIndex ? '#2563eb' : '#1e2d4a',
+                      backgroundColor: i < stepIndex ? '#22c55e' : i === stepIndex ? '#2563eb' : '#1e3a8a',
                       color: i <= stepIndex ? '#fff' : '#475569',
                     }}>
                     {i < stepIndex ? '✓' : i + 1}
@@ -146,7 +147,7 @@ export default function ProductsPage() {
                 </div>
                 {i < STEPS.length - 1 && (
                   <div className="flex-1 h-px mx-2 sm:mx-3 min-w-4"
-                    style={{ backgroundColor: i < stepIndex ? '#22c55e' : '#1e2d4a', marginBottom: '1.25rem' }} />
+                    style={{ backgroundColor: i < stepIndex ? '#22c55e' : '#1e3a8a', marginBottom: '1.25rem' }} />
                 )}
               </Fragment>
             ))}
@@ -181,8 +182,8 @@ export default function ProductsPage() {
                   <div key={p.id}
                     className="relative rounded-2xl p-5 sm:p-6 flex flex-col transition-all duration-300 hover:-translate-y-1 cursor-pointer"
                     style={{
-                      backgroundColor: p.popular ? '#0f1a35' : '#0f1629',
-                      border: `1px solid ${p.popular ? p.accent : '#1e2d4a'}`,
+                      backgroundColor: p.popular ? '#0f1a35' : '#060b16',
+                      border: `1px solid ${p.popular ? p.accent : '#1e3a8a'}`,
                       boxShadow: p.popular ? `0 0 30px ${p.accent}30` : 'none',
                     }}
                     onClick={() => handleSelectPkg(p)}>
@@ -212,7 +213,7 @@ export default function ProductsPage() {
                     </ul>
                     <button
                       className="w-full py-2.5 rounded-xl text-sm font-bold text-white transition-all"
-                      style={{ background: p.popular ? `linear-gradient(135deg,${p.accent},${p.accent}cc)` : '#1e2d4a' }}
+                      style={{ background: p.popular ? `linear-gradient(135deg,${p.accent},${p.accent}cc)` : '#1e3a8a' }}
                       onClick={e => { e.stopPropagation(); handleSelectPkg(p); }}>
                       {p.popular ? '⚡ Get Started' : 'Choose Plan'}
                     </button>
@@ -227,7 +228,7 @@ export default function ProductsPage() {
         {step === 'configure' && pkg && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
             {/* Form */}
-            <div className="lg:col-span-2 rounded-2xl p-5 sm:p-7" style={{ backgroundColor: '#0f1629', border: '1px solid #1e2d4a' }}>
+            <div className="lg:col-span-2 rounded-2xl p-5 sm:p-7" style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a' }}>
               <h2 className="font-bold text-lg mb-5" style={{ color: '#f0f4ff' }}>Configure Your Server</h2>
               <form onSubmit={handleConfirm} className="space-y-4">
                 {/* Name row */}
@@ -241,8 +242,8 @@ export default function ProductsPage() {
                       <input type="text" value={form[f.key]} onChange={e => setForm(x => ({ ...x, [f.key]: e.target.value }))}
                         placeholder={f.placeholder} required
                         className="w-full px-4 py-3 rounded-xl text-sm outline-none"
-                        style={{ backgroundColor: 'rgba(10,10,15,0.72)', border: '1px solid #1e2d4a', color: '#f0f4ff' }}
-                        onFocus={e => e.target.style.borderColor='#2563eb'} onBlur={e => e.target.style.borderColor='#1e2d4a'} />
+                        style={{ backgroundColor: 'rgba(2,4,9,0.92)', border: '1px solid #1e3a8a', color: '#f0f4ff' }}
+                        onFocus={e => e.target.style.borderColor='#2563eb'} onBlur={e => e.target.style.borderColor='#1e3a8a'} />
                     </div>
                   ))}
                 </div>
@@ -257,8 +258,8 @@ export default function ProductsPage() {
                     <input type={f.type} value={form[f.key]} onChange={e => setForm(x => ({ ...x, [f.key]: e.target.value }))}
                       placeholder={f.placeholder} required
                       className="w-full px-4 py-3 rounded-xl text-sm outline-none"
-                      style={{ backgroundColor: 'rgba(10,10,15,0.72)', border: '1px solid #1e2d4a', color: '#f0f4ff' }}
-                      onFocus={e => e.target.style.borderColor='#2563eb'} onBlur={e => e.target.style.borderColor='#1e2d4a'} />
+                      style={{ backgroundColor: 'rgba(2,4,9,0.92)', border: '1px solid #1e3a8a', color: '#f0f4ff' }}
+                      onFocus={e => e.target.style.borderColor='#2563eb'} onBlur={e => e.target.style.borderColor='#1e3a8a'} />
                   </div>
                 ))}
 
@@ -267,7 +268,7 @@ export default function ProductsPage() {
                   <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: '#475569' }}>Server Type (Nest)</label>
                   <select value={form.nest_id} onChange={e => handleNestChange(e.target.value)} required
                     className="w-full px-4 py-3 rounded-xl text-sm outline-none"
-                    style={{ backgroundColor: 'rgba(10,10,15,0.72)', border: '1px solid #1e2d4a', color: form.nest_id ? '#f0f4ff' : '#475569' }}>
+                    style={{ backgroundColor: 'rgba(2,4,9,0.92)', border: '1px solid #1e3a8a', color: form.nest_id ? '#f0f4ff' : '#475569' }}>
                     <option value="">{loadingNests ? 'Loading nests…' : '— Select a nest —'}</option>
                     {nests.map(n => <option key={n.id} value={n.id}>{n.name}</option>)}
                   </select>
@@ -278,7 +279,7 @@ export default function ProductsPage() {
                   <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: '#475569' }}>Server Software (Egg)</label>
                   <select value={form.egg_id} onChange={e => setForm(f => ({ ...f, egg_id: e.target.value }))} required disabled={!form.nest_id}
                     className="w-full px-4 py-3 rounded-xl text-sm outline-none"
-                    style={{ backgroundColor: 'rgba(10,10,15,0.72)', border: '1px solid #1e2d4a', color: form.egg_id ? '#f0f4ff' : '#475569', opacity: !form.nest_id ? 0.5 : 1 }}>
+                    style={{ backgroundColor: 'rgba(2,4,9,0.92)', border: '1px solid #1e3a8a', color: form.egg_id ? '#f0f4ff' : '#475569', opacity: !form.nest_id ? 0.5 : 1 }}>
                     <option value="">{loadingEggs ? 'Loading eggs…' : !form.nest_id ? '— Select a nest first —' : '— Select software —'}</option>
                     {eggs.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}
                   </select>
@@ -287,7 +288,7 @@ export default function ProductsPage() {
                 <div className="flex flex-col sm:flex-row gap-3 pt-2">
                   <button type="button" onClick={reset}
                     className="flex-1 py-3 rounded-xl text-sm font-semibold"
-                    style={{ color: '#94a3b8', border: '1px solid #1e2d4a' }}>
+                    style={{ color: '#94a3b8', border: '1px solid #1e3a8a' }}>
                     ← Back
                   </button>
                   <button type="submit"
@@ -301,9 +302,9 @@ export default function ProductsPage() {
 
             {/* Order summary */}
             <div>
-              <div className="rounded-2xl p-5 sm:p-6 sticky top-20" style={{ backgroundColor: '#0f1629', border: '1px solid #1e2d4a' }}>
+              <div className="rounded-2xl p-5 sm:p-6 sticky top-20" style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a' }}>
                 <p className="text-xs font-bold uppercase tracking-wider mb-4" style={{ color: '#475569' }}>Order Summary</p>
-                <div className="flex items-center justify-between mb-4 pb-4" style={{ borderBottom: '1px solid #1e2d4a' }}>
+                <div className="flex items-center justify-between mb-4 pb-4" style={{ borderBottom: '1px solid #1e3a8a' }}>
                   <div>
                     <p className="font-bold" style={{ color: '#f0f4ff' }}>{pkg.name} Plan</p>
                     <p className="text-xs mt-0.5" style={{ color: '#64748b' }}>Monthly subscription</p>
@@ -318,7 +319,7 @@ export default function ProductsPage() {
                     {s}
                   </div>
                 ))}
-                <div className="mt-4 pt-4" style={{ borderTop: '1px solid #1e2d4a' }}>
+                <div className="mt-4 pt-4" style={{ borderTop: '1px solid #1e3a8a' }}>
                   <div className="flex justify-between text-xs mb-1" style={{ color: '#475569' }}>
                     <span>Your balance</span>
                     <span style={{ color: balance >= pkg.price ? '#4ade80' : '#f87171' }}>{fmtMtc(balance)}</span>
@@ -335,7 +336,7 @@ export default function ProductsPage() {
 
         {/* ════ STEP: confirm ════ */}
         {step === 'confirm' && pkg && (
-          <div className="max-w-lg mx-auto rounded-2xl p-6 sm:p-8" style={{ backgroundColor: '#0f1629', border: '1px solid #1e2d4a' }}>
+          <div className="max-w-lg mx-auto rounded-2xl p-6 sm:p-8" style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a' }}>
             <h2 className="font-bold text-xl mb-6" style={{ color: '#f0f4ff' }}>Confirm Order</h2>
             {[
               { label: 'Plan',      value: `${pkg.name} — ${fmtMtc(pkg.price)}/mo` },
@@ -345,12 +346,12 @@ export default function ProductsPage() {
               { label: 'Nest',      value: nests.find(n => String(n.id) === String(form.nest_id))?.name || form.nest_id },
               { label: 'Egg',       value: eggs.find(e => String(e.id) === String(form.egg_id))?.name || form.egg_id },
             ].map(r => (
-              <div key={r.label} className="flex justify-between py-3 text-sm" style={{ borderBottom: '1px solid #1e2d4a' }}>
+              <div key={r.label} className="flex justify-between py-3 text-sm" style={{ borderBottom: '1px solid #1e3a8a' }}>
                 <span style={{ color: '#64748b' }}>{r.label}</span>
                 <span className="font-semibold text-right ml-4" style={{ color: '#f0f4ff', wordBreak: 'break-all' }}>{r.value}</span>
               </div>
             ))}
-            <div className="flex justify-between py-3 text-base font-bold" style={{ borderBottom: '1px solid #1e2d4a' }}>
+            <div className="flex justify-between py-3 text-base font-bold" style={{ borderBottom: '1px solid #1e3a8a' }}>
               <span style={{ color: '#94a3b8' }}>Total Charge</span>
               <span style={{ color: '#3b82f6' }}>{fmtMtc(pkg.price)}</span>
             </div>
@@ -360,7 +361,7 @@ export default function ProductsPage() {
             <div className="flex flex-col sm:flex-row gap-3">
               <button onClick={() => setStep('configure')}
                 className="flex-1 py-3 rounded-xl text-sm font-semibold"
-                style={{ color: '#94a3b8', border: '1px solid #1e2d4a' }}>
+                style={{ color: '#94a3b8', border: '1px solid #1e3a8a' }}>
                 ← Edit
               </button>
               <button onClick={handleCreate}
@@ -376,7 +377,7 @@ export default function ProductsPage() {
         {step === 'creating' && (
           <div className="text-center py-16 sm:py-24">
             <div className="w-14 h-14 rounded-full border-2 animate-spin mx-auto mb-6"
-              style={{ borderColor: '#1e2d4a', borderTopColor: '#3b82f6' }} />
+              style={{ borderColor: '#1e3a8a', borderTopColor: '#3b82f6' }} />
             <p className="font-bold text-lg mb-2" style={{ color: '#f0f4ff' }}>Deploying your panel…</p>
             <p className="text-sm" style={{ color: '#64748b' }}>This takes about 30 seconds. Please wait.</p>
           </div>
@@ -385,7 +386,7 @@ export default function ProductsPage() {
         {/* ════ STEP: done ════ */}
         {step === 'done' && result && (
           <div className="max-w-lg mx-auto">
-            <div className="rounded-2xl p-6 sm:p-8" style={{ backgroundColor: '#0f1629', border: '1px solid rgba(34,197,94,0.3)', boxShadow: '0 0 40px rgba(34,197,94,0.1)' }}>
+            <div className="rounded-2xl p-6 sm:p-8" style={{ backgroundColor: '#060b16', border: '1px solid rgba(34,197,94,0.3)', boxShadow: '0 0 40px rgba(34,197,94,0.1)' }}>
               <div className="text-center mb-6">
                 <div className="text-5xl mb-3">🎉</div>
                 <h2 className="text-2xl font-extrabold mb-1" style={{ color: '#f0f4ff' }}>Panel Deployed!</h2>
@@ -393,7 +394,7 @@ export default function ProductsPage() {
               </div>
 
               {/* Credentials box */}
-              <div className="rounded-xl p-4 mb-4 text-left space-y-3" style={{ backgroundColor: 'rgba(10,10,15,0.72)', border: '1px solid #1e2d4a' }}>
+              <div className="rounded-xl p-4 mb-4 text-left space-y-3" style={{ backgroundColor: 'rgba(2,4,9,0.92)', border: '1px solid #1e3a8a' }}>
                 <p className="text-xs font-bold uppercase tracking-wider mb-1" style={{ color: '#475569' }}>Login Credentials</p>
                 {[
                   { label: '🌐 Panel URL',  value: result.panel_url || 'https://public.mzazi.shop', link: result.panel_url || 'https://public.mzazi.shop' },
@@ -402,7 +403,7 @@ export default function ProductsPage() {
                   { label: '📦 Plan',       value: result.package   || pkg?.name },
                   { label: '🖥️ Server ID',  value: result.ptero_server_id ? String(result.ptero_server_id) : '—' },
                 ].map(r => (
-                  <div key={r.label} className="flex items-center justify-between gap-3 text-sm py-1" style={{ borderBottom: '1px solid #1e2d4a' }}>
+                  <div key={r.label} className="flex items-center justify-between gap-3 text-sm py-1" style={{ borderBottom: '1px solid #1e3a8a' }}>
                     <span className="flex-shrink-0" style={{ color: '#64748b' }}>{r.label}</span>
                     {r.link
                       ? <a href={r.link} target="_blank" rel="noopener noreferrer" className="font-semibold truncate" style={{ color: '#60a5fa', textDecoration: 'underline', wordBreak: 'break-all' }}>{r.value}</a>
@@ -434,7 +435,7 @@ export default function ProductsPage() {
                 </a>
                 <button onClick={reset}
                   className="flex-1 py-3 rounded-xl text-sm font-semibold"
-                  style={{ color: '#94a3b8', border: '1px solid #1e2d4a' }}>
+                  style={{ color: '#94a3b8', border: '1px solid #1e3a8a' }}>
                   Deploy Another
                 </button>
               </div>

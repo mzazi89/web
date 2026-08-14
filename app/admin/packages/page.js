@@ -10,7 +10,7 @@ function fmtCpu(v)  { const n = parseInt(v); return n === 0 ? 'Unlimited CPU'  :
 function fmtRam(v)  { const n = parseInt(v); return n === 0 ? 'Unlimited RAM'  : n >= 1024 ? `${n / 1024} GB RAM`  : `${n} MB RAM`; }
 function fmtDisk(v) { const n = parseInt(v); return n === 0 ? 'Unlimited Disk' : n >= 1024 ? `${n / 1024} GB Disk` : `${n} MB Disk`; }
 
-const inputStyle = { backgroundColor: '#0a0c14', border: '1px solid #1e2030', color: '#f0f4ff', borderRadius: '0.75rem', padding: '0.625rem 1rem', width: '100%', fontSize: '0.875rem', outline: 'none' };
+const inputStyle = { backgroundColor: '#04070f', border: '1px solid #1e3a8a', color: '#f0f4ff', borderRadius: '0.75rem', padding: '0.625rem 1rem', width: '100%', fontSize: '0.875rem', outline: 'none' };
 const labelStyle = { display: 'block', fontSize: '0.7rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.375rem', color: '#475569' };
 
 export default function AdminPackages() {
@@ -88,7 +88,7 @@ export default function AdminPackages() {
   return (
     <div className="min-h-screen" style={{ backgroundColor: 'rgba(6,8,16,0.78)' }}>
       {/* Top bar */}
-      <div style={{ backgroundColor: '#0a0c14', borderBottom: '1px solid #1e2030' }} className="sticky top-0 z-40">
+      <div style={{ backgroundColor: '#04070f', borderBottom: '1px solid #1e3a8a' }} className="sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #dc2626, #b91c1c)' }}>
@@ -110,7 +110,7 @@ export default function AdminPackages() {
         <div className="flex flex-wrap gap-2 mb-8">
           {navTabs.map(n => (
             <Link key={n.href} href={n.href} className="px-4 py-2 rounded-xl text-sm font-medium"
-              style={{ backgroundColor: n.active ? 'rgba(220,38,38,0.15)' : 'rgba(30,32,48,0.5)', color: n.active ? '#f87171' : '#64748b', border: n.active ? '1px solid rgba(220,38,38,0.3)' : '1px solid #1e2030' }}>
+              style={{ backgroundColor: n.active ? 'rgba(220,38,38,0.15)' : 'rgba(30,32,48,0.5)', color: n.active ? '#f87171' : '#64748b', border: n.active ? '1px solid rgba(220,38,38,0.3)' : '1px solid #1e3a8a' }}>
               {n.label}
             </Link>
           ))}
@@ -120,7 +120,7 @@ export default function AdminPackages() {
           <h1 className="text-2xl font-extrabold" style={{ color: '#f0f4ff' }}>Packages</h1>
           <div className="flex items-center gap-2">
             <button onClick={handleRestoreDefaults} disabled={restoring} className="px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2"
-              style={{ color: '#94a3b8', border: '1px solid #1e2030', opacity: restoring ? 0.6 : 1 }}>
+              style={{ color: '#94a3b8', border: '1px solid #1e3a8a', opacity: restoring ? 0.6 : 1 }}>
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
               </svg>
@@ -141,14 +141,14 @@ export default function AdminPackages() {
             <div className="w-8 h-8 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
           </div>
         ) : (
-          <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: '#0f1117', border: '1px solid #1e2030' }}>
+          <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: '#0f1117', border: '1px solid #1e3a8a' }}>
             {packages.length === 0 ? (
               <div className="text-center py-16" style={{ color: '#374151' }}>No packages yet. Click "Add Package" to create one.</div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr style={{ borderBottom: '1px solid #1e2030' }}>
+                    <tr style={{ borderBottom: '1px solid #1e3a8a' }}>
                       {['Name', 'Price', 'CPU', 'RAM', 'Disk', 'Popular', 'Active', 'Order', 'Actions'].map(h => (
                         <th key={h} className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider" style={{ color: '#475569' }}>{h}</th>
                       ))}
@@ -156,7 +156,7 @@ export default function AdminPackages() {
                   </thead>
                   <tbody>
                     {packages.map((pkg, i) => (
-                      <tr key={pkg.id} style={{ borderBottom: i < packages.length - 1 ? '1px solid #1e2030' : 'none' }}>
+                      <tr key={pkg.id} style={{ borderBottom: i < packages.length - 1 ? '1px solid #1e3a8a' : 'none' }}>
                         <td className="px-5 py-4">
                           <div className="flex items-center gap-2">
                             <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: pkg.accent }} />
@@ -168,7 +168,7 @@ export default function AdminPackages() {
                         <td className="px-5 py-4" style={{ color: '#94a3b8' }}>{fmtRam(pkg.ram)}</td>
                         <td className="px-5 py-4" style={{ color: '#94a3b8' }}>{fmtDisk(pkg.disk)}</td>
                         <td className="px-5 py-4">
-                          <span className="text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: pkg.popular ? 'rgba(37,99,235,0.15)' : 'rgba(30,32,48,0.8)', color: pkg.popular ? '#60a5fa' : '#475569', border: `1px solid ${pkg.popular ? 'rgba(37,99,235,0.3)' : '#1e2030'}` }}>
+                          <span className="text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: pkg.popular ? 'rgba(37,99,235,0.15)' : 'rgba(30,32,48,0.8)', color: pkg.popular ? '#60a5fa' : '#475569', border: `1px solid ${pkg.popular ? 'rgba(37,99,235,0.3)' : '#1e3a8a'}` }}>
                             {pkg.popular ? 'Yes' : 'No'}
                           </span>
                         </td>
@@ -203,7 +203,7 @@ export default function AdminPackages() {
       {/* Add / Edit modal */}
       {modal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.7)' }} onClick={closeModal}>
-          <div className="w-full max-w-lg rounded-2xl p-6 sm:p-8" style={{ backgroundColor: '#0f1117', border: '1px solid #1e2030' }} onClick={e => e.stopPropagation()}>
+          <div className="w-full max-w-lg rounded-2xl p-6 sm:p-8" style={{ backgroundColor: '#0f1117', border: '1px solid #1e3a8a' }} onClick={e => e.stopPropagation()}>
             <h2 className="text-lg font-bold mb-6" style={{ color: '#f0f4ff' }}>{modal === 'add' ? 'Add Package' : 'Edit Package'}</h2>
             {error && <div className="mb-4 p-3 rounded-xl text-sm" style={{ backgroundColor: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: '#f87171' }}>{error}</div>}
             <form onSubmit={handleSave} className="space-y-4">
@@ -239,7 +239,7 @@ export default function AdminPackages() {
                 <div>
                   <label style={labelStyle}>Accent Color</label>
                   <div className="flex gap-2 items-center">
-                    <input type="color" value={form.accent} onChange={e => setForm(f => ({ ...f, accent: e.target.value }))} style={{ width: '2.5rem', height: '2.5rem', borderRadius: '0.5rem', border: '1px solid #1e2030', backgroundColor: '#0a0c14', cursor: 'pointer', padding: '2px' }} />
+                    <input type="color" value={form.accent} onChange={e => setForm(f => ({ ...f, accent: e.target.value }))} style={{ width: '2.5rem', height: '2.5rem', borderRadius: '0.5rem', border: '1px solid #1e3a8a', backgroundColor: '#04070f', cursor: 'pointer', padding: '2px' }} />
                     <input style={{ ...inputStyle, flex: 1 }} value={form.accent} onChange={e => setForm(f => ({ ...f, accent: e.target.value }))} placeholder="#2563eb" />
                   </div>
                 </div>
@@ -258,7 +258,7 @@ export default function AdminPackages() {
               </div>
 
               {/* Live preview */}
-              <div className="rounded-xl p-4 mt-2" style={{ backgroundColor: '#0a0c14', border: `1px solid ${form.accent || '#1e2030'}` }}>
+              <div className="rounded-xl p-4 mt-2" style={{ backgroundColor: '#04070f', border: `1px solid ${form.accent || '#1e3a8a'}` }}>
                 <p className="text-xs font-bold uppercase tracking-wider mb-2" style={{ color: '#475569' }}>Preview</p>
                 <p className="font-bold" style={{ color: '#f0f4ff' }}>{form.name || 'Package Name'}</p>
                 <p className="font-extrabold text-xl" style={{ color: form.accent }}>{fmtMtc(form.price || 0)}<span className="text-xs font-normal ml-1" style={{ color: '#475569' }}>/mo</span></p>
@@ -266,7 +266,7 @@ export default function AdminPackages() {
               </div>
 
               <div className="flex gap-3 pt-2">
-                <button type="button" onClick={closeModal} className="flex-1 py-2.5 rounded-xl text-sm font-semibold" style={{ color: '#94a3b8', border: '1px solid #1e2030' }}>Cancel</button>
+                <button type="button" onClick={closeModal} className="flex-1 py-2.5 rounded-xl text-sm font-semibold" style={{ color: '#94a3b8', border: '1px solid #1e3a8a' }}>Cancel</button>
                 <button type="submit" disabled={saving} className="flex-1 py-2.5 rounded-xl text-sm font-bold text-white"
                   style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', opacity: saving ? 0.6 : 1 }}>
                   {saving ? 'Saving…' : modal === 'add' ? 'Create Package' : 'Save Changes'}
@@ -284,7 +284,7 @@ export default function AdminPackages() {
             <h3 className="font-bold text-lg mb-2" style={{ color: '#f0f4ff' }}>Delete Package?</h3>
             <p className="text-sm mb-6" style={{ color: '#64748b' }}>This cannot be undone. Existing panels using this package are unaffected.</p>
             <div className="flex gap-3">
-              <button onClick={() => setDeleteId(null)} className="flex-1 py-2.5 rounded-xl text-sm font-semibold" style={{ color: '#94a3b8', border: '1px solid #1e2030' }}>Cancel</button>
+              <button onClick={() => setDeleteId(null)} className="flex-1 py-2.5 rounded-xl text-sm font-semibold" style={{ color: '#94a3b8', border: '1px solid #1e3a8a' }}>Cancel</button>
               <button onClick={() => handleDelete(deleteId)} className="flex-1 py-2.5 rounded-xl text-sm font-bold text-white" style={{ background: 'linear-gradient(135deg,#dc2626,#b91c1c)' }}>Delete</button>
             </div>
           </div>

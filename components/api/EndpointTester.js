@@ -53,7 +53,7 @@ export default function EndpointTester({ endpoint }) {
   };
 
   return (
-    <div className="rounded-xl p-4" style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a' }}>
+    <div className="rounded-xl p-4" style={{ backgroundColor: '#020409', border: '1px solid #1e3a8a' }}>
       <div className="flex flex-wrap items-end gap-3 mb-3">
         <div className="flex-1 min-w-[200px]">
           <label className="block text-[10px] font-bold uppercase tracking-wide mb-1" style={{ color: '#64748b' }}>
@@ -61,7 +61,7 @@ export default function EndpointTester({ endpoint }) {
           </label>
           <input value={key} onChange={e => setKey(e.target.value)} placeholder="mzazi_..."
             className="w-full px-3 py-2 rounded-lg text-xs font-mono outline-none"
-            style={{ backgroundColor: '#0f1629', border: '1px solid #1e2d4a', color: '#f0f4ff' }} />
+            style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a', color: '#f0f4ff' }} />
         </div>
         {all.map(p => (
           <div key={p.name} className="flex-1 min-w-[140px]">
@@ -72,7 +72,7 @@ export default function EndpointTester({ endpoint }) {
             <input value={values[p.name] || ''} onChange={e => setValues(v => ({ ...v, [p.name]: e.target.value }))}
               placeholder={p.example || p.name}
               className="w-full px-3 py-2 rounded-lg text-xs outline-none"
-              style={{ backgroundColor: '#0f1629', border: '1px solid #1e2d4a', color: '#f0f4ff' }} />
+              style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a', color: '#f0f4ff' }} />
           </div>
         ))}
         <button onClick={run} disabled={testing}

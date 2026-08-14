@@ -18,9 +18,9 @@ const inputStyle = {
   width: '100%',
   padding: '10px 12px',
   borderRadius: '10px',
-  background: '#0d1117',
+  background: '#02040a',
   color: '#e2e8f0',
-  border: '1px solid #1e2030',
+  border: '1px solid #1e3a8a',
   fontSize: '14px',
   outline: 'none',
 };
@@ -36,7 +36,7 @@ const btnPrimary = {
 const btnGhost = {
   background: 'rgba(30,32,48,0.5)',
   color: '#94a3b8',
-  border: '1px solid #1e2030',
+  border: '1px solid #1e3a8a',
   padding: '8px 14px',
   borderRadius: '10px',
   cursor: 'pointer',
@@ -233,11 +233,11 @@ export default function CommandsPage() {
         <button onClick={openAdd} style={{ ...btnPrimary, marginLeft: 'auto' }}>+ Add Command</button>
       </div>
 
-      <div style={{ background: 'rgba(30,32,48,0.5)', border: '1px solid #1e2030', borderRadius: 16, overflow: 'hidden' }}>
+      <div style={{ background: 'rgba(30,32,48,0.5)', border: '1px solid #1e3a8a', borderRadius: 16, overflow: 'hidden' }}>
         <div className="scroll-x">
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14, minWidth: 720 }}>
           <thead>
-            <tr style={{ background: '#0d1117', color: '#64748b', textAlign: 'left' }}>
+            <tr style={{ background: '#02040a', color: '#64748b', textAlign: 'left' }}>
               <th style={{ padding: '12px 16px' }}>Command</th>
               <th style={{ padding: '12px 16px' }}>Category</th>
               <th style={{ padding: '12px 16px' }}>Description</th>
@@ -254,7 +254,7 @@ export default function CommandsPage() {
               <tr><td colSpan={6} style={{ padding: 24, textAlign: 'center', color: '#64748b' }}>No commands found. Add your first command.</td></tr>
             )}
             {commands.map((cmd) => (
-              <tr key={cmd.id} style={{ borderTop: '1px solid #1e2030' }}>
+              <tr key={cmd.id} style={{ borderTop: '1px solid #1e3a8a' }}>
                 <td style={{ padding: '12px 16px' }}>
                   <div style={{ color: '#f1f5f9', fontWeight: 600 }}>.{cmd.name}</div>
                   {cmd.aliases.length > 0 && (
@@ -288,7 +288,7 @@ export default function CommandsPage() {
 
       {modal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, padding: 20 }}>
-          <div style={{ background: '#0d1117', border: '1px solid #1e2030', borderRadius: 16, width: '100%', maxWidth: 640, maxHeight: '90vh', overflowY: 'auto', padding: 24 }}>
+          <div style={{ background: '#02040a', border: '1px solid #1e3a8a', borderRadius: 16, width: '100%', maxWidth: 640, maxHeight: '90vh', overflowY: 'auto', padding: 24 }}>
             <h2 style={{ color: '#f1f5f9', fontSize: 18, fontWeight: 700, marginBottom: 16 }}>
               {modal.mode === 'add' ? '➕ Add Command' : `✏️ Edit .${modal.name}`}
             </h2>

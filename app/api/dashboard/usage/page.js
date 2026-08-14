@@ -94,7 +94,7 @@ export default function ApiUsage() {
           <label className="block text-[10px] font-bold uppercase tracking-wide mb-1.5" style={{ color: '#64748b' }}>Endpoint</label>
           <select value={filters.endpoint} onChange={e => setFilters(f => ({ ...f, endpoint: e.target.value, page: 1 }))}
             className="px-3 py-2 rounded-lg text-sm outline-none"
-            style={{ backgroundColor: 'rgba(10,10,15,0.72)', border: '1px solid #1e2d4a', color: '#f0f4ff' }}>
+            style={{ backgroundColor: 'rgba(2,4,9,0.92)', border: '1px solid #1e3a8a', color: '#f0f4ff' }}>
             <option value="">All endpoints</option>
             {endpoints.map(e => <option key={e} value={e}>{e}</option>)}
           </select>
@@ -103,7 +103,7 @@ export default function ApiUsage() {
           <label className="block text-[10px] font-bold uppercase tracking-wide mb-1.5" style={{ color: '#64748b' }}>Status</label>
           <select value={filters.status} onChange={e => setFilters(f => ({ ...f, status: e.target.value, page: 1 }))}
             className="px-3 py-2 rounded-lg text-sm outline-none"
-            style={{ backgroundColor: 'rgba(10,10,15,0.72)', border: '1px solid #1e2d4a', color: '#f0f4ff' }}>
+            style={{ backgroundColor: 'rgba(2,4,9,0.92)', border: '1px solid #1e3a8a', color: '#f0f4ff' }}>
             <option value="">All</option>
             <option value="success">Success (2xx/3xx)</option>
             <option value="failed">Failed (4xx/5xx)</option>
@@ -147,7 +147,7 @@ export default function ApiUsage() {
                     <code className="font-mono" style={{ color: '#e2e8f0' }}>{e.endpoint}</code>
                     <span style={{ color: '#94a3b8' }}>{e.count.toLocaleString()} · {e.avg_response_ms !== null ? `${Number(e.avg_response_ms).toFixed(0)}ms` : '—'}</span>
                   </div>
-                  <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(10,10,15,0.72)' }}>
+                  <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(2,4,9,0.92)' }}>
                     <div className="h-full rounded-full" style={{
                       width: `${Math.min(100, (e.count / Math.max(1, data.per_endpoint[0].count)) * 100)}%`,
                       background: 'linear-gradient(90deg,#2563eb,#60a5fa)',
@@ -165,7 +165,7 @@ export default function ApiUsage() {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr style={{ backgroundColor: '#0f1629', borderBottom: '1px solid #1e2d4a' }}>
+              <tr style={{ backgroundColor: '#060b16', borderBottom: '1px solid #1e3a8a' }}>
                 {['Request ID', 'Key', 'Endpoint', 'Status', 'Time', 'Provider', 'Error', 'When'].map(h => (
                   <th key={h} className="text-left px-4 py-2.5 text-xs font-bold uppercase tracking-wide" style={{ color: '#64748b' }}>{h}</th>
                 ))}
@@ -180,7 +180,7 @@ export default function ApiUsage() {
                 </tr>
               ) : (
                 data.requests.map(r => (
-                  <tr key={r.request_id} style={{ borderBottom: '1px solid #0f1629' }}>
+                  <tr key={r.request_id} style={{ borderBottom: '1px solid #060b16' }}>
                     <td className="px-4 py-3 font-mono text-xs" style={{ color: '#64748b' }}>{r.request_id}</td>
                     <td className="px-4 py-3 text-xs" style={{ color: '#94a3b8' }}>
                       {r.key_name || '—'}
@@ -203,19 +203,19 @@ export default function ApiUsage() {
 
         {/* Pagination */}
         {meta.total_pages > 1 && (
-          <div className="flex items-center justify-between px-4 py-3" style={{ borderTop: '1px solid #1e2d4a', backgroundColor: '#0f1629' }}>
+          <div className="flex items-center justify-between px-4 py-3" style={{ borderTop: '1px solid #1e3a8a', backgroundColor: '#060b16' }}>
             <span className="text-xs" style={{ color: '#64748b' }}>
               Page {meta.page} of {meta.total_pages} · {meta.total.toLocaleString()} requests
             </span>
             <div className="flex gap-2">
               <button disabled={meta.page <= 1} onClick={() => setFilters(f => ({ ...f, page: f.page - 1 }))}
                 className="px-3 py-1.5 rounded-lg text-xs font-semibold"
-                style={{ border: '1px solid #1e2d4a', color: meta.page <= 1 ? '#475569' : '#94a3b8', cursor: meta.page <= 1 ? 'not-allowed' : 'pointer' }}>
+                style={{ border: '1px solid #1e3a8a', color: meta.page <= 1 ? '#475569' : '#94a3b8', cursor: meta.page <= 1 ? 'not-allowed' : 'pointer' }}>
                 ← Prev
               </button>
               <button disabled={meta.page >= meta.total_pages} onClick={() => setFilters(f => ({ ...f, page: f.page + 1 }))}
                 className="px-3 py-1.5 rounded-lg text-xs font-semibold"
-                style={{ border: '1px solid #1e2d4a', color: meta.page >= meta.total_pages ? '#475569' : '#94a3b8', cursor: meta.page >= meta.total_pages ? 'not-allowed' : 'pointer' }}>
+                style={{ border: '1px solid #1e3a8a', color: meta.page >= meta.total_pages ? '#475569' : '#94a3b8', cursor: meta.page >= meta.total_pages ? 'not-allowed' : 'pointer' }}>
                 Next →
               </button>
             </div>

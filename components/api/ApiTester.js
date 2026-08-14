@@ -67,7 +67,7 @@ export default function ApiTester({ defaultQuery = 'Faded Alan Walker', compact 
             value={form.endpoint}
             onChange={e => setForm(f => ({ ...f, endpoint: e.target.value }))}
             className="w-full px-3 py-2.5 rounded-lg text-sm outline-none font-mono"
-            style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a', color: '#f0f4ff' }}>
+            style={{ backgroundColor: '#020409', border: '1px solid #1e3a8a', color: '#f0f4ff' }}>
             {ENDPOINTS.map(e => <option key={e.path} value={e.path}>{e.label}</option>)}
           </select>
         </div>
@@ -80,7 +80,7 @@ export default function ApiTester({ defaultQuery = 'Faded Alan Walker', compact 
             onChange={e => setForm(f => ({ ...f, key: e.target.value }))}
             placeholder="mzazi_... (leave empty to test without a key)"
             className="w-full px-3 py-2.5 rounded-lg text-sm outline-none font-mono"
-            style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a', color: '#f0f4ff' }}
+            style={{ backgroundColor: '#020409', border: '1px solid #1e3a8a', color: '#f0f4ff' }}
           />
         </div>
         <div>
@@ -92,7 +92,7 @@ export default function ApiTester({ defaultQuery = 'Faded Alan Walker', compact 
             onChange={e => setForm(f => ({ ...f, query: e.target.value }))}
             placeholder="e.g. Faded Alan Walker"
             className="w-full px-3 py-2.5 rounded-lg text-sm outline-none"
-            style={{ backgroundColor: '#0a0a0f', border: '1px solid #1e2d4a', color: '#f0f4ff' }}
+            style={{ backgroundColor: '#020409', border: '1px solid #1e3a8a', color: '#f0f4ff' }}
             onKeyDown={e => { if (e.key === 'Enter') run(); }}
           />
         </div>

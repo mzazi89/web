@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import TypingHeading from '@/components/TypingHeading';
 import PairingPanel from './PairingPanel';
 
 const BOTS = [
@@ -55,7 +56,7 @@ function TelegramButton({ bot, size = 'lg' }) {
     <a href={href} target="_blank" rel="noopener noreferrer"
       className={`rounded-xl font-bold text-white transition-all hover:opacity-90 inline-flex items-center justify-center gap-2 ${size === 'lg' ? 'px-6 py-3.5 text-sm' : 'px-4 py-2.5 text-xs'}`}
       style={{
-        background: bot.recommended ? 'linear-gradient(135deg, #2563eb, #1d4ed8)' : 'rgba(37,99,235,0.08)',
+        background: bot.recommended ? 'linear-gradient(135deg, #3b82f6, #1d4ed8)' : 'rgba(37,99,235,0.08)',
         border: bot.recommended ? 'none' : '1px solid rgba(37,99,235,0.35)',
         color: bot.recommended ? '#fff' : '#93c5fd',
         boxShadow: bot.recommended ? '0 0 24px rgba(37,99,235,0.35)' : 'none',
@@ -71,9 +72,9 @@ function TelegramButton({ bot, size = 'lg' }) {
 
 export default function WhatsAppBotPage() {
   return (
-    <div style={{ backgroundColor: 'rgba(10,10,15,0.72)' }}>
+    <div style={{ backgroundColor: 'rgba(2,4,9,0.92)' }}>
       {/* Hero */}
-      <section className="relative overflow-hidden py-20" style={{ background: 'linear-gradient(180deg, #0a0a0f 0%, #071428 50%, #0a0a0f 100%)' }}>
+      <section className="relative overflow-hidden py-20" style={{ background: 'linear-gradient(180deg, #020409 0%, #071428 50%, #020409 100%)' }}>
         <div className="absolute inset-0" style={{
           backgroundImage: 'linear-gradient(rgba(37,99,235,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(37,99,235,0.05) 1px, transparent 1px)',
           backgroundSize: '40px 40px'
@@ -88,11 +89,10 @@ export default function WhatsAppBotPage() {
           </div>
 
           <h1 className="text-4xl md:text-6xl font-extrabold mb-6" style={{ color: '#f0f4ff' }}>
-            Connect Your
+            <TypingHeading as="span" text="Connect Your" speed={70} />
             <br />
-            <span style={{ background: 'linear-gradient(135deg, #25D366, #128C7E)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              WhatsApp Bot
-            </span>
+            <TypingHeading as="span" text="WhatsApp Bot" speed={70} delay={1200}
+              style={{ background: 'linear-gradient(135deg, #25D366, #128C7E)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }} />
           </h1>
 
           <p className="text-lg mb-8 max-w-2xl mx-auto" style={{ color: '#64748b' }}>
@@ -109,7 +109,7 @@ export default function WhatsAppBotPage() {
       </section>
 
       {/* How to pair */}
-      <section className="py-20" style={{ backgroundColor: 'rgba(13,13,26,0.72)' }}>
+      <section className="py-20" style={{ backgroundColor: 'rgba(2,4,9,0.92)' }}>
         <div className="max-w-4xl mx-auto px-4">
           <div className="text-center mb-14">
             <h2 className="text-3xl font-extrabold mb-3" style={{ color: '#f0f4ff' }}>How to Link Your WhatsApp</h2>
@@ -118,8 +118,8 @@ export default function WhatsAppBotPage() {
 
           <div className="space-y-6">
             {steps.map((s, i) => (
-              <div key={s.step} className="flex gap-6 p-6 rounded-2xl transition-all" style={{ backgroundColor: '#16182a', border: '1px solid #1e2d4a' }}>
-                <div className="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center font-extrabold text-sm" style={{ background: 'linear-gradient(135deg, #2563eb, #1d4ed8)', color: '#fff' }}>
+              <div key={s.step} className="flex gap-6 p-6 rounded-2xl transition-all" style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a' }}>
+                <div className="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center font-extrabold text-sm" style={{ background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)', color: '#fff' }}>
                   {s.step}
                 </div>
                 <div className="flex-1">
@@ -129,7 +129,7 @@ export default function WhatsAppBotPage() {
                   </div>
                   <p className="text-sm mb-3 leading-relaxed" style={{ color: '#64748b' }}>{s.desc}</p>
                   {s.code && (
-                    <div className="inline-flex items-center space-x-3 px-4 py-2.5 rounded-xl" style={{ backgroundColor: '#0d1117', border: '1px solid rgba(37,99,235,0.3)' }}>
+                    <div className="inline-flex items-center space-x-3 px-4 py-2.5 rounded-xl" style={{ backgroundColor: '#02040a', border: '1px solid rgba(37,99,235,0.3)' }}>
                       <span className="font-mono font-bold text-sm" style={{ color: '#60a5fa' }}>{s.code}</span>
                       <span className="text-xs" style={{ color: '#475569' }}>{s.step === '04' ? '— the code from your bot' : '— send this to the bot'}</span>
                     </div>
@@ -137,7 +137,7 @@ export default function WhatsAppBotPage() {
                   {s.action && (
                     <a href={s.action.href}
                       className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all"
-                      style={{ background: 'linear-gradient(135deg, #2563eb, #1d4ed8)', color: '#fff', textDecoration: 'none' }}>
+                      style={{ background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)', color: '#fff', textDecoration: 'none' }}>
                       <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.833.941z"/>
                       </svg>
@@ -150,7 +150,7 @@ export default function WhatsAppBotPage() {
           </div>
 
           {/* Which bot? */}
-          <div className="mt-10 p-6 rounded-2xl" style={{ backgroundColor: '#16182a', border: '1px solid rgba(37,99,235,0.3)' }}>
+          <div className="mt-10 p-6 rounded-2xl" style={{ backgroundColor: '#060b16', border: '1px solid rgba(37,99,235,0.3)' }}>
             <h3 className="font-bold text-lg mb-2" style={{ color: '#f0f4ff' }}>🤖 Which bot should I use?</h3>
             <p className="text-sm mb-4 leading-relaxed" style={{ color: '#64748b' }}>
               We run <strong style={{ color: '#f0f4ff' }}>4 separate bots</strong> so you can connect up to 4 different WhatsApp numbers.
@@ -159,7 +159,7 @@ export default function WhatsAppBotPage() {
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {BOTS.map(bot => (
-                <div key={bot.handle} className="flex items-center justify-between gap-3 p-3 rounded-xl" style={{ backgroundColor: '#0d1117', border: bot.recommended ? '1px solid rgba(37,99,235,0.4)' : '1px solid #1e2d4a' }}>
+                <div key={bot.handle} className="flex items-center justify-between gap-3 p-3 rounded-xl" style={{ backgroundColor: '#02040a', border: bot.recommended ? '1px solid rgba(37,99,235,0.4)' : '1px solid #1e3a8a' }}>
                   <div className="min-w-0">
                     <p className="text-sm font-bold" style={{ color: '#f0f4ff' }}>
                       {bot.name} {bot.recommended && <span className="text-[10px] font-bold px-1.5 py-0.5 rounded ml-1" style={{ backgroundColor: 'rgba(74,222,128,0.1)', color: '#4ade80' }}>Recommended</span>}
@@ -173,7 +173,7 @@ export default function WhatsAppBotPage() {
           </div>
 
           {/* Command reference */}
-          <div className="mt-10 p-6 rounded-2xl" style={{ backgroundColor: '#16182a', border: '1px solid rgba(37,99,235,0.3)' }}>
+          <div className="mt-10 p-6 rounded-2xl" style={{ backgroundColor: '#060b16', border: '1px solid rgba(37,99,235,0.3)' }}>
             <h3 className="font-bold text-lg mb-4" style={{ color: '#f0f4ff' }}>📋 Quick Command Reference</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {[
@@ -182,7 +182,7 @@ export default function WhatsAppBotPage() {
                 { cmd: '/status', desc: 'Check your connection status' },
                 { cmd: '/help', desc: 'List all available commands' },
               ].map(c => (
-                <div key={c.cmd} className="flex items-start space-x-3 p-3 rounded-xl" style={{ backgroundColor: '#0d1117' }}>
+                <div key={c.cmd} className="flex items-start space-x-3 p-3 rounded-xl" style={{ backgroundColor: '#02040a' }}>
                   <code className="font-mono text-sm font-bold" style={{ color: '#60a5fa' }}>{c.cmd}</code>
                   <span className="text-sm" style={{ color: '#64748b' }}>{c.desc}</span>
                 </div>
@@ -196,7 +196,7 @@ export default function WhatsAppBotPage() {
       </section>
 
       {/* Pair online — no Telegram needed */}
-      <section className="py-20" style={{ backgroundColor: 'rgba(10,10,15,0.72)' }}>
+      <section className="py-20" style={{ backgroundColor: 'rgba(2,4,9,0.92)' }}>
         <div className="max-w-5xl mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-extrabold mb-3" style={{ color: '#f0f4ff' }}>Pair Directly Here — No Telegram Needed</h2>
@@ -207,7 +207,7 @@ export default function WhatsAppBotPage() {
       </section>
 
       {/* Features */}
-      <section className="py-20" style={{ backgroundColor: 'rgba(10,10,15,0.72)' }}>
+      <section className="py-20" style={{ backgroundColor: 'rgba(2,4,9,0.92)' }}>
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-14">
             <h2 className="text-3xl font-extrabold" style={{ color: '#f0f4ff' }}>Bot Features</h2>
@@ -215,7 +215,7 @@ export default function WhatsAppBotPage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map(f => (
-              <div key={f.title} className="p-6 rounded-2xl transition-all hover:scale-105" style={{ backgroundColor: '#16182a', border: '1px solid #1e2d4a' }}>
+              <div key={f.title} className="p-6 rounded-2xl transition-all hover:scale-105" style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a' }}>
                 <div className="text-3xl mb-3">{f.icon}</div>
                 <h3 className="font-bold mb-2" style={{ color: '#f0f4ff' }}>{f.title}</h3>
                 <p className="text-sm" style={{ color: '#64748b' }}>{f.desc}</p>
@@ -226,7 +226,7 @@ export default function WhatsAppBotPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-16" style={{ backgroundColor: 'rgba(13,13,26,0.72)' }}>
+      <section className="py-16" style={{ backgroundColor: 'rgba(2,4,9,0.92)' }}>
         <div className="max-w-2xl mx-auto text-center px-4">
           <h2 className="text-3xl font-extrabold mb-4" style={{ color: '#f0f4ff' }}>Ready to connect?</h2>
           <p className="mb-8" style={{ color: '#64748b' }}>

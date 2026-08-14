@@ -30,7 +30,7 @@ export default function AdminUsers() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: 'rgba(6,8,16,0.78)' }}>
-      <div style={{ backgroundColor: '#0a0c14', borderBottom: '1px solid #1e2030' }} className="sticky top-0 z-40">
+      <div style={{ backgroundColor: '#04070f', borderBottom: '1px solid #1e3a8a' }} className="sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #dc2626, #b91c1c)' }}>
@@ -47,7 +47,7 @@ export default function AdminUsers() {
         <div className="flex flex-wrap gap-2 mb-8">
           {[{ href: '/admin/dashboard', label: 'Overview' }, { href: '/admin/users', label: 'Users', active: true }, { href: '/admin/transactions', label: 'Transactions' }, { href: '/admin/inquiries', label: 'Inquiries' }, { href: '/admin/packages', label: 'Packages' }, { href: '/admin/vouchers', label: 'Vouchers & Recoveries' }].map(n => (
             <Link key={n.href} href={n.href} className="px-4 py-2 rounded-xl text-sm font-medium"
-              style={{ backgroundColor: n.active ? 'rgba(220,38,38,0.15)' : 'rgba(30,32,48,0.5)', color: n.active ? '#f87171' : '#64748b', border: n.active ? '1px solid rgba(220,38,38,0.3)' : '1px solid #1e2030' }}>
+              style={{ backgroundColor: n.active ? 'rgba(220,38,38,0.15)' : 'rgba(30,32,48,0.5)', color: n.active ? '#f87171' : '#64748b', border: n.active ? '1px solid rgba(220,38,38,0.3)' : '1px solid #1e3a8a' }}>
               {n.label}
             </Link>
           ))}
@@ -58,16 +58,16 @@ export default function AdminUsers() {
           </h1>
           <input type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder="Search by name or email..."
             className="rounded-xl px-4 py-2.5 text-sm outline-none w-full sm:w-72"
-            style={{ backgroundColor: '#0a0c14', border: '1px solid #1e2030', color: '#f0f4ff' }} />
+            style={{ backgroundColor: '#04070f', border: '1px solid #1e3a8a', color: '#f0f4ff' }} />
         </div>
-        <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: '#0f1117', border: '1px solid #1e2030' }}>
+        <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: '#0f1117', border: '1px solid #1e3a8a' }}>
           {loading ? (
             <div className="flex items-center justify-center py-20"><div className="w-8 h-8 border-2 border-red-500 border-t-transparent rounded-full animate-spin" /></div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr style={{ borderBottom: '1px solid #1e2030' }}>
+                  <tr style={{ borderBottom: '1px solid #1e3a8a' }}>
                     {['ID', 'Name', 'Email', 'Wallet Balance', 'Orders', 'Joined'].map(h => (
                       <th key={h} className="text-left px-5 py-3.5 text-xs font-semibold uppercase tracking-wider" style={{ color: '#475569' }}>{h}</th>
                     ))}
@@ -75,12 +75,12 @@ export default function AdminUsers() {
                 </thead>
                 <tbody>
                   {filtered.map((u, i) => (
-                    <tr key={u.id} style={{ borderBottom: i < filtered.length - 1 ? '1px solid #1e2030' : 'none' }}>
+                    <tr key={u.id} style={{ borderBottom: i < filtered.length - 1 ? '1px solid #1e3a8a' : 'none' }}>
                       <td className="px-5 py-4 text-xs" style={{ color: '#475569' }}>#{u.id}</td>
                       <td className="px-5 py-4">
                         <div className="flex items-center space-x-3">
                           <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
-                            style={{ background: 'linear-gradient(135deg, #2563eb, #1d4ed8)', color: '#fff' }}>
+                            style={{ background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)', color: '#fff' }}>
                             {(u.firstname || u.email || 'U')[0].toUpperCase()}
                           </div>
                           <span className="text-sm font-medium" style={{ color: '#f0f4ff' }}>{u.fullname || ((u.firstname || '') + ' ' + (u.lastname || '')).trim() || 'N/A'}</span>

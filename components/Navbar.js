@@ -92,9 +92,9 @@ export default function Navbar() {
       <nav
         className="sticky top-0 z-50 transition-shadow duration-300"
         style={{
-          backgroundColor: 'rgba(10,10,15,0.72)',
-          borderBottom: '1px solid #1e2d4a',
-          boxShadow: scrolled ? '0 4px 24px rgba(0,0,0,0.5)' : 'none',
+          backgroundColor: 'rgba(2,4,9,0.94)',
+          borderBottom: '1px solid #1e3a8a',
+          boxShadow: '0 1px 0 rgba(59,130,246,0.35), 0 4px 28px rgba(0,0,0,0.6)',
         }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -105,7 +105,7 @@ export default function Navbar() {
               <button
                 onClick={() => setMenuOpen(o => !o)}
                 className="lg:hidden w-10 h-10 flex flex-col items-center justify-center gap-1.5 rounded-lg"
-                style={{ border: '1px solid #1e2d4a', backgroundColor: menuOpen ? 'rgba(37,99,235,0.12)' : 'transparent' }}
+                style={{ border: '1px solid #1e3a8a', backgroundColor: menuOpen ? 'rgba(37,99,235,0.12)' : 'transparent' }}
                 aria-label="Menu"
                 aria-expanded={menuOpen}
               >
@@ -123,7 +123,7 @@ export default function Navbar() {
               {/* ── Mobile portrait dropdown (left-aligned under the ☰ button) ── */}
               {menuOpen && (
                 <div className="absolute left-0 top-14 w-64 rounded-2xl p-2 z-50 lg:hidden max-h-[70vh] overflow-y-auto"
-                  style={{ backgroundColor: '#0d1117', border: '1px solid #1e2d4a', boxShadow: '0 10px 34px rgba(0,0,0,0.55)' }}>
+                  style={{ backgroundColor: '#02040a', border: '1px solid #1e3a8a', boxShadow: '0 10px 34px rgba(0,0,0,0.55)' }}>
                   <div className="px-3 py-2 mb-1 text-[10px] font-bold uppercase tracking-wider" style={{ color: '#475569' }}>
                     Menu
                   </div>
@@ -138,10 +138,10 @@ export default function Navbar() {
                       {l.label}
                     </Link>
                   ))}
-                  <div className="pt-2 mt-1 border-t" style={{ borderColor: '#1e2d4a' }}>
+                  <div className="pt-2 mt-1 border-t" style={{ borderColor: '#1e3a8a' }}>
                     {user ? (
                       <div className="space-y-1.5">
-                        <div className="px-3 py-2.5 rounded-lg" style={{ backgroundColor: '#0f1629', border: '1px solid #1e2d4a' }}>
+                        <div className="px-3 py-2.5 rounded-lg" style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a' }}>
                           <p className="text-sm font-semibold truncate" style={{ color: '#f0f4ff' }}>
                             {user.firstname ? `${user.firstname} ${user.lastname || ''}`.trim() : user.email}
                           </p>
@@ -160,7 +160,7 @@ export default function Navbar() {
                     ) : (
                       <div className="flex flex-col gap-1.5 pt-1">
                         <Link href="/login" className="flex items-center justify-center px-3 py-2.5 rounded-lg text-sm font-semibold"
-                          style={{ color: '#94a3b8', border: '1px solid #1e2d4a', textDecoration: 'none' }}>Log In</Link>
+                          style={{ color: '#94a3b8', border: '1px solid #1e3a8a', textDecoration: 'none' }}>Log In</Link>
                         <Link href="/signup" className="flex items-center justify-center px-3 py-2.5 rounded-lg text-sm font-semibold text-white"
                           style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', textDecoration: 'none' }}>Get Started — Free</Link>
                       </div>
@@ -192,7 +192,7 @@ export default function Navbar() {
                   <button
                     onClick={() => { setChatOpen(o => !o); setChatSent(false); }}
                     className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all"
-                    style={{ color: '#94a3b8', border: '1px solid #1e2d4a' }}>
+                    style={{ color: '#94a3b8', border: '1px solid #1e3a8a' }}>
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                         d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
@@ -201,8 +201,8 @@ export default function Navbar() {
                   </button>
                   {chatOpen && (
                     <div className="absolute right-0 top-12 w-80 rounded-2xl shadow-2xl overflow-hidden"
-                      style={{ backgroundColor: '#0f1629', border: '1px solid #1e2d4a', zIndex: 60 }}>
-                      <div className="p-4 border-b" style={{ borderColor: '#1e2d4a' }}>
+                      style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a', zIndex: 60 }}>
+                      <div className="p-4 border-b" style={{ borderColor: '#1e3a8a' }}>
                         <p className="font-bold text-sm" style={{ color: '#f0f4ff' }}>Quick Inquiry</p>
                         <p className="text-xs mt-0.5" style={{ color: '#475569' }}>We reply within 2 hours</p>
                       </div>
@@ -217,11 +217,11 @@ export default function Navbar() {
                           <input value={chatMsg.subject} onChange={e => setChatMsg(m => ({ ...m, subject: e.target.value }))}
                             placeholder="Subject" required
                             className="w-full px-3 py-2 rounded-lg text-sm outline-none"
-                            style={{ backgroundColor: 'rgba(10,10,15,0.72)', border: '1px solid #1e2d4a', color: '#f0f4ff' }} />
+                            style={{ backgroundColor: 'rgba(2,4,9,0.92)', border: '1px solid #1e3a8a', color: '#f0f4ff' }} />
                           <textarea value={chatMsg.message} onChange={e => setChatMsg(m => ({ ...m, message: e.target.value }))}
                             placeholder="Your message..." required rows={3}
                             className="w-full px-3 py-2 rounded-lg text-sm outline-none resize-none"
-                            style={{ backgroundColor: 'rgba(10,10,15,0.72)', border: '1px solid #1e2d4a', color: '#f0f4ff' }} />
+                            style={{ backgroundColor: 'rgba(2,4,9,0.92)', border: '1px solid #1e3a8a', color: '#f0f4ff' }} />
                           <button type="submit" disabled={chatLoading}
                             className="w-full py-2 rounded-lg text-sm font-semibold text-white"
                             style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', opacity: chatLoading ? 0.7 : 1 }}>
@@ -251,7 +251,7 @@ export default function Navbar() {
                 <>
                   <Link href="/dashboard"
                     className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all"
-                    style={{ color: '#94a3b8', border: '1px solid #1e2d4a', textDecoration: 'none' }}>
+                    style={{ color: '#94a3b8', border: '1px solid #1e3a8a', textDecoration: 'none' }}>
                     <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
                       style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', color: '#fff' }}>
                       {(user.firstname || user.email || 'U')[0].toUpperCase()}
@@ -268,7 +268,7 @@ export default function Navbar() {
                 <>
                   <Link href="/login"
                     className="px-4 py-2 rounded-lg text-sm font-medium transition-all"
-                    style={{ color: '#94a3b8', border: '1px solid #1e2d4a', textDecoration: 'none' }}>
+                    style={{ color: '#94a3b8', border: '1px solid #1e3a8a', textDecoration: 'none' }}>
                     Login
                   </Link>
                   <Link href="/signup"

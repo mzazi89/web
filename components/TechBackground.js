@@ -101,8 +101,40 @@ export default function TechBackground() {
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
-          opacity: 0.22,
+          opacity: 0.16,
           transition: 'background-image 0.6s ease',
+        }}
+      />
+
+      {/* Blue glow orbs — black + blue ambience */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: 'fixed',
+          top: '-140px',
+          left: '8%',
+          width: 440,
+          height: 440,
+          borderRadius: '50%',
+          zIndex: 0,
+          pointerEvents: 'none',
+          background: 'radial-gradient(circle, rgba(59,130,246,0.15), transparent 70%)',
+          filter: 'blur(60px)',
+        }}
+      />
+      <div
+        aria-hidden="true"
+        style={{
+          position: 'fixed',
+          bottom: '-160px',
+          right: '4%',
+          width: 500,
+          height: 500,
+          borderRadius: '50%',
+          zIndex: 0,
+          pointerEvents: 'none',
+          background: 'radial-gradient(circle, rgba(37,99,235,0.13), transparent 70%)',
+          filter: 'blur(70px)',
         }}
       />
 
@@ -115,7 +147,7 @@ export default function TechBackground() {
           zIndex: 0,
           pointerEvents: 'none',
           backgroundImage:
-            'linear-gradient(rgba(37,99,235,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(37,99,235,0.05) 1px, transparent 1px)',
+            'linear-gradient(rgba(59,130,246,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(59,130,246,0.06) 1px, transparent 1px)',
           backgroundSize: '44px 44px',
         }}
       />
@@ -129,7 +161,7 @@ export default function TechBackground() {
           zIndex: 0,
           pointerEvents: 'none',
           background:
-            'radial-gradient(ellipse at center, transparent 40%, rgba(10,10,15,0.75) 100%)',
+            'radial-gradient(ellipse at center, transparent 40%, rgba(2,4,9,0.92) 100%)',
         }}
       />
     </>

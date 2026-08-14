@@ -102,7 +102,7 @@ export default function AdminInquiries() {
     <div className="min-h-screen" style={{ backgroundColor: 'rgba(6,8,16,0.78)' }}>
 
       {/* ── Top bar ── */}
-      <div className="sticky top-0 z-40" style={{ backgroundColor: '#0a0c14', borderBottom: '1px solid #1e2030' }}>
+      <div className="sticky top-0 z-40" style={{ backgroundColor: '#04070f', borderBottom: '1px solid #1e3a8a' }}>
         <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg,#dc2626,#b91c1c)' }}>
@@ -136,7 +136,7 @@ export default function AdminInquiries() {
               style={{
                 backgroundColor: n.active ? 'rgba(220,38,38,0.15)' : 'rgba(30,32,48,0.5)',
                 color: n.active ? '#f87171' : '#64748b',
-                border: n.active ? '1px solid rgba(220,38,38,0.3)' : '1px solid #1e2030',
+                border: n.active ? '1px solid rgba(220,38,38,0.3)' : '1px solid #1e3a8a',
                 textDecoration: 'none', flexShrink: 0,
               }}>
               {n.label}
@@ -157,9 +157,9 @@ export default function AdminInquiries() {
               <button key={f} onClick={() => setFilter(f)}
                 className="px-2.5 py-1.5 rounded-lg text-xs font-medium capitalize"
                 style={{
-                  backgroundColor: filter === f ? 'rgba(59,130,246,0.15)' : '#0a0c14',
+                  backgroundColor: filter === f ? 'rgba(59,130,246,0.15)' : '#04070f',
                   color: filter === f ? '#60a5fa' : '#64748b',
-                  border: filter === f ? '1px solid rgba(59,130,246,0.3)' : '1px solid #1e2030',
+                  border: filter === f ? '1px solid rgba(59,130,246,0.3)' : '1px solid #1e3a8a',
                   cursor: 'pointer',
                 }}>
                 {f}{f === 'open' && openCount > 0 ? ` (${openCount})` : ''}
@@ -169,14 +169,14 @@ export default function AdminInquiries() {
         </div>
 
         {/* ── Chat UI ── */}
-        <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: '#0a0c14', border: '1px solid #1e2030' }}>
+        <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: '#04070f', border: '1px solid #1e3a8a' }}>
 
           {/* ─── MOBILE ─── */}
           <div className="block md:hidden" style={{ height: 'calc(100dvh - 220px)', minHeight: '480px', display: 'flex', flexDirection: 'column' }}>
 
             {mobileView === 'list' && (
               <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-                <div className="px-4 py-3" style={{ borderBottom: '1px solid #1e2030', backgroundColor: 'rgba(6,8,16,0.78)', flexShrink: 0 }}>
+                <div className="px-4 py-3" style={{ borderBottom: '1px solid #1e3a8a', backgroundColor: 'rgba(6,8,16,0.78)', flexShrink: 0 }}>
                   <p className="text-xs font-bold uppercase tracking-wider" style={{ color: '#475569' }}>
                     {filtered.length} conversation{filtered.length !== 1 ? 's' : ''}
                   </p>
@@ -212,8 +212,8 @@ export default function AdminInquiries() {
           {/* ─── DESKTOP ─── */}
           <div className="hidden md:flex" style={{ height: '620px' }}>
             {/* Left: thread list */}
-            <div style={{ width: '280px', minWidth: '220px', borderRight: '1px solid #1e2030', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
-              <div className="px-4 py-3" style={{ borderBottom: '1px solid #1e2030', backgroundColor: 'rgba(6,8,16,0.78)', flexShrink: 0 }}>
+            <div style={{ width: '280px', minWidth: '220px', borderRight: '1px solid #1e3a8a', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
+              <div className="px-4 py-3" style={{ borderBottom: '1px solid #1e3a8a', backgroundColor: 'rgba(6,8,16,0.78)', flexShrink: 0 }}>
                 <p className="text-xs font-bold uppercase tracking-wider" style={{ color: '#475569' }}>
                   {filtered.length} conversation{filtered.length !== 1 ? 's' : ''}
                 </p>
@@ -299,7 +299,7 @@ function AdminChatWindow({ selected, messages, msgLoading, reply, setReply, repl
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       {/* Header */}
       <div className="flex items-center justify-between gap-3 px-4 py-3"
-        style={{ borderBottom: '1px solid #1e2030', backgroundColor: 'rgba(6,8,16,0.78)', flexShrink: 0 }}>
+        style={{ borderBottom: '1px solid #1e3a8a', backgroundColor: 'rgba(6,8,16,0.78)', flexShrink: 0 }}>
         <div className="flex items-center gap-3 min-w-0">
           {showBack && (
             <button onClick={onBack}
@@ -379,7 +379,7 @@ function AdminChatWindow({ selected, messages, msgLoading, reply, setReply, repl
       </div>
 
       {/* Reply input */}
-      <div className="px-3 py-3" style={{ borderTop: '1px solid #1e2030', backgroundColor: 'rgba(6,8,16,0.78)', flexShrink: 0 }}>
+      <div className="px-3 py-3" style={{ borderTop: '1px solid #1e3a8a', backgroundColor: 'rgba(6,8,16,0.78)', flexShrink: 0 }}>
         {selected.status === 'closed' ? (
           <p className="text-xs text-center py-1" style={{ color: '#374151' }}>This inquiry is closed.</p>
         ) : (
@@ -391,12 +391,12 @@ function AdminChatWindow({ selected, messages, msgLoading, reply, setReply, repl
               placeholder="Type your reply… (Enter to send)"
               rows={1}
               className="flex-1 px-4 py-2.5 rounded-2xl text-sm outline-none"
-              style={{ backgroundColor: '#111827', border: '1px solid #1e2030', color: '#f0f4ff', resize: 'none', maxHeight: '100px' }}
+              style={{ backgroundColor: '#111827', border: '1px solid #1e3a8a', color: '#f0f4ff', resize: 'none', maxHeight: '100px' }}
             />
             <button onClick={onReply} disabled={replying || !reply.trim()}
               className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
               style={{
-                background: replying || !reply.trim() ? '#1e2030' : 'linear-gradient(135deg,#dc2626,#b91c1c)',
+                background: replying || !reply.trim() ? '#1e3a8a' : 'linear-gradient(135deg,#dc2626,#b91c1c)',
                 cursor: replying || !reply.trim() ? 'not-allowed' : 'pointer', border: 'none',
               }}>
               {replying

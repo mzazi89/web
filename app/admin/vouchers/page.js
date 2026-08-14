@@ -77,7 +77,7 @@ export default function AdminVouchers() {
   return (
     <div className="min-h-screen" style={{ backgroundColor: 'rgba(6,8,16,0.78)' }}>
       {/* Top bar */}
-      <div style={{ backgroundColor: '#0a0c14', borderBottom: '1px solid #1e2030' }} className="sticky top-0 z-40">
+      <div style={{ backgroundColor: '#04070f', borderBottom: '1px solid #1e3a8a' }} className="sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #dc2626, #b91c1c)' }}>
@@ -97,7 +97,7 @@ export default function AdminVouchers() {
         <div className="flex flex-wrap gap-2 mb-8">
           {navTabs.map(n => (
             <Link key={n.href} href={n.href} className="px-4 py-2 rounded-xl text-sm font-medium"
-              style={{ backgroundColor: n.active ? 'rgba(220,38,38,0.15)' : 'rgba(30,32,48,0.5)', color: n.active ? '#f87171' : '#64748b', border: n.active ? '1px solid rgba(220,38,38,0.3)' : '1px solid #1e2030' }}>
+              style={{ backgroundColor: n.active ? 'rgba(220,38,38,0.15)' : 'rgba(30,32,48,0.5)', color: n.active ? '#f87171' : '#64748b', border: n.active ? '1px solid rgba(220,38,38,0.3)' : '1px solid #1e3a8a' }}>
               {n.label}
             </Link>
           ))}
@@ -118,7 +118,7 @@ export default function AdminVouchers() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           {/* Create Voucher Form */}
-          <div className="lg:col-span-1 rounded-2xl p-6" style={{ backgroundColor: '#0f1117', border: '1px solid #1e2030' }}>
+          <div className="lg:col-span-1 rounded-2xl p-6" style={{ backgroundColor: '#0f1117', border: '1px solid #1e3a8a' }}>
             <p className="text-xs font-semibold uppercase tracking-wider mb-5" style={{ color: '#475569' }}>Create &amp; Activate Voucher</p>
             <form onSubmit={handleCreate} className="space-y-4">
               <div>
@@ -130,7 +130,7 @@ export default function AdminVouchers() {
                   placeholder="e.g. ABC123"
                   maxLength={6}
                   className="w-full px-3 py-2.5 rounded-lg text-sm outline-none font-mono tracking-widest"
-                  style={{ backgroundColor: '#0a0c14', border: '1px solid #1e2030', color: '#f0f4ff' }}
+                  style={{ backgroundColor: '#04070f', border: '1px solid #1e3a8a', color: '#f0f4ff' }}
                   required
                 />
                 <p className="mt-1 text-xs" style={{ color: '#374151' }}>{code.length}/6 characters</p>
@@ -145,7 +145,7 @@ export default function AdminVouchers() {
                   onChange={e => setAmount(e.target.value)}
                   placeholder="Enter amount..."
                   className="w-full px-3 py-2.5 rounded-lg text-sm outline-none"
-                  style={{ backgroundColor: '#0a0c14', border: '1px solid #1e2030', color: '#f0f4ff' }}
+                  style={{ backgroundColor: '#04070f', border: '1px solid #1e3a8a', color: '#f0f4ff' }}
                   required
                 />
               </div>
@@ -182,7 +182,7 @@ export default function AdminVouchers() {
                 <div className="text-xs" style={{ color: '#64748b' }}>{c.label}</div>
               </div>
             ))}
-            <div className="sm:col-span-3 rounded-2xl p-5" style={{ backgroundColor: '#0f1117', border: '1px solid #1e2030' }}>
+            <div className="sm:col-span-3 rounded-2xl p-5" style={{ backgroundColor: '#0f1117', border: '1px solid #1e3a8a' }}>
               <div className="text-2xl font-extrabold mb-1" style={{ color: '#a78bfa' }}>
                 {fmtMtc(vouchers.filter(v => v.status === 'used').reduce((s, v) => s + parseFloat(v.amount), 0))}
               </div>
@@ -192,8 +192,8 @@ export default function AdminVouchers() {
         </div>
 
         {/* Vouchers Table */}
-        <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: '#0f1117', border: '1px solid #1e2030' }}>
-          <div className="px-6 py-4" style={{ borderBottom: '1px solid #1e2030' }}>
+        <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: '#0f1117', border: '1px solid #1e3a8a' }}>
+          <div className="px-6 py-4" style={{ borderBottom: '1px solid #1e3a8a' }}>
             <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#475569' }}>All Vouchers ({vouchers.length})</p>
           </div>
           {loading ? (
@@ -206,7 +206,7 @@ export default function AdminVouchers() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr style={{ borderBottom: '1px solid #1e2030' }}>
+                  <tr style={{ borderBottom: '1px solid #1e3a8a' }}>
                     {['Code', 'Amount', 'Status', 'Used By', 'Used At', 'Created'].map(h => (
                       <th key={h} className="text-left px-5 py-3.5 text-xs font-semibold uppercase tracking-wider" style={{ color: '#475569' }}>{h}</th>
                     ))}
@@ -214,7 +214,7 @@ export default function AdminVouchers() {
                 </thead>
                 <tbody>
                   {vouchers.map((v, i) => (
-                    <tr key={v.id} style={{ borderBottom: i < vouchers.length - 1 ? '1px solid #1e2030' : 'none' }}>
+                    <tr key={v.id} style={{ borderBottom: i < vouchers.length - 1 ? '1px solid #1e3a8a' : 'none' }}>
                       <td className="px-5 py-4">
                         <span className="font-mono font-bold text-sm tracking-widest" style={{ color: '#f0f4ff' }}>{v.code}</span>
                       </td>

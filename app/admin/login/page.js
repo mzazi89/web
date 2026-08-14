@@ -45,7 +45,7 @@ export default function AdminLogin() {
           <h1 className="text-2xl font-extrabold" style={{ color: '#f0f4ff' }}>Admin Portal</h1>
           <p className="text-sm mt-1" style={{ color: '#64748b' }}>Restricted access — Mzazi Tech Inc.</p>
         </div>
-        <div className="rounded-2xl p-8" style={{ backgroundColor: '#0f1117', border: '1px solid #1e2030' }}>
+        <div className="rounded-2xl p-8" style={{ backgroundColor: '#0f1117', border: '1px solid #1e3a8a' }}>
           {error && (
             <div className="mb-5 px-4 py-3 rounded-xl text-sm" style={{ backgroundColor: 'rgba(220,38,38,0.1)', border: '1px solid rgba(220,38,38,0.3)', color: '#f87171' }}>
               {error}
@@ -56,19 +56,19 @@ export default function AdminLogin() {
               <label className="block text-sm font-medium mb-2" style={{ color: '#94a3b8' }}>Admin Email</label>
               <input type="email" required value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
                 placeholder="admin@mzazi.shop" className="w-full rounded-xl px-4 py-3 text-sm outline-none"
-                style={{ backgroundColor: '#0a0c14', border: '1px solid #1e2030', color: '#f0f4ff' }}
-                onFocus={e => e.target.style.borderColor = '#dc2626'} onBlur={e => e.target.style.borderColor = '#1e2030'} />
+                style={{ backgroundColor: '#04070f', border: '1px solid #1e3a8a', color: '#f0f4ff' }}
+                onFocus={e => e.target.style.borderColor = '#dc2626'} onBlur={e => e.target.style.borderColor = '#1e3a8a'} />
             </div>
             <div>
               <label className="block text-sm font-medium mb-2" style={{ color: '#94a3b8' }}>Password</label>
               <input type="password" required value={form.password} onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
                 placeholder="••••••••" className="w-full rounded-xl px-4 py-3 text-sm outline-none"
-                style={{ backgroundColor: '#0a0c14', border: '1px solid #1e2030', color: '#f0f4ff' }}
-                onFocus={e => e.target.style.borderColor = '#dc2626'} onBlur={e => e.target.style.borderColor = '#1e2030'} />
+                style={{ backgroundColor: '#04070f', border: '1px solid #1e3a8a', color: '#f0f4ff' }}
+                onFocus={e => e.target.style.borderColor = '#dc2626'} onBlur={e => e.target.style.borderColor = '#1e3a8a'} />
             </div>
             <button type="submit" disabled={loading}
               className="w-full py-3.5 rounded-xl font-bold text-white text-sm mt-2"
-              style={{ background: loading ? '#1e2030' : 'linear-gradient(135deg, #dc2626, #b91c1c)', boxShadow: loading ? 'none' : '0 0 30px rgba(220,38,38,0.3)', cursor: loading ? 'not-allowed' : 'pointer' }}>
+              style={{ background: loading ? '#1e3a8a' : 'linear-gradient(135deg, #dc2626, #b91c1c)', boxShadow: loading ? 'none' : '0 0 30px rgba(220,38,38,0.3)', cursor: loading ? 'not-allowed' : 'pointer' }}>
               {loading ? 'Authenticating...' : 'Access Admin Panel'}
             </button>
           </form>

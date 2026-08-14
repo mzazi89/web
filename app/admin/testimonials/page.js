@@ -64,7 +64,7 @@ export default function AdminTestimonials() {
             style={{
               backgroundColor: tab === v ? 'rgba(37,99,235,0.15)' : 'transparent',
               color: tab === v ? '#60a5fa' : '#94a3b8',
-              border: `1px solid ${tab === v ? 'rgba(37,99,235,0.4)' : '#1e2d4a'}`,
+              border: `1px solid ${tab === v ? 'rgba(37,99,235,0.4)' : '#1e3a8a'}`,
               cursor: 'pointer',
             }}>
             {l}
@@ -81,7 +81,7 @@ export default function AdminTestimonials() {
       ) : (
         <div className="space-y-3">
           {list.map(t => (
-            <div key={t.id} className="p-5 rounded-2xl" style={{ backgroundColor: '#0f1629', border: '1px solid #1e2d4a' }}>
+            <div key={t.id} className="p-5 rounded-2xl" style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a' }}>
               <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
                 <div className="flex items-center gap-2">
                   <strong className="text-sm" style={{ color: '#f0f4ff' }}>{t.name}</strong>
@@ -103,7 +103,7 @@ export default function AdminTestimonials() {
                 {t.approved && (
                   <button onClick={() => hide(t.id)} disabled={busy}
                     className="px-3 py-1.5 rounded-lg text-xs font-semibold"
-                    style={{ border: '1px solid #1e2d4a', color: '#94a3b8', cursor: 'pointer' }}>Hide</button>
+                    style={{ border: '1px solid #1e3a8a', color: '#94a3b8', cursor: 'pointer' }}>Hide</button>
                 )}
                 <button onClick={() => del(t.id)} disabled={busy}
                   className="px-3 py-1.5 rounded-lg text-xs font-semibold"
