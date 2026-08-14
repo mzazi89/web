@@ -1,5 +1,5 @@
 // MZAZI API — POST /api/pair/unlink
-// Manage a linked WhatsApp device: unlink | delete | pause | resume.
+// Manage a linked WhatsApp device: unlink (logout) | delete (logout + wipe).
 // Asks the running bot to perform the action (ownership enforced).
 import { NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
@@ -9,7 +9,7 @@ import { auth, normalizeNumber, getAccount } from '@/lib/pairApi';
 export const dynamic = 'force-dynamic';
 const sql = neon(process.env.DATABASE_URL);
 
-const ACTIONS = ['unlink', 'delete', 'pause', 'resume'];
+const ACTIONS = ['unlink', 'delete'];
 
 export async function POST(request) {
   try {
@@ -41,9 +41,6 @@ export async function POST(request) {
     if (action === 'delete') {
       controlAction = 'unpair';
       payload = { number, accountId: user.userId, mode: 'delete' };
-    } else if (action === 'pause' || action === 'resume') {
-      controlAction = 'pause';
-      payload = { number, accountId: user.userId, paused: action === 'pause' };
     } else {
       controlAction = 'unpair';
       payload = { number, accountId: user.userId };

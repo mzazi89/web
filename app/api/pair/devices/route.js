@@ -31,12 +31,11 @@ export async function GET() {
     const plan = active ? sub.plan : 'FREE';
     const maxDevices = active && sub.plan !== 'FREE' ? sub.maxDevices : 1;
 
-    // ACTIVE + PAUSED sessions are shown (paused ones can be resumed);
-    // INACTIVE rows are already unlinked and stay hidden.
+    // Only ACTIVE sessions are shown; INACTIVE rows are unlinked and hidden.
     const devices = await sql`
       SELECT "phoneNumber", "connectedAt", status
       FROM "WhatsAppSession"
-      WHERE "userId" = ${account.id} AND status IN ('ACTIVE', 'PAUSED')
+      WHERE "userId" = ${account.id} AND status = 'ACTIVE'
       ORDER BY id DESC
     `;
 

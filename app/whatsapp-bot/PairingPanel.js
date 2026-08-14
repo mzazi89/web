@@ -114,8 +114,8 @@ export default function PairingPanel() {
   };
 
   const manageDevice = async (number, action) => {
-    if (action === 'unlink' && !window.confirm(`Unlink ${number}? The bot will disconnect it and it can be paired again later.`)) return;
-    if (action === 'delete' && !window.confirm(`Delete ${number}? This permanently removes the device from your account.`)) return;
+    if (action === 'unlink' && !window.confirm(`Unlink ${number}? The bot will log the device out of WhatsApp (it can be paired again later).`)) return;
+    if (action === 'delete' && !window.confirm(`Delete ${number}? This permanently removes the device from the bot and your account.`)) return;
     setBusyNum(number);
     setNotice('');
     try {
@@ -126,7 +126,7 @@ export default function PairingPanel() {
       });
       const d = await res.json();
       if (!res.ok) { setNotice(`❌ ${d.error || 'Failed'}`); setBusyNum(null); return; }
-      const label = { pause: 'Pausing', resume: 'Resuming', unlink: 'Unlinking', delete: 'Deleting' }[action] || 'Processing';
+      const label = { unlink: 'Unlinking', delete: 'Deleting' }[action] || 'Processing';
       setNotice(`⏳ ${label} ${number}…`);
       // the bot picks it up within ~15s — refresh after that
       setTimeout(loadDevices, 14000);
@@ -331,65 +331,47 @@ export default function PairingPanel() {
           <p className="text-sm text-center py-6" style={{ color: '#475569' }}>No devices linked yet. Pair your first number above.</p>
         ) : (
           <div className="space-y-2.5">
-            {devices.map((d) => {
-              const paused = d.status === 'PAUSED';
-              return (
-                <div key={d.number} className="p-3.5 rounded-xl"
-                  style={{ backgroundColor: 'rgba(2,4,9,0.45)', border: '1px solid #1e3a8a' }}>
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2">
-                        <p className="font-mono font-bold text-sm truncate" style={{ color: '#f0f4ff' }}>{d.number}</p>
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide"
-                          style={paused
-                            ? { backgroundColor: 'rgba(245,158,11,0.12)', color: '#fbbf24', border: '1px solid rgba(245,158,11,0.3)' }
-                            : { backgroundColor: 'rgba(34,197,94,0.12)', color: '#4ade80', border: '1px solid rgba(34,197,94,0.3)' }}>
-                          {paused ? 'Paused' : 'Active'}
-                        </span>
-                      </div>
-                      <p className="text-xs mt-0.5" style={{ color: '#475569' }}>
-                        {d.connectedAt ? `linked ${new Date(d.connectedAt).toLocaleDateString()}` : 'linked'}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-1.5 flex-shrink-0 flex-wrap justify-end">
-                      <button onClick={() => manageDevice(d.number, paused ? 'resume' : 'pause')} disabled={busyNum === d.number}
-                        className="px-2.5 py-1.5 rounded-lg text-xs font-semibold"
-                        style={{
-                          color: '#fbbf24',
-                          border: '1px solid rgba(245,158,11,0.3)',
-                          backgroundColor: 'rgba(245,158,11,0.06)',
-                          cursor: busyNum === d.number ? 'not-allowed' : 'pointer',
-                          opacity: busyNum === d.number ? 0.5 : 1,
-                        }}>
-                        {busyNum === d.number ? '…' : (paused ? '▶ Resume' : '⏸ Pause')}
-                      </button>
-                      <button onClick={() => manageDevice(d.number, 'unlink')} disabled={busyNum === d.number}
-                        className="px-2.5 py-1.5 rounded-lg text-xs font-semibold"
-                        style={{
-                          color: '#60a5fa',
-                          border: '1px solid rgba(96,165,250,0.3)',
-                          backgroundColor: 'rgba(96,165,250,0.06)',
-                          cursor: busyNum === d.number ? 'not-allowed' : 'pointer',
-                          opacity: busyNum === d.number ? 0.5 : 1,
-                        }}>
-                        Unlink
-                      </button>
-                      <button onClick={() => manageDevice(d.number, 'delete')} disabled={busyNum === d.number}
-                        className="px-2.5 py-1.5 rounded-lg text-xs font-semibold"
-                        style={{
-                          color: '#f87171',
-                          border: '1px solid rgba(248,113,113,0.3)',
-                          backgroundColor: 'rgba(248,113,113,0.06)',
-                          cursor: busyNum === d.number ? 'not-allowed' : 'pointer',
-                          opacity: busyNum === d.number ? 0.5 : 1,
-                        }}>
-                        Delete
-                      </button>
-                    </div>
+            {devices.map((d) => (
+              <div key={d.number} className="flex items-center justify-between gap-3 p-3.5 rounded-xl"
+                style={{ backgroundColor: 'rgba(2,4,9,0.45)', border: '1px solid #1e3a8a' }}>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <p className="font-mono font-bold text-sm truncate" style={{ color: '#f0f4ff' }}>{d.number}</p>
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide"
+                      style={{ backgroundColor: 'rgba(34,197,94,0.12)', color: '#4ade80', border: '1px solid rgba(34,197,94,0.3)' }}>
+                      Active
+                    </span>
                   </div>
+                  <p className="text-xs mt-0.5" style={{ color: '#475569' }}>
+                    {d.connectedAt ? `linked ${new Date(d.connectedAt).toLocaleDateString()}` : 'linked'}
+                  </p>
                 </div>
-              );
-            })}
+                <div className="flex items-center gap-1.5 flex-shrink-0">
+                  <button onClick={() => manageDevice(d.number, 'unlink')} disabled={busyNum === d.number}
+                    className="px-2.5 py-1.5 rounded-lg text-xs font-semibold"
+                    style={{
+                      color: '#60a5fa',
+                      border: '1px solid rgba(96,165,250,0.3)',
+                      backgroundColor: 'rgba(96,165,250,0.06)',
+                      cursor: busyNum === d.number ? 'not-allowed' : 'pointer',
+                      opacity: busyNum === d.number ? 0.5 : 1,
+                    }}>
+                    Unlink
+                  </button>
+                  <button onClick={() => manageDevice(d.number, 'delete')} disabled={busyNum === d.number}
+                    className="px-2.5 py-1.5 rounded-lg text-xs font-semibold"
+                    style={{
+                      color: '#f87171',
+                      border: '1px solid rgba(248,113,113,0.3)',
+                      backgroundColor: 'rgba(248,113,113,0.06)',
+                      cursor: busyNum === d.number ? 'not-allowed' : 'pointer',
+                      opacity: busyNum === d.number ? 0.5 : 1,
+                    }}>
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </div>
