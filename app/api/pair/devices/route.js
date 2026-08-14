@@ -31,10 +31,12 @@ export async function GET() {
     const plan = active ? sub.plan : 'FREE';
     const maxDevices = active && sub.plan !== 'FREE' ? sub.maxDevices : 1;
 
+    // ACTIVE + PAUSED sessions are shown (paused ones can be resumed);
+    // INACTIVE rows are already unlinked and stay hidden.
     const devices = await sql`
-      SELECT "phoneNumber", "connectedAt"
+      SELECT "phoneNumber", "connectedAt", status
       FROM "WhatsAppSession"
-      WHERE "userId" = ${account.id} AND status = 'ACTIVE'
+      WHERE "userId" = ${account.id} AND status IN ('ACTIVE', 'PAUSED')
       ORDER BY id DESC
     `;
 
@@ -45,6 +47,7 @@ export async function GET() {
       devices: devices.map((d) => ({
         number: d.phoneNumber,
         connectedAt: d.connectedAt,
+        status: d.status,
       })),
       plans: Object.values(PLANS),
     });
