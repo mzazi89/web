@@ -184,6 +184,24 @@ a { color: inherit; }
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
+/* ─── Click loader ───────────────────────────────────── */
+@keyframes loader-rotate    { to { transform: rotate(360deg); } }
+@keyframes loader-rotate-rev{ to { transform: rotate(-360deg); } }
+@keyframes loader-bar       { from { width: 0%; } to { width: 100%; } }
+@keyframes loader-pulse     { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
+
+.loader-ring {
+  position: absolute;
+  border-style: solid;
+  border-radius: 50%;
+  animation: loader-rotate 1.1s linear infinite;
+}
+.loader-ring-rev { animation-name: loader-rotate-rev; }
+.loader-bar {
+  animation: loader-bar 5s linear forwards;
+}
+.loader-pulse { animation: loader-pulse 1.2s ease-in-out infinite; }
+
 /* ─── Responsive table → stacked on mobile ──────────── */
 @media (max-width: 640px) {
   .table-responsive thead { display: none; }
