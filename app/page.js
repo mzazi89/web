@@ -4,7 +4,6 @@ import { neon } from '@neondatabase/serverless';
 import { unstable_noStore as noStore } from 'next/cache';
 import AuthSwap from '@/components/AuthSwap';
 import PwaInstallButton from '@/components/PwaInstallButton';
-import { fmtMtc, fmtMtcValue, mtcToKsh } from '@/lib/currency';
 
 export const dynamic = 'force-dynamic';
 
@@ -46,25 +45,6 @@ const FEATURES = [
   },
 ];
 
-function fmtCpu(v)  { const n = parseInt(v); return n === 0 ? 'Unlimited CPU'  : `${n}% CPU`; }
-function fmtRam(v)  { const n = parseInt(v); return n === 0 ? 'Unlimited RAM'  : n >= 1024 ? `${n / 1024} GB RAM`  : `${n} MB RAM`; }
-function fmtDisk(v) { const n = parseInt(v); return n === 0 ? 'Unlimited Disk' : n >= 1024 ? `${n / 1024} GB Disk` : `${n} GB`; }
-
-async function getPackages() {
-  try {
-    const sql = neon(process.env.DATABASE_URL);
-    const rows = await sql`
-      SELECT id, name, price, cpu, ram, disk, popular, accent
-      FROM packages
-      WHERE active = true
-      ORDER BY sort_order ASC, id ASC
-    `;
-    return rows;
-  } catch {
-    return [];
-  }
-}
-
 async function getApiStats() {
   try {
     const sql = neon(process.env.DATABASE_URL);
@@ -86,7 +66,6 @@ async function getApiStats() {
 
 export default async function Home() {
   noStore();
-  const packages = await getPackages();
   const api = await getApiStats();
 
   return (
@@ -275,76 +254,6 @@ export default async function Home() {
               </div>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* ─── Pricing ─── */}
-      <section className="py-16 sm:py-24" style={{ backgroundColor: 'rgba(2,4,9,0.45)' }}>
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-12 sm:mb-16">
-            <p className="text-xs sm:text-sm font-semibold uppercase tracking-widest mb-3" style={{ color: '#3b82f6' }}>Panel Plans</p>
-            <h2 className="font-extrabold mb-4" style={{ fontSize: 'clamp(1.6rem,4vw,2.5rem)', color: '#f0f4ff' }}>
-              Simple, Honest Pricing
-            </h2>
-            <p className="text-sm sm:text-base" style={{ color: '#64748b' }}>Pay per month. Cancel anytime. No hidden fees.</p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 sm:gap-6">
-            {packages.map(pkg => (
-              <div key={pkg.id}
-                className="relative rounded-2xl p-5 sm:p-6 transition-all duration-300 hover:-translate-y-1"
-                style={{
-                  backgroundColor: pkg.popular ? '#0f1a35' : '#060b16',
-                  border: `1px solid ${pkg.popular ? (pkg.accent || '#2563eb') : '#1e3a8a'}`,
-                  boxShadow: pkg.popular ? `0 0 30px rgba(37,99,235,0.2)` : 'none',
-                }}>
-                {pkg.popular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <span className="px-3 py-1 rounded-full text-xs font-bold text-white"
-                      style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)' }}>
-                      Most Popular
-                    </span>
-                  </div>
-                )}
-
-                <div className="mb-4">
-                  <p className="font-bold text-base sm:text-lg mb-1" style={{ color: '#f0f4ff' }}>{pkg.name}</p>
-                  <div className="flex items-baseline gap-1">
-                    <span className="font-extrabold" style={{ fontSize: 'clamp(1.8rem,5vw,2.25rem)', color: pkg.popular ? '#60a5fa' : '#f0f4ff' }}>
-                      {fmtMtc(pkg.price)}
-                    </span>
-                    <span className="text-xs" style={{ color: '#475569' }}>/mo</span>
-                  </div>
-                </div>
-
-                <ul className="space-y-2.5 mb-6">
-                  {[fmtCpu(pkg.cpu), fmtRam(pkg.ram), fmtDisk(pkg.disk), ...(pkg.expires_after_hours ? [`Auto-removed after ${pkg.expires_after_hours}h`] : [])].map(spec => (
-                    <li key={spec} className="flex items-center gap-2.5 text-sm" style={{ color: '#94a3b8' }}>
-                      <svg className="w-4 h-4 flex-shrink-0" style={{ color: '#3b82f6' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                      </svg>
-                      {spec}
-                    </li>
-                  ))}
-                </ul>
-
-                <Link href="/products"
-                  className="block w-full py-2.5 rounded-xl text-sm font-bold text-center transition-all"
-                  style={{
-                    background: pkg.popular ? 'linear-gradient(135deg,#2563eb,#1d4ed8)' : 'transparent',
-                    color: pkg.popular ? '#fff' : '#60a5fa',
-                    border: pkg.popular ? 'none' : '1px solid rgba(37,99,235,0.35)',
-                    textDecoration: 'none',
-                  }}>
-                  {pkg.popular ? 'Get Started' : 'Choose Plan'}
-                </Link>
-              </div>
-            ))}
-          </div>
-
-          <p className="text-center text-xs mt-8" style={{ color: '#374151' }}>
-            🛡️ 2-week panel replacement warranty included on all plans
-          </p>
         </div>
       </section>
 
