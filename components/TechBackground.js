@@ -106,6 +106,29 @@ export default function TechBackground() {
         }}
       />
 
+      {/* Live video layer — looping dark-blue particles (Pexels, CC0) */}
+      <video
+        aria-hidden="true"
+        autoPlay
+        muted
+        loop
+        playsInline
+        disablePictureInPicture
+        poster={`/videos/background-poster.jpg`}
+        style={{
+          position: 'fixed',
+          inset: 0,
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          zIndex: 0,
+          pointerEvents: 'none',
+          opacity: 0.32,
+        }}
+      >
+        <source src="/videos/background.mp4" type="video/mp4" />
+      </video>
+
       {/* Blue glow orbs — black + blue ambience */}
       <div
         aria-hidden="true"
