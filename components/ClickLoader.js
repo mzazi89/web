@@ -2,9 +2,10 @@
 import { useEffect, useRef, useState } from 'react';
 import Logo from './Logo';
 
-// Custom full-screen loading animation that appears for 5 seconds after every
-// click (branded: glowing logo + rotating blue rings + progress bar).
-// Visual-only (pointerEvents: none) so it never blocks the app.
+// Custom full-screen loading animation (branded: glowing logo + rotating blue
+// rings + progress bar) that appears for 2 seconds — but only on real actions:
+// links, buttons, form submits and other interactive elements. Random clicks
+// on text/backgrounds do nothing. Visual-only (pointerEvents: none).
 export default function ClickLoader() {
   const [visible, setVisible] = useState(false);
   const [leaving, setLeaving] = useState(false);
@@ -23,9 +24,21 @@ export default function ClickLoader() {
       }, 2000);
     };
 
-    document.addEventListener('click', show);
+    // Only clicks on actionable elements trigger the loader.
+    const ACTIONABLE =
+      'a[href], button, [role="button"], input[type="submit"], input[type="button"], select, summary, [tabindex]:not([tabindex="-1"])';
+
+    const onClick = (event) => {
+      const el = event.target?.closest ? event.target.closest(ACTIONABLE) : null;
+      if (!el) return;                       // plain text/background click → ignore
+      if (el.tagName === 'A' && el.target === '_blank') return; // opens new tab, page unchanged
+      if (el.disabled || el.getAttribute('aria-disabled') === 'true') return;
+      show();
+    };
+
+    document.addEventListener('click', onClick);
     return () => {
-      document.removeEventListener('click', show);
+      document.removeEventListener('click', onClick);
       if (timerRef.current) clearTimeout(timerRef.current);
       if (fadeRef.current) clearTimeout(fadeRef.current);
     };
