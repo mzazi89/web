@@ -52,8 +52,36 @@ export async function POST(request) {
 
     // 1) Official DeepSeek API (reliable) — needs a key in Settings
     const deepseekKey = await getSetting('deepseek_api_key');
-    let deepseekError = '';
-    if (deepseekKey) {
+    // 1) FREE AI — Pollinations (OpenAI-compatible, no key, no credits)
+    let aiError = '';
+    try {
+      const res = await fetch('https://text.pollinations.ai/openai', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'openai',
+          messages: [
+            { role: 'system', content: fullPrompt },
+            { role: 'user', content: question },
+          ],
+        }),
+        signal: AbortSignal.timeout(45000),
+      });
+      if (!res.ok) {
+        aiError = `AI ${res.status}`;
+        console.error('Pollinations error:', res.status);
+      } else {
+        const json = await res.json();
+        response = json?.choices?.[0]?.message?.content || '';
+      }
+    } catch (e) {
+      aiError = `AI: ${e.message}`;
+      console.error('Pollinations error:', e.message);
+    }
+
+    // 2) Official DeepSeek (if a key is configured) — free fallback when
+    //    Pollinations is rate-limited
+    if (!response && deepseekKey) {
       try {
         const res = await fetch('https://api.deepseek.com/chat/completions', {
           method: 'POST',
@@ -73,19 +101,19 @@ export async function POST(request) {
         });
         if (!res.ok) {
           const ejson = await res.json().catch(() => ({}));
-          deepseekError = `DeepSeek ${res.status}: ${ejson?.error?.message || 'request failed'}`;
-          console.error('DeepSeek API error:', deepseekError);
+          aiError = `DeepSeek ${res.status}: ${ejson?.error?.message || 'request failed'}`;
+          console.error('DeepSeek API error:', aiError);
         } else {
           const json = await res.json();
           response = json?.choices?.[0]?.message?.content || '';
         }
       } catch (e) {
-        deepseekError = `DeepSeek: ${e.message}`;
+        aiError = `DeepSeek: ${e.message}`;
         console.error('DeepSeek API error:', e.message);
       }
     }
 
-    // 2) Free DrexApp fallbacks (best-effort)
+    // 3) Free DrexApp fallbacks (best-effort)
     if (!response) {
       try {
         const json = await fetch(
