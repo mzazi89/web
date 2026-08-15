@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from 'react';
 import TypingHeading from '@/components/TypingHeading';
 import Link from 'next/link';
+import AiChatWidget from '@/components/AiChatWidget';
 
 const channels = [
   {
@@ -541,6 +542,9 @@ function ChatWindow({ thread, messages, msgLoading, newMsg, setNewMsg, sending, 
           </form>
         )}
       </div>
+
+      {/* 🤖 Ask the AI or send to admin */}
+      <AiChatWidget />
     </div>
   );
 }
