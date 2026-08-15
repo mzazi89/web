@@ -52,6 +52,7 @@ export async function POST(request) {
 
     // 1) Official DeepSeek API (reliable) — needs a key in Settings
     const deepseekKey = await getSetting('deepseek_api_key');
+    let deepseekError = '';
     if (deepseekKey) {
       try {
         const res = await fetch('https://api.deepseek.com/chat/completions', {
@@ -70,9 +71,16 @@ export async function POST(request) {
           }),
           signal: AbortSignal.timeout(45000),
         });
-        const json = await res.json();
-        response = json?.choices?.[0]?.message?.content || '';
+        if (!res.ok) {
+          const ejson = await res.json().catch(() => ({}));
+          deepseekError = `DeepSeek ${res.status}: ${ejson?.error?.message || 'request failed'}`;
+          console.error('DeepSeek API error:', deepseekError);
+        } else {
+          const json = await res.json();
+          response = json?.choices?.[0]?.message?.content || '';
+        }
       } catch (e) {
+        deepseekError = `DeepSeek: ${e.message}`;
         console.error('DeepSeek API error:', e.message);
       }
     }
@@ -99,7 +107,11 @@ export async function POST(request) {
 
     if (!response) {
       return NextResponse.json(
-        { error: 'The AI assistant is busy right now. Please try again in a moment, or send your question to the admin.' },
+        {
+          error:
+            'The AI assistant is temporarily unavailable.' +
+            (deepseekError ? ` ${deepseekError}` : ' Please try again in a moment or send your question to the admin.'),
+        },
         { status: 502 }
       );
     }
