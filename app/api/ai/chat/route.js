@@ -138,15 +138,21 @@ export async function POST(request) {
         {
           error:
             'The AI assistant is temporarily unavailable.' +
-            (deepseekError ? ` ${deepseekError}` : ' Please try again in a moment or send your question to the admin.'),
+            (aiError ? ` ${aiError}` : ' Please try again in a moment or send your question to the admin.'),
         },
         { status: 502 }
       );
     }
 
-    return NextResponse.json({ response: String(response).slice(0, 4000) });
+    if (response && typeof response !== 'string') {
+      response = JSON.stringify(response);
+    }
+    return NextResponse.json({ response: String(response || '').slice(0, 4000) });
   } catch (e) {
     console.error('AI chat error:', e.message);
-    return NextResponse.json({ error: 'AI request failed. Please try again.' }, { status: 500 });
+    return NextResponse.json(
+      { error: `AI request failed: ${e.message}` },
+      { status: 500 }
+    );
   }
 }
