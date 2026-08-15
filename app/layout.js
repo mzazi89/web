@@ -3,6 +3,7 @@ import Footer from '../components/Footer';
 import TechBackground from '../components/TechBackground';
 import PwaProvider from '../components/PwaProvider';
 import ClickLoader from '../components/ClickLoader';
+import AiChatWidget from '../components/AiChatWidget';
 import './globals.css';
 
 export const metadata = {
@@ -60,6 +61,7 @@ export default function RootLayout({ children }) {
           <Footer />
         </PwaProvider>
         <ClickLoader />
+        <AiChatWidget />
       </body>
     </html>
   );

@@ -2,7 +2,6 @@
 import { useState, useEffect, useRef } from 'react';
 import TypingHeading from '@/components/TypingHeading';
 import Link from 'next/link';
-import AiChatWidget from '@/components/AiChatWidget';
 
 const channels = [
   {
@@ -45,7 +44,6 @@ export default function ContactPage() {
   const [msgLoading, setMsgLoading]   = useState(false);
   const [newMsg, setNewMsg]           = useState('');
   const [sending, setSending]         = useState(false);
-  const [aiAsk, setAiAsk]             = useState(null);
   const [newSubject, setNewSubject]   = useState('');
   const [composing, setComposing]     = useState(false);
   const [alert, setAlert]             = useState(null);
@@ -146,7 +144,7 @@ export default function ContactPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ subject: newSubject.trim(), message: newMsg.trim() }),
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (res.ok) {
         setAlert({ type: 'success', text: '✅ Inquiry sent! Our team will reply within 2 hours.' });
         setNewSubject(''); setNewMsg('');
@@ -276,7 +274,7 @@ export default function ContactPage() {
                   newMsg={newMsg} setNewMsg={setNewMsg}
                   sending={sending} alert={alert}
                   onBack={backToList} onSubmit={startNewInquiry}
-                  onAskAI={(q) => setAiAsk({ question: q, at: Date.now() })}
+                 
                 />
               )}
 
@@ -284,7 +282,7 @@ export default function ContactPage() {
                 <ChatWindow
                   thread={activeThread} messages={messages} msgLoading={msgLoading}
                   newMsg={newMsg} setNewMsg={setNewMsg}
-                  sending={sending} onSend={sendMessage} onAskAI={(q) => setAiAsk({ question: q, at: Date.now() })}
+                  sending={sending} onSend={sendMessage}
                   bottomRef={bottomRef} inputRef={inputRef}
                   fmtTime={fmtTime} fmtDate={fmtDate}
                   onBack={backToList}
@@ -331,7 +329,7 @@ export default function ContactPage() {
                   <ChatWindow
                     thread={activeThread} messages={messages} msgLoading={msgLoading}
                     newMsg={newMsg} setNewMsg={setNewMsg}
-                    sending={sending} onSend={sendMessage} onAskAI={(q) => setAiAsk({ question: q, at: Date.now() })}
+                    sending={sending} onSend={sendMessage}
                     bottomRef={bottomRef} inputRef={inputRef}
                     fmtTime={fmtTime} fmtDate={fmtDate}
                     showBack={false}
@@ -392,7 +390,7 @@ function ThreadRow({ t, active, onClick, fmtDate }) {
   );
 }
 
-function ComposeForm({ newSubject, setNewSubject, newMsg, setNewMsg, sending, alert, onBack, onSubmit, desktop, onAskAI }) {
+function ComposeForm({ newSubject, setNewSubject, newMsg, setNewMsg, sending, alert, onBack, onSubmit, desktop }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       {/* Header */}
@@ -439,18 +437,12 @@ function ComposeForm({ newSubject, setNewSubject, newMsg, setNewMsg, sending, al
           style={{ background: sending ? '#1e3a8a' : 'linear-gradient(135deg,#2563eb,#1d4ed8)', cursor: sending ? 'not-allowed' : 'pointer', border: 'none' }}>
           {sending ? 'Sending…' : '📨 Send Inquiry'}
         </button>
-        <button type="button" disabled={!newMsg.trim()}
-          onClick={() => onAskAI && onAskAI(newMsg.trim())}
-          className="w-full py-3 rounded-xl font-bold text-sm"
-          style={{ background: 'transparent', border: '1px solid rgba(96,165,250,0.35)', color: '#60a5fa', cursor: !newMsg.trim() ? 'not-allowed' : 'pointer', opacity: !newMsg.trim() ? 0.5 : 1 }}>
-          🤖 Ask the AI instead (instant answer)
-        </button>
       </form>
     </div>
   );
 }
 
-function ChatWindow({ thread, messages, msgLoading, newMsg, setNewMsg, sending, onSend, bottomRef, inputRef, fmtTime, fmtDate, onBack, showBack, onAskAI }) {
+function ChatWindow({ thread, messages, msgLoading, newMsg, setNewMsg, sending, onSend, bottomRef, inputRef, fmtTime, fmtDate, onBack, showBack }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       {/* Header */}
@@ -554,18 +546,11 @@ function ChatWindow({ thread, messages, msgLoading, newMsg, setNewMsg, sending, 
                 : <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
               }
             </button>
-            <button type="button" disabled={!newMsg.trim()}
-              onClick={() => onAskAI && onAskAI(newMsg.trim())}
-              className="h-10 px-3 rounded-2xl text-xs font-bold flex-shrink-0"
-              style={{ background: 'transparent', border: '1px solid rgba(96,165,250,0.35)', color: '#60a5fa', cursor: !newMsg.trim() ? 'not-allowed' : 'pointer', opacity: !newMsg.trim() ? 0.5 : 1 }}>
-              🤖 Ask AI
-            </button>
           </form>
         )}
       </div>
 
-      {/* 🤖 Ask the AI or send to admin */}
-      <AiChatWidget prefill={aiAsk} />
+
     </div>
   );
 }
