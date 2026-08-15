@@ -1,6 +1,8 @@
 // MZAZI API — POST /api/ai/chat
-// The MZAZI AI assistant: understands site questions (services, prices,
-// accounts, orders…) using live context + the DeepSeek AI backend.
+// The MZAZI AI assistant: reads the question and answers accurately using
+// live site context (packages/prices) + DeepSeek.
+//  1) official DeepSeek API when a `deepseek_api_key` is set in Settings
+//  2) free DrexApp AI endpoints as best-effort fallback
 import { NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 
@@ -12,6 +14,15 @@ You read the user's question carefully and answer it directly, clearly and helpf
 About MZAZI TECH: a technology company offering Pterodactyl panel hosting, WhatsApp automation bots, developer APIs, temporary numbers and wallet services. Customers sign up at mzazi.shop (free account), fund their wallet via Paystack (KES), and buy products from the dashboard.
 How to help: answer questions about accounts, signup/login, wallet deposits, refunds (contact admin), WhatsApp bot pairing (use the WhatsApp Bot page; the pairing keyword is MZAZIBOT), API keys (API dashboard), panel servers, and payments. If you don't know, say you'll have the admin look into it and suggest sending the question to the admin.
 Keep answers short (2-5 sentences), friendly, and accurate. Never invent prices or features beyond what is listed.`;
+
+async function getSetting(key) {
+  try {
+    const rows = await sql`SELECT value FROM settings WHERE key = ${key} LIMIT 1`;
+    return rows[0]?.value ? String(rows[0].value).trim() : '';
+  } catch {
+    return '';
+  }
+}
 
 export async function POST(request) {
   try {
@@ -34,28 +45,55 @@ export async function POST(request) {
           .map((r) => `- ${r.name}: KES ${Number(r.price).toLocaleString()} (${r.cpu}% CPU, ${r.ram} MB RAM, ${r.disk} MB disk)`)
           .join('\n');
       }
-    } catch { /* packages table may be missing — context stays generic */ }
+    } catch { /* packages table may be missing */ }
 
-    const fullQuery = `${SYSTEM_PROMPT}\n\nCURRENT PACKAGES:\n${packagesTxt}\n\nUser question: ${question}`;
-
-    // 1) DeepSeek AI
+    const fullPrompt = `${SYSTEM_PROMPT}\n\nCURRENT PACKAGES:\n${packagesTxt}`;
     let response = '';
-    try {
-      const json = await fetch(
-        `https://api.drexapp.space/ai/deepseek?q=${encodeURIComponent(fullQuery)}`,
-        { signal: AbortSignal.timeout(25000) }
-      ).then((r) => r.json());
-      response = json?.message || json?.response || json?.result || json?.answer || '';
-    } catch { /* try fallback */ }
 
-    // 2) Fallback AI
+    // 1) Official DeepSeek API (reliable) — needs a key in Settings
+    const deepseekKey = await getSetting('deepseek_api_key');
+    if (deepseekKey) {
+      try {
+        const res = await fetch('https://api.deepseek.com/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${deepseekKey}`,
+          },
+          body: JSON.stringify({
+            model: 'deepseek-chat',
+            messages: [
+              { role: 'system', content: fullPrompt },
+              { role: 'user', content: question },
+            ],
+            max_tokens: 700,
+          }),
+          signal: AbortSignal.timeout(45000),
+        });
+        const json = await res.json();
+        response = json?.choices?.[0]?.message?.content || '';
+      } catch (e) {
+        console.error('DeepSeek API error:', e.message);
+      }
+    }
+
+    // 2) Free DrexApp fallbacks (best-effort)
+    if (!response) {
+      try {
+        const json = await fetch(
+          `https://api.drexapp.space/ai/deepseek?q=${encodeURIComponent(`${fullPrompt}\n\nUser question: ${question}`)}`,
+          { signal: AbortSignal.timeout(20000) }
+        ).then((r) => r.json());
+        response = json?.message || json?.response || json?.result || '';
+      } catch { /* try next */ }
+    }
     if (!response) {
       try {
         const fb = await fetch(
-          `https://api.drexapp.space/ai/chat?q=${encodeURIComponent(fullQuery)}`,
-          { signal: AbortSignal.timeout(20000) }
+          `https://api.drexapp.space/ai/chat?q=${encodeURIComponent(`${fullPrompt}\n\nUser question: ${question}`)}`,
+          { signal: AbortSignal.timeout(15000) }
         ).then((r) => r.json());
-        response = fb?.result || fb?.response || fb?.message || fb?.answer || '';
+        response = fb?.result || fb?.response || fb?.message || '';
       } catch { /* both failed */ }
     }
 

@@ -3,7 +3,8 @@ import { useState, useRef, useEffect } from 'react';
 
 // Floating MZAZI AI assistant — answers questions instantly; the user can
 // still send the message to the admin instead (button in the widget).
-export default function AiChatWidget() {
+// Optional `prefill` prop ({ question, at }) auto-opens the widget and asks.
+export default function AiChatWidget({ prefill = null }) {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
@@ -14,8 +15,7 @@ export default function AiChatWidget() {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages, loading, open]);
 
-  const send = async () => {
-    const q = input.trim();
+  const askAI = async (q) => {
     if (!q || loading) return;
     setMessages((m) => [...m, { role: 'user', text: q }]);
     setInput('');
@@ -34,6 +34,17 @@ export default function AiChatWidget() {
       setLoading(false);
     }
   };
+
+  // Prefill from the compose box: open the widget and ask the question.
+  useEffect(() => {
+    if (prefill && prefill.at && prefill.question) {
+      setOpen(true);
+      askAI(prefill.question);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [prefill?.at]);
+
+  const send = () => askAI(input.trim());
 
   return (
     <>
