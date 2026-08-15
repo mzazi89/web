@@ -67,7 +67,12 @@ export default function ContactPage() {
 
   const loadThreads = async () => {
     const r = await fetch('/api/inquiries');
-    if (r.ok) { const d = await r.json(); setThreads(d.inquiries || []); }
+    if (r.ok) {
+      const d = await r.json();
+      setThreads(Array.isArray(d.inquiries) ? d.inquiries : []);
+    } else {
+      setThreads([]);
+    }
   };
 
   const openThread = async (thread) => {
@@ -81,6 +86,8 @@ export default function ContactPage() {
         const d = await r.json();
         if (d.messages && d.messages.length > 0) {
           setMessages(d.messages);
+        } else if (!d.messages) {
+          setMessages([]);
         } else {
           const legacy = [{ id: 'lu', sender: 'user', message: thread.message, created_at: thread.created_at }];
           if (thread.admin_reply) legacy.push({ id: 'la', sender: 'admin', message: thread.admin_reply, created_at: thread.replied_at || thread.created_at });
@@ -324,7 +331,7 @@ export default function ContactPage() {
                   <ChatWindow
                     thread={activeThread} messages={messages} msgLoading={msgLoading}
                     newMsg={newMsg} setNewMsg={setNewMsg}
-                    sending={sending} onSend={sendMessage}
+                    sending={sending} onSend={sendMessage} onAskAI={(q) => setAiAsk({ question: q, at: Date.now() })}
                     bottomRef={bottomRef} inputRef={inputRef}
                     fmtTime={fmtTime} fmtDate={fmtDate}
                     showBack={false}

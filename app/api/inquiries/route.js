@@ -23,6 +23,12 @@ async function ensureTables() {
       created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
   `;
+  // Upgrade older tables that may be missing newer columns
+  await sql`ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS user_email VARCHAR(255)`;
+  await sql`ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS user_name VARCHAR(255)`;
+  await sql`ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS status VARCHAR(50) DEFAULT 'open'`;
+  await sql`ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS admin_reply TEXT`;
+  await sql`ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS replied_at TIMESTAMP`;
   await sql`ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP`;
   await sql`
     CREATE TABLE IF NOT EXISTS inquiry_messages (
