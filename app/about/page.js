@@ -1,11 +1,11 @@
 import Link from 'next/link';
 import AuthSwap from '@/components/AuthSwap';
-import { fmtMtc, fmtMtcValue, mtcToKsh } from '@/lib/currency';
+
 
 const values = [
   { num: '01', title: 'Speed First', desc: 'Deploy servers in under 2 minutes. No waiting, no friction — just instant results.' },
   { num: '02', title: 'Security', desc: 'Enterprise-grade security with encrypted connections and isolated server environments.' },
-  { num: '03', title: 'Worldwide', desc: 'Built for everyone. Mobile money (M-Pesa), card payments, global support, MTC coin pricing.' },
+  { num: '03', title: 'Worldwide', desc: 'Built for everyone. Mobile money (M-Pesa), card payments, global support, simple KES pricing.' },
   { num: '04', title: '24/7 Support', desc: 'Our team is always available via Telegram to help you with any issue.' },
 ];
 
@@ -78,7 +78,7 @@ export default function AboutPage() {
             <p className="lede">
               To democratize access to powerful cloud infrastructure for businesses and individuals
               worldwide. We offer enterprise-level Pterodactyl panel hosting at prices anyone can
-              afford — starting from just 5 MTC/month.
+              afford — starting from just KES 50/month.
             </p>
             <p className="text-sm leading-relaxed" style={{ color: '#79818A' }}>
               From small WhatsApp bots to large-scale game servers and Pterodactyl panels for

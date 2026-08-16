@@ -1,7 +1,7 @@
 'use client';
 import React, { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { fmtMtc, fmtMtcValue, mtcToKsh } from '@/lib/currency';
+import { fmtKes } from '@/lib/currency';
 
 // ─── Receipt printer (no library needed) ────────────────────────────────────
 function downloadReceipt(t, userEmail, balance) {
@@ -116,7 +116,7 @@ function downloadReceipt(t, userEmail, balance) {
   <div class="body">
     <div class="amount-section">
       <div class="amount-label">Transaction Amount</div>
-      <div class="amount"><span class="currency">MTC </span>${sign}${(parseFloat(t.amount)/10).toLocaleString('en-KE', { minimumFractionDigits: 2 })}</div>
+      <div class="amount"><span class="currency">KES </span>${sign}${Number(t.amount).toLocaleString('en-KE', { minimumFractionDigits: 2 })}</div>
     </div>
     <div class="rows">
       <div class="row"><span class="row-label">Receipt No.</span><span class="row-value ref">#MZAZI-${String(t.id).padStart(6,'0')}</span></div>
@@ -126,7 +126,7 @@ function downloadReceipt(t, userEmail, balance) {
       <div class="row"><span class="row-label">Transaction Type</span><span class="row-value" style="text-transform:capitalize">${t.type}</span></div>
       <div class="row"><span class="row-label">Account</span><span class="row-value">${userEmail || '—'}</span></div>
       ${t.reference ? `<div class="row"><span class="row-label">Reference</span><span class="row-value ref">${t.reference}</span></div>` : ''}
-      <div class="row"><span class="row-label">Wallet Balance After</span><span class="row-value">MTC ${(parseFloat(balance)/10).toLocaleString('en-KE', { minimumFractionDigits: 2 })}</span></div>
+      <div class="row"><span class="row-label">Wallet Balance After</span><span class="row-value">KES ${Number(balance).toLocaleString('en-KE', { minimumFractionDigits: 2 })}</span></div>
     </div>
     <div class="warranty">
       <strong>Panel Warranty Policy</strong>
@@ -176,7 +176,7 @@ function WalletInner() {
     const error = searchParams.get('error');
     const amount = searchParams.get('amount');
     if (success === 'credited') {
-      setMessage({ type: 'success', text: `${fmtMtc(amount)} has been added to your wallet!` });
+      setMessage({ type: 'success', text: `${fmtKes(amount)} has been added to your wallet!` });
     } else if (success === 'already_credited') {
       setMessage({ type: 'info', text: 'Payment already credited to your wallet.' });
     } else if (error) {
@@ -207,9 +207,9 @@ function WalletInner() {
 
   const handleDeposit = async (e) => {
     e.preventDefault();
-    const amount = parseFloat(depositAmount); // entered in MTC
-    if (!amount || amount < 1) { // minimum 1 MTC = KSH 10
-      setMessage({ type: 'error', text: 'Minimum deposit is 1 MTC (KSH 10)' });
+    const amount = parseFloat(depositAmount); // entered in KES
+    if (!amount || amount < 10) { // minimum KES 10
+      setMessage({ type: 'error', text: 'Minimum deposit is KES 10' });
       return;
     }
     setDepositing(true);
@@ -218,7 +218,7 @@ function WalletInner() {
       const res = await fetch('/api/wallet/deposit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: mtcToKsh(amount) }),
+        body: JSON.stringify({ amount }),
       });
       const data = await res.json();
       if (res.ok && data.authorization_url) {
@@ -261,7 +261,7 @@ function WalletInner() {
     }
   };
 
-  const quickAmounts = [50, 100, 200, 500, 1000];
+  const quickAmounts = [100, 200, 500, 1000, 2000];
 
   if (loading) {
     return (
@@ -328,7 +328,7 @@ function WalletInner() {
             <div>
               <p className="mono text-[10px] uppercase tracking-[0.18em] mb-3" style={{ color: '#4C535B' }}>Available balance</p>
               <p className="stat-num" style={{ color: '#F2A93B', fontSize: 'clamp(2.2rem, 5vw, 3rem)' }}>
-                {fmtMtc(balance)}
+                {fmtKes(balance)}
               </p>
               {user && (
                 <p className="mono text-[11px] mt-4" style={{ color: '#4C535B' }}>
@@ -343,7 +343,7 @@ function WalletInner() {
             <p className="mono text-[10px] uppercase tracking-[0.18em] mb-4" style={{ color: '#4C535B' }}>Deposit funds</p>
             <form onSubmit={handleDeposit}>
               <div className="mb-3">
-                <label className="label">Amount (MTC)</label>
+                <label className="label">Amount (KES)</label>
                 <input
                   type="number"
                   min="10"
@@ -364,7 +364,7 @@ function WalletInner() {
                       border: `1px solid ${depositAmount === String(amt) ? 'rgba(242,169,59,0.45)' : '#262C33'}`,
                       cursor: 'pointer',
                     }}>
-                    {fmtMtc(amt)}
+                    {fmtKes(amt)}
                   </button>
                 ))}
               </div>
@@ -453,7 +453,7 @@ function WalletInner() {
                         </span>
                       </td>
                       <td data-label="Amount" className="mono font-semibold whitespace-nowrap" style={{ color: t.type === 'deposit' ? '#3ECF8E' : '#E5484D' }}>
-                        {t.type === 'deposit' ? '+' : '−'}{fmtMtc(t.amount)}
+                        {t.type === 'deposit' ? '+' : '−'}{fmtKes(t.amount)}
                       </td>
                       <td data-label="Status">
                         <span className="tag" style={{ color: t.status === 'success' ? '#3ECF8E' : '#F2A93B', borderColor: t.status === 'success' ? 'rgba(62,207,142,0.3)' : 'rgba(242,169,59,0.3)' }}>

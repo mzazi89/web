@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import Logo from './Logo';
-import { fmtMtc } from '@/lib/currency';
+import { fmtKes } from '@/lib/currency';
 
 const NAV_LINKS = [
   { href: '/',             label: 'Home' },
@@ -203,7 +203,7 @@ export default function Navbar() {
                 <Link href="/wallet"
                   className="mono flex items-center gap-2 px-3 py-2 text-[11px] font-semibold tracking-[0.06em]"
                   style={{ backgroundColor: 'rgba(242,169,59,0.07)', color: '#F2A93B', border: '1px solid rgba(242,169,59,0.3)', borderRadius: 2, textDecoration: 'none' }}>
-                  {fmtMtc(walletBalance)}
+                  {fmtKes(walletBalance)}
                 </Link>
               )}
 
@@ -249,7 +249,7 @@ export default function Navbar() {
                 <Link href="/wallet"
                   className="mono px-2.5 py-1.5 text-[11px] font-semibold"
                   style={{ backgroundColor: 'rgba(242,169,59,0.07)', color: '#F2A93B', border: '1px solid rgba(242,169,59,0.3)', borderRadius: 2, textDecoration: 'none' }}>
-                  {fmtMtc(walletBalance)}
+                  {fmtKes(walletBalance)}
                 </Link>
               )}
               <button
@@ -300,7 +300,7 @@ export default function Navbar() {
                       Dashboard
                     </Link>
                     <Link href="/wallet" className="mono block px-3 py-2.5 text-[12px] font-medium uppercase tracking-[0.08em]" style={{ color: '#F2A93B', textDecoration: 'none' }}>
-                      Wallet — {walletBalance !== null ? fmtMtc(walletBalance) : '—'}
+                      Wallet — {walletBalance !== null ? fmtKes(walletBalance) : '—'}
                     </Link>
                     <button onClick={handleLogout}
                       className="mono w-full text-left px-3 py-2.5 text-[12px] font-medium uppercase tracking-[0.08em]"

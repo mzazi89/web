@@ -71,7 +71,7 @@ export async function POST(request) {
     const [wallet] = await sql`SELECT balance FROM wallet WHERE user_id = ${decoded.userId}`;
 
     return NextResponse.json({
-      message: `${(parseFloat(amount) / 10).toLocaleString()} MTC has been credited to your wallet!`,
+      message: `KES ${Number(amount).toLocaleString()} has been credited to your wallet!`,
       amount,
       newBalance: parseFloat(wallet.balance),
     });

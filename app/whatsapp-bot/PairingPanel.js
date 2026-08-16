@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
-import { fmtMtc } from '@/lib/currency';
+import { fmtKes } from '@/lib/currency';
 
 // Interactive WhatsApp pairing panel for the /whatsapp-bot page.
 // Requires login — shows the pairing card, linked devices + unlink, and plans.
@@ -223,7 +223,7 @@ export default function PairingPanel() {
               }}>
                 <div>
                   <p className="display font-bold text-sm" style={{ color: '#E9E7E2' }}>{p.name}</p>
-                  <p className="stat-num mt-1" style={{ fontSize: '1.25rem', color: isCurrent ? '#F2A93B' : '#3ECF8E' }}>{fmtMtc(p.priceKsh)}</p>
+                  <p className="stat-num mt-1" style={{ fontSize: '1.25rem', color: isCurrent ? '#F2A93B' : '#3ECF8E' }}>{fmtKes(p.priceKsh)}</p>
                   <p className="mono text-[10px] mb-3" style={{ color: '#4C535B' }}>/ {p.days} days</p>
                 </div>
                 {isCurrent ? (

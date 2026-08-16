@@ -190,7 +190,7 @@ export default function SignupPage() {
               {[
                 { k: '02 min', v: 'To your first panel' },
                 { k: 'KES', v: 'Local wallet, Paystack top-ups' },
-                { k: '2 MTC', v: 'Referral reward per purchase' },
+                { k: 'KES 20', v: 'Referral reward per purchase' },
                 { k: '24/7', v: 'Support that replies' },
               ].map(r => (
                 <div key={r.k} className="flex items-baseline justify-between gap-6 py-3.5" style={{ borderBottom: '1px solid #1B2026' }}>

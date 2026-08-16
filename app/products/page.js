@@ -2,7 +2,7 @@
 import { useState, useEffect, Fragment } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { fmtMtc } from '@/lib/currency';
+import { fmtKes } from '@/lib/currency';
 
 function fmtCpu(v)  { const n = parseInt(v); return n === 0 ? 'Unlimited CPU'  : `${n}% CPU`; }
 function fmtRam(v)  { const n = parseInt(v); return n === 0 ? 'Unlimited RAM'  : n >= 1024 ? `${n / 1024} GB RAM`  : `${n} MB RAM`; }
@@ -71,7 +71,7 @@ export default function ProductsPage() {
       setError('All fields are required'); return;
     }
     if (balance < pkg.price) {
-      setError(`Insufficient balance. You need ${fmtMtc(pkg.price)} but have ${fmtMtc(balance)}. Please top up your wallet.`);
+      setError(`Insufficient balance. You need ${fmtKes(pkg.price)} but have ${fmtKes(balance)}. Please top up your wallet.`);
       return;
     }
     setError(''); setStep('confirm');
@@ -121,7 +121,7 @@ export default function ProductsPage() {
             </p>
             {user && (
               <span className="tag tag-amber">
-                Wallet: <strong>{fmtMtc(balance)}</strong>
+                Wallet: <strong>{fmtKes(balance)}</strong>
                 {balance < 50 && (
                   <Link href="/wallet" style={{ color: '#F2A93B', textDecoration: 'underline' }}>top up →</Link>
                 )}
@@ -200,7 +200,7 @@ export default function ProductsPage() {
                     )}
                     <p className="display font-bold text-base mb-1" style={{ color: '#E9E7E2' }}>{p.name}</p>
                     <div className="flex items-baseline gap-1.5 mb-3">
-                      <span className="stat-num" style={{ fontSize: '1.8rem', color: p.popular ? '#F2A93B' : '#E9E7E2' }}>{fmtMtc(p.price)}</span>
+                      <span className="stat-num" style={{ fontSize: '1.8rem', color: p.popular ? '#F2A93B' : '#E9E7E2' }}>{fmtKes(p.price)}</span>
                       <span className="mono text-[10px] uppercase tracking-[0.1em]" style={{ color: '#4C535B' }}>/mo</span>
                     </div>
                     <p className="text-xs leading-relaxed mb-4" style={{ color: '#79818A' }}>{p.description}</p>
@@ -301,7 +301,7 @@ export default function ProductsPage() {
                     <p className="display font-bold" style={{ color: '#E9E7E2' }}>{pkg.name} plan</p>
                     <p className="mono text-[10px] uppercase tracking-[0.12em] mt-0.5" style={{ color: '#4C535B' }}>Monthly subscription</p>
                   </div>
-                  <p className="stat-num" style={{ fontSize: '1.4rem', color: '#F2A93B' }}>{fmtMtc(pkg.price)}</p>
+                  <p className="stat-num" style={{ fontSize: '1.4rem', color: '#F2A93B' }}>{fmtKes(pkg.price)}</p>
                 </div>
                 <div className="space-y-1.5">
                   {[fmtCpu(pkg.cpu), fmtRam(pkg.ram), fmtDisk(pkg.disk)].map(s => (
@@ -314,11 +314,11 @@ export default function ProductsPage() {
                 <div className="mt-4 pt-4" style={{ borderTop: '1px solid #1B2026' }}>
                   <div className="flex justify-between text-xs mb-1.5" style={{ color: '#4C535B' }}>
                     <span>Your balance</span>
-                    <span style={{ color: balance >= pkg.price ? '#3ECF8E' : '#E5484D' }}>{fmtMtc(balance)}</span>
+                    <span style={{ color: balance >= pkg.price ? '#3ECF8E' : '#E5484D' }}>{fmtKes(balance)}</span>
                   </div>
                   <div className="flex justify-between text-xs" style={{ color: '#4C535B' }}>
                     <span>After purchase</span>
-                    <span style={{ color: '#AEB5BD' }}>{fmtMtc(Math.max(0, balance - pkg.price))}</span>
+                    <span style={{ color: '#AEB5BD' }}>{fmtKes(Math.max(0, balance - pkg.price))}</span>
                   </div>
                 </div>
               </div>
@@ -332,7 +332,7 @@ export default function ProductsPage() {
             <p className="eyebrow">Step 03</p>
             <h2 className="display text-xl font-bold mt-3 mb-6" style={{ color: '#E9E7E2' }}>Confirm order</h2>
             {[
-              { label: 'Plan',      value: `${pkg.name} — ${fmtMtc(pkg.price)}/mo` },
+              { label: 'Plan',      value: `${pkg.name} — ${fmtKes(pkg.price)}/mo` },
               { label: 'Resources', value: `${fmtCpu(pkg.cpu)} · ${fmtRam(pkg.ram)} · ${fmtDisk(pkg.disk)}` },
               { label: 'Username',  value: form.ptero_username },
               { label: 'Name',      value: `${form.firstname} ${form.lastname}` },
@@ -346,10 +346,10 @@ export default function ProductsPage() {
             ))}
             <div className="flex justify-between py-3.5 text-base" style={{ borderBottom: '1px solid #1B2026' }}>
               <span className="mono text-[10px] uppercase tracking-[0.12em]" style={{ color: '#4C535B', paddingTop: 4 }}>Total charge</span>
-              <span className="stat-num" style={{ fontSize: '1.3rem', color: '#F2A93B' }}>{fmtMtc(pkg.price)}</span>
+              <span className="stat-num" style={{ fontSize: '1.3rem', color: '#F2A93B' }}>{fmtKes(pkg.price)}</span>
             </div>
             <p className="text-xs mt-4 mb-6" style={{ color: '#4C535B' }}>
-              {fmtMtc(pkg.price)} will be deducted from your wallet. Balance after: {fmtMtc(Math.max(0, balance - pkg.price))}
+              {fmtKes(pkg.price)} will be deducted from your wallet. Balance after: {fmtKes(Math.max(0, balance - pkg.price))}
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
               <button onClick={() => setStep('configure')} className="btn btn-ghost flex-1">← Edit</button>

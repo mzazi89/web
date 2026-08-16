@@ -9,7 +9,7 @@ const SECTIONS = [
   ) },
   { id: 'services', title: '3. Services', body: (
     <>
-      <p><strong style={{ color: '#E9E7E2' }}>Panel hosting:</strong> paid hosting plans billed monthly in MTC coins.{' '}
+      <p><strong style={{ color: '#E9E7E2' }}>Panel hosting:</strong> paid hosting plans billed monthly in KES.{' '}
       <strong style={{ color: '#E9E7E2' }}>WhatsApp bots:</strong> automation tools — you are responsible for complying with WhatsApp&apos;s Terms of Service and applicable messaging laws.{' '}
       <strong style={{ color: '#E9E7E2' }}>MZAZI API:</strong> developer APIs subject to fair-use rate limits per your plan.{' '}
       <strong style={{ color: '#E9E7E2' }}>Temporary numbers:</strong> provided for legitimate verification purposes only — not for fraud, spam, or unlawful activity.</p>

@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { fmtMtc } from '@/lib/currency';
+import { fmtKes } from '@/lib/currency';
 
 export default function DashboardPage() {
   const [user, setUser]           = useState(null);
@@ -151,7 +151,7 @@ export default function DashboardPage() {
   const activePanels = panels.filter(p => p.status === 'active').length;
 
   const stats = [
-    { label: 'Wallet balance', value: fmtMtc(balance), href: '/wallet', tone: '#F2A93B' },
+    { label: 'Wallet balance', value: fmtKes(balance), href: '/wallet', tone: '#F2A93B' },
     { label: 'Active panels',  value: activePanels, href: '/products', tone: '#E9E7E2' },
     { label: 'API keys',       value: apiStats ? apiStats.keys : '—', href: '/api/dashboard/keys', tone: '#E9E7E2' },
     { label: 'API requests',   value: apiStats ? apiStats.requests.toLocaleString() : '—', href: '/api/dashboard', tone: '#E9E7E2' },
@@ -234,7 +234,7 @@ export default function DashboardPage() {
                           </span>
                         </div>
                         <p className="mono text-[11px] mt-1.5" style={{ color: '#4C535B' }}>
-                          {p.package_name} · {fmtMtc(p.package_price || 0)}
+                          {p.package_name} · {fmtKes(p.package_price || 0)}
                           {p.expires_at && (
                             <span className="ml-2" style={{ color: p.is_expired ? '#E5484D' : '#79818A' }}>
                               {p.is_expired ? 'EXPIRED' : `expires ${new Date(p.expires_at).toLocaleString()}`}
@@ -289,7 +289,7 @@ export default function DashboardPage() {
                         </div>
                       </div>
                       <span className="mono text-[13px] font-semibold flex-shrink-0" style={{ color: t.type === 'deposit' ? '#3ECF8E' : '#E5484D' }}>
-                        {t.type === 'deposit' ? '+' : '−'}{fmtMtc(t.amount)}
+                        {t.type === 'deposit' ? '+' : '−'}{fmtKes(t.amount)}
                       </span>
                     </div>
                   ))}
@@ -307,7 +307,7 @@ export default function DashboardPage() {
                 <h2 className="mono text-[10px] uppercase tracking-[0.18em]" style={{ color: '#4C535B' }}>Wallet</h2>
                 <Link href="/wallet" className="mono text-[10px] uppercase tracking-[0.12em]" style={{ color: '#F2A93B', textDecoration: 'none' }}>Manage →</Link>
               </div>
-              <div className="stat-num mb-1" style={{ color: '#F2A93B' }}>{fmtMtc(balance)}</div>
+              <div className="stat-num mb-1" style={{ color: '#F2A93B' }}>{fmtKes(balance)}</div>
               <p className="mono text-[10px] uppercase tracking-[0.14em] mb-5" style={{ color: '#4C535B' }}>Available balance</p>
               <Link href="/wallet" className="btn btn-ghost w-full" style={{ padding: '10px 0', fontSize: 11 }}>
                 Deposit funds
@@ -445,10 +445,10 @@ export default function DashboardPage() {
               <section className="card p-6">
                 <div className="flex items-center justify-between mb-3">
                   <h2 className="mono text-[10px] uppercase tracking-[0.18em]" style={{ color: '#4C535B' }}>Refer & earn</h2>
-                  <span className="tag tag-amber">2 MTC / purchase</span>
+                  <span className="tag tag-amber">KES 20 / purchase</span>
                 </div>
                 <p className="text-xs leading-relaxed mb-4" style={{ color: '#79818A' }}>
-                  Share your link — when someone signs up and buys a panel, you get 2 MTC (KSH 20) in your wallet.
+                  Share your link — when someone signs up and buys a panel, you get KES 20 in your wallet.
                 </p>
                 <div className="grid grid-cols-2 gap-3 mb-4">
                   <div>
@@ -456,7 +456,7 @@ export default function DashboardPage() {
                     <div className="stat-label">Referred</div>
                   </div>
                   <div>
-                    <div className="stat-num" style={{ fontSize: '1.35rem', color: '#F2A93B' }}>{fmtMtc(referral.total_earned)}</div>
+                    <div className="stat-num" style={{ fontSize: '1.35rem', color: '#F2A93B' }}>{fmtKes(referral.total_earned)}</div>
                     <div className="stat-label">Earned</div>
                   </div>
                 </div>

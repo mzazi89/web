@@ -31,7 +31,7 @@ export async function POST(request) {
     const balance = w.length ? parseFloat(w[0].balance) : 0;
     if (balance < plan.priceKsh) {
       return NextResponse.json({
-        error: `Insufficient wallet balance. This plan costs ${plan.priceKsh / 10} MTC (KSH ${plan.priceKsh}) — please deposit first.`,
+        error: `Insufficient wallet balance. This plan costs KES ${plan.priceKsh} — please deposit first.`,
         insufficient: true,
         depositUrl: '/wallet',
       }, { status: 402 });
