@@ -74,6 +74,26 @@ input, select, textarea {
 
 a { color: inherit; }
 
+/* ─── Accessibility: skip link ─────────────────────────────── */
+.skip-link {
+  position: fixed;
+  top: -100px;
+  left: 16px;
+  z-index: 1000;
+  padding: 10px 18px;
+  background: var(--amber);
+  color: #14100A;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: 2px;
+  transition: top 0.2s ease;
+}
+.skip-link:focus { top: 16px; }
+
 /* ─── Typography ───────────────────────────────────────────── */
 h1, h2, h3, h4, .display {
   font-family: var(--font-display);

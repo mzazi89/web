@@ -7,6 +7,7 @@ import AiChatWidget from '../components/AiChatWidget';
 import './globals.css';
 
 export const metadata = {
+  metadataBase: new URL('https://www.mzazi.shop'),
   title: 'MZAZI TECH INC - Technology & Automation Solutions',
   description: 'Your trusted partner for WhatsApp bots, Pterodactyl panel hosting, and automation solutions — worldwide.',
   keywords: 'pterodactyl hosting, whatsapp bot, automation, kenya, game server',
@@ -23,7 +24,6 @@ export const metadata = {
     card: 'summary_large_image',
     title: 'MZAZI TECH INC',
     description: 'Game panels, WhatsApp bots and the MZAZI API platform.',
-    images: ['https://www.mzazi.shop/icons/icon-512.png'],
   },
   manifest: '/manifest.webmanifest',
   appleWebApp: {
@@ -32,9 +32,20 @@ export const metadata = {
     title: 'MZAZI TECH',
   },
   icons: {
-    icon: [{ url: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' }, { url: '/icons/icon-512.png', sizes: '512x512', type: 'image/png' }],
-    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180' }],
+    icon: [{ url: '/icon', sizes: '512x512', type: 'image/png' }],
+    apple: [{ url: '/apple-icon', sizes: '180x180' }],
   },
+};
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'MZAZI TECH INC',
+  url: 'https://www.mzazi.shop',
+  logo: 'https://www.mzazi.shop/icon',
+  description: 'Kenya-born infrastructure company — Pterodactyl panel hosting, WhatsApp automation and developer APIs.',
+  foundingLocation: { '@type': 'Place', name: 'Nairobi, Kenya' },
+  sameAs: ['https://t.me/mzazitech', 'https://wa.me/254108595201'],
 };
 
 export default function RootLayout({ children }) {
@@ -51,14 +62,18 @@ export default function RootLayout({ children }) {
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       </head>
       <body className="flex flex-col min-h-screen" style={{ backgroundColor: '#0B0D0F', color: '#E9E7E2' }}>
         <PwaProvider>
+          {/* Accessibility: skip straight to content */}
+          <a href="#main-content" className="skip-link">Skip to content</a>
+
           {/* Ambient background — sits behind everything */}
           <TechBackground />
 
           <Navbar />
-          <main className="flex-grow" style={{ position: 'relative', zIndex: 1 }}>
+          <main id="main-content" className="flex-grow" style={{ position: 'relative', zIndex: 1 }}>
             {children}
           </main>
           <Footer />
