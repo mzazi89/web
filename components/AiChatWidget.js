@@ -52,46 +52,55 @@ export default function AiChatWidget({ prefill = null }) {
       <button
         onClick={() => setOpen((o) => !o)}
         aria-label="Ask MZAZI AI"
-        className="fixed bottom-5 right-5 z-50 flex items-center gap-2 px-4 py-3 rounded-full font-bold text-sm text-white"
-        style={{ background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)', border: 'none', cursor: 'pointer', boxShadow: '0 8px 30px rgba(37,99,235,0.5)' }}
+        className="fixed bottom-5 right-5 z-50 flex items-center gap-2 px-4 py-3 text-sm font-bold"
+        style={{
+          background: '#F2A93B', color: '#14100A', border: 'none', cursor: 'pointer',
+          borderRadius: 2, boxShadow: '0 8px 30px rgba(0,0,0,0.5)',
+          fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase',
+        }}
       >
-        {open ? '✕ Close' : '🤖 Ask MZAZI AI'}
+        {open ? '✕ Close' : (
+          <>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 2a10 10 0 0 1 10 10c0 4.4-3.6 8-8 8H4a2 2 0 0 1-2-2v-6a10 10 0 0 1 10-10z" />
+              <path d="M8 11h.01M12 11h.01M16 11h.01" />
+            </svg>
+            Ask MZAZI AI
+          </>
+        )}
       </button>
 
       {/* Chat panel */}
       {open && (
         <div
-          className="fixed bottom-20 right-5 z-50 w-[calc(100vw-2.5rem)] max-w-sm rounded-2xl overflow-hidden flex flex-col"
-          style={{ height: 'min(480px, 70vh)', backgroundColor: '#060b16', border: '1px solid #1e3a8a', boxShadow: '0 20px 60px rgba(0,0,0,0.6)' }}
+          className="fixed bottom-20 right-5 z-50 w-[calc(100vw-2.5rem)] max-w-sm overflow-hidden flex flex-col"
+          style={{ height: 'min(480px, 70vh)', backgroundColor: '#14181D', border: '1px solid #262C33', boxShadow: '0 20px 60px rgba(0,0,0,0.6)', borderRadius: 6 }}
         >
           {/* Header */}
-          <div className="px-4 py-3 flex items-center justify-between" style={{ backgroundColor: 'rgba(37,99,235,0.12)', borderBottom: '1px solid #1e3a8a' }}>
+          <div className="px-4 py-3 flex items-center justify-between" style={{ background: '#0F1215', borderBottom: '1px solid #262C33' }}>
             <div>
-              <p className="font-bold text-sm" style={{ color: '#f0f4ff' }}>🤖 MZAZI AI</p>
-              <p className="text-[11px]" style={{ color: '#64748b' }}>Instant answers — no waiting</p>
+              <p className="display font-bold text-sm" style={{ color: '#E9E7E2' }}>MZAZI AI</p>
+              <p className="mono text-[10px] uppercase tracking-[0.12em] mt-0.5" style={{ color: '#4C535B' }}>Instant answers — no waiting</p>
             </div>
-            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase"
-              style={{ backgroundColor: 'rgba(34,197,94,0.12)', color: '#4ade80', border: '1px solid rgba(34,197,94,0.3)' }}>
-              Online
-            </span>
+            <span className="tag tag-green"><span className="dot anim-pulse" /> Online</span>
           </div>
 
           {/* Messages */}
-          <div ref={listRef} className="flex-1 overflow-y-auto px-3 py-3 space-y-2.5" style={{ backgroundColor: 'rgba(2,4,9,0.45)' }}>
+          <div ref={listRef} className="flex-1 overflow-y-auto px-3 py-3 space-y-2.5" style={{ background: 'rgba(11,13,15,0.6)' }}>
             {messages.length === 0 && (
-              <p className="text-xs leading-relaxed" style={{ color: '#64748b' }}>
-                👋 Hi! Ask me anything about MZAZI TECH — accounts, payments, WhatsApp bot pairing, panel servers, API keys…
-                <br />If you&apos;d rather talk to a person, use the <b style={{ color: '#94a3b8' }}>contact form → Send to Admin</b>.
+              <p className="text-xs leading-relaxed" style={{ color: '#79818A' }}>
+                Hi! Ask me anything about MZAZI TECH — accounts, payments, WhatsApp bot pairing, panel servers, API keys…
+                <br />If you&apos;d rather talk to a person, use the <b style={{ color: '#AEB5BD' }}>contact form → Send to Admin</b>.
               </p>
             )}
             {messages.map((m, i) => (
               <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                 <div
-                  className="max-w-[85%] px-3 py-2 rounded-xl text-sm whitespace-pre-wrap"
+                  className="max-w-[85%] px-3 py-2 text-sm whitespace-pre-wrap"
                   style={
                     m.role === 'user'
-                      ? { backgroundColor: 'rgba(37,99,235,0.25)', border: '1px solid rgba(59,130,246,0.4)', color: '#f0f4ff' }
-                      : { backgroundColor: '#0a0e1a', border: '1px solid #1e3a8a', color: '#cbd5e1' }
+                      ? { background: 'rgba(242,169,59,0.14)', border: '1px solid rgba(242,169,59,0.4)', color: '#E9E7E2', borderRadius: '10px 10px 2px 10px' }
+                      : { background: '#1A1F25', border: '1px solid #262C33', color: '#AEB5BD', borderRadius: '10px 10px 10px 2px' }
                   }
                 >
                   {m.text}
@@ -100,7 +109,7 @@ export default function AiChatWidget({ prefill = null }) {
             ))}
             {loading && (
               <div className="flex justify-start">
-                <div className="px-3 py-2 rounded-xl text-sm" style={{ backgroundColor: '#0a0e1a', border: '1px solid #1e3a8a', color: '#64748b' }}>
+                <div className="px-3 py-2 text-sm" style={{ background: '#1A1F25', border: '1px solid #262C33', color: '#79818A', borderRadius: '10px 10px 10px 2px' }}>
                   <span className="spinner" style={{ width: 14, height: 14, borderWidth: 2, verticalAlign: 'middle', display: 'inline-block', marginRight: 8 }} />
                   Thinking…
                 </div>
@@ -109,19 +118,21 @@ export default function AiChatWidget({ prefill = null }) {
           </div>
 
           {/* Input */}
-          <div className="p-2.5 flex items-center gap-2" style={{ borderTop: '1px solid #1e3a8a' }}>
+          <div className="p-2.5 flex items-center gap-2" style={{ borderTop: '1px solid #262C33', background: '#0F1215' }}>
             <input
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && send()}
               placeholder="Ask the AI…"
-              className="flex-1 rounded-xl px-3 py-2.5 text-sm outline-none"
-              style={{ backgroundColor: '#02040a', border: '1px solid #1e3a8a', color: '#f0f4ff' }}
+              className="input flex-1"
+              style={{ padding: '10px 12px', fontSize: 14 }}
             />
             <button onClick={send} disabled={loading || !input.trim()}
-              className="px-3.5 py-2.5 rounded-xl text-sm font-bold text-white"
-              style={{ background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)', border: 'none', cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.6 : 1 }}>
-              ➤
+              className="btn btn-primary flex-shrink-0"
+              style={{ padding: '11px 14px', cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.6 : 1 }}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style={{ display: 'block' }}>
+                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+              </svg>
             </button>
           </div>
         </div>

@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import TypingHeading from '@/components/TypingHeading';
 import { neon } from '@neondatabase/serverless';
 import { unstable_noStore as noStore } from 'next/cache';
 
@@ -28,11 +27,12 @@ const CATEGORY_LABELS = {
   'URL SHORTENER': 'URL Shortener',
 };
 
-const CATEGORY_ICONS = {
-  DOWNLOAD: '⬇️', SEARCH: '🔍', AI: '🤖', 'AI MUSIC': '🎵', ANIME: '🎌', CANVAS: '🎨',
-  FUN: '🎉', GAMES: '🎮', 'IMAGE GENERATION': '🖼️', TOOLS: '🛠️', MEDIA: '🎬', SOCIAL: '📱',
-  UTILITY: '⚙️', MOVIES: '🎥', NEWS: '📰', RANDOM: '🎲', STALK: '🕵️', SPORTS: '🏆',
-  UPLOADER: '📤', 'URL SHORTENER': '🔗',
+// two-letter mono codes used in place of icon glyphs
+const CATEGORY_CODES = {
+  DOWNLOAD: 'DL', SEARCH: 'SR', AI: 'AI', 'AI MUSIC': 'AM', ANIME: 'AN', CANVAS: 'CV',
+  FUN: 'FN', GAMES: 'GM', 'IMAGE GENERATION': 'IG', TOOLS: 'TL', MEDIA: 'MD', SOCIAL: 'SC',
+  UTILITY: 'UT', MOVIES: 'MV', NEWS: 'NW', RANDOM: 'RD', STALK: 'SK', SPORTS: 'SP',
+  UPLOADER: 'UP', 'URL SHORTENER': 'US',
 };
 
 async function getCategories() {
@@ -62,39 +62,75 @@ async function getCategories() {
 export default async function ApiExplorer() {
   noStore();
   const categories = await getCategories();
+  const totalActive = categories.reduce((a, c) => a + c.active, 0);
 
   return (
-    <div className="container-site py-12" style={{ minHeight: '70vh' }}>
-      <div className="mb-8">
-        <Link href="/api" className="text-xs font-semibold" style={{ color: '#475569', textDecoration: 'none' }}>← Back to API</Link>
-        <h1 className="text-3xl font-extrabold mt-2"><TypingHeading as="span" text="API Explorer" speed={45} className="gradient-text" /></h1>
-        <p className="text-sm mt-1" style={{ color: '#94a3b8' }}>
-          Browse all MZAZI API categories — {categories.reduce((a, c) => a + c.active, 0)} active endpoints across {categories.length} categories.
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {categories.map(c => (
-          <Link key={c.category} href={`/api/docs#cat-${encodeURIComponent(c.category)}`}
-            className="card p-6 transition-transform hover:-translate-y-1" style={{ textDecoration: 'none' }}>
-            <div className="text-3xl mb-3">{CATEGORY_ICONS[c.category] || '📦'}</div>
-            <h3 className="font-bold mb-1" style={{ color: '#f0f4ff' }}>{CATEGORY_LABELS[c.category] || c.category}</h3>
-            <p className="text-xs mb-3" style={{ color: '#94a3b8' }}>
-              {c.active} active · {c.total} total
+    <div style={{ backgroundColor: 'rgba(15,18,21,0.35)', minHeight: '70vh' }}>
+      <section className="relative overflow-hidden" style={{ paddingTop: 64, paddingBottom: 40 }}>
+        <div className="absolute inset-0 pointer-events-none grid-bg" style={{ maskImage: 'linear-gradient(180deg, rgba(0,0,0,0.5), transparent 80%)', WebkitMaskImage: 'linear-gradient(180deg, rgba(0,0,0,0.5), transparent 80%)' }} />
+        <div className="container-site relative">
+          <div className="max-w-3xl">
+            <Link href="/api" className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: '#79818A', textDecoration: 'none' }}>
+              ← Back to API
+            </Link>
+            <p className="eyebrow mt-8">Endpoint explorer</p>
+            <h1 className="headline mt-4" style={{ fontSize: 'clamp(2rem, 4.4vw, 3.2rem)' }}>
+              Browse the catalog<span className="accent">.</span>
+            </h1>
+            <p className="lede mt-5 max-w-xl">
+              {totalActive} active endpoints across {categories.length} categories — every one of them
+              callable from the docs with a single key.
             </p>
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold" style={{ color: '#60a5fa' }}>Explore →</span>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded"
-                style={{ backgroundColor: c.active > 0 ? 'rgba(74,222,128,0.1)' : 'rgba(100,116,139,0.1)', color: c.active > 0 ? '#4ade80' : '#64748b' }}>
-                {c.active > 0 ? 'LIVE' : 'INACTIVE'}
-              </span>
+          </div>
+        </div>
+      </section>
+
+      <section className="section" style={{ paddingTop: 24, paddingBottom: 110 }}>
+        <div className="container-site">
+          {categories.length === 0 ? (
+            <div className="card card-pad text-center">
+              <p className="text-sm" style={{ color: '#4C535B' }}>Category registry unavailable — run database initialization first.</p>
             </div>
-            {c.requests > 0 && (
-              <p className="text-[10px] mt-2" style={{ color: '#475569' }}>{c.requests.toLocaleString()} requests (14d)</p>
-            )}
-          </Link>
-        ))}
-      </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {categories.map(c => {
+                const live = c.active > 0;
+                return (
+                  <Link key={c.category} href={`/api/docs#cat-${encodeURIComponent(c.category)}`}
+                    className="glow-card card-pad flex flex-col" style={{ textDecoration: 'none', padding: '24px 22px' }}>
+                    <div className="flex items-center justify-between mb-5">
+                      <span className="mono text-[11px] font-bold"
+                        style={{ color: live ? '#F2A93B' : '#4C535B', border: `1px solid ${live ? 'rgba(242,169,59,0.4)' : '#262C33'}`, padding: '4px 8px' }}>
+                        {CATEGORY_CODES[c.category] || '??'}
+                      </span>
+                      <span className={`tag ${live ? 'tag-green' : 'tag'}`}>
+                        <span className="dot anim-pulse" style={{ color: live ? '#3ECF8E' : '#4C535B' }} />
+                        {live ? 'Live' : 'Inactive'}
+                      </span>
+                    </div>
+                    <h3 className="display font-bold text-lg mb-1" style={{ color: '#E9E7E2' }}>
+                      {CATEGORY_LABELS[c.category] || c.category}
+                    </h3>
+                    <p className="mono text-[11px] uppercase tracking-[0.12em] mb-4" style={{ color: '#4C535B' }}>
+                      {c.active} live · {c.total} total
+                    </p>
+                    <div className="flex items-center justify-between mt-auto pt-4" style={{ borderTop: '1px solid #1B2026' }}>
+                      <span className="mono text-[10px] uppercase tracking-[0.14em]" style={{ color: '#F2A93B' }}>
+                        Explore →
+                      </span>
+                      {c.requests > 0 && (
+                        <span className="mono text-[10px]" style={{ color: '#4C535B' }}>
+                          {c.requests.toLocaleString()} req / 14d
+                        </span>
+                      )}
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </section>
     </div>
   );
 }

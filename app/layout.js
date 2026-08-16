@@ -43,15 +43,18 @@ export default function RootLayout({ children }) {
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-        <meta name="theme-color" content="#020409" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+          rel="stylesheet"
+        />
+        <meta name="theme-color" content="#0B0D0F" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
-      <body className="flex flex-col min-h-screen" style={{ backgroundColor: 'rgba(2,4,9,0.45)', color: '#f0f4ff' }}>
+      <body className="flex flex-col min-h-screen" style={{ backgroundColor: '#0B0D0F', color: '#E9E7E2' }}>
         <PwaProvider>
-          {/* Fixed tech background — sits behind everything */}
+          {/* Ambient background — sits behind everything */}
           <TechBackground />
 
           <Navbar />

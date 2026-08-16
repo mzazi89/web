@@ -20,11 +20,13 @@ export function ToastProvider({ children }) {
         {toasts.map(t => (
           <div
             key={t.id}
-            className="px-4 py-3 rounded-xl text-sm font-medium shadow-2xl animate-fade-in"
+            className="px-4 py-3 text-sm font-medium shadow-2xl"
             style={{
-              backgroundColor: '#060b16',
-              border: `1px solid ${t.type === 'error' ? 'rgba(248,113,113,0.4)' : 'rgba(74,222,128,0.4)'}`,
-              color: t.type === 'error' ? '#fca5a5' : '#bbf7d0',
+              backgroundColor: '#14181D',
+              border: `1px solid ${t.type === 'error' ? 'rgba(229,72,77,0.45)' : 'rgba(62,207,142,0.45)'}`,
+              color: t.type === 'error' ? '#E5484D' : '#3ECF8E',
+              borderRadius: 4,
+              boxShadow: '0 18px 44px rgba(0,0,0,0.5)',
             }}
           >
             {t.message}

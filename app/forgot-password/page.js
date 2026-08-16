@@ -1,6 +1,5 @@
 'use client';
 import { useState } from 'react';
-import TypingHeading from '@/components/TypingHeading';
 import Link from 'next/link';
 import Logo from '@/components/Logo';
 
@@ -53,46 +52,37 @@ export default function ForgotPasswordPage() {
     }
   };
 
-  const inputStyle = {
-    backgroundColor: '#02040a',
-    border: '1px solid #1e3a8a',
-    color: '#f0f4ff',
-  };
-
   return (
-    <div className="min-h-screen flex items-center justify-center py-12 px-4" style={{ backgroundColor: 'rgba(2,4,9,0.45)' }}>
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full pointer-events-none"
-        style={{ background: 'radial-gradient(circle, rgba(37,99,235,0.1) 0%, transparent 70%)', filter: 'blur(40px)' }} />
+    <div className="min-h-[80vh] flex items-center py-12 px-5">
+      <div className="container-site grid lg:grid-cols-2 gap-12 items-center w-full">
 
-      <div className="relative w-full max-w-md">
-        <div className="rounded-2xl p-8" style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a', boxShadow: '0 25px 50px rgba(0,0,0,0.5)' }}>
-          <div className="text-center mb-8">
-            <div className="mx-auto mb-4 flex justify-center">
-              <Logo size={56} />
-            </div>
-            <TypingHeading as="h2" text={step === 1 ? 'Forgot Password' : step === 2 ? 'Answer Security Question' : 'Password Reset'} speed={45} className="text-2xl font-extrabold" style={{ color: '#f0f4ff' }} />
-            <p className="text-sm mt-1" style={{ color: '#64748b' }}>
-              {step === 1 && 'Enter your account email to recover your password'}
-              {step === 2 && `Hi — answer the security question to set a new password`}
-              {step === 3 && 'Your password has been reset'}
-            </p>
-          </div>
+        {/* Form side */}
+        <div className="max-w-md w-full">
+          <p className="eyebrow">Password recovery</p>
+          <h1 className="headline mt-4" style={{ fontSize: 'clamp(1.8rem, 3.4vw, 2.4rem)' }}>
+            {step === 1 && 'Forgot your password?'}
+            {step === 2 && 'Answer the security question'}
+            {step === 3 && 'Password reset'}
+          </h1>
+          <p className="text-sm mt-2 mb-8" style={{ color: '#79818A' }}>
+            {step === 1 && 'Enter your account email to recover your password.'}
+            {step === 2 && `Account: ${email}`}
+            {step === 3 && 'You can now sign in with your new password.'}
+          </p>
 
           {error && (
-            <div className="mb-5 p-3 rounded-lg text-sm" style={{ backgroundColor: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: '#f87171' }}>
+            <div className="mb-5 px-4 py-3 text-sm" style={{ background: 'rgba(229,72,77,0.08)', border: '1px solid rgba(229,72,77,0.3)', color: '#E5484D' }}>
               {error}
             </div>
           )}
 
           {step === 1 && (
             <form onSubmit={findAccount}>
-              <label className="block text-sm font-medium mb-2" style={{ color: '#94a3b8' }}>Email Address</label>
+              <label className="label">Email address</label>
               <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
-                className="w-full rounded-xl px-4 py-3 text-sm outline-none mb-6"
-                style={inputStyle} />
-              <button type="submit" disabled={loading} className="w-full py-3 rounded-xl font-bold text-white text-sm"
-                style={{ background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)', cursor: loading ? 'not-allowed' : 'pointer' }}>
+                className="input mb-6" />
+              <button type="submit" disabled={loading} className="btn btn-primary w-full">
                 {loading ? 'Checking…' : 'Continue'}
               </button>
             </form>
@@ -100,58 +90,80 @@ export default function ForgotPasswordPage() {
 
           {step === 2 && (
             <form onSubmit={resetPassword}>
-              <div className="p-4 rounded-xl mb-4" style={{ backgroundColor: 'rgba(37,99,235,0.08)', border: '1px solid rgba(37,99,235,0.25)' }}>
-                <p className="text-xs font-semibold mb-1" style={{ color: '#60a5fa' }}>Security Question</p>
-                <p className="text-sm" style={{ color: '#f0f4ff' }}>{question}</p>
+              <div className="px-4 py-3 mb-5" style={{ background: 'rgba(242,169,59,0.05)', border: '1px solid rgba(242,169,59,0.25)' }}>
+                <p className="mono text-[10px] uppercase tracking-[0.14em] mb-1" style={{ color: '#F2A93B' }}>Security question</p>
+                <p className="text-sm" style={{ color: '#E9E7E2' }}>{question}</p>
               </div>
 
-              <label className="block text-sm font-medium mb-2" style={{ color: '#94a3b8' }}>Your Answer</label>
+              <label className="label">Your answer</label>
               <input type="text" required value={answer} onChange={(e) => setAnswer(e.target.value)}
                 placeholder="Answer"
-                className="w-full rounded-xl px-4 py-3 text-sm outline-none mb-4"
-                style={inputStyle} />
+                className="input mb-4" />
 
-              <label className="block text-sm font-medium mb-2" style={{ color: '#94a3b8' }}>New Password</label>
+              <label className="label">New password</label>
               <input type="password" required value={newPassword} onChange={(e) => setNewPassword(e.target.value)}
                 placeholder="Min. 6 characters"
-                className="w-full rounded-xl px-4 py-3 text-sm outline-none mb-4"
-                style={inputStyle} />
+                className="input mb-4" />
 
-              <label className="block text-sm font-medium mb-2" style={{ color: '#94a3b8' }}>Confirm New Password</label>
+              <label className="label">Confirm new password</label>
               <input type="password" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Repeat new password"
-                className="w-full rounded-xl px-4 py-3 text-sm outline-none mb-6"
-                style={inputStyle} />
+                className="input mb-6" />
 
-              <button type="submit" disabled={loading} className="w-full py-3 rounded-xl font-bold text-white text-sm"
-                style={{ background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)', cursor: loading ? 'not-allowed' : 'pointer' }}>
-                {loading ? 'Resetting…' : 'Reset Password'}
+              <button type="submit" disabled={loading} className="btn btn-primary w-full">
+                {loading ? 'Resetting…' : 'Reset password'}
               </button>
-              <button type="button" onClick={() => setStep(1)} className="w-full py-2 mt-2 text-xs"
-                style={{ color: '#64748b', background: 'none', border: 'none', cursor: 'pointer' }}>
+              <button type="button" onClick={() => setStep(1)} className="mono w-full text-center text-[10px] uppercase tracking-[0.12em] mt-3"
+                style={{ color: '#4C535B', background: 'none', border: 'none', cursor: 'pointer' }}>
                 ← Use a different email
               </button>
             </form>
           )}
 
           {step === 3 && (
-            <div className="text-center">
-              <div className="w-14 h-14 mx-auto mb-4 rounded-full flex items-center justify-center text-2xl"
-                style={{ backgroundColor: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.3)' }}>✅</div>
-              <p className="text-sm mb-6" style={{ color: '#94a3b8' }}>
-                You can now sign in with your new password.
-              </p>
-              <Link href="/login" className="block w-full py-3 rounded-xl font-bold text-white text-sm text-center"
-                style={{ background: 'linear-gradient(135deg, #22c55e, #15803d)', textDecoration: 'none' }}>
-                Go to Login
-              </Link>
+            <div>
+              <div className="card p-6 mb-6 text-center">
+                <Logo size={40} />
+                <p className="display font-bold mt-4" style={{ color: '#3ECF8E' }}>All set.</p>
+                <p className="text-sm mt-1 mb-6" style={{ color: '#79818A' }}>
+                  Sign in with your new password.
+                </p>
+                <Link href="/login" className="btn btn-primary w-full">Go to login</Link>
+              </div>
             </div>
           )}
 
-          <p className="text-center mt-6 text-sm" style={{ color: '#64748b' }}>
+          <p className="mt-8 text-sm" style={{ color: '#79818A' }}>
             Remembered it?{' '}
-            <Link href="/login" className="font-semibold hover:underline" style={{ color: '#3b82f6' }}>Sign in</Link>
+            <Link href="/login" className="link">Sign in</Link>
           </p>
+        </div>
+
+        {/* Editorial rail */}
+        <div className="hidden lg:block">
+          <div className="card p-10" style={{ background: 'linear-gradient(160deg, #14181D 0%, #0F1215 100%)' }}>
+            <p className="mono text-[10px] uppercase tracking-[0.2em]" style={{ color: '#F2A93B' }}>Need a hand?</p>
+            <p className="display text-2xl font-bold leading-snug mt-6" style={{ color: '#E9E7E2' }}>
+              Support answers within two hours<span className="accent">.</span>
+            </p>
+            <p className="text-sm leading-relaxed mt-4 mb-8" style={{ color: '#79818A' }}>
+              Stuck on something else? Reach us on Telegram or WhatsApp — a human, not a ticket queue.
+            </p>
+            <div className="space-y-3">
+              {[
+                { label: 'Telegram', href: 'https://t.me/mzazitech' },
+                { label: 'WhatsApp', href: 'https://wa.me/254108595201' },
+                { label: 'Email', href: 'mailto:mzazitechinc@gmail.com' },
+              ].map(l => (
+                <a key={l.label} href={l.href} target="_blank" rel="noopener noreferrer"
+                  className="flex items-center justify-between py-3 px-4"
+                  style={{ border: '1px solid #262C33', color: '#AEB5BD', textDecoration: 'none' }}>
+                  <span className="mono text-[11px] uppercase tracking-[0.12em]">{l.label}</span>
+                  <span className="mono text-[10px]" style={{ color: '#F2A93B' }}>→</span>
+                </a>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -1,6 +1,5 @@
 'use client';
 import { useState, useEffect, useCallback } from 'react';
-import TypingHeading from '@/components/TypingHeading';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import CopyButton from '@/components/api/CopyButton';
@@ -10,6 +9,15 @@ function fmtDate(iso) {
   if (!iso) return '—';
   const d = new Date(iso);
   return isNaN(d) ? '—' : d.toLocaleString();
+}
+
+function KeyGlyph() {
+  return (
+    <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#F2A93B' }}>
+      <circle cx="7.5" cy="15.5" r="4.5" />
+      <path d="M10.7 12.3 21 2M15 8l3 3M18 5l3 3" />
+    </svg>
+  );
 }
 
 function KeysInner() {
@@ -103,167 +111,180 @@ function KeysInner() {
   if (loading) return (
     <div className="container-site py-24 text-center">
       <div className="spinner mx-auto mb-4" />
-      <p className="text-sm" style={{ color: '#64748b' }}>Loading API keys…</p>
+      <p className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: '#79818A' }}>Loading API keys…</p>
     </div>
   );
 
   return (
-    <div className="container-site py-12" style={{ minHeight: '70vh' }}>
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
-        <div>
-          <h1 className="text-3xl font-extrabold"><TypingHeading as="span" text="API Keys" speed={45} className="gradient-text" /></h1>
-          <p className="text-sm mt-1" style={{ color: '#94a3b8' }}>
-            Generate, copy, revoke and rotate your API keys. Full keys are shown only once.
-          </p>
-        </div>
-        <Link href="/api/dashboard" className="text-xs font-semibold" style={{ color: '#60a5fa', textDecoration: 'none' }}>
-          ← Back to dashboard
-        </Link>
-      </div>
-
-      {/* Create */}
-      <div className="card p-6 mb-8">
-        <h2 className="font-bold mb-1" style={{ color: '#f0f4ff' }}>CREATE API KEY</h2>
-        <p className="text-xs mb-4" style={{ color: '#64748b' }}>Give the key a name so you can identify it later.</p>
-        <div className="flex flex-col sm:flex-row gap-3">
-          <input
-            value={keyName}
-            onChange={e => setKeyName(e.target.value)}
-            placeholder="e.g. WhatsApp Bot"
-            className="flex-1 px-3 py-2.5 rounded-lg text-sm outline-none"
-            style={{ backgroundColor: 'rgba(2,4,9,0.45)', border: '1px solid #1e3a8a', color: '#f0f4ff' }}
-            onKeyDown={e => { if (e.key === 'Enter') createKey(); }}
-          />
-          <button onClick={createKey} disabled={creating}
-            className="px-5 py-2.5 rounded-lg text-sm font-bold text-white transition-all"
-            style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', opacity: creating ? 0.6 : 1, cursor: creating ? 'not-allowed' : 'pointer' }}>
-            {creating ? 'CREATING…' : '+ CREATE API KEY'}
-          </button>
-        </div>
-      </div>
-
-      {/* Keys list */}
-      <div className="card overflow-hidden">
-        {keys.length === 0 ? (
-          <div className="py-16 text-center">
-            <p className="text-3xl mb-3">🔑</p>
-            <p className="text-sm font-semibold mb-1" style={{ color: '#f0f4ff' }}>No API keys yet</p>
-            <p className="text-xs mb-4" style={{ color: '#64748b' }}>Create your first key above to start calling the API.</p>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr style={{ backgroundColor: '#060b16', borderBottom: '1px solid #1e3a8a' }}>
-                  {['Name', 'Key', 'Plan', 'Status', 'Requests', 'Daily Limit', 'Last Used', 'Created', 'Expires', 'Actions'].map(h => (
-                    <th key={h} className="text-left px-4 py-2.5 text-xs font-bold uppercase tracking-wide" style={{ color: '#64748b' }}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {keys.map(k => (
-                  <tr key={k.id} style={{ borderBottom: '1px solid #060b16', opacity: k.status === 'revoked' ? 0.55 : 1 }}>
-                    <td className="px-4 py-3">
-                      <p className="text-xs font-semibold" style={{ color: '#f0f4ff' }}>{k.name}</p>
-                      <p className="text-[10px] font-mono" style={{ color: '#475569' }}>#{k.id}</p>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        <span className="font-mono text-xs" style={{ color: '#94a3b8' }}>{k.prefix}</span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded" style={{ backgroundColor: 'rgba(37,99,235,0.12)', color: '#60a5fa' }}>
-                        {k.plan}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className="text-xs font-bold" style={{ color: k.status === 'active' ? '#4ade80' : '#f87171' }}>
-                        {k.status.toUpperCase()}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <p className="text-xs" style={{ color: '#94a3b8' }}>{k.total_requests.toLocaleString()} total</p>
-                      <p className="text-[10px]" style={{ color: '#64748b' }}>{k.requests_today.toLocaleString()} today</p>
-                    </td>
-                    <td className="px-4 py-3">
-                      <p className="text-xs" style={{ color: '#94a3b8' }}>{k.daily_limit < 0 ? '∞' : k.daily_limit.toLocaleString()}</p>
-                      <p className="text-[10px]" style={{ color: k.remaining_today === 0 ? '#f87171' : '#64748b' }}>
-                        {k.remaining_today < 0 ? 'unlimited' : `${k.remaining_today.toLocaleString()} left today`}
-                      </p>
-                    </td>
-                    <td className="px-4 py-3 text-xs" style={{ color: '#94a3b8' }}>{fmtDate(k.last_used_at)}</td>
-                    <td className="px-4 py-3 text-xs" style={{ color: '#64748b' }}>{fmtDate(k.created_at)}</td>
-                    <td className="px-4 py-3 text-xs" style={{ color: k.expires_at ? '#fbbf24' : '#64748b' }}>
-                      {fmtDate(k.expires_at)}
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex flex-wrap gap-1.5">
-                        <button onClick={() => act(k, 'rename', { name: prompt('New key name:', k.name) || k.name })}
-                          disabled={busyId === k.id}
-                          className="px-2 py-1 rounded-md text-[11px] font-semibold"
-                          style={{ border: '1px solid #1e3a8a', color: '#94a3b8', cursor: 'pointer' }}>
-                          Rename
-                        </button>
-                        {k.status === 'active' ? (
-                          <>
-                            <button onClick={() => act(k, 'revoke')} disabled={busyId === k.id}
-                              className="px-2 py-1 rounded-md text-[11px] font-semibold"
-                              style={{ border: '1px solid rgba(248,113,113,0.3)', color: '#f87171', cursor: 'pointer' }}>
-                              Revoke
-                            </button>
-                            <button onClick={() => act(k, 'regenerate')} disabled={busyId === k.id}
-                              className="px-2 py-1 rounded-md text-[11px] font-semibold"
-                              style={{ border: '1px solid rgba(251,191,36,0.3)', color: '#fbbf24', cursor: 'pointer' }}>
-                              Regenerate
-                            </button>
-                          </>
-                        ) : (
-                          <button onClick={() => act(k, 'restore')} disabled={busyId === k.id}
-                            className="px-2 py-1 rounded-md text-[11px] font-semibold"
-                            style={{ border: '1px solid rgba(74,222,128,0.3)', color: '#4ade80', cursor: 'pointer' }}>
-                            Restore
-                          </button>
-                        )}
-                        <button onClick={() => removeKey(k)} disabled={busyId === k.id}
-                          className="px-2 py-1 rounded-md text-[11px] font-semibold"
-                          style={{ border: '1px solid rgba(248,113,113,0.3)', color: '#f87171', cursor: 'pointer' }}>
-                          Delete
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
-
-      {/* Full-key modal (shown exactly once) */}
-      {newKey && (
-        <div className="fixed inset-0 z-[90] flex items-center justify-center p-4"
-          style={{ backgroundColor: 'rgba(0,0,0,0.7)' }} onClick={() => setNewKey(null)}>
-          <div className="card p-6 w-full max-w-lg animate-fade-in" onClick={e => e.stopPropagation()}>
-            <h3 className="font-bold mb-1" style={{ color: '#f0f4ff' }}>🔑 Your new API key</h3>
-            <p className="text-xs mb-4" style={{ color: '#fbbf24' }}>
-              Store this key securely. For security reasons, it will never be shown again.
-            </p>
-            <div className="flex items-center gap-2 mb-4">
-              <code className="flex-1 px-3 py-2.5 rounded-lg text-xs font-mono break-all"
-                style={{ backgroundColor: 'rgba(2,4,9,0.45)', border: '1px solid #1e3a8a', color: '#93c5fd' }}>
-                {newKey}
-              </code>
-              <CopyButton text={newKey} label="Copy" />
+    <div style={{ backgroundColor: 'rgba(15,18,21,0.35)', minHeight: '70vh' }}>
+      <section className="section" style={{ paddingTop: 64, paddingBottom: 110 }}>
+        <div className="container-site max-w-6xl">
+          <div className="flex flex-wrap items-end justify-between gap-4 mb-10">
+            <div>
+              <p className="eyebrow">Credentials</p>
+              <h1 className="headline mt-4" style={{ fontSize: 'clamp(1.9rem, 4vw, 2.8rem)' }}>
+                API keys<span className="accent">.</span>
+              </h1>
+              <p className="text-sm mt-3" style={{ color: '#79818A' }}>
+                Generate, copy, revoke and rotate your API keys. Full keys are shown only once.
+              </p>
             </div>
-            <button onClick={() => setNewKey(null)}
-              className="w-full py-2.5 rounded-lg text-sm font-bold text-white"
-              style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', cursor: 'pointer' }}>
-              I've saved my key
-            </button>
+            <Link href="/api/dashboard" className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: '#79818A', textDecoration: 'none' }}>
+              ← Back to dashboard
+            </Link>
           </div>
+
+          {/* Create */}
+          <div className="card card-pad mb-10">
+            <div className="grid lg:grid-cols-12 gap-8 items-center">
+              <div className="lg:col-span-4">
+                <p className="mono text-[10px] uppercase tracking-[0.18em] mb-2" style={{ color: '#F2A93B' }}>New key</p>
+                <h2 className="section-title text-xl" style={{ color: '#E9E7E2' }}>Create an API key</h2>
+                <p className="text-sm mt-2" style={{ color: '#79818A' }}>
+                  Give the key a name so you can identify it later. The full key is displayed once — store it securely.
+                </p>
+              </div>
+              <div className="lg:col-span-8">
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <input
+                    value={keyName}
+                    onChange={e => setKeyName(e.target.value)}
+                    placeholder="e.g. WhatsApp Bot"
+                    className="input flex-1"
+                    onKeyDown={e => { if (e.key === 'Enter') createKey(); }}
+                  />
+                  <button onClick={createKey} disabled={creating}
+                    className="btn btn-primary" style={{ opacity: creating ? 0.6 : 1, cursor: creating ? 'not-allowed' : 'pointer' }}>
+                    {creating ? 'Creating…' : '+ Create API key'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Keys list */}
+          <div className="card overflow-hidden">
+            <div className="px-6 py-4 flex items-center justify-between" style={{ borderBottom: '1px solid #1B2026' }}>
+              <h2 className="section-title text-xl" style={{ color: '#E9E7E2' }}>Your keys</h2>
+              <span className="tag">{keys.length} total</span>
+            </div>
+            {keys.length === 0 ? (
+              <div className="py-16 text-center">
+                <KeyGlyph />
+                <p className="display font-bold text-lg mt-4 mb-1" style={{ color: '#E9E7E2' }}>No API keys yet</p>
+                <p className="text-sm" style={{ color: '#79818A' }}>Create your first key above to start calling the API.</p>
+              </div>
+            ) : (
+              <div className="scroll-x">
+                <table className="table-plain table-responsive">
+                  <thead>
+                    <tr>
+                      {['Name', 'Key', 'Plan', 'Status', 'Requests', 'Daily limit', 'Last used', 'Created', 'Expires', 'Actions'].map(h => (
+                        <th key={h}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {keys.map(k => (
+                      <tr key={k.id} data-label="Name" style={{ opacity: k.status === 'revoked' ? 0.55 : 1 }}>
+                        <td data-label="Name">
+                          <p className="font-semibold" style={{ color: '#E9E7E2' }}>{k.name}</p>
+                          <p className="mono text-[10px]" style={{ color: '#4C535B' }}>#{k.id}</p>
+                        </td>
+                        <td data-label="Key" className="mono text-[12px]" style={{ color: '#AEB5BD' }}>{k.prefix}</td>
+                        <td data-label="Plan"><span className="tag tag-amber">{k.plan}</span></td>
+                        <td data-label="Status">
+                          <span className={`tag ${k.status === 'active' ? 'tag-green' : 'tag-red'}`}>{k.status}</span>
+                        </td>
+                        <td data-label="Requests">
+                          <p className="mono text-[11px]" style={{ color: '#AEB5BD' }}>{k.total_requests.toLocaleString()} total</p>
+                          <p className="mono text-[10px]" style={{ color: '#4C535B' }}>{k.requests_today.toLocaleString()} today</p>
+                        </td>
+                        <td data-label="Daily limit">
+                          <p className="mono text-[11px]" style={{ color: '#AEB5BD' }}>{k.daily_limit < 0 ? '∞' : k.daily_limit.toLocaleString()}</p>
+                          <p className="mono text-[10px]" style={{ color: k.remaining_today === 0 ? '#E5484D' : '#4C535B' }}>
+                            {k.remaining_today < 0 ? 'unlimited' : `${k.remaining_today.toLocaleString()} left today`}
+                          </p>
+                        </td>
+                        <td data-label="Last used" style={{ color: '#AEB5BD' }}>{fmtDate(k.last_used_at)}</td>
+                        <td data-label="Created" style={{ color: '#79818A' }}>{fmtDate(k.created_at)}</td>
+                        <td data-label="Expires" style={{ color: k.expires_at ? '#F2A93B' : '#79818A' }}>{fmtDate(k.expires_at)}</td>
+                        <td data-label="Actions">
+                          <div className="flex flex-wrap gap-1.5">
+                            <button onClick={() => act(k, 'rename', { name: prompt('New key name:', k.name) || k.name })}
+                              disabled={busyId === k.id}
+                              className="mono px-2.5 py-1.5 text-[10px] uppercase tracking-[0.08em]"
+                              style={{ border: '1px solid #262C33', color: '#AEB5BD', background: 'transparent', cursor: 'pointer' }}>
+                              Rename
+                            </button>
+                            {k.status === 'active' ? (
+                              <>
+                                <button onClick={() => act(k, 'revoke')} disabled={busyId === k.id}
+                                  className="mono px-2.5 py-1.5 text-[10px] uppercase tracking-[0.08em]"
+                                  style={{ border: '1px solid rgba(229,72,77,0.4)', color: '#E5484D', background: 'transparent', cursor: 'pointer' }}>
+                                  Revoke
+                                </button>
+                                <button onClick={() => act(k, 'regenerate')} disabled={busyId === k.id}
+                                  className="mono px-2.5 py-1.5 text-[10px] uppercase tracking-[0.08em]"
+                                  style={{ border: '1px solid rgba(242,169,59,0.4)', color: '#F2A93B', background: 'transparent', cursor: 'pointer' }}>
+                                  Regenerate
+                                </button>
+                              </>
+                            ) : (
+                              <button onClick={() => act(k, 'restore')} disabled={busyId === k.id}
+                                className="mono px-2.5 py-1.5 text-[10px] uppercase tracking-[0.08em]"
+                                style={{ border: '1px solid rgba(62,207,142,0.4)', color: '#3ECF8E', background: 'transparent', cursor: 'pointer' }}>
+                                Restore
+                              </button>
+                            )}
+                            <button onClick={() => removeKey(k)} disabled={busyId === k.id}
+                              className="mono px-2.5 py-1.5 text-[10px] uppercase tracking-[0.08em]"
+                              style={{ border: '1px solid rgba(229,72,77,0.4)', color: '#E5484D', background: 'transparent', cursor: 'pointer' }}>
+                              Delete
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+
+          {/* Full-key modal (shown exactly once) */}
+          {newKey && (
+            <div className="fixed inset-0 z-[90] flex items-center justify-center p-4"
+              style={{ backgroundColor: 'rgba(0,0,0,0.7)' }} onClick={() => setNewKey(null)}>
+              <div className="card card-pad w-full max-w-lg" style={{ background: '#0F1215' }} onClick={e => e.stopPropagation()}>
+                <div className="flex items-center gap-3 mb-2">
+                  <KeyGlyph />
+                  <div>
+                    <h3 className="display font-bold text-lg" style={{ color: '#E9E7E2' }}>Your new API key</h3>
+                    <p className="mono text-[10px] uppercase tracking-[0.14em] mt-0.5" style={{ color: '#F2A93B' }}>
+                      Store this key securely — shown once
+                    </p>
+                  </div>
+                </div>
+                <p className="text-xs mb-5" style={{ color: '#79818A' }}>
+                  For security reasons, it will never be shown again.
+                </p>
+                <div className="flex items-center gap-2 mb-6">
+                  <code className="mono flex-1 px-3 py-2.5 text-xs break-all"
+                    style={{ background: '#14181D', border: '1px solid rgba(242,169,59,0.4)', color: '#F2A93B' }}>
+                    {newKey}
+                  </code>
+                  <CopyButton text={newKey} label="Copy" />
+                </div>
+                <button onClick={() => setNewKey(null)}
+                  className="btn btn-primary w-full" style={{ cursor: 'pointer' }}>
+                  I&apos;ve saved my key
+                </button>
+              </div>
+            </div>
+          )}
         </div>
-      )}
+      </section>
     </div>
   );
 }

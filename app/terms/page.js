@@ -1,47 +1,92 @@
 import Link from 'next/link';
-import TypingHeading from '@/components/TypingHeading';
+
+const SECTIONS = [
+  { id: 'acceptance', title: '1. Acceptance of Terms', body: (
+    <p>By accessing or using MZAZI TECH INC services — including panel hosting, WhatsApp automation bots, the MZAZI API platform, wallet, and temporary number tools — you agree to these Terms of Service. If you do not agree, please do not use the services.</p>
+  ) },
+  { id: 'accounts', title: '2. Accounts', body: (
+    <p>You must provide accurate information when creating an account and keep your credentials secure. You are responsible for all activity under your account. We may suspend or terminate accounts that violate these terms or applicable law.</p>
+  ) },
+  { id: 'services', title: '3. Services', body: (
+    <>
+      <p><strong style={{ color: '#E9E7E2' }}>Panel hosting:</strong> paid hosting plans billed monthly in MTC coins.{' '}
+      <strong style={{ color: '#E9E7E2' }}>WhatsApp bots:</strong> automation tools — you are responsible for complying with WhatsApp&apos;s Terms of Service and applicable messaging laws.{' '}
+      <strong style={{ color: '#E9E7E2' }}>MZAZI API:</strong> developer APIs subject to fair-use rate limits per your plan.{' '}
+      <strong style={{ color: '#E9E7E2' }}>Temporary numbers:</strong> provided for legitimate verification purposes only — not for fraud, spam, or unlawful activity.</p>
+    </>
+  ) },
+  { id: 'payments', title: '4. Payments & Refunds', body: (
+    <p>Payments are processed via Paystack (M-Pesa/card). Wallet balances are non-refundable except where required by law. Unused hosting periods may be refunded at our discretion within 7 days of purchase for qualifying service issues.</p>
+  ) },
+  { id: 'acceptable-use', title: '5. Acceptable Use', body: (
+    <p>You agree not to: use services for illegal activity, spam, phishing, or fraud; reverse-engineer or abuse the API beyond your rate limits; resell services without authorization; or interfere with other users&apos; service availability.</p>
+  ) },
+  { id: 'liability', title: '6. Limitation of Liability', body: (
+    <p>Services are provided &quot;as is&quot; without warranties of any kind. To the maximum extent permitted by law, MZAZI TECH INC shall not be liable for indirect, incidental, or consequential damages arising from use of the services.</p>
+  ) },
+  { id: 'changes', title: '7. Changes', body: (
+    <p>We may update these terms from time to time. Continued use after changes constitutes acceptance. Material changes will be communicated on this page.</p>
+  ) },
+  { id: 'contact', title: '8. Contact', body: (
+    <p>Questions about these terms? <Link href="/contact" className="link">Contact our support team</Link>.</p>
+  ) },
+];
 
 export default function TermsPage() {
   return (
-    <div className="container-site py-12 max-w-3xl" style={{ minHeight: '70vh' }}>
-      <Link href="/" className="text-xs font-semibold" style={{ color: '#475569', textDecoration: 'none' }}>← Back to Home</Link>
-      <h1 className="text-3xl font-extrabold mt-3 mb-6"><TypingHeading as="span" text="Terms of Service" speed={45} className="gradient-text" /></h1>
-      <p className="text-xs mb-8" style={{ color: '#64748b' }}>Last updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+    <div style={{ backgroundColor: 'rgba(15,18,21,0.35)', minHeight: '70vh' }}>
+      <section className="relative overflow-hidden" style={{ paddingTop: 64, paddingBottom: 40 }}>
+        <div className="absolute inset-0 pointer-events-none grid-bg" style={{ maskImage: 'linear-gradient(180deg, rgba(0,0,0,0.5), transparent 80%)', WebkitMaskImage: 'linear-gradient(180deg, rgba(0,0,0,0.5), transparent 80%)' }} />
+        <div className="container-site relative">
+          <div className="max-w-3xl">
+            <Link href="/" className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: '#79818A', textDecoration: 'none' }}>← Back to home</Link>
+            <p className="eyebrow mt-8">Legal</p>
+            <h1 className="headline mt-4" style={{ fontSize: 'clamp(2rem, 4.4vw, 3.2rem)' }}>
+              Terms of service<span className="accent">.</span>
+            </h1>
+            <p className="mono text-[10px] uppercase tracking-[0.14em] mt-4" style={{ color: '#4C535B' }}>
+              Last updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+            </p>
+          </div>
+        </div>
+      </section>
 
-      <div className="space-y-6 text-sm leading-relaxed" style={{ color: '#94a3b8' }}>
-        <section>
-          <h2 className="text-lg font-bold mb-2" style={{ color: '#f0f4ff' }}>1. Acceptance of Terms</h2>
-          <p>By accessing or using MZAZI TECH INC services — including panel hosting, WhatsApp automation bots, the MZAZI API platform, wallet, and temporary number tools — you agree to these Terms of Service. If you do not agree, please do not use the services.</p>
-        </section>
-        <section>
-          <h2 className="text-lg font-bold mb-2" style={{ color: '#f0f4ff' }}>2. Accounts</h2>
-          <p>You must provide accurate information when creating an account and keep your credentials secure. You are responsible for all activity under your account. We may suspend or terminate accounts that violate these terms or applicable law.</p>
-        </section>
-        <section>
-          <h2 className="text-lg font-bold mb-2" style={{ color: '#f0f4ff' }}>3. Services</h2>
-          <p><strong style={{ color: '#cbd5e1' }}>Panel hosting:</strong> paid hosting plans billed monthly in MTC coins. <strong style={{ color: '#cbd5e1' }}>WhatsApp bots:</strong> automation tools — you are responsible for complying with WhatsApp's Terms of Service and applicable messaging laws. <strong style={{ color: '#cbd5e1' }}>MZAZI API:</strong> developer APIs subject to fair-use rate limits per your plan. <strong style={{ color: '#cbd5e1' }}>Temporary numbers:</strong> provided for legitimate verification purposes only — not for fraud, spam, or unlawful activity.</p>
-        </section>
-        <section>
-          <h2 className="text-lg font-bold mb-2" style={{ color: '#f0f4ff' }}>4. Payments & Refunds</h2>
-          <p>Payments are processed via Paystack (M-Pesa/card). Wallet balances are non-refundable except where required by law. Unused hosting periods may be refunded at our discretion within 7 days of purchase for qualifying service issues.</p>
-        </section>
-        <section>
-          <h2 className="text-lg font-bold mb-2" style={{ color: '#f0f4ff' }}>5. Acceptable Use</h2>
-          <p>You agree not to: use services for illegal activity, spam, phishing, or fraud; reverse-engineer or abuse the API beyond your rate limits; resell services without authorization; or interfere with other users' service availability.</p>
-        </section>
-        <section>
-          <h2 className="text-lg font-bold mb-2" style={{ color: '#f0f4ff' }}>6. Limitation of Liability</h2>
-          <p>Services are provided "as is" without warranties of any kind. To the maximum extent permitted by law, MZAZI TECH INC shall not be liable for indirect, incidental, or consequential damages arising from use of the services.</p>
-        </section>
-        <section>
-          <h2 className="text-lg font-bold mb-2" style={{ color: '#f0f4ff' }}>7. Changes</h2>
-          <p>We may update these terms from time to time. Continued use after changes constitutes acceptance. Material changes will be communicated on this page.</p>
-        </section>
-        <section>
-          <h2 className="text-lg font-bold mb-2" style={{ color: '#f0f4ff' }}>8. Contact</h2>
-          <p>Questions about these terms? <Link href="/contact" style={{ color: '#60a5fa' }}>Contact our support team</Link>.</p>
-        </section>
-      </div>
+      <section className="section" style={{ paddingTop: 24, paddingBottom: 110 }}>
+        <div className="container-site max-w-6xl">
+          <div className="grid lg:grid-cols-12 gap-10">
+            {/* TOC */}
+            <aside className="lg:col-span-3">
+              <div className="card p-5 lg:sticky lg:top-32">
+                <p className="mono text-[10px] uppercase tracking-[0.18em] mb-4" style={{ color: '#4C535B' }}>Contents</p>
+                <div className="space-y-0.5">
+                  {SECTIONS.map(s => (
+                    <a key={s.id} href={`#${s.id}`}
+                      className="mono block text-[11px] py-1.5 px-2"
+                      style={{ color: '#79818A', textDecoration: 'none' }}>
+                      {s.title}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </aside>
+
+            {/* Body */}
+            <div className="lg:col-span-9">
+              {SECTIONS.map((s, i) => (
+                <section key={s.id} id={s.id} className="scroll-mt-32" style={{ padding: '26px 8px', borderTop: i === 0 ? 'none' : '1px solid #1B2026' }}>
+                  <div className="grid sm:grid-cols-12 gap-4">
+                    <span className="mono text-[11px] sm:col-span-2" style={{ color: '#F2A93B', paddingTop: 3 }}>{String(i + 1).padStart(2, '0')}</span>
+                    <div className="sm:col-span-10">
+                      <h2 className="section-title text-xl mb-3" style={{ color: '#E9E7E2' }}>{s.title.replace(/^\d+\.\s/, '')}</h2>
+                      <div className="text-sm leading-relaxed space-y-3" style={{ color: '#AEB5BD' }}>{s.body}</div>
+                    </div>
+                  </div>
+                </section>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

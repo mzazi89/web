@@ -6,102 +6,78 @@ const contributors = [
     role: 'Founder',
     company: 'Mzazi Tech',
     initials: 'DM',
-    color: 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
-    glow: 'rgba(37,99,235,0.35)',
-    badge: '🚀',
+    code: '01',
   },
   {
     name: 'ANTONY OCHIENG',
     role: 'Founder',
     company: 'Blacklord Tech',
     initials: 'AO',
-    color: 'linear-gradient(135deg, #7c3aed, #5b21b6)',
-    glow: 'rgba(124,58,237,0.35)',
-    badge: '⚡',
+    code: '02',
   },
   {
     name: 'BIG BROTHER',
     role: 'Founder',
     company: 'Darknode XMD',
     initials: 'BB',
-    color: 'linear-gradient(135deg, #0f766e, #0d9488)',
-    glow: 'rgba(15,118,110,0.35)',
-    badge: '🌐',
+    code: '03',
   },
 ];
 
 function ContributorCard({ c }) {
   return (
     <div
-      style={{
-        backgroundColor: 'rgba(22,24,42,0.85)',
-        backdropFilter: 'blur(8px)',
-        border: '1px solid #1e3a8a',
-        borderRadius: '20px',
-        padding: '36px 28px',
-        textAlign: 'center',
-        transition: 'transform 0.25s, box-shadow 0.25s, border-color 0.25s',
-      }}
-      onMouseEnter={e => {
-        e.currentTarget.style.transform = 'translateY(-6px)';
-        e.currentTarget.style.boxShadow = `0 12px 40px ${c.glow}`;
-        e.currentTarget.style.borderColor = 'rgba(37,99,235,0.4)';
-      }}
-      onMouseLeave={e => {
-        e.currentTarget.style.transform = 'translateY(0)';
-        e.currentTarget.style.boxShadow = 'none';
-        e.currentTarget.style.borderColor = '#1e3a8a';
-      }}
+      className="card card-pad text-center transition-all duration-300 hover:-translate-y-1"
+      style={{ padding: '32px 26px', background: '#14181D' }}
     >
       {/* Avatar */}
-      <div style={{ position: 'relative', display: 'inline-block', marginBottom: '20px' }}>
+      <div style={{ position: 'relative', display: 'inline-block', marginBottom: '18px' }}>
         <div style={{
-          width: '80px', height: '80px', borderRadius: '50%',
-          background: c.color,
+          width: '72px', height: '72px', borderRadius: '50%',
+          background: 'rgba(242,169,59,0.1)',
+          border: '1px solid rgba(242,169,59,0.4)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: '26px', fontWeight: 800, color: '#fff',
-          boxShadow: `0 0 28px ${c.glow}`,
+          fontSize: '20px', fontWeight: 800, color: '#F2A93B',
+          fontFamily: 'var(--font-display)',
           margin: '0 auto',
         }}>
           {c.initials}
         </div>
-        <div style={{
-          position: 'absolute', bottom: 0, right: -4,
-          width: '28px', height: '28px', borderRadius: '50%',
-          backgroundColor: 'rgba(2,4,9,0.45)', border: '2px solid #1e3a8a',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: '14px',
-        }}>
-          {c.badge}
-        </div>
+        <span className="mono text-[9px] font-bold"
+          style={{
+            position: 'absolute', bottom: -4, right: -6,
+            padding: '2px 6px', background: '#0F1215', border: '1px solid #262C33',
+            color: '#4C535B', borderRadius: 2,
+          }}>
+          {c.code}
+        </span>
       </div>
 
-      <h3 style={{ color: '#f0f4ff', fontWeight: 800, fontSize: '16px', marginBottom: '6px', lineHeight: 1.3 }}>
+      <h3 className="display font-bold text-base mb-1.5" style={{ color: '#E9E7E2', lineHeight: 1.3 }}>
         {c.name}
       </h3>
-      <p style={{ color: '#60a5fa', fontSize: '13px', fontWeight: 600, marginBottom: '4px' }}>{c.role}</p>
-      <p style={{ color: '#475569', fontSize: '13px' }}>{c.company}</p>
-      <div style={{ width: '40px', height: '2px', margin: '16px auto 0', background: c.color, borderRadius: '2px' }} />
+      <p className="mono text-[10px] uppercase tracking-[0.14em] mb-1" style={{ color: '#F2A93B' }}>{c.role}</p>
+      <p className="text-xs" style={{ color: '#4C535B' }}>{c.company}</p>
+      <div style={{ width: '36px', height: '1px', margin: '18px auto 0', background: '#262C33' }} />
     </div>
   );
 }
 
 export default function Contributors() {
   return (
-    <section className="py-20" style={{ backgroundColor: 'rgba(2,4,9,0.55)', backdropFilter: 'blur(4px)' }}>
-      <div className="max-w-5xl mx-auto px-4">
+    <section className="section" style={{ paddingTop: 88, paddingBottom: 88 }}>
+      <div className="container-site max-w-5xl">
         <div className="text-center mb-14">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-6"
-            style={{ backgroundColor: 'rgba(37,99,235,0.1)', border: '1px solid rgba(37,99,235,0.3)' }}>
-            <span style={{ color: '#60a5fa', fontSize: '14px', fontWeight: 600 }}>🤝 Project Contributors</span>
-          </div>
-          <h2 className="text-4xl font-extrabold mb-4" style={{ color: '#f0f4ff' }}>Built by Visionaries</h2>
-          <p style={{ color: '#64748b', maxWidth: '480px', margin: '0 auto' }}>
+          <span className="tag tag-amber mb-6">Project contributors</span>
+          <h2 className="section-title text-3xl sm:text-4xl mt-4" style={{ color: '#E9E7E2' }}>
+            Built by visionaries<span className="bar" style={{ margin: '14px auto 0' }} />
+          </h2>
+          <p className="text-sm mt-5 max-w-md mx-auto" style={{ color: '#79818A' }}>
             The founders and innovators who brought this platform to life.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {contributors.map(c => <ContributorCard key={c.name} c={c} />)}
         </div>
       </div>

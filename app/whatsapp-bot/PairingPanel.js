@@ -125,13 +125,13 @@ export default function PairingPanel() {
         body: JSON.stringify({ number, action }),
       });
       const d = await res.json();
-      if (!res.ok) { setNotice(`❌ ${d.error || 'Failed'}`); setBusyNum(null); return; }
+      if (!res.ok) { setNotice(`Error: ${d.error || 'Failed'}`); setBusyNum(null); return; }
       const label = { unlink: 'Unlinking', delete: 'Deleting' }[action] || 'Processing';
-      setNotice(`⏳ ${label} ${number}…`);
+      setNotice(`${label} ${number}…`);
       // the bot picks it up within ~15s — refresh after that
       setTimeout(loadDevices, 14000);
     } catch {
-      setNotice('❌ Connection error.');
+      setNotice('Connection error.');
       setBusyNum(null);
     }
   };
@@ -147,14 +147,14 @@ export default function PairingPanel() {
       });
       const d = await res.json();
       if (!res.ok) {
-        setNotice(`❌ ${d.error || 'Failed to buy plan'}`);
+        setNotice(`Error: ${d.error || 'Failed to buy plan'}`);
         setBuying(null);
         return;
       }
-      setNotice(`✅ Plan activated: ${d.plan.replace('_', ' ')} — you can now link up to ${d.maxDevices} devices.`);
+      setNotice(`Plan activated: ${d.plan.replace('_', ' ')} — you can now link up to ${d.maxDevices} devices.`);
       loadDevices();
     } catch {
-      setNotice('❌ Connection error.');
+      setNotice('Connection error.');
     }
     setBuying(null);
   };
@@ -162,28 +162,29 @@ export default function PairingPanel() {
   // ── not logged in ─────────────────────────────────────────────────────────
   if (authed === false) {
     return (
-      <div className="rounded-2xl p-6 sm:p-8 text-center" style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a' }}>
-        <div className="text-4xl mb-3">🔐</div>
-        <h3 className="font-bold text-lg mb-1" style={{ color: '#f0f4ff' }}>Login to pair from the website</h3>
-        <p className="text-sm mb-5" style={{ color: '#64748b' }}>
+      <div className="card card-pad text-center" style={{ borderColor: 'rgba(242,169,59,0.35)' }}>
+        <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#F2A93B', margin: '0 auto' }}>
+          <rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
+        </svg>
+        <h3 className="display font-bold text-lg mt-4 mb-1" style={{ color: '#E9E7E2' }}>Login to pair from the website</h3>
+        <p className="text-sm mb-6" style={{ color: '#79818A' }}>
           Create a free account to get your pairing code right here — no Telegram needed.
         </p>
         <div className="flex justify-center gap-3 flex-wrap">
-          <Link href="/login" className="px-5 py-2.5 rounded-xl text-sm font-bold text-white"
-            style={{ background: 'linear-gradient(135deg,#22c55e,#15803d)', textDecoration: 'none' }}>
-            Login
-          </Link>
-          <Link href="/signup" className="px-5 py-2.5 rounded-xl text-sm font-semibold"
-            style={{ color: '#94a3b8', border: '1px solid #1e3a8a', textDecoration: 'none' }}>
-            Create account
-          </Link>
+          <Link href="/login" className="btn btn-primary" style={{ textDecoration: 'none' }}>Login</Link>
+          <Link href="/signup" className="btn btn-ghost" style={{ textDecoration: 'none' }}>Create account</Link>
         </div>
       </div>
     );
   }
 
   if (authed === null) {
-    return <div className="text-center py-8 text-sm" style={{ color: '#475569' }}>Loading…</div>;
+    return (
+      <div className="text-center py-10">
+        <div className="spinner mx-auto mb-4" />
+        <p className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: '#4C535B' }}>Loading…</p>
+      </div>
+    );
   }
 
   const devices = data?.devices || [];
@@ -195,18 +196,18 @@ export default function PairingPanel() {
     <div className="space-y-6">
       {/* device usage + plans */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="md:col-span-1 rounded-2xl p-5" style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a' }}>
-          <p className="text-xs font-bold uppercase tracking-wider mb-2" style={{ color: '#475569' }}>Linked devices</p>
-          <p className="font-extrabold text-2xl" style={{ color: '#4ade80' }}>
-            {devices.length} <span className="text-sm font-semibold" style={{ color: '#64748b' }}>/ {maxDevices === 999 ? '∞' : maxDevices}</span>
+        <div className="card card-pad" style={{ padding: '22px' }}>
+          <p className="mono text-[10px] uppercase tracking-[0.16em] mb-3" style={{ color: '#4C535B' }}>Linked devices</p>
+          <p className="stat-num" style={{ color: '#3ECF8E' }}>
+            {devices.length} <span className="text-sm font-semibold" style={{ color: '#79818A' }}>/ {maxDevices === 999 ? '∞' : maxDevices}</span>
           </p>
-          <p className="text-xs mt-1" style={{ color: '#64748b' }}>
-            Plan: <span className="font-bold" style={{ color: '#93c5fd' }}>{plan.replace('_', ' ')}</span>
+          <p className="text-xs mt-2" style={{ color: '#79818A' }}>
+            Plan: <span className="mono font-bold" style={{ color: '#F2A93B' }}>{plan.replace('_', ' ')}</span>
             {data?.endDate && <span className="block mt-0.5">expires {new Date(data.endDate).toLocaleDateString()}</span>}
           </p>
           {limitReached && (
-            <p className="text-xs mt-3 p-2.5 rounded-lg" style={{ backgroundColor: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.25)', color: '#fbbf24' }}>
-              ⚠️ All {maxDevices === 999 ? '∞' : maxDevices} device slot{maxDevices === 1 ? '' : 's'} used. Buy a bigger plan to link more.
+            <p className="text-xs mt-4 px-3 py-2.5" style={{ background: 'rgba(242,169,59,0.06)', border: '1px solid rgba(242,169,59,0.3)', color: '#F2A93B' }}>
+              All {maxDevices === 999 ? '∞' : maxDevices} device slot{maxDevices === 1 ? '' : 's'} used. Buy a bigger plan to link more.
             </p>
           )}
         </div>
@@ -215,28 +216,30 @@ export default function PairingPanel() {
           {(data?.plans || []).map((p) => {
             const isCurrent = plan === p.key;
             return (
-              <div key={p.key} className="rounded-2xl p-4 flex flex-col justify-between" style={{
-                backgroundColor: isCurrent ? 'rgba(34,197,94,0.08)' : '#060b16',
-                border: `1px solid ${isCurrent ? 'rgba(34,197,94,0.4)' : '#1e3a8a'}`,
+              <div key={p.key} className="card card-pad flex flex-col justify-between" style={{
+                padding: '16px',
+                background: isCurrent ? 'rgba(242,169,59,0.05)' : '#14181D',
+                border: isCurrent ? '1px solid rgba(242,169,59,0.45)' : '1px solid #262C33',
               }}>
                 <div>
-                  <p className="font-bold text-sm" style={{ color: '#f0f4ff' }}>{p.name}</p>
-                  <p className="text-lg font-extrabold mt-1" style={{ color: '#4ade80' }}>{fmtMtc(p.priceKsh)}</p>
-                  <p className="text-[10px] mb-2" style={{ color: '#475569' }}>/ {p.days} days</p>
+                  <p className="display font-bold text-sm" style={{ color: '#E9E7E2' }}>{p.name}</p>
+                  <p className="stat-num mt-1" style={{ fontSize: '1.25rem', color: isCurrent ? '#F2A93B' : '#3ECF8E' }}>{fmtMtc(p.priceKsh)}</p>
+                  <p className="mono text-[10px] mb-3" style={{ color: '#4C535B' }}>/ {p.days} days</p>
                 </div>
                 {isCurrent ? (
-                  <span className="text-xs font-bold text-center py-2 rounded-lg" style={{ backgroundColor: 'rgba(34,197,94,0.15)', color: '#4ade80' }}>
-                    ✓ Current
+                  <span className="mono text-[10px] uppercase tracking-[0.1em] text-center py-2" style={{ background: 'rgba(242,169,59,0.12)', color: '#F2A93B', border: '1px solid rgba(242,169,59,0.35)' }}>
+                    Current
                   </span>
                 ) : (
                   <button onClick={() => buyPlan(p.key)} disabled={buying !== null}
-                    className="py-2 rounded-lg text-xs font-bold text-white"
+                    className="btn w-full"
                     style={{
-                      background: 'linear-gradient(135deg,#22c55e,#15803d)',
+                      padding: '9px 0', fontSize: 10,
+                      background: '#F2A93B', color: '#14100A', border: '1px solid #F2A93B',
                       opacity: buying !== null ? 0.5 : 1,
                       cursor: buying !== null ? 'not-allowed' : 'pointer',
                     }}>
-                    {buying === p.key ? 'Buying…' : 'Buy with Wallet'}
+                    {buying === p.key ? 'Buying…' : 'Buy with wallet'}
                   </button>
                 )}
               </div>
@@ -245,40 +248,35 @@ export default function PairingPanel() {
         </div>
       </div>
 
-      <div className="flex items-center justify-between flex-wrap gap-3 p-4 rounded-2xl" style={{ backgroundColor: 'rgba(59,130,246,0.06)', border: '1px solid rgba(59,130,246,0.2)' }}>
-        <p className="text-sm" style={{ color: '#94a3b8' }}>
-          💳 Pay from your wallet balance. Need more funds?{' '}
-          <Link href="/wallet" className="font-bold underline" style={{ color: '#60a5fa' }}>Deposit now →</Link>
+      <div className="flex items-center justify-between flex-wrap gap-3 px-4 py-3.5" style={{ background: 'rgba(242,169,59,0.05)', border: '1px solid rgba(242,169,59,0.2)' }}>
+        <p className="text-sm" style={{ color: '#AEB5BD' }}>
+          Pay from your wallet balance. Need more funds?{' '}
+          <Link href="/wallet" className="mono text-[10px] uppercase tracking-[0.12em]" style={{ color: '#F2A93B', textDecoration: 'none' }}>Deposit now →</Link>
         </p>
       </div>
 
       {notice && (
-        <div className="p-3.5 rounded-xl text-sm" style={{ backgroundColor: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.25)', color: '#4ade80' }}>
+        <div className="px-4 py-3 text-sm" style={{ background: 'rgba(62,207,142,0.07)', border: '1px solid rgba(62,207,142,0.3)', color: '#3ECF8E' }}>
           {notice}
         </div>
       )}
 
       {/* pairing card */}
-      <div className="rounded-2xl p-5 sm:p-6" style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a' }}>
-        <h3 className="font-bold text-base" style={{ color: '#f0f4ff' }}>🔗 Pair a new number</h3>
-        <p className="text-xs mb-4 mt-1" style={{ color: '#64748b' }}>
+      <div className="card card-pad" style={{ padding: '24px' }}>
+        <h3 className="display font-bold text-base" style={{ color: '#E9E7E2' }}>Pair a new number</h3>
+        <p className="text-xs mb-5 mt-1" style={{ color: '#79818A' }}>
           Enter the WhatsApp number you want the bot to run on — your pairing code appears here in seconds.
         </p>
 
         {pairPhase === 'done' ? (
-          <div className="p-4 sm:p-5 rounded-xl text-center" style={{ backgroundColor: 'rgba(34,197,94,0.07)', border: '1px solid rgba(34,197,94,0.3)' }}>
-            <p className="text-sm font-semibold mb-1" style={{ color: '#4ade80' }}>✅ Pairing code ready</p>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-3"
-              style={{ backgroundColor: 'rgba(37,99,235,0.12)', border: '1px solid rgba(37,99,235,0.35)' }}>
-              <span className="text-xs font-extrabold tracking-widest" style={{ color: '#60a5fa' }}>MZAZIBOT</span>
-            </div>
-            <p className="text-3xl sm:text-4xl font-extrabold tracking-[0.2em] my-3 font-mono" style={{ color: '#f0f4ff' }}>{pairCode}</p>
-            <p className="text-xs leading-relaxed" style={{ color: '#94a3b8' }}>
-              On your phone: <b style={{ color: '#f0f4ff' }}>WhatsApp → Settings → Linked Devices → Link a Device → Pair with a code</b>, then enter the code above.
+          <div className="p-5 text-center" style={{ background: 'rgba(62,207,142,0.05)', border: '1px solid rgba(62,207,142,0.3)' }}>
+            <p className="mono text-[10px] uppercase tracking-[0.16em] mb-3" style={{ color: '#3ECF8E' }}>Pairing code ready</p>
+            <p className="text-3xl sm:text-4xl font-extrabold tracking-[0.2em] my-4 font-mono" style={{ color: '#F2A93B' }}>{pairCode}</p>
+            <p className="text-xs leading-relaxed max-w-md mx-auto" style={{ color: '#AEB5BD' }}>
+              On your phone: <b style={{ color: '#E9E7E2' }}>WhatsApp → Settings → Linked Devices → Link a Device → Pair with a code</b>, then enter the code above.
               The bot connects automatically once you do. Valid for about an hour.
             </p>
-            <button onClick={resetPair} className="mt-4 px-4 py-2 rounded-lg text-xs font-semibold"
-              style={{ color: '#94a3b8', border: '1px solid #1e3a8a', cursor: 'pointer', background: 'none' }}>
+            <button onClick={resetPair} className="btn btn-ghost mt-5" style={{ padding: '10px 18px', fontSize: 10, cursor: 'pointer' }}>
               Pair another number
             </button>
           </div>
@@ -291,33 +289,29 @@ export default function PairingPanel() {
                 placeholder="254785016388"
                 inputMode="tel"
                 disabled={pairPhase === 'requesting' || pairPhase === 'waiting'}
-                className="flex-1 w-full px-4 py-3 rounded-xl text-sm outline-none font-mono"
-                style={{ backgroundColor: 'rgba(2,4,9,0.45)', border: '1px solid #1e3a8a', color: '#f0f4ff' }}
+                className="input flex-1 font-mono"
+                style={{ textAlign: 'center', letterSpacing: '0.08em' }}
               />
               <button
                 onClick={startPair}
                 disabled={pairPhase === 'requesting' || pairPhase === 'waiting'}
-                className="px-5 py-3 rounded-xl text-sm font-bold text-white whitespace-nowrap"
-                style={{
-                  background: 'linear-gradient(135deg,#22c55e,#15803d)',
-                  opacity: pairPhase === 'requesting' || pairPhase === 'waiting' ? 0.55 : 1,
-                  cursor: pairPhase === 'requesting' || pairPhase === 'waiting' ? 'not-allowed' : 'pointer',
-                }}>
-                {pairPhase === 'requesting' ? 'Requesting…' : pairPhase === 'waiting' ? 'Waiting for code…' : '🔗 Pair Number'}
+                className="btn btn-primary whitespace-nowrap"
+                style={{ opacity: pairPhase === 'requesting' || pairPhase === 'waiting' ? 0.55 : 1, cursor: pairPhase === 'requesting' || pairPhase === 'waiting' ? 'not-allowed' : 'pointer' }}>
+                {pairPhase === 'requesting' ? 'Requesting…' : pairPhase === 'waiting' ? 'Waiting for code…' : 'Pair number'}
               </button>
             </div>
 
             {(pairPhase === 'requesting' || pairPhase === 'waiting') && (
-              <div className="flex items-center gap-2.5 mt-3 text-sm" style={{ color: '#94a3b8' }}>
-                <div className="w-4 h-4 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
+              <div className="flex items-center gap-2.5 mt-4 text-sm" style={{ color: '#AEB5BD' }}>
+                <span className="spinner" style={{ width: 16, height: 16, borderWidth: 2 }} />
                 {pairPhase === 'requesting' ? 'Requesting the pairing code…' : 'The bot is generating your code — it appears here in a few seconds…'}
               </div>
             )}
 
             {pairPhase === 'error' && (
-              <div className="mt-3 p-3 rounded-xl text-sm" style={{ backgroundColor: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: '#f87171' }}>
-                ❌ {pairError}
-                <button onClick={resetPair} className="ml-2 underline" style={{ cursor: 'pointer', background: 'none', border: 'none', color: '#f87171' }}>Try again</button>
+              <div className="mt-4 px-4 py-3 text-sm" style={{ background: 'rgba(229,72,77,0.08)', border: '1px solid rgba(229,72,77,0.3)', color: '#E5484D' }}>
+                {pairError}
+                <button onClick={resetPair} className="mono ml-2 text-[10px] uppercase tracking-[0.1em] underline" style={{ cursor: 'pointer', background: 'none', border: 'none', color: '#E5484D' }}>Try again</button>
               </div>
             )}
           </div>
@@ -325,45 +319,44 @@ export default function PairingPanel() {
       </div>
 
       {/* linked devices */}
-      <div className="rounded-2xl p-5 sm:p-6" style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a' }}>
-        <h3 className="font-bold text-base mb-4" style={{ color: '#f0f4ff' }}>📱 Your linked devices</h3>
+      <div className="card card-pad" style={{ padding: '24px' }}>
+        <h3 className="display font-bold text-base mb-4" style={{ color: '#E9E7E2' }}>Your linked devices</h3>
         {devices.length === 0 ? (
-          <p className="text-sm text-center py-6" style={{ color: '#475569' }}>No devices linked yet. Pair your first number above.</p>
+          <p className="text-sm text-center py-6" style={{ color: '#4C535B' }}>No devices linked yet. Pair your first number above.</p>
         ) : (
           <div className="space-y-2.5">
             {devices.map((d) => (
-              <div key={d.number} className="flex items-center justify-between gap-3 p-3.5 rounded-xl"
-                style={{ backgroundColor: 'rgba(2,4,9,0.45)', border: '1px solid #1e3a8a' }}>
+              <div key={d.number} className="flex items-center justify-between gap-3 px-4 py-3.5"
+                style={{ background: 'rgba(15,18,21,0.6)', border: '1px solid #262C33' }}>
                 <div className="min-w-0">
-                  <div className="flex items-center gap-2">
-                    <p className="font-mono font-bold text-sm truncate" style={{ color: '#f0f4ff' }}>{d.number}</p>
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide"
-                      style={{ backgroundColor: 'rgba(34,197,94,0.12)', color: '#4ade80', border: '1px solid rgba(34,197,94,0.3)' }}>
-                      Active
+                  <div className="flex items-center gap-2.5">
+                    <p className="mono font-bold text-sm truncate" style={{ color: '#E9E7E2' }}>{d.number}</p>
+                    <span className="tag tag-green">
+                      <span className="dot anim-pulse" /> Active
                     </span>
                   </div>
-                  <p className="text-xs mt-0.5" style={{ color: '#475569' }}>
+                  <p className="mono text-[10px] uppercase tracking-[0.1em] mt-1" style={{ color: '#4C535B' }}>
                     {d.connectedAt ? `linked ${new Date(d.connectedAt).toLocaleDateString()}` : 'linked'}
                   </p>
                 </div>
                 <div className="flex items-center gap-1.5 flex-shrink-0">
                   <button onClick={() => manageDevice(d.number, 'unlink')} disabled={busyNum === d.number}
-                    className="px-2.5 py-1.5 rounded-lg text-xs font-semibold"
+                    className="mono px-2.5 py-1.5 text-[10px] uppercase tracking-[0.08em]"
                     style={{
-                      color: '#60a5fa',
-                      border: '1px solid rgba(96,165,250,0.3)',
-                      backgroundColor: 'rgba(96,165,250,0.06)',
+                      color: '#4C7DFC',
+                      border: '1px solid rgba(76,125,252,0.35)',
+                      background: 'transparent',
                       cursor: busyNum === d.number ? 'not-allowed' : 'pointer',
                       opacity: busyNum === d.number ? 0.5 : 1,
                     }}>
                     Unlink
                   </button>
                   <button onClick={() => manageDevice(d.number, 'delete')} disabled={busyNum === d.number}
-                    className="px-2.5 py-1.5 rounded-lg text-xs font-semibold"
+                    className="mono px-2.5 py-1.5 text-[10px] uppercase tracking-[0.08em]"
                     style={{
-                      color: '#f87171',
-                      border: '1px solid rgba(248,113,113,0.3)',
-                      backgroundColor: 'rgba(248,113,113,0.06)',
+                      color: '#E5484D',
+                      border: '1px solid rgba(229,72,77,0.35)',
+                      background: 'transparent',
                       cursor: busyNum === d.number ? 'not-allowed' : 'pointer',
                       opacity: busyNum === d.number ? 0.5 : 1,
                     }}>

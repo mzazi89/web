@@ -49,50 +49,38 @@ export default function ApiTester({ defaultQuery = 'Faded Alan Walker', compact 
   };
 
   return (
-    <div className="card p-5 sm:p-6">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="font-bold" style={{ color: '#f0f4ff' }}>⚡ API Tester</h3>
-        <span className="text-[11px] font-semibold px-2 py-1 rounded-md"
-          style={{ backgroundColor: 'rgba(74,222,128,0.1)', color: '#4ade80', border: '1px solid rgba(74,222,128,0.3)' }}>
-          LIVE
-        </span>
+    <div className="card card-pad" style={{ padding: '24px' }}>
+      <div className="flex items-center justify-between mb-5">
+        <h3 className="display font-bold text-lg" style={{ color: '#E9E7E2' }}>API tester</h3>
+        <span className="tag tag-green"><span className="dot anim-pulse" /> Live</span>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
         <div>
-          <label className="block text-[10px] font-bold uppercase tracking-wide mb-1.5" style={{ color: '#64748b' }}>
-            Endpoint
-          </label>
+          <label className="label">Endpoint</label>
           <select
             value={form.endpoint}
             onChange={e => setForm(f => ({ ...f, endpoint: e.target.value }))}
-            className="w-full px-3 py-2.5 rounded-lg text-sm outline-none font-mono"
-            style={{ backgroundColor: '#020409', border: '1px solid #1e3a8a', color: '#f0f4ff' }}>
+            className="input font-mono">
             {ENDPOINTS.map(e => <option key={e.path} value={e.path}>{e.label}</option>)}
           </select>
         </div>
         <div>
-          <label className="block text-[10px] font-bold uppercase tracking-wide mb-1.5" style={{ color: '#64748b' }}>
-            API Key <span style={{ color: '#4ade80' }}>(optional)</span>
-          </label>
+          <label className="label">API key <span className="tag tag-green" style={{ fontSize: 9, padding: '1px 6px', marginLeft: 6 }}>optional</span></label>
           <input
             value={form.key}
             onChange={e => setForm(f => ({ ...f, key: e.target.value }))}
             placeholder="mzazi_... (leave empty to test without a key)"
-            className="w-full px-3 py-2.5 rounded-lg text-sm outline-none font-mono"
-            style={{ backgroundColor: '#020409', border: '1px solid #1e3a8a', color: '#f0f4ff' }}
+            className="input font-mono"
           />
         </div>
         <div>
-          <label className="block text-[10px] font-bold uppercase tracking-wide mb-1.5" style={{ color: '#64748b' }}>
-            Song name
-          </label>
+          <label className="label">Song name</label>
           <input
             value={form.query}
             onChange={e => setForm(f => ({ ...f, query: e.target.value }))}
             placeholder="e.g. Faded Alan Walker"
-            className="w-full px-3 py-2.5 rounded-lg text-sm outline-none"
-            style={{ backgroundColor: '#020409', border: '1px solid #1e3a8a', color: '#f0f4ff' }}
+            className="input"
             onKeyDown={e => { if (e.key === 'Enter') run(); }}
           />
         </div>
@@ -100,11 +88,10 @@ export default function ApiTester({ defaultQuery = 'Faded Alan Walker', compact 
 
       <div className="flex flex-wrap items-center gap-3">
         <button onClick={run} disabled={testing}
-          className="px-5 py-2.5 rounded-lg text-sm font-bold text-white transition-all"
-          style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', opacity: testing ? 0.6 : 1, cursor: testing ? 'not-allowed' : 'pointer' }}>
-          {testing ? 'SENDING…' : 'SEND REQUEST'}
+          className="btn btn-primary" style={{ opacity: testing ? 0.6 : 1, cursor: testing ? 'not-allowed' : 'pointer' }}>
+          {testing ? 'Sending…' : 'Send request'}
         </button>
-        <span className="text-xs" style={{ color: '#64748b' }}>
+        <span className="mono text-[10px] uppercase tracking-[0.1em]" style={{ color: '#4C535B' }}>
           {currentEndpoint.needsKey
             ? 'No key? You’ll see the proper JSON error — then add your key to get real results.'
             : 'This endpoint is public — no API key needed.'}
@@ -112,16 +99,17 @@ export default function ApiTester({ defaultQuery = 'Faded Alan Walker', compact 
       </div>
 
       {result && (
-        <div className="mt-5 space-y-3">
-          <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
-            <span className="px-2 py-1 rounded font-bold" style={{
-              backgroundColor: result.ok ? 'rgba(74,222,128,0.1)' : 'rgba(248,113,113,0.1)',
-              color: result.ok ? '#4ade80' : '#f87171',
+        <div className="mt-6 space-y-3">
+          <div className="flex flex-wrap items-center gap-2 mono text-xs">
+            <span className="tag" style={{
+              color: result.ok ? '#3ECF8E' : '#E5484D',
+              borderColor: result.ok ? 'rgba(62,207,142,0.35)' : 'rgba(229,72,77,0.35)',
+              background: result.ok ? 'rgba(62,207,142,0.06)' : 'rgba(229,72,77,0.06)',
             }}>
               HTTP {result.status}
             </span>
-            <span style={{ color: '#94a3b8' }}>{result.ms}ms</span>
-            <span className="break-all" style={{ color: '#475569' }}>{result.url}</span>
+            <span style={{ color: '#79818A' }}>{result.ms}ms</span>
+            <span className="break-all" style={{ color: '#4C535B' }}>{result.url}</span>
             <CopyButton text={result.url} label="Copy URL" />
           </div>
           <CodeBlock label="JSON response" code={result.body} />

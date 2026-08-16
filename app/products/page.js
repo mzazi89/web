@@ -1,15 +1,14 @@
 'use client';
 import { useState, useEffect, Fragment } from 'react';
-import TypingHeading from '@/components/TypingHeading';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { fmtMtc, fmtMtcValue, mtcToKsh } from '@/lib/currency';
+import { fmtMtc } from '@/lib/currency';
 
 function fmtCpu(v)  { const n = parseInt(v); return n === 0 ? 'Unlimited CPU'  : `${n}% CPU`; }
 function fmtRam(v)  { const n = parseInt(v); return n === 0 ? 'Unlimited RAM'  : n >= 1024 ? `${n / 1024} GB RAM`  : `${n} MB RAM`; }
 function fmtDisk(v) { const n = parseInt(v); return n === 0 ? 'Unlimited Disk' : n >= 1024 ? `${n / 1024} GB Disk` : `${n} MB Disk`; }
 
-const STEPS = ['Select Plan', 'Configure', 'Review', 'Done'];
+const STEPS = ['Select plan', 'Configure', 'Review', 'Done'];
 
 export default function ProductsPage() {
   const [user, setUser]         = useState(null);
@@ -72,7 +71,7 @@ export default function ProductsPage() {
       setError('All fields are required'); return;
     }
     if (balance < pkg.price) {
-      setError(`Insufficient balance. You need {fmtMtc(pkg.price)} but have {fmtMtc(balance)}. Please top up your wallet.`);
+      setError(`Insufficient balance. You need ${fmtMtc(pkg.price)} but have ${fmtMtc(balance)}. Please top up your wallet.`);
       return;
     }
     setError(''); setStep('confirm');
@@ -98,8 +97,8 @@ export default function ProductsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'rgba(2,4,9,0.45)' }}>
-        <div className="w-10 h-10 rounded-full border-2 animate-spin" style={{ borderColor: '#1e3a8a', borderTopColor: '#3b82f6' }} />
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <div className="spinner" />
       </div>
     );
   }
@@ -107,47 +106,53 @@ export default function ProductsPage() {
   const stepIndex = { select: 0, configure: 1, confirm: 2, creating: 2, done: 3 }[step] ?? 0;
 
   return (
-    <div className="min-h-screen py-8 sm:py-12" style={{ backgroundColor: 'rgba(2,4,9,0.45)' }}>
-      <div className="max-w-5xl mx-auto px-4 sm:px-6">
+    <div className="py-10 sm:py-14">
+      <div className="container-site max-w-6xl">
 
         {/* ── Page header ── */}
-        <div className="mb-8 sm:mb-10">
-          <TypingHeading as="h1" text="Deploy a Panel" speed={60} className="text-2xl sm:text-3xl font-extrabold mb-2" style={{ color: '#f0f4ff' }} />
-          <p className="text-sm" style={{ color: '#64748b' }}>
-            Choose a plan, configure your server, and go live in minutes.
-          </p>
-          {user && (
-            <div className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm"
-              style={{ backgroundColor: 'rgba(37,99,235,0.08)', border: '1px solid rgba(37,99,235,0.2)', color: '#60a5fa' }}>
-              💳 Wallet: <strong>{fmtMtc(balance)}</strong>
-              {balance < 50 && (
-                <Link href="/wallet" className="ml-2 underline text-xs" style={{ color: '#f87171', textDecoration: 'underline' }}>Top up →</Link>
-              )}
-            </div>
-          )}
+        <div className="mb-10">
+          <p className="eyebrow">Pterodactyl hosting</p>
+          <h1 className="headline mt-4" style={{ fontSize: 'clamp(1.9rem, 4vw, 3rem)' }}>
+            Deploy a panel<span className="accent">.</span>
+          </h1>
+          <div className="flex flex-wrap items-center gap-4 mt-4">
+            <p className="text-sm" style={{ color: '#79818A' }}>
+              Choose a plan, configure your server, and go live in minutes.
+            </p>
+            {user && (
+              <span className="tag tag-amber">
+                Wallet: <strong>{fmtMtc(balance)}</strong>
+                {balance < 50 && (
+                  <Link href="/wallet" style={{ color: '#F2A93B', textDecoration: 'underline' }}>top up →</Link>
+                )}
+              </span>
+            )}
+          </div>
         </div>
 
         {/* ── Step indicator ── */}
         {step !== 'select' && (
-          <div className="flex items-center gap-0 mb-8 sm:mb-10 overflow-x-auto pb-1">
+          <div className="flex items-center mb-10 overflow-x-auto pb-1">
             {STEPS.map((s, i) => (
               <Fragment key={s}>
-                <div className="flex flex-col items-center flex-shrink-0">
-                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all"
+                <div className="flex items-center gap-2.5 flex-shrink-0">
+                  <span
+                    className="mono flex items-center justify-center text-[11px] font-semibold"
                     style={{
-                      backgroundColor: i < stepIndex ? '#22c55e' : i === stepIndex ? '#2563eb' : '#1e3a8a',
-                      color: i <= stepIndex ? '#fff' : '#475569',
+                      width: 26, height: 26, borderRadius: 2,
+                      background: i < stepIndex ? '#F2A93B' : i === stepIndex ? 'rgba(242,169,59,0.12)' : 'transparent',
+                      border: `1px solid ${i <= stepIndex ? '#F2A93B' : '#262C33'}`,
+                      color: i < stepIndex ? '#14100A' : i === stepIndex ? '#F2A93B' : '#4C535B',
                     }}>
                     {i < stepIndex ? '✓' : i + 1}
-                  </div>
-                  <p className="text-xs mt-1.5 whitespace-nowrap"
-                    style={{ color: i === stepIndex ? '#f0f4ff' : '#475569', fontWeight: i === stepIndex ? 600 : 400 }}>
+                  </span>
+                  <p className="mono text-[11px] uppercase tracking-[0.12em] whitespace-nowrap"
+                    style={{ color: i === stepIndex ? '#E9E7E2' : '#4C535B' }}>
                     {s}
                   </p>
                 </div>
                 {i < STEPS.length - 1 && (
-                  <div className="flex-1 h-px mx-2 sm:mx-3 min-w-4"
-                    style={{ backgroundColor: i < stepIndex ? '#22c55e' : '#1e3a8a', marginBottom: '1.25rem' }} />
+                  <div className="h-px mx-4 min-w-6 flex-1" style={{ background: i < stepIndex ? '#F2A93B' : '#1B2026' }} />
                 )}
               </Fragment>
             ))}
@@ -156,10 +161,10 @@ export default function ProductsPage() {
 
         {/* ── Error ── */}
         {error && (
-          <div className="mb-6 p-4 rounded-xl text-sm" style={{ backgroundColor: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: '#f87171' }}>
+          <div className="mb-6 px-4 py-3 text-sm flex flex-wrap items-center gap-2" style={{ background: 'rgba(229,72,77,0.08)', border: '1px solid rgba(229,72,77,0.3)', color: '#E5484D' }}>
             {error}
             {error.includes('Insufficient') && (
-              <Link href="/wallet" className="ml-2 underline font-semibold" style={{ color: '#fbbf24' }}>Top up wallet →</Link>
+              <Link href="/wallet" className="link" style={{ fontSize: 12 }}>Top up wallet →</Link>
             )}
           </div>
         )}
@@ -168,54 +173,55 @@ export default function ProductsPage() {
         {step === 'select' && (
           <>
             {!user && (
-              <div className="mb-6 p-4 rounded-xl text-sm flex flex-col sm:flex-row items-start sm:items-center gap-3"
-                style={{ backgroundColor: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.25)', color: '#fcd34d' }}>
-                <span>⚠️ You need to be logged in to deploy a panel.</span>
-                <Link href="/login" className="font-bold underline flex-shrink-0" style={{ color: '#fbbf24' }}>Log in →</Link>
+              <div className="mb-6 px-4 py-3 text-sm flex flex-col sm:flex-row items-start sm:items-center gap-3"
+                style={{ background: 'rgba(242,169,59,0.06)', border: '1px solid rgba(242,169,59,0.25)' }}>
+                <span style={{ color: '#F2A93B' }}>You need to be logged in to deploy a panel.</span>
+                <Link href="/login" className="link flex-shrink-0" style={{ fontSize: 12 }}>Log in →</Link>
               </div>
             )}
             {packages.length === 0 ? (
-              <div className="text-center py-16" style={{ color: '#475569' }}>No packages available at the moment. Please check back soon.</div>
+              <div className="text-center py-16" style={{ color: '#4C535B' }}>No packages available at the moment. Please check back soon.</div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
                 {packages.map(p => (
                   <div key={p.id}
-                    className="relative rounded-2xl p-5 sm:p-6 flex flex-col transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+                    className="card flex flex-col transition-all duration-300 hover:-translate-y-1 cursor-pointer relative"
                     style={{
-                      backgroundColor: p.popular ? '#0f1a35' : '#060b16',
-                      border: `1px solid ${p.popular ? p.accent : '#1e3a8a'}`,
-                      boxShadow: p.popular ? `0 0 30px ${p.accent}30` : 'none',
+                      padding: '24px 22px',
+                      background: p.popular ? '#16181C' : 'var(--surface)',
+                      border: p.popular ? '1px solid #F2A93B' : '1px solid #262C33',
                     }}
                     onClick={() => handleSelectPkg(p)}>
                     {p.popular && (
-                      <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                        <span className="px-3 py-1 rounded-full text-xs font-bold text-white"
-                          style={{ background: `linear-gradient(135deg,${p.accent},${p.accent}cc)` }}>
-                          Most Popular
-                        </span>
-                      </div>
+                      <span className="mono absolute -top-2.5 left-4 px-2 py-0.5 text-[9px] uppercase tracking-[0.14em] font-semibold"
+                        style={{ background: '#F2A93B', color: '#14100A', borderRadius: 2 }}>
+                        Most popular
+                      </span>
                     )}
-                    <p className="font-bold text-base mb-1" style={{ color: '#f0f4ff' }}>{p.name}</p>
-                    <div className="flex items-baseline gap-1 mb-3">
-                      <span className="font-extrabold text-3xl" style={{ color: p.popular ? p.accent : '#f0f4ff' }}>{fmtMtc(p.price)}</span>
-                      <span className="text-xs" style={{ color: '#475569' }}>/mo</span>
+                    <p className="display font-bold text-base mb-1" style={{ color: '#E9E7E2' }}>{p.name}</p>
+                    <div className="flex items-baseline gap-1.5 mb-3">
+                      <span className="stat-num" style={{ fontSize: '1.8rem', color: p.popular ? '#F2A93B' : '#E9E7E2' }}>{fmtMtc(p.price)}</span>
+                      <span className="mono text-[10px] uppercase tracking-[0.1em]" style={{ color: '#4C535B' }}>/mo</span>
                     </div>
-                    <p className="text-xs leading-relaxed mb-4" style={{ color: '#64748b' }}>{p.description}</p>
-                    <ul className="space-y-2 mb-5 flex-1">
+                    <p className="text-xs leading-relaxed mb-4" style={{ color: '#79818A' }}>{p.description}</p>
+                    <ul className="space-y-1.5 mb-6 flex-1">
                       {[fmtCpu(p.cpu), fmtRam(p.ram), fmtDisk(p.disk), ...(p.expires_after_hours ? [`Auto-removed after ${p.expires_after_hours}h`] : [])].map(spec => (
-                        <li key={spec} className="flex items-center gap-2 text-sm" style={{ color: '#94a3b8' }}>
-                          <svg className="w-4 h-4 flex-shrink-0" style={{ color: p.accent || '#3b82f6' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                          </svg>
+                        <li key={spec} className="mono flex items-center gap-2 text-[11px]" style={{ color: '#AEB5BD' }}>
+                          <span style={{ color: p.accent || '#F2A93B' }}>—</span>
                           {spec}
                         </li>
                       ))}
                     </ul>
                     <button
-                      className="w-full py-2.5 rounded-xl text-sm font-bold text-white transition-all"
-                      style={{ background: p.popular ? `linear-gradient(135deg,${p.accent},${p.accent}cc)` : '#1e3a8a' }}
+                      className="btn w-full"
+                      style={{
+                        padding: '10px 0', fontSize: 11,
+                        background: p.popular ? '#F2A93B' : 'transparent',
+                        color: p.popular ? '#14100A' : '#AEB5BD',
+                        border: p.popular ? '1px solid #F2A93B' : '1px solid #262C33',
+                      }}
                       onClick={e => { e.stopPropagation(); handleSelectPkg(p); }}>
-                      {p.popular ? '⚡ Get Started' : 'Choose Plan'}
+                      {p.popular ? 'Get started' : 'Choose plan'}
                     </button>
                   </div>
                 ))}
@@ -226,49 +232,44 @@ export default function ProductsPage() {
 
         {/* ════ STEP: configure ════ */}
         {step === 'configure' && pkg && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Form */}
-            <div className="lg:col-span-2 rounded-2xl p-5 sm:p-7" style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a' }}>
-              <h2 className="font-bold text-lg mb-5" style={{ color: '#f0f4ff' }}>Configure Your Server</h2>
-              <form onSubmit={handleConfirm} className="space-y-4">
+            <div className="lg:col-span-2 card p-6 sm:p-8">
+              <p className="eyebrow">Step 02</p>
+              <h2 className="display text-xl font-bold mt-3 mb-6" style={{ color: '#E9E7E2' }}>Configure your server</h2>
+              <form onSubmit={handleConfirm} className="space-y-5">
                 {/* Name row */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {[
-                    { key: 'firstname', label: 'First Name', placeholder: 'John' },
-                    { key: 'lastname',  label: 'Last Name',  placeholder: 'Doe' },
+                    { key: 'firstname', label: 'First name', placeholder: 'John' },
+                    { key: 'lastname',  label: 'Last name',  placeholder: 'Doe' },
                   ].map(f => (
                     <div key={f.key}>
-                      <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: '#475569' }}>{f.label}</label>
+                      <label className="label">{f.label}</label>
                       <input type="text" value={form[f.key]} onChange={e => setForm(x => ({ ...x, [f.key]: e.target.value }))}
-                        placeholder={f.placeholder} required
-                        className="w-full px-4 py-3 rounded-xl text-sm outline-none"
-                        style={{ backgroundColor: 'rgba(2,4,9,0.45)', border: '1px solid #1e3a8a', color: '#f0f4ff' }}
-                        onFocus={e => e.target.style.borderColor='#2563eb'} onBlur={e => e.target.style.borderColor='#1e3a8a'} />
+                        placeholder={f.placeholder} required className="input" />
                     </div>
                   ))}
                 </div>
 
                 {/* Username + Password */}
-                {[
-                  { key: 'ptero_username', label: 'Panel Username', placeholder: 'Your Pterodactyl username', type: 'text' },
-                  { key: 'ptero_password', label: 'Panel Password',  placeholder: 'Min. 8 characters',        type: 'password' },
-                ].map(f => (
-                  <div key={f.key}>
-                    <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: '#475569' }}>{f.label}</label>
-                    <input type={f.type} value={form[f.key]} onChange={e => setForm(x => ({ ...x, [f.key]: e.target.value }))}
-                      placeholder={f.placeholder} required
-                      className="w-full px-4 py-3 rounded-xl text-sm outline-none"
-                      style={{ backgroundColor: 'rgba(2,4,9,0.45)', border: '1px solid #1e3a8a', color: '#f0f4ff' }}
-                      onFocus={e => e.target.style.borderColor='#2563eb'} onBlur={e => e.target.style.borderColor='#1e3a8a'} />
-                  </div>
-                ))}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {[
+                    { key: 'ptero_username', label: 'Panel username', placeholder: 'Your Pterodactyl username', type: 'text' },
+                    { key: 'ptero_password', label: 'Panel password',  placeholder: 'Min. 8 characters',        type: 'password' },
+                  ].map(f => (
+                    <div key={f.key}>
+                      <label className="label">{f.label}</label>
+                      <input type={f.type} value={form[f.key]} onChange={e => setForm(x => ({ ...x, [f.key]: e.target.value }))}
+                        placeholder={f.placeholder} required className="input" />
+                    </div>
+                  ))}
+                </div>
 
                 {/* Nest selector */}
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: '#475569' }}>Server Type (Nest)</label>
-                  <select value={form.nest_id} onChange={e => handleNestChange(e.target.value)} required
-                    className="w-full px-4 py-3 rounded-xl text-sm outline-none"
-                    style={{ backgroundColor: 'rgba(2,4,9,0.45)', border: '1px solid #1e3a8a', color: form.nest_id ? '#f0f4ff' : '#475569' }}>
+                  <label className="label">Server type (nest)</label>
+                  <select value={form.nest_id} onChange={e => handleNestChange(e.target.value)} required className="input">
                     <option value="">{loadingNests ? 'Loading nests…' : '— Select a nest —'}</option>
                     {nests.map(n => <option key={n.id} value={n.id}>{n.name}</option>)}
                   </select>
@@ -276,57 +277,48 @@ export default function ProductsPage() {
 
                 {/* Egg selector */}
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: '#475569' }}>Server Software (Egg)</label>
+                  <label className="label">Server software (egg)</label>
                   <select value={form.egg_id} onChange={e => setForm(f => ({ ...f, egg_id: e.target.value }))} required disabled={!form.nest_id}
-                    className="w-full px-4 py-3 rounded-xl text-sm outline-none"
-                    style={{ backgroundColor: 'rgba(2,4,9,0.45)', border: '1px solid #1e3a8a', color: form.egg_id ? '#f0f4ff' : '#475569', opacity: !form.nest_id ? 0.5 : 1 }}>
+                    className="input" style={{ opacity: !form.nest_id ? 0.5 : 1 }}>
                     <option value="">{loadingEggs ? 'Loading eggs…' : !form.nest_id ? '— Select a nest first —' : '— Select software —'}</option>
                     {eggs.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}
                   </select>
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-3 pt-2">
-                  <button type="button" onClick={reset}
-                    className="flex-1 py-3 rounded-xl text-sm font-semibold"
-                    style={{ color: '#94a3b8', border: '1px solid #1e3a8a' }}>
-                    ← Back
-                  </button>
-                  <button type="submit"
-                    className="flex-1 py-3 rounded-xl text-sm font-bold text-white"
-                    style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)' }}>
-                    Review Order →
-                  </button>
+                  <button type="button" onClick={reset} className="btn btn-ghost flex-1">← Back</button>
+                  <button type="submit" className="btn btn-primary flex-1">Review order →</button>
                 </div>
               </form>
             </div>
 
             {/* Order summary */}
             <div>
-              <div className="rounded-2xl p-5 sm:p-6 sticky top-20" style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a' }}>
-                <p className="text-xs font-bold uppercase tracking-wider mb-4" style={{ color: '#475569' }}>Order Summary</p>
-                <div className="flex items-center justify-between mb-4 pb-4" style={{ borderBottom: '1px solid #1e3a8a' }}>
+              <div className="card p-6 lg:sticky lg:top-32">
+                <p className="mono text-[10px] uppercase tracking-[0.18em] mb-5" style={{ color: '#4C535B' }}>Order summary</p>
+                <div className="flex items-center justify-between mb-4 pb-4" style={{ borderBottom: '1px solid #1B2026' }}>
                   <div>
-                    <p className="font-bold" style={{ color: '#f0f4ff' }}>{pkg.name} Plan</p>
-                    <p className="text-xs mt-0.5" style={{ color: '#64748b' }}>Monthly subscription</p>
+                    <p className="display font-bold" style={{ color: '#E9E7E2' }}>{pkg.name} plan</p>
+                    <p className="mono text-[10px] uppercase tracking-[0.12em] mt-0.5" style={{ color: '#4C535B' }}>Monthly subscription</p>
                   </div>
-                  <p className="font-extrabold text-xl" style={{ color: '#3b82f6' }}>{fmtMtc(pkg.price)}</p>
+                  <p className="stat-num" style={{ fontSize: '1.4rem', color: '#F2A93B' }}>{fmtMtc(pkg.price)}</p>
                 </div>
-                {[fmtCpu(pkg.cpu), fmtRam(pkg.ram), fmtDisk(pkg.disk)].map(s => (
-                  <div key={s} className="flex items-center gap-2 py-1.5 text-sm" style={{ color: '#64748b' }}>
-                    <svg className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#3b82f6' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                    </svg>
-                    {s}
-                  </div>
-                ))}
-                <div className="mt-4 pt-4" style={{ borderTop: '1px solid #1e3a8a' }}>
-                  <div className="flex justify-between text-xs mb-1" style={{ color: '#475569' }}>
+                <div className="space-y-1.5">
+                  {[fmtCpu(pkg.cpu), fmtRam(pkg.ram), fmtDisk(pkg.disk)].map(s => (
+                    <div key={s} className="mono flex items-center gap-2 text-[11px]" style={{ color: '#79818A' }}>
+                      <span style={{ color: '#F2A93B' }}>—</span>
+                      {s}
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-4 pt-4" style={{ borderTop: '1px solid #1B2026' }}>
+                  <div className="flex justify-between text-xs mb-1.5" style={{ color: '#4C535B' }}>
                     <span>Your balance</span>
-                    <span style={{ color: balance >= pkg.price ? '#4ade80' : '#f87171' }}>{fmtMtc(balance)}</span>
+                    <span style={{ color: balance >= pkg.price ? '#3ECF8E' : '#E5484D' }}>{fmtMtc(balance)}</span>
                   </div>
-                  <div className="flex justify-between text-xs" style={{ color: '#475569' }}>
+                  <div className="flex justify-between text-xs" style={{ color: '#4C535B' }}>
                     <span>After purchase</span>
-                    <span style={{ color: '#94a3b8' }}>{fmtMtc(Math.max(0, balance - pkg.price))}</span>
+                    <span style={{ color: '#AEB5BD' }}>{fmtMtc(Math.max(0, balance - pkg.price))}</span>
                   </div>
                 </div>
               </div>
@@ -336,8 +328,9 @@ export default function ProductsPage() {
 
         {/* ════ STEP: confirm ════ */}
         {step === 'confirm' && pkg && (
-          <div className="max-w-lg mx-auto rounded-2xl p-6 sm:p-8" style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a' }}>
-            <h2 className="font-bold text-xl mb-6" style={{ color: '#f0f4ff' }}>Confirm Order</h2>
+          <div className="max-w-lg mx-auto card p-6 sm:p-8">
+            <p className="eyebrow">Step 03</p>
+            <h2 className="display text-xl font-bold mt-3 mb-6" style={{ color: '#E9E7E2' }}>Confirm order</h2>
             {[
               { label: 'Plan',      value: `${pkg.name} — ${fmtMtc(pkg.price)}/mo` },
               { label: 'Resources', value: `${fmtCpu(pkg.cpu)} · ${fmtRam(pkg.ram)} · ${fmtDisk(pkg.disk)}` },
@@ -346,29 +339,21 @@ export default function ProductsPage() {
               { label: 'Nest',      value: nests.find(n => String(n.id) === String(form.nest_id))?.name || form.nest_id },
               { label: 'Egg',       value: eggs.find(e => String(e.id) === String(form.egg_id))?.name || form.egg_id },
             ].map(r => (
-              <div key={r.label} className="flex justify-between py-3 text-sm" style={{ borderBottom: '1px solid #1e3a8a' }}>
-                <span style={{ color: '#64748b' }}>{r.label}</span>
-                <span className="font-semibold text-right ml-4" style={{ color: '#f0f4ff', wordBreak: 'break-all' }}>{r.value}</span>
+              <div key={r.label} className="flex justify-between py-3 text-sm" style={{ borderBottom: '1px solid #1B2026' }}>
+                <span className="mono text-[10px] uppercase tracking-[0.12em] flex-shrink-0" style={{ color: '#4C535B', paddingTop: 3 }}>{r.label}</span>
+                <span className="font-semibold text-right ml-6" style={{ color: '#E9E7E2', wordBreak: 'break-all' }}>{r.value}</span>
               </div>
             ))}
-            <div className="flex justify-between py-3 text-base font-bold" style={{ borderBottom: '1px solid #1e3a8a' }}>
-              <span style={{ color: '#94a3b8' }}>Total Charge</span>
-              <span style={{ color: '#3b82f6' }}>{fmtMtc(pkg.price)}</span>
+            <div className="flex justify-between py-3.5 text-base" style={{ borderBottom: '1px solid #1B2026' }}>
+              <span className="mono text-[10px] uppercase tracking-[0.12em]" style={{ color: '#4C535B', paddingTop: 4 }}>Total charge</span>
+              <span className="stat-num" style={{ fontSize: '1.3rem', color: '#F2A93B' }}>{fmtMtc(pkg.price)}</span>
             </div>
-            <p className="text-xs mt-4 mb-6" style={{ color: '#475569' }}>
+            <p className="text-xs mt-4 mb-6" style={{ color: '#4C535B' }}>
               {fmtMtc(pkg.price)} will be deducted from your wallet. Balance after: {fmtMtc(Math.max(0, balance - pkg.price))}
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
-              <button onClick={() => setStep('configure')}
-                className="flex-1 py-3 rounded-xl text-sm font-semibold"
-                style={{ color: '#94a3b8', border: '1px solid #1e3a8a' }}>
-                ← Edit
-              </button>
-              <button onClick={handleCreate}
-                className="flex-1 py-3 rounded-xl text-sm font-bold text-white"
-                style={{ background: 'linear-gradient(135deg,#22c55e,#16a34a)', boxShadow: '0 0 20px rgba(34,197,94,0.3)' }}>
-                ✅ Confirm & Deploy
-              </button>
+              <button onClick={() => setStep('configure')} className="btn btn-ghost flex-1">← Edit</button>
+              <button onClick={handleCreate} className="btn btn-primary flex-1">Confirm & deploy</button>
             </div>
           </div>
         )}
@@ -376,38 +361,41 @@ export default function ProductsPage() {
         {/* ════ STEP: creating ════ */}
         {step === 'creating' && (
           <div className="text-center py-16 sm:py-24">
-            <div className="w-14 h-14 rounded-full border-2 animate-spin mx-auto mb-6"
-              style={{ borderColor: '#1e3a8a', borderTopColor: '#3b82f6' }} />
-            <p className="font-bold text-lg mb-2" style={{ color: '#f0f4ff' }}>Deploying your panel…</p>
-            <p className="text-sm" style={{ color: '#64748b' }}>This takes about 30 seconds. Please wait.</p>
+            <div className="spinner mx-auto mb-6" />
+            <p className="display font-bold text-lg mb-2" style={{ color: '#E9E7E2' }}>Deploying your panel…</p>
+            <p className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: '#4C535B' }}>About 30 seconds — please wait</p>
           </div>
         )}
 
         {/* ════ STEP: done ════ */}
         {step === 'done' && result && (
           <div className="max-w-lg mx-auto">
-            <div className="rounded-2xl p-6 sm:p-8" style={{ backgroundColor: '#060b16', border: '1px solid rgba(34,197,94,0.3)', boxShadow: '0 0 40px rgba(34,197,94,0.1)' }}>
-              <div className="text-center mb-6">
-                <div className="text-5xl mb-3">🎉</div>
-                <h2 className="text-2xl font-extrabold mb-1" style={{ color: '#f0f4ff' }}>Panel Deployed!</h2>
-                <p className="text-sm" style={{ color: '#64748b' }}>Your server is live. Save these credentials — you will need them to log in.</p>
+            <div className="card p-6 sm:p-8" style={{ borderColor: 'rgba(62,207,142,0.4)' }}>
+              <div className="mb-6">
+                <p className="eyebrow">Step 04 — done</p>
+                <h2 className="headline mt-3" style={{ fontSize: 'clamp(1.6rem, 3vw, 2.1rem)' }}>Panel deployed<span className="accent">.</span></h2>
+                <p className="text-sm mt-2" style={{ color: '#79818A' }}>
+                  Your server is live. Save these credentials — you will need them to log in.
+                </p>
               </div>
 
               {/* Credentials box */}
-              <div className="rounded-xl p-4 mb-4 text-left space-y-3" style={{ backgroundColor: 'rgba(2,4,9,0.45)', border: '1px solid #1e3a8a' }}>
-                <p className="text-xs font-bold uppercase tracking-wider mb-1" style={{ color: '#475569' }}>Login Credentials</p>
+              <div className="mb-4" style={{ border: '1px solid #262C33', background: '#0F1215' }}>
+                <p className="mono text-[10px] uppercase tracking-[0.16em] px-4 py-3" style={{ color: '#F2A93B', borderBottom: '1px solid #1B2026' }}>
+                  Login credentials
+                </p>
                 {[
-                  { label: '🌐 Panel URL',  value: result.panel_url || 'https://public.mzazi.shop', link: result.panel_url || 'https://public.mzazi.shop' },
-                  { label: '👤 Username',   value: result.username  || form.ptero_username },
-                  { label: '🔑 Password',   value: result.password  || form.ptero_password },
-                  { label: '📦 Plan',       value: result.package   || pkg?.name },
-                  { label: '🖥️ Server ID',  value: result.ptero_server_id ? String(result.ptero_server_id) : '—' },
+                  { label: 'Panel URL',  value: result.panel_url || 'https://public.mzazi.shop', link: result.panel_url || 'https://public.mzazi.shop' },
+                  { label: 'Username',   value: result.username  || form.ptero_username },
+                  { label: 'Password',   value: result.password  || form.ptero_password },
+                  { label: 'Plan',       value: result.package   || pkg?.name },
+                  { label: 'Server ID',  value: result.ptero_server_id ? String(result.ptero_server_id) : '—' },
                 ].map(r => (
-                  <div key={r.label} className="flex items-center justify-between gap-3 text-sm py-1" style={{ borderBottom: '1px solid #1e3a8a' }}>
-                    <span className="flex-shrink-0" style={{ color: '#64748b' }}>{r.label}</span>
+                  <div key={r.label} className="flex items-center justify-between gap-3 px-4 py-2.5 text-sm" style={{ borderBottom: '1px solid #1B2026' }}>
+                    <span className="mono text-[9px] uppercase tracking-[0.14em] flex-shrink-0" style={{ color: '#4C535B' }}>{r.label}</span>
                     {r.link
-                      ? <a href={r.link} target="_blank" rel="noopener noreferrer" className="font-semibold truncate" style={{ color: '#60a5fa', textDecoration: 'underline', wordBreak: 'break-all' }}>{r.value}</a>
-                      : <span className="font-mono font-semibold text-right" style={{ color: '#f0f4ff', wordBreak: 'break-all' }}>{r.value}</span>
+                      ? <a href={r.link} target="_blank" rel="noopener noreferrer" className="mono text-[12px] font-semibold truncate" style={{ color: '#4C7DFC', textDecoration: 'underline', wordBreak: 'break-all' }}>{r.value}</a>
+                      : <span className="mono text-[12px] font-semibold text-right" style={{ color: '#E9E7E2', wordBreak: 'break-all' }}>{r.value}</span>
                     }
                   </div>
                 ))}
@@ -415,29 +403,24 @@ export default function ProductsPage() {
 
               {/* Expiry notice */}
               {result.expires_at && (
-                <div className="rounded-xl px-4 py-3 mb-4 text-sm flex items-start gap-2" style={{ backgroundColor: 'rgba(124,58,237,0.1)', border: '1px solid rgba(124,58,237,0.3)', color: '#a78bfa' }}>
-                  <span className="flex-shrink-0">⏱</span>
-                  <span>This server will be <strong>automatically removed</strong> on {new Date(result.expires_at).toLocaleString()}. Make sure to back up your data before then.</span>
+                <div className="px-4 py-3 mb-4 text-xs flex items-start gap-2" style={{ background: 'rgba(242,169,59,0.05)', border: '1px solid rgba(242,169,59,0.25)', color: '#AEB5BD' }}>
+                  <span className="flex-shrink-0" style={{ color: '#F2A93B' }}>EXP</span>
+                  <span>This server will be <strong style={{ color: '#E9E7E2' }}>automatically removed</strong> on {new Date(result.expires_at).toLocaleString()}. Back up your data before then.</span>
                 </div>
               )}
 
               {/* Warning to save creds */}
-              <div className="rounded-xl px-4 py-3 mb-5 text-xs" style={{ backgroundColor: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.2)', color: '#fbbf24' }}>
-                ⚠️ <strong>Save your password now.</strong> It is shown only once and cannot be recovered from this page.
+              <div className="px-4 py-3 mb-5 text-xs" style={{ background: 'rgba(229,72,77,0.06)', border: '1px solid rgba(229,72,77,0.25)', color: '#AEB5BD' }}>
+                <strong style={{ color: '#E5484D' }}>Save your password now.</strong> It is shown only once and cannot be recovered from this page.
               </div>
 
               <div className="flex flex-col sm:flex-row gap-3">
                 <a href={result.panel_url || 'https://public.mzazi.shop'}
                   target="_blank" rel="noopener noreferrer"
-                  className="flex-1 py-3 rounded-xl text-sm font-bold text-white text-center"
-                  style={{ background: 'linear-gradient(135deg,#22c55e,#16a34a)', textDecoration: 'none' }}>
-                  🚀 Open Panel →
+                  className="btn btn-primary flex-1" style={{ textDecoration: 'none' }}>
+                  Open panel →
                 </a>
-                <button onClick={reset}
-                  className="flex-1 py-3 rounded-xl text-sm font-semibold"
-                  style={{ color: '#94a3b8', border: '1px solid #1e3a8a' }}>
-                  Deploy Another
-                </button>
+                <button onClick={reset} className="btn btn-ghost flex-1">Deploy another</button>
               </div>
             </div>
           </div>

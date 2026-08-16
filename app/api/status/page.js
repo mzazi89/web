@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import TypingHeading from '@/components/TypingHeading';
 import { neon } from '@neondatabase/serverless';
 import { unstable_noStore as noStore } from 'next/cache';
 
@@ -68,113 +67,163 @@ export default async function ApiStatus() {
   };
 
   return (
-    <div className="container-site py-12" style={{ minHeight: '70vh' }}>
-      <div className="mb-8">
-        <Link href="/api" className="text-xs font-semibold" style={{ color: '#475569', textDecoration: 'none' }}>← Back to API</Link>
-        <h1 className="text-3xl font-extrabold mt-2"><TypingHeading as="span" text="MZAZI API Status" speed={45} className="gradient-text" /></h1>
-        <p className="text-sm mt-1" style={{ color: '#94a3b8' }}>System health, provider and endpoint status.</p>
-      </div>
+    <div style={{ backgroundColor: 'rgba(15,18,21,0.35)', minHeight: '70vh' }}>
+      <section className="relative overflow-hidden" style={{ paddingTop: 64, paddingBottom: 40 }}>
+        <div className="absolute inset-0 pointer-events-none grid-bg" style={{ maskImage: 'linear-gradient(180deg, rgba(0,0,0,0.5), transparent 80%)', WebkitMaskImage: 'linear-gradient(180deg, rgba(0,0,0,0.5), transparent 80%)' }} />
+        <div className="container-site relative">
+          <div className="max-w-3xl">
+            <Link href="/api" className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: '#79818A', textDecoration: 'none' }}>
+              ← Back to API
+            </Link>
+            <div className="flex flex-wrap items-center gap-4 mt-8">
+              <p className="eyebrow" style={{ marginRight: 8 }}>System status</p>
+              <span className="tag tag-green"><span className="dot anim-pulse" /> {db.ok ? 'Operational' : 'Degraded'}</span>
+            </div>
+            <h1 className="headline mt-4" style={{ fontSize: 'clamp(2rem, 4.4vw, 3.2rem)' }}>
+              Health at a glance<span className="accent">.</span>
+            </h1>
+            <p className="lede mt-5 max-w-xl">
+              Database, providers and endpoints — measured live on every visit.
+            </p>
+          </div>
 
-      {/* System health */}
-      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-8">
-        <div className="card p-6">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: db.ok ? '#4ade80' : '#f87171' }} />
-            <span className="text-sm font-bold" style={{ color: '#f0f4ff' }}>Database</span>
+          {/* System health ledger */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-px mt-12 card overflow-hidden" style={{ background: '#262C33' }}>
+            {[
+              { label: 'Database', value: db.ok ? 'Operational' : 'Unreachable', sub: `${db.ms}ms round trip`, ok: db.ok },
+              { label: 'API service', value: 'Operational', sub: 'v1.0.0', ok: true },
+              { label: 'Avg response', value: avgMs !== null ? `${avgMs}ms` : '—', sub: avgMs !== null ? 'last 24h window' : 'no requests yet', ok: avgMs !== null },
+              { label: 'Requests today', value: todayCount.toLocaleString(), sub: `${activeEndpoints.length} active endpoints`, ok: true },
+            ].map(s => (
+              <div key={s.label} className="card p-5" style={{ background: '#14181D' }}>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="dot anim-pulse" style={{ color: s.ok ? '#3ECF8E' : '#E5484D' }} />
+                  <span className="mono text-[10px] uppercase tracking-[0.14em]" style={{ color: '#4C535B' }}>{s.label}</span>
+                </div>
+                <p className="display font-bold text-lg" style={{ color: '#E9E7E2' }}>{s.value}</p>
+                <p className="mono text-[10px] mt-1" style={{ color: '#4C535B' }}>{s.sub}</p>
+              </div>
+            ))}
           </div>
-          <p className="text-xs" style={{ color: '#94a3b8' }}>{db.ok ? 'Operational' : 'Unreachable'} · {db.ms}ms</p>
         </div>
-        <div className="card p-6">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: '#4ade80' }} />
-            <span className="text-sm font-bold" style={{ color: '#f0f4ff' }}>API Service</span>
-          </div>
-          <p className="text-xs" style={{ color: '#94a3b8' }}>Operational · v1.0.0</p>
-        </div>
-        <div className="card p-6">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: avgMs !== null ? '#4ade80' : '#64748b' }} />
-            <span className="text-sm font-bold" style={{ color: '#f0f4ff' }}>Avg Response</span>
-          </div>
-          <p className="text-xs" style={{ color: '#94a3b8' }}>{avgMs !== null ? `${avgMs}ms` : 'No requests yet'}</p>
-        </div>
-        <div className="card p-6">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: '#60a5fa' }} />
-            <span className="text-sm font-bold" style={{ color: '#f0f4ff' }}>Requests Today</span>
-          </div>
-          <p className="text-xs" style={{ color: '#94a3b8' }}>{todayCount.toLocaleString()} · {activeEndpoints.length} active endpoints</p>
-        </div>
-      </div>
+      </section>
 
       {/* Providers */}
-      <h2 className="text-xl font-bold mb-4" style={{ color: '#f0f4ff' }}>Providers</h2>
-      <div className="space-y-3 mb-10">
-        {providers.length === 0 && (
-          <div className="card p-6 text-center text-sm" style={{ color: '#64748b' }}>Provider registry unavailable.</div>
-        )}
-        {providers.map(p => (
-          <div key={p.name} className="card p-5 flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: p.status === 'active' ? '#4ade80' : p.status === 'offline' ? '#f87171' : '#fbbf24' }} />
-              <div>
-                <p className="text-sm font-bold" style={{ color: '#f0f4ff' }}>{p.display_name || p.name}</p>
-                <p className="text-xs font-mono" style={{ color: '#64748b' }}>{p.base_url}</p>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-8 gap-y-1 text-xs" style={{ color: '#94a3b8' }}>
-              <span>Avg: <strong style={{ color: '#f0f4ff' }}>{p.avg_response_ms !== null ? `${Number(p.avg_response_ms).toFixed(0)}ms` : '—'}</strong></span>
-              <span>Failures: <strong style={{ color: '#f0f4ff' }}>{p.total_failures}</strong> / {p.total_requests}</span>
-              <span>Last OK: <strong style={{ color: '#f0f4ff' }}>{fmt(p.last_success_at)}</strong></span>
-              <span>Last error: <strong style={{ color: '#f87171' }}>{p.last_error || '—'}</strong></span>
-            </div>
-            <span className="text-[11px] font-bold px-2.5 py-1 rounded-md"
-              style={{
-                backgroundColor: p.status === 'active' ? 'rgba(74,222,128,0.1)' : 'rgba(248,113,113,0.1)',
-                color: p.status === 'active' ? '#4ade80' : '#f87171',
-                border: `1px solid ${p.status === 'active' ? 'rgba(74,222,128,0.3)' : 'rgba(248,113,113,0.3)'}`,
-              }}>
-              {p.status.toUpperCase()}
-            </span>
+      <section className="section" style={{ paddingTop: 24 }}>
+        <div className="container-site">
+          <div className="mb-8">
+            <p className="eyebrow">Upstream</p>
+            <h2 className="section-title text-3xl mt-4" style={{ color: '#E9E7E2' }}>
+              Providers
+              <span className="bar" />
+            </h2>
           </div>
-        ))}
-      </div>
+
+          {providers.length === 0 ? (
+            <div className="card card-pad text-center">
+              <p className="text-sm" style={{ color: '#4C535B' }}>Provider registry unavailable.</p>
+            </div>
+          ) : (
+            <div className="card overflow-hidden scroll-x">
+              <table className="table-plain table-responsive">
+                <thead>
+                  <tr>
+                    <th>Provider</th>
+                    <th>Status</th>
+                    <th>Avg response</th>
+                    <th>Failures</th>
+                    <th>Last success</th>
+                    <th>Last error</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {providers.map(p => {
+                    const active = p.status === 'active';
+                    return (
+                      <tr key={p.name} data-label="Provider">
+                        <td data-label="Provider">
+                          <div className="flex items-center gap-3">
+                            <span className="dot" style={{ color: active ? '#3ECF8E' : p.status === 'offline' ? '#E5484D' : '#F2A93B' }} />
+                            <div>
+                              <p className="font-semibold" style={{ color: '#E9E7E2' }}>{p.display_name || p.name}</p>
+                              <p className="mono text-[10px]" style={{ color: '#4C535B' }}>{p.base_url}</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td data-label="Status">
+                          <span className={`tag ${active ? 'tag-green' : 'tag-red'}`}>{p.status.toUpperCase()}</span>
+                        </td>
+                        <td data-label="Avg response" className="mono text-[12px]">
+                          {p.avg_response_ms !== null ? `${Number(p.avg_response_ms).toFixed(0)}ms` : '—'}
+                        </td>
+                        <td data-label="Failures">
+                          <span className="mono text-[12px]" style={{ color: p.total_failures > 0 ? '#E5484D' : '#79818A' }}>
+                            {p.total_failures} / {p.total_requests}
+                          </span>
+                        </td>
+                        <td data-label="Last success" style={{ color: '#79818A' }}>{fmt(p.last_success_at)}</td>
+                        <td data-label="Last error" style={{ color: p.last_error ? '#E5484D' : '#4C535B' }}>{p.last_error || '—'}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </section>
 
       {/* Active endpoints */}
-      <h2 className="text-xl font-bold mb-4" style={{ color: '#f0f4ff' }}>Active Endpoints ({activeEndpoints.length})</h2>
-      <div className="card overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr style={{ backgroundColor: '#060b16', borderBottom: '1px solid #1e3a8a' }}>
-                {['Endpoint', 'Category', 'Provider', 'Status'].map(h => (
-                  <th key={h} className="text-left px-5 py-3 text-xs font-bold uppercase tracking-wide" style={{ color: '#64748b' }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {activeEndpoints.length === 0 && (
-                <tr><td colSpan={4} className="px-5 py-8 text-center text-sm" style={{ color: '#64748b' }}>No active endpoints yet.</td></tr>
-              )}
-              {activeEndpoints.map(e => (
-                <tr key={e.path} style={{ borderBottom: '1px solid #060b16' }}>
-                  <td className="px-5 py-3">
-                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded mr-2" style={{ backgroundColor: '#1e3a8a', color: '#93c5fd' }}>{e.method}</span>
-                    <code className="text-xs font-mono" style={{ color: '#e2e8f0' }}>{e.path}</code>
-                  </td>
-                  <td className="px-5 py-3 text-xs" style={{ color: '#94a3b8' }}>{CATEGORY_LABELS[e.category] || e.category}</td>
-                  <td className="px-5 py-3 text-xs" style={{ color: '#64748b' }}>{providerLabel(e.provider)}</td>
-                  <td className="px-5 py-3">
-                    <span className="flex items-center gap-1.5 text-xs font-semibold" style={{ color: '#4ade80' }}>
-                      <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: '#4ade80' }} />Operational
-                    </span>
-                  </td>
+      <section className="section" style={{ paddingBottom: 110 }}>
+        <div className="container-site">
+          <div className="mb-8">
+            <p className="eyebrow">Live routes</p>
+            <h2 className="section-title text-3xl mt-4" style={{ color: '#E9E7E2' }}>
+              Active endpoints
+              <span className="mono text-sm font-medium" style={{ color: '#4C535B', letterSpacing: '0.02em' }}>
+                {' '}({activeEndpoints.length})
+              </span>
+              <span className="bar" />
+            </h2>
+          </div>
+
+          <div className="card overflow-hidden scroll-x">
+            <table className="table-plain table-responsive">
+              <thead>
+                <tr>
+                  <th>Endpoint</th>
+                  <th>Category</th>
+                  <th>Provider</th>
+                  <th>Status</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {activeEndpoints.length === 0 && (
+                  <tr>
+                    <td colSpan={4} className="text-center" style={{ color: '#4C535B', padding: '36px 0' }}>No active endpoints yet.</td>
+                  </tr>
+                )}
+                {activeEndpoints.map(e => (
+                  <tr key={e.path} data-label="Endpoint">
+                    <td data-label="Endpoint">
+                      <span className="mono text-[10px] font-bold px-1.5 py-0.5 mr-2"
+                        style={{ background: e.method === 'GET' ? 'rgba(76,125,252,0.12)' : 'rgba(242,169,59,0.1)', color: e.method === 'GET' ? '#4C7DFC' : '#F2A93B', border: `1px solid ${e.method === 'GET' ? 'rgba(76,125,252,0.35)' : 'rgba(242,169,59,0.3)'}` }}>
+                        {e.method}
+                      </span>
+                      <code className="mono text-[12px]" style={{ color: '#E9E7E2' }}>{e.path}</code>
+                    </td>
+                    <td data-label="Category"><span className="tag">{CATEGORY_LABELS[e.category] || e.category}</span></td>
+                    <td data-label="Provider" style={{ color: '#79818A' }}>{providerLabel(e.provider)}</td>
+                    <td data-label="Status">
+                      <span className="tag tag-green"><span className="dot anim-pulse" /> Operational</span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 }

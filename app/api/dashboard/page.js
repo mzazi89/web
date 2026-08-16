@@ -4,12 +4,12 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { BarChart, LineChart } from '@/components/api/Charts';
 
-function StatCard({ label, value, sub, color = '#60a5fa' }) {
+function StatCell({ label, value, sub, tone }) {
   return (
     <div className="card p-5">
-      <p className="text-xs font-bold uppercase tracking-wide mb-1.5" style={{ color: '#64748b' }}>{label}</p>
-      <p className="text-2xl font-extrabold" style={{ color }}>{value}</p>
-      {sub && <p className="text-xs mt-1" style={{ color: '#475569' }}>{sub}</p>}
+      <p className="mono text-[10px] uppercase tracking-[0.14em] mb-2" style={{ color: '#4C535B' }}>{label}</p>
+      <p className="stat-num" style={{ fontSize: '1.6rem', color: tone || '#E9E7E2' }}>{value}</p>
+      {sub && <div className="mono text-[10px] mt-2" style={{ color: '#79818A' }}>{sub}</div>}
     </div>
   );
 }
@@ -44,15 +44,14 @@ export default function ApiDashboard() {
   if (loading) return (
     <div className="container-site py-24 text-center">
       <div className="spinner mx-auto mb-4" />
-      <p className="text-sm" style={{ color: '#64748b' }}>Loading dashboard…</p>
+      <p className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: '#79818A' }}>Loading dashboard…</p>
     </div>
   );
 
   if (error) return (
     <div className="container-site py-24 text-center">
-      <p className="text-sm mb-4" style={{ color: '#f87171' }}>{error}</p>
-      <button onClick={() => location.reload()} className="px-4 py-2 rounded-lg text-sm font-semibold"
-        style={{ border: '1px solid #1e3a8a', color: '#94a3b8', cursor: 'pointer' }}>Retry</button>
+      <p className="text-sm mb-4" style={{ color: '#E5484D' }}>{error}</p>
+      <button onClick={() => location.reload()} className="btn btn-ghost">Retry</button>
     </div>
   );
 
@@ -61,154 +60,155 @@ export default function ApiDashboard() {
   const s = data.stats;
 
   return (
-    <div className="container-site py-12" style={{ minHeight: '70vh' }}>
-      {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
-        <div>
-          <h1 className="text-3xl font-extrabold"><span className="gradient-text">Developer Dashboard</span></h1>
-          <p className="text-sm mt-1" style={{ color: '#94a3b8' }}>Real-time statistics from your MZAZI API usage.</p>
-        </div>
-        <div className="flex gap-2">
-          <Link href="/api/dashboard/keys"
-            className="px-4 py-2 rounded-lg text-sm font-bold text-white transition-all"
-            style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', textDecoration: 'none' }}>
-            + CREATE API KEY
-          </Link>
-          <Link href="/api/dashboard/usage"
-            className="px-4 py-2 rounded-lg text-sm font-semibold transition-all"
-            style={{ color: '#60a5fa', border: '1px solid rgba(37,99,235,0.35)', textDecoration: 'none' }}>
-            Usage Logs
-          </Link>
-        </div>
-      </div>
-
-      {/* Stat cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-        <StatCard label="Total Requests" value={s.total_requests.toLocaleString()} color="#60a5fa" />
-        <StatCard label="Requests Today" value={s.requests_today.toLocaleString()} sub={`${s.success_today} ok · ${s.failed_today} failed`} color="#93c5fd" />
-        <StatCard label="Success Rate" value={s.total_requests ? `${Math.round(s.successful_requests / s.total_requests * 100)}%` : '—'} sub={`${s.successful_requests.toLocaleString()} succeeded`} color="#4ade80" />
-        <StatCard label="Avg Response" value={fmtMs(s.avg_response_ms)} sub={`${s.failed_requests.toLocaleString()} failed total`} color="#fbbf24" />
-      </div>
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <StatCard label="Total Endpoints" value={data.endpoints?.total ?? '—'} sub="in registry" color="#a78bfa" />
-        <StatCard label="Active Endpoints" value={data.endpoints?.active ?? '—'} sub={<Link href="/api/explorer" style={{ color: '#60a5fa', textDecoration: 'none' }}>explore all →</Link>} color="#4ade80" />
-        <StatCard label="Top Endpoint (14d)" value={data.top_endpoints?.[0]?.endpoint || '—'} sub={data.top_endpoints?.[0] ? `${data.top_endpoints[0].count.toLocaleString()} requests` : ''} color="#f472b6" />
-        <StatCard label="Top Category" value={data.top_categories?.[0]?.category || '—'} sub={data.top_categories?.[0] ? `${data.top_categories[0].count.toLocaleString()} requests` : ''} color="#34d399" />
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8">
-        <StatCard label="Active API Keys" value={s.active_keys} sub={<Link href="/api/dashboard/keys" style={{ color: '#60a5fa', textDecoration: 'none' }}>manage keys →</Link>} color="#a78bfa" />
-        <StatCard label="Most Used Endpoint" value={s.most_used_endpoint || '—'} sub="by request count" color="#f472b6" />
-        <StatCard label="Quota Remaining (today)" value={
-          data.quotas.length === 0 ? '—' : data.quotas.some(q => q.remaining === -1) ? 'Unlimited' : data.quotas.reduce((a, q) => a + q.remaining, 0).toLocaleString()
-        } sub={`${data.quotas.length} active key${data.quotas.length === 1 ? '' : 's'}`} color="#34d399" />
-      </div>
-
-      {/* Chart */}
-      <div className="card p-6 mb-8">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="font-bold" style={{ color: '#f0f4ff' }}>Requests — last 14 days</h2>
-          <div className="flex items-center gap-4 text-xs" style={{ color: '#94a3b8' }}>
-            <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: '#3b82f6' }} /> requests</span>
-            <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: '#4ade80' }} /> success</span>
-          </div>
-        </div>
-        {data.daily_series.every(d => d.requests === 0) ? (
-          <p className="text-sm py-10 text-center" style={{ color: '#64748b' }}>
-            No requests recorded yet — make your first API call and it will show up here.
-          </p>
-        ) : (
-          <>
-            <BarChart data={data.daily_series} valueKey="requests" />
-            <div className="mt-4">
-              <LineChart data={data.daily_series} valueKey="success" color="#4ade80" />
+    <div style={{ backgroundColor: 'rgba(15,18,21,0.35)', minHeight: '70vh' }}>
+      <section className="section" style={{ paddingTop: 64, paddingBottom: 40 }}>
+        <div className="container-site">
+          {/* Header */}
+          <div className="flex flex-wrap items-end justify-between gap-4 mb-10">
+            <div>
+              <p className="eyebrow">Usage console</p>
+              <h1 className="headline mt-4" style={{ fontSize: 'clamp(1.9rem, 4vw, 2.8rem)' }}>
+                Developer dashboard<span className="accent">.</span>
+              </h1>
+              <p className="text-sm mt-3" style={{ color: '#79818A' }}>
+                Real-time statistics from your MZAZI API usage.
+              </p>
             </div>
-          </>
-        )}
-      </div>
-
-      {/* Quota per key */}
-      <div className="card p-6 mb-8">
-        <h2 className="font-bold mb-4" style={{ color: '#f0f4ff' }}>API Keys — quota</h2>
-        {data.quotas.length === 0 ? (
-          <div className="py-8 text-center">
-            <p className="text-sm mb-3" style={{ color: '#64748b' }}>You don't have any active API keys yet.</p>
-            <Link href="/api/dashboard/keys"
-              className="px-4 py-2 rounded-lg text-sm font-bold text-white"
-              style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', textDecoration: 'none' }}>
-              Create your first key
-            </Link>
+            <div className="flex flex-wrap gap-3">
+              <Link href="/api/dashboard/keys" className="btn btn-primary" style={{ textDecoration: 'none', padding: '11px 18px', fontSize: 11 }}>
+                + Create API key
+              </Link>
+              <Link href="/api/dashboard/usage" className="btn btn-ghost" style={{ textDecoration: 'none', padding: '11px 18px', fontSize: 11 }}>
+                Usage logs
+              </Link>
+            </div>
           </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr style={{ backgroundColor: '#060b16', borderBottom: '1px solid #1e3a8a' }}>
-                  {['Name', 'Key', 'Plan', 'Used today', 'Daily limit', 'Remaining'].map(h => (
-                    <th key={h} className="text-left px-4 py-2.5 text-xs font-bold uppercase tracking-wide" style={{ color: '#64748b' }}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {data.quotas.map(q => (
-                  <tr key={q.id} style={{ borderBottom: '1px solid #060b16' }}>
-                    <td className="px-4 py-3 text-xs font-semibold" style={{ color: '#f0f4ff' }}>{q.name}</td>
-                    <td className="px-4 py-3 font-mono text-xs" style={{ color: '#94a3b8' }}>{q.prefix}</td>
-                    <td className="px-4 py-3">
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded" style={{ backgroundColor: 'rgba(37,99,235,0.12)', color: '#60a5fa' }}>
-                        {q.plan}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-xs" style={{ color: '#94a3b8' }}>{q.used_today.toLocaleString()}</td>
-                    <td className="px-4 py-3 text-xs" style={{ color: '#94a3b8' }}>{q.daily_limit < 0 ? '∞' : q.daily_limit.toLocaleString()}</td>
-                    <td className="px-4 py-3 text-xs font-semibold" style={{ color: q.remaining === 0 ? '#f87171' : '#4ade80' }}>
-                      {q.remaining < 0 ? '∞' : q.remaining.toLocaleString()}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
 
-      {/* Recent requests */}
-      <div className="card p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="font-bold" style={{ color: '#f0f4ff' }}>Recent Requests</h2>
-          <Link href="/api/dashboard/usage" className="text-xs font-semibold" style={{ color: '#60a5fa', textDecoration: 'none' }}>
-            View all →
-          </Link>
+          {/* Stat ledger */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-px card overflow-hidden mb-4" style={{ background: '#262C33' }}>
+            <StatCell label="Total requests" value={s.total_requests.toLocaleString()} tone="#E9E7E2" />
+            <StatCell label="Requests today" value={s.requests_today.toLocaleString()} sub={`${s.success_today} ok · ${s.failed_today} failed`} tone="#4C7DFC" />
+            <StatCell label="Success rate" value={s.total_requests ? `${Math.round(s.successful_requests / s.total_requests * 100)}%` : '—'} sub={`${s.successful_requests.toLocaleString()} succeeded`} tone="#3ECF8E" />
+            <StatCell label="Avg response" value={fmtMs(s.avg_response_ms)} sub={`${s.failed_requests.toLocaleString()} failed total`} tone="#F2A93B" />
+          </div>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-px card overflow-hidden mb-10" style={{ background: '#262C33' }}>
+            <StatCell label="Total endpoints" value={data.endpoints?.total ?? '—'} sub="in registry" tone="#AEB5BD" />
+            <StatCell label="Active endpoints" value={data.endpoints?.active ?? '—'} sub={<Link href="/api/explorer" style={{ color: '#4C7DFC', textDecoration: 'none' }}>explore all →</Link>} tone="#3ECF8E" />
+            <StatCell label="Top endpoint (14d)" value={data.top_endpoints?.[0]?.endpoint || '—'} sub={data.top_endpoints?.[0] ? `${data.top_endpoints[0].count.toLocaleString()} requests` : ''} tone="#AEB5BD" />
+            <StatCell label="Top category" value={data.top_categories?.[0]?.category || '—'} sub={data.top_categories?.[0] ? `${data.top_categories[0].count.toLocaleString()} requests` : ''} tone="#AEB5BD" />
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-10">
+            <StatCell label="Active API keys" value={s.active_keys} sub={<Link href="/api/dashboard/keys" style={{ color: '#4C7DFC', textDecoration: 'none' }}>manage keys →</Link>} tone="#AEB5BD" />
+            <StatCell label="Most used endpoint" value={s.most_used_endpoint || '—'} sub="by request count" tone="#AEB5BD" />
+            <StatCell label="Quota remaining (today)" value={
+              data.quotas.length === 0 ? '—' : data.quotas.some(q => q.remaining === -1) ? 'Unlimited' : data.quotas.reduce((a, q) => a + q.remaining, 0).toLocaleString()
+            } sub={`${data.quotas.length} active key${data.quotas.length === 1 ? '' : 's'}`} tone="#3ECF8E" />
+          </div>
+
+          {/* Chart */}
+          <div className="card card-pad mb-10">
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+              <h2 className="section-title text-xl" style={{ color: '#E9E7E2' }}>Requests — last 14 days</h2>
+              <div className="flex items-center gap-4 mono text-[10px] uppercase tracking-[0.12em]" style={{ color: '#79818A' }}>
+                <span className="flex items-center gap-1.5"><span className="dot" style={{ color: '#4C7DFC' }} /> requests</span>
+                <span className="flex items-center gap-1.5"><span className="dot" style={{ color: '#3ECF8E' }} /> success</span>
+              </div>
+            </div>
+            {data.daily_series.every(d => d.requests === 0) ? (
+              <p className="text-sm py-10 text-center" style={{ color: '#79818A' }}>
+                No requests recorded yet — make your first API call and it will show up here.
+              </p>
+            ) : (
+              <>
+                <BarChart data={data.daily_series} valueKey="requests" />
+                <div className="mt-6 pt-6" style={{ borderTop: '1px solid #1B2026' }}>
+                  <LineChart data={data.daily_series} valueKey="success" color="#3ECF8E" />
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Quota per key */}
+          <div className="card overflow-hidden mb-10">
+            <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid #1B2026' }}>
+              <h2 className="section-title text-xl" style={{ color: '#E9E7E2' }}>API keys — quota</h2>
+            </div>
+            {data.quotas.length === 0 ? (
+              <div className="py-12 text-center">
+                <p className="text-sm mb-5" style={{ color: '#79818A' }}>You don&apos;t have any active API keys yet.</p>
+                <Link href="/api/dashboard/keys" className="btn btn-primary" style={{ textDecoration: 'none', padding: '11px 18px', fontSize: 11 }}>
+                  Create your first key
+                </Link>
+              </div>
+            ) : (
+              <div className="scroll-x">
+                <table className="table-plain table-responsive">
+                  <thead>
+                    <tr>
+                      {['Name', 'Key', 'Plan', 'Used today', 'Daily limit', 'Remaining'].map(h => (
+                        <th key={h}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {data.quotas.map(q => (
+                      <tr key={q.id} data-label="Name">
+                        <td data-label="Name" className="font-semibold" style={{ color: '#E9E7E2' }}>{q.name}</td>
+                        <td data-label="Key" className="mono text-[12px]" style={{ color: '#79818A' }}>{q.prefix}</td>
+                        <td data-label="Plan"><span className="tag tag-amber">{q.plan}</span></td>
+                        <td data-label="Used today" style={{ color: '#AEB5BD' }}>{q.used_today.toLocaleString()}</td>
+                        <td data-label="Daily limit" style={{ color: '#AEB5BD' }}>{q.daily_limit < 0 ? '∞' : q.daily_limit.toLocaleString()}</td>
+                        <td data-label="Remaining" className="mono text-[12px] font-semibold" style={{ color: q.remaining === 0 ? '#E5484D' : '#3ECF8E' }}>
+                          {q.remaining < 0 ? '∞' : q.remaining.toLocaleString()}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+
+          {/* Recent requests */}
+          <div className="card overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid #1B2026' }}>
+              <h2 className="section-title text-xl" style={{ color: '#E9E7E2' }}>Recent requests</h2>
+              <Link href="/api/dashboard/usage" className="mono text-[10px] uppercase tracking-[0.14em]" style={{ color: '#F2A93B', textDecoration: 'none' }}>
+                View all →
+              </Link>
+            </div>
+            {data.recent_requests.length === 0 ? (
+              <p className="text-sm py-10 text-center" style={{ color: '#79818A' }}>No requests yet.</p>
+            ) : (
+              <div className="scroll-x">
+                <table className="table-plain table-responsive">
+                  <thead>
+                    <tr>
+                      {['Request ID', 'Endpoint', 'Status', 'Time', 'When'].map(h => (
+                        <th key={h}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {data.recent_requests.map(r => (
+                      <tr key={r.request_id} data-label="Endpoint">
+                        <td data-label="Request ID" className="mono text-[11px]" style={{ color: '#79818A' }}>{r.request_id}</td>
+                        <td data-label="Endpoint" className="mono text-[12px]" style={{ color: '#E9E7E2' }}>{r.endpoint}</td>
+                        <td data-label="Status">
+                          <span className="mono text-[12px] font-semibold" style={{ color: r.status_code < 400 ? '#3ECF8E' : '#E5484D' }}>{r.status_code}</span>
+                        </td>
+                        <td data-label="Time" style={{ color: '#AEB5BD' }}>{r.response_time_ms}ms</td>
+                        <td data-label="When" style={{ color: '#79818A' }}>{fmtDate(r.created_at)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
         </div>
-        {data.recent_requests.length === 0 ? (
-          <p className="text-sm py-8 text-center" style={{ color: '#64748b' }}>No requests yet.</p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr style={{ backgroundColor: '#060b16', borderBottom: '1px solid #1e3a8a' }}>
-                  {['Request ID', 'Endpoint', 'Status', 'Time', 'When'].map(h => (
-                    <th key={h} className="text-left px-4 py-2.5 text-xs font-bold uppercase tracking-wide" style={{ color: '#64748b' }}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {data.recent_requests.map(r => (
-                  <tr key={r.request_id} style={{ borderBottom: '1px solid #060b16' }}>
-                    <td className="px-4 py-3 font-mono text-xs" style={{ color: '#64748b' }}>{r.request_id}</td>
-                    <td className="px-4 py-3 font-mono text-xs" style={{ color: '#e2e8f0' }}>{r.endpoint}</td>
-                    <td className="px-4 py-3">
-                      <span className="text-xs font-bold" style={{ color: r.status_code < 400 ? '#4ade80' : '#f87171' }}>{r.status_code}</span>
-                    </td>
-                    <td className="px-4 py-3 text-xs" style={{ color: '#94a3b8' }}>{r.response_time_ms}ms</td>
-                    <td className="px-4 py-3 text-xs" style={{ color: '#64748b' }}>{fmtDate(r.created_at)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+      </section>
     </div>
   );
 }

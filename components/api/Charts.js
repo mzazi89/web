@@ -1,8 +1,8 @@
 'use client';
 
-// Lightweight dependency-free SVG charts matching the MZAZI dark theme
+// Lightweight dependency-free SVG charts matching the Ink & Bolt dark theme
 
-export function BarChart({ data, height = 160, color = '#3b82f6', valueKey = 'requests', labelKey = 'date' }) {
+export function BarChart({ data, height = 160, color = '#4C7DFC', valueKey = 'requests', labelKey = 'date' }) {
   const max = Math.max(1, ...data.map(d => d[valueKey] ?? 0));
   const w = Math.max(280, data.length * 26);
   const barW = 18;
@@ -11,18 +11,18 @@ export function BarChart({ data, height = 160, color = '#3b82f6', valueKey = 're
     <svg viewBox={`0 0 ${w} ${height + 28}`} className="w-full" style={{ display: 'block' }}>
       {[0.25, 0.5, 0.75, 1].map(f => (
         <line key={f} x1={0} x2={w} y1={height - height * f} y2={height - height * f}
-          stroke="#1e3a8a" strokeWidth={1} strokeDasharray="4 4" />
+          stroke="#1B2026" strokeWidth={1} strokeDasharray="4 4" />
       ))}
       {data.map((d, i) => {
         const h = Math.max(2, (d[valueKey] ?? 0) / max * height);
         const x = i * (w / data.length) + (w / data.length - barW) / 2;
         return (
           <g key={i}>
-            <rect x={x} y={height - h} width={barW} height={h} rx={3} fill={color} opacity={0.85}>
+            <rect x={x} y={height - h} width={barW} height={h} rx={2} fill={color} opacity={0.85}>
               <title>{`${d[labelKey]}: ${d[valueKey]}`}</title>
             </rect>
             {i % Math.ceil(data.length / 8) === 0 && (
-              <text x={x + barW / 2} y={height + 16} textAnchor="middle" fontSize={9} fill="#475569">
+              <text x={x + barW / 2} y={height + 16} textAnchor="middle" fontSize={9} fill="#4C535B" fontFamily="var(--font-mono)">
                 {String(d[labelKey]).slice(5)}
               </text>
             )}
@@ -33,7 +33,7 @@ export function BarChart({ data, height = 160, color = '#3b82f6', valueKey = 're
   );
 }
 
-export function LineChart({ data, height = 160, color = '#60a5fa', valueKey = 'requests', labelKey = 'date' }) {
+export function LineChart({ data, height = 160, color = '#4C7DFC', valueKey = 'requests', labelKey = 'date' }) {
   const max = Math.max(1, ...data.map(d => d[valueKey] ?? 0));
   const w = Math.max(280, data.length * 26);
 
@@ -50,7 +50,7 @@ export function LineChart({ data, height = 160, color = '#60a5fa', valueKey = 'r
     <svg viewBox={`0 0 ${w} ${height + 28}`} className="w-full" style={{ display: 'block' }}>
       <defs>
         <linearGradient id={`lg-${valueKey}`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity={0.35} />
+          <stop offset="0%" stopColor={color} stopOpacity={0.3} />
           <stop offset="100%" stopColor={color} stopOpacity={0} />
         </linearGradient>
       </defs>
@@ -62,7 +62,7 @@ export function LineChart({ data, height = 160, color = '#60a5fa', valueKey = 'r
             <title>{`${data[i][labelKey]}: ${data[i][valueKey]}`}</title>
           </circle>
           {i % Math.ceil(data.length / 8) === 0 && (
-            <text x={p[0]} y={height + 16} textAnchor="middle" fontSize={9} fill="#475569">
+            <text x={p[0]} y={height + 16} textAnchor="middle" fontSize={9} fill="#4C535B" fontFamily="var(--font-mono)">
               {String(data[i][labelKey]).slice(5)}
             </text>
           )}

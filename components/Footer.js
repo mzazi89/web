@@ -1,82 +1,82 @@
 import Link from 'next/link';
 import Logo from './Logo';
 
-const sections = [
+const columns = [
   {
-    title: 'Services',
+    title: 'Products',
     links: [
       { label: 'Pterodactyl Panels', href: '/products' },
-      { label: 'WhatsApp Bot',       href: '/whatsapp-bot' },
-      { label: 'Wallet Top-up',      href: '/wallet' },
-      { label: 'Dashboard',          href: '/dashboard' },
+      { label: 'WhatsApp Automation', href: '/whatsapp-bot' },
+      { label: 'Developer API', href: '/api' },
+      { label: 'Temp Numbers', href: '/temp-number' },
+      { label: 'Wallet', href: '/wallet' },
     ],
   },
   {
     title: 'Company',
     links: [
-      { label: 'About Us',   href: '/about' },
-      { label: 'Contact',    href: '/contact' },
-      { label: 'Create Account', href: '/signup' },
-      { label: 'Login',     href: '/login' },
+      { label: 'About', href: '/about' },
+      { label: 'Reviews', href: '/testimonials' },
+      { label: 'Contact', href: '/contact' },
+      { label: 'Privacy', href: '/privacy' },
+      { label: 'Terms', href: '/terms' },
     ],
   },
   {
     title: 'Support',
     links: [
-      { label: 'Telegram Support', href: 'https://t.me/mzazitech',      external: true },
-      { label: 'WhatsApp',         href: 'https://wa.me/254108595201', external: true },
-      { label: 'Telegram Bot',     href: 'https://t.me/mrsmzazixdbot', external: true },
-      { label: 'Email Us',         href: 'mailto:mzazitechinc@gmail.com', external: true },
+      { label: 'Telegram — t.me/mzazitech', href: 'https://t.me/mzazitech', external: true },
+      { label: 'WhatsApp — wa.me/254108595201', href: 'https://wa.me/254108595201', external: true },
+      { label: 'Bot — t.me/mrsmzazixdbot', href: 'https://t.me/mrsmzazixdbot', external: true },
+      { label: 'Email — mzazitechinc@gmail.com', href: 'mailto:mzazitechinc@gmail.com', external: true },
     ],
   },
 ];
 
 export default function Footer() {
   return (
-    <footer style={{ backgroundColor: 'rgba(2,4,9,0.70)', borderTop: '1px solid #1e3a8a', boxShadow: '0 -1px 0 rgba(59,130,246,0.25), 0 -14px 44px rgba(37,99,235,0.07)' }}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
-        {/* Top row */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
-          {/* Brand */}
-          <div className="sm:col-span-2 lg:col-span-1">
-            <Link href="/" className="flex items-center gap-2.5 mb-4" style={{ textDecoration: 'none' }}>
-              <Logo size={36} withText />
+    <footer style={{ background: '#0B0D0F', borderTop: '1px solid #1B2026' }}>
+      <div className="max-w-7xl mx-auto px-5 sm:px-6">
+        {/* Top: brand + link columns */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-10 pt-14 pb-12">
+          {/* Brand — spans 5 */}
+          <div className="lg:col-span-5">
+            <Link href="/" className="flex items-center gap-2.5 mb-5" style={{ textDecoration: 'none' }}>
+              <Logo size={38} withText />
             </Link>
-            <p className="text-sm leading-relaxed mb-5" style={{ color: '#475569' }}>
-              A global provider of Pterodactyl panel hosting, WhatsApp automation bots, and tech solutions.
+            <p className="text-sm leading-relaxed max-w-sm mb-6" style={{ color: '#79818A' }}>
+              Kenya-born infrastructure company. Pterodactyl panels, WhatsApp automation and
+              developer APIs — operated from Nairobi, trusted worldwide.
             </p>
-            {/* Social / contact chips */}
-            <div className="flex flex-wrap gap-2">
-              {[
-                { label: 'Telegram', href: 'https://t.me/mzazitech', icon: '✈️' },
-                { label: 'WhatsApp', href: 'https://wa.me/254108595201', icon: '📱' },
-              ].map(s => (
-                <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
-                  style={{ backgroundColor: '#060b16', color: '#64748b', border: '1px solid #1e3a8a', textDecoration: 'none' }}>
-                  {s.icon} {s.label}
-                </a>
-              ))}
+            <div className="flex flex-col gap-1.5">
+              <span className="mono text-[11px] tracking-[0.14em] uppercase flex items-center gap-2" style={{ color: '#3ECF8E' }}>
+                <span className="dot anim-pulse" /> All systems operational
+              </span>
+              <span className="mono text-[11px] tracking-[0.14em] uppercase" style={{ color: '#4C535B' }}>
+                Payments via Paystack · KES wallet
+              </span>
             </div>
           </div>
 
-          {/* Link columns */}
-          {sections.map(s => (
-            <div key={s.title}>
-              <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: '#3b82f6' }}>{s.title}</p>
+          {/* Link columns — 7 split */}
+          {columns.map((c, i) => (
+            <div key={c.title} className={i === 0 ? 'lg:col-span-2' : 'lg:col-span-2'}>
+              <p className="mono text-[10px] font-semibold uppercase tracking-[0.2em] mb-4" style={{ color: '#F2A93B' }}>
+                {c.title}
+              </p>
               <ul className="space-y-2.5">
-                {s.links.map(l => (
+                {c.links.map(l => (
                   <li key={l.label}>
                     {l.external ? (
                       <a href={l.href} target="_blank" rel="noopener noreferrer"
-                        className="text-sm transition-colors hover:text-blue-400"
-                        style={{ color: '#64748b', textDecoration: 'none' }}>
+                        className="text-[13px] transition-colors"
+                        style={{ color: '#79818A', textDecoration: 'none' }}>
                         {l.label}
                       </a>
                     ) : (
                       <Link href={l.href}
-                        className="text-sm transition-colors hover:text-blue-400"
-                        style={{ color: '#64748b', textDecoration: 'none' }}>
+                        className="text-[13px] transition-colors"
+                        style={{ color: '#79818A', textDecoration: 'none' }}>
                         {l.label}
                       </Link>
                     )}
@@ -87,41 +87,44 @@ export default function Footer() {
           ))}
         </div>
 
-        {/* Warranty notice */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 p-4 rounded-xl mb-8"
-          style={{ backgroundColor: 'rgba(37,99,235,0.06)', border: '1px solid rgba(37,99,235,0.15)' }}>
-          <span className="text-lg flex-shrink-0">🛡️</span>
-          <p className="text-xs leading-relaxed" style={{ color: '#475569' }}>
-            <span className="font-semibold" style={{ color: '#60a5fa' }}>Panel Warranty: </span>
-            Pterodactyl panel replacement warranty is valid for <strong style={{ color: '#93c5fd' }}>2 weeks</strong> from purchase. Contact support within this period for a free replacement.
+        {/* Warranty strip */}
+        <div
+          className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-5 py-4 mb-10"
+          style={{ border: '1px solid #262C33', borderRadius: 4, background: '#0F1215' }}
+        >
+          <p className="mono text-[11px] tracking-[0.06em]" style={{ color: '#79818A' }}>
+            <span style={{ color: '#F2A93B' }}>PANEL WARRANTY — </span>
+            Pterodactyl panels carry a 2-week replacement warranty from purchase.
           </p>
+          <a href="/contact" className="mono text-[11px] tracking-[0.1em] uppercase flex-shrink-0" style={{ color: '#AEB5BD', textDecoration: 'none' }}>
+            Claim within 14 days →
+          </a>
         </div>
 
         {/* Bottom bar */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-8"
-          style={{ borderTop: '1px solid #1e3a8a' }}>
-          <p className="text-xs text-center sm:text-left" style={{ color: '#374151' }}>
-            © {new Date().getFullYear()} Mzazi Tech Inc. All rights reserved.
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pb-8" style={{ borderTop: '1px solid #1B2026', paddingTop: 24 }}>
+          <p className="mono text-[11px]" style={{ color: '#4C535B' }}>
+            © {new Date().getFullYear()} Mzazi Tech Inc — Nairobi, Kenya
           </p>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-5">
             {[
               { label: 'Privacy', href: '/privacy' },
-              { label: 'Terms',   href: '/terms' },
-              { label: 'Support', href: '/contact' },
+              { label: 'Terms', href: '/terms' },
+              { label: 'Admin', href: 'https://admin.mzazi.shop' },
             ].map(l => (
               <Link key={l.label} href={l.href}
-                className="text-xs transition-colors hover:text-blue-400"
-                style={{ color: '#374151', textDecoration: 'none' }}>
+                className="mono text-[11px] uppercase tracking-[0.1em] transition-colors"
+                style={{ color: '#4C535B', textDecoration: 'none' }}>
                 {l.label}
               </Link>
             ))}
-            <a href="https://admin.mzazi.shop"
-              className="text-xs transition-colors hover:text-red-400"
-              style={{ color: '#1f2937', textDecoration: 'none' }}>
-              Admin
-            </a>
           </div>
         </div>
+      </div>
+
+      {/* Giant wordmark */}
+      <div aria-hidden="true" className="watermark overflow-hidden" style={{ fontSize: 'clamp(80px, 16.5vw, 260px)', whiteSpace: 'nowrap', marginTop: -30 }}>
+        MZAZI TECH
       </div>
     </footer>
   );

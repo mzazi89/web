@@ -1,6 +1,5 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import TypingHeading from '@/components/TypingHeading';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Logo from '@/components/Logo';
@@ -52,87 +51,89 @@ export default function LoginPage() {
   }, []);
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-12 px-4" style={{ backgroundColor: 'rgba(2,4,9,0.45)' }}>
-      {/* Background glow */}
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full pointer-events-none"
-        style={{ background: 'radial-gradient(circle, rgba(37,99,235,0.1) 0%, transparent 70%)', filter: 'blur(40px)' }} />
-
-      <div className="relative w-full max-w-md">
-        {/* Card */}
-        <div className="rounded-2xl p-8" style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a', boxShadow: '0 25px 50px rgba(0,0,0,0.5)' }}>
-          {/* Logo */}
-          <div className="text-center mb-8">
-            <div className="mx-auto mb-4 flex justify-center">
-              <Logo size={56} />
-            </div>
-            <TypingHeading as="h2" text="Welcome back" speed={55} className="text-2xl font-extrabold" style={{ color: '#f0f4ff' }} />
-            <p className="text-sm mt-1" style={{ color: '#64748b' }}>Sign in to your MZAZI TECH account</p>
-          </div>
+    <div className="min-h-[80vh] flex items-center py-12 px-5">
+      <div className="container-site grid lg:grid-cols-2 gap-12 items-center w-full">
+        {/* Form side */}
+        <div className="max-w-md w-full">
+          <p className="eyebrow">Account access</p>
+          <h1 className="headline mt-4" style={{ fontSize: 'clamp(1.8rem, 3.4vw, 2.4rem)' }}>
+            Welcome back<span className="accent">.</span>
+          </h1>
+          <p className="text-sm mt-2 mb-8" style={{ color: '#79818A' }}>
+            Sign in to manage panels, devices and your wallet.
+          </p>
 
           {error && (
-            <div className="mb-6 p-3 rounded-lg text-sm" style={{ backgroundColor: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: '#f87171' }}>
+            <div className="mb-6 px-4 py-3 text-sm" style={{ background: 'rgba(229,72,77,0.08)', border: '1px solid rgba(229,72,77,0.3)', color: '#E5484D' }}>
               {error}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-sm font-medium mb-2" style={{ color: '#94a3b8' }}>Email Address</label>
+              <label className="label">Email address</label>
               <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-xl px-4 py-3 text-sm transition-all outline-none"
-                style={{ backgroundColor: '#02040a', border: '1px solid #1e3a8a', color: '#f0f4ff' }}
+                className="input"
                 placeholder="you@example.com"
-                onFocus={e => e.target.style.borderColor = '#2563eb'}
-                onBlur={e => e.target.style.borderColor = '#1e3a8a'}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2" style={{ color: '#94a3b8' }}>Password</label>
+              <div className="flex items-center justify-between mb-2">
+                <label className="label" style={{ marginBottom: 0 }}>Password</label>
+                <Link href="/forgot-password" className="mono text-[10px] uppercase tracking-[0.1em]" style={{ color: '#79818A', textDecoration: 'none' }}>
+                  Forgot password?
+                </Link>
+              </div>
               <input
                 type="password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-xl px-4 py-3 text-sm transition-all outline-none"
-                style={{ backgroundColor: '#02040a', border: '1px solid #1e3a8a', color: '#f0f4ff' }}
+                className="input"
                 placeholder="Your password"
-                onFocus={e => e.target.style.borderColor = '#2563eb'}
-                onBlur={e => e.target.style.borderColor = '#1e3a8a'}
               />
-              <div className="text-right mt-1.5">
-                <Link href="/forgot-password" className="text-xs hover:underline" style={{ color: '#60a5fa' }}>
-                  Forgot password?
-                </Link>
-              </div>
             </div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3 rounded-xl font-bold text-white text-sm transition-all"
-              style={{ background: loading ? '#1e3a8a' : 'linear-gradient(135deg, #3b82f6, #1d4ed8)', cursor: loading ? 'not-allowed' : 'pointer' }}
-            >
-              {loading ? (
-                <span className="flex items-center justify-center space-x-2">
-                  <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
-                  </svg>
-                  <span>Signing in...</span>
-                </span>
-              ) : 'Sign In'}
+            <button type="submit" disabled={loading} className="btn btn-primary w-full" style={{ opacity: loading ? 0.7 : 1 }}>
+              {loading ? 'Signing in…' : 'Sign in'}
             </button>
           </form>
 
-          <p className="text-center mt-6 text-sm" style={{ color: '#64748b' }}>
+          <p className="mt-8 text-sm" style={{ color: '#79818A' }}>
             No account?{' '}
-            <Link href="/signup" className="font-semibold hover:underline" style={{ color: '#3b82f6' }}>
-              Create one free
-            </Link>
+            <Link href="/signup" className="link">Create one free</Link>
           </p>
+        </div>
+
+        {/* Editorial rail */}
+        <div className="hidden lg:block">
+          <div className="card p-10 relative overflow-hidden" style={{ background: 'linear-gradient(160deg, #14181D 0%, #0F1215 100%)' }}>
+            <div aria-hidden="true" className="absolute -top-20 -right-20 w-72 h-72 pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(242,169,59,0.10) 0%, transparent 65%)' }} />
+            <Logo size={40} />
+            <p className="display text-2xl font-bold leading-snug mt-8" style={{ color: '#E9E7E2' }}>
+              One account for panels, bots and APIs<span className="accent">.</span>
+            </p>
+            <p className="text-sm leading-relaxed mt-4 mb-10" style={{ color: '#79818A' }}>
+              Everything you buy, deploy and connect lives under one login — with a wallet that
+              makes payment instant.
+            </p>
+            <div className="space-y-0" style={{ borderTop: '1px solid #1B2026' }}>
+              {[
+                { k: 'Panels', v: 'Deploy in under 2 minutes' },
+                { k: 'Devices', v: 'Linked from WhatsApp or Telegram' },
+                { k: 'Wallet', v: 'KES balance, Paystack top-ups' },
+                { k: 'API', v: 'Keys, usage and docs in one place' },
+              ].map(r => (
+                <div key={r.k} className="flex items-baseline justify-between gap-6 py-3.5" style={{ borderBottom: '1px solid #1B2026' }}>
+                  <span className="mono text-[10px] uppercase tracking-[0.18em]" style={{ color: '#F2A93B' }}>{r.k}</span>
+                  <span className="text-[13px] text-right" style={{ color: '#AEB5BD' }}>{r.v}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </div>

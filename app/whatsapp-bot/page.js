@@ -1,6 +1,5 @@
 'use client';
 import Link from 'next/link';
-import TypingHeading from '@/components/TypingHeading';
 import PairingPanel from './PairingPanel';
 
 const BOTS = [
@@ -13,134 +12,121 @@ const BOTS = [
 const steps = [
   {
     step: '01',
-    title: 'Open a Telegram Bot',
-    desc: 'Click any bot below to open it in Telegram. Each bot connects ONE WhatsApp number — pick Bot 1 first (recommended) and stick with it. If you need more numbers later, use Bot 2, 3 or 4.',
-    icon: '📱',
+    title: 'Open a Telegram bot',
+    desc: 'Each bot connects ONE WhatsApp number. Pick Bot 1 first (recommended) and stick with it. Need more numbers later? Use Bot 2, 3 or 4.',
     action: { label: 'Choose your bot', href: '#bots' },
   },
   {
     step: '02',
-    title: 'Start the Bot',
-    desc: 'Tap Start (or send /start) inside the bot. The bot replies with a welcome message and lists its commands — confirm it is online before pairing.',
-    icon: '▶️',
+    title: 'Start the bot',
+    desc: 'Tap Start (or send /start) inside the bot. It replies with a welcome message and lists its commands — confirm it is online before pairing.',
     code: '/start',
   },
   {
     step: '03',
-    title: 'Pair Your WhatsApp',
-    desc: 'Send /pair followed by your WhatsApp phone number in international format — country code first, no spaces or + sign. The bot replies with an 8-character pairing code. Example: for Kenya (country code 254) the number 0712 345 678 becomes 254712345678.',
-    icon: '🔗',
+    title: 'Pair your WhatsApp',
+    desc: 'Send /pair followed by your WhatsApp number in international format — country code first, no spaces or + sign. The bot replies with an 8-character pairing code. Example: for Kenya (254) the number 0712 345 678 becomes 254712345678.',
     code: '/pair 254712345678',
   },
   {
     step: '04',
-    title: 'Enter the Code in WhatsApp',
-    desc: 'On your phone open WhatsApp → Settings → Linked Devices → Link a Device → Link with Phone Number. Type the 8-character code from the bot and tap Link. Done — your WhatsApp is connected and the bot starts working.',
-    icon: '✅',
+    title: 'Enter the code in WhatsApp',
+    desc: 'On your phone open WhatsApp → Settings → Linked Devices → Link a Device → Link with Phone Number. Type the 8-character code from the bot and tap Link. Done — your WhatsApp is connected.',
     code: 'AB12CD34',
   },
 ];
 
 const features = [
-  { icon: '⚡', title: 'Instant Pairing', desc: 'Link your WhatsApp number in seconds via our Telegram bots — no QR code scanning needed.' },
-  { icon: '🤖', title: 'Bot Commands', desc: 'Manage your bot, send broadcasts, auto-reply messages, and run custom automation workflows.' },
-  { icon: '🔒', title: 'Secure Connection', desc: 'Your WhatsApp is connected securely. No passwords are stored — only a session token.' },
-  { icon: '📊', title: '24/7 Uptime', desc: 'Your bot runs on our high-availability infrastructure, ensuring it\'s always online.' },
-  { icon: '🌍', title: 'Any Number', desc: 'Works with WhatsApp numbers worldwide — pair in international format (e.g. 254XXXXXXXXX for Kenya).' },
-  { icon: '💬', title: 'Multi-Group Support', desc: 'Manage multiple WhatsApp groups and broadcast lists from one dashboard.' },
+  { title: 'Instant pairing', desc: 'Link your WhatsApp number in seconds via our Telegram bots — no QR code scanning needed.' },
+  { title: 'Bot commands', desc: 'Manage your bot, send broadcasts, auto-reply messages, and run custom automation workflows.' },
+  { title: 'Secure connection', desc: 'No passwords are stored — only a session token, and sessions are wiped when you delete a device.' },
+  { title: '24/7 uptime', desc: 'Your bot runs on high-availability infrastructure and stays online around the clock.' },
+  { title: 'Any number, anywhere', desc: 'Works with WhatsApp numbers worldwide — pair in international format (e.g. 254XXXXXXXXX for Kenya).' },
+  { title: 'Multi-group support', desc: 'Manage multiple WhatsApp groups and broadcast lists from one dashboard.' },
 ];
 
 function TelegramButton({ bot, size = 'lg' }) {
   const href = `https://t.me/${bot.handle}`;
   return (
     <a href={href} target="_blank" rel="noopener noreferrer"
-      className={`rounded-xl font-bold text-white transition-all hover:opacity-90 inline-flex items-center justify-center gap-2 ${size === 'lg' ? 'px-6 py-3.5 text-sm' : 'px-4 py-2.5 text-xs'}`}
+      className="mono flex items-center justify-between gap-3 transition-colors"
       style={{
-        background: bot.recommended ? 'linear-gradient(135deg, #3b82f6, #1d4ed8)' : 'rgba(37,99,235,0.08)',
-        border: bot.recommended ? 'none' : '1px solid rgba(37,99,235,0.35)',
-        color: bot.recommended ? '#fff' : '#93c5fd',
-        boxShadow: bot.recommended ? '0 0 24px rgba(37,99,235,0.35)' : 'none',
+        padding: size === 'lg' ? '12px 16px' : '8px 12px',
+        fontSize: size === 'lg' ? 12 : 11,
+        background: bot.recommended ? 'rgba(242,169,59,0.08)' : '#0F1215',
+        border: bot.recommended ? '1px solid rgba(242,169,59,0.45)' : '1px solid #262C33',
+        color: bot.recommended ? '#F2A93B' : '#AEB5BD',
         textDecoration: 'none',
+        borderRadius: 2,
       }}>
-      <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.833.941z"/>
-      </svg>
-      <span className="truncate">{bot.recommended ? `★ ${bot.name} · @${bot.handle}` : `${bot.name} · @${bot.handle}`}</span>
+      <span className="truncate">
+        {bot.recommended ? '★ ' : ''}{bot.name} · @{bot.handle}
+      </span>
+      <span style={{ color: bot.recommended ? '#F2A93B' : '#4C535B' }}>→</span>
     </a>
   );
 }
 
 export default function WhatsAppBotPage() {
   return (
-    <div style={{ backgroundColor: 'rgba(2,4,9,0.45)' }}>
-      {/* Hero */}
-      <section className="relative overflow-hidden py-20" style={{ background: 'linear-gradient(180deg, #020409 0%, #071428 50%, #020409 100%)' }}>
-        <div className="absolute inset-0" style={{
-          backgroundImage: 'linear-gradient(rgba(37,99,235,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(37,99,235,0.05) 1px, transparent 1px)',
-          backgroundSize: '40px 40px'
-        }} />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] rounded-full"
-          style={{ background: 'radial-gradient(ellipse, rgba(37,99,235,0.12) 0%, transparent 70%)', filter: 'blur(60px)' }} />
+    <>
+      {/* ─── Hero ─── */}
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none grid-bg" style={{ maskImage: 'linear-gradient(180deg, rgba(0,0,0,0.5), transparent 70%)', WebkitMaskImage: 'linear-gradient(180deg, rgba(0,0,0,0.5), transparent 70%)' }} />
+        <div className="container-site relative py-20 sm:py-28">
+          <div className="max-w-2xl">
+            <span className="tag tag-green anim-fade-up"><span className="dot anim-pulse" /> 4 bots online</span>
+            <h1 className="headline anim-fade-up d1 mt-6" style={{ color: '#E9E7E2' }}>
+              Your WhatsApp,<br />on autopilot<span className="accent">.</span>
+            </h1>
+            <p className="lede anim-fade-up d2 mt-6">
+              Link your number through our Telegram bots in under two minutes. No technical skills —
+              one command, one code, done.
+            </p>
 
-        <div className="relative max-w-4xl mx-auto px-4 text-center">
-          <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full mb-6" style={{ backgroundColor: 'rgba(37,99,235,0.1)', border: '1px solid rgba(37,99,235,0.3)' }}>
-            <span className="text-green-400 text-lg">●</span>
-            <span className="text-sm font-medium" style={{ color: '#60a5fa' }}>WhatsApp Bot Service — 4 Bots Online</span>
+            <div id="bots" className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-10 max-w-lg scroll-mt-32 anim-fade-up d3">
+              {BOTS.map(bot => <TelegramButton key={bot.handle} bot={bot} />)}
+            </div>
+            <p className="mono text-[10px] uppercase tracking-[0.14em] mt-4" style={{ color: '#4C535B' }}>
+              One bot = one WhatsApp number. Keep using the same bot.
+            </p>
           </div>
-
-          <h1 className="text-4xl md:text-6xl font-extrabold mb-6" style={{ color: '#f0f4ff' }}>
-            <TypingHeading as="span" text="Connect Your WhatsApp Bot" speed={70}
-              highlight="WhatsApp Bot"
-              highlightStyle={{ background: 'linear-gradient(135deg, #25D366, #128C7E)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }} />
-          </h1>
-
-          <p className="text-lg mb-8 max-w-2xl mx-auto" style={{ color: '#64748b' }}>
-            Link your WhatsApp number through our Telegram bots in under 2 minutes. No technical skills needed — just one simple command.
-          </p>
-
-          <div id="bots" className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-2xl mx-auto scroll-mt-24">
-            {BOTS.map(bot => <TelegramButton key={bot.handle} bot={bot} />)}
-          </div>
-          <p className="text-xs mt-4" style={{ color: '#475569' }}>
-            Each bot connects <strong style={{ color: '#94a3b8' }}>one</strong> WhatsApp number — pick a bot and keep using it for that number.
-          </p>
         </div>
       </section>
 
-      {/* How to pair */}
-      <section className="py-20" style={{ backgroundColor: 'rgba(2,4,9,0.45)' }}>
-        <div className="max-w-4xl mx-auto px-4">
-          <div className="text-center mb-14">
-            <h2 className="text-3xl font-extrabold mb-3" style={{ color: '#f0f4ff' }}>How to Link Your WhatsApp</h2>
-            <p style={{ color: '#64748b' }}>4 simple steps — Telegram bot + your phone, no computer needed</p>
+      {/* ─── How to pair ─── */}
+      <section className="section" style={{ paddingTop: 40 }}>
+        <div className="container-site max-w-4xl">
+          <div className="mb-12">
+            <p className="eyebrow">How it works</p>
+            <h2 className="section-title text-3xl sm:text-4xl mt-4" style={{ color: '#E9E7E2' }}>
+              Four steps, two minutes
+              <span className="bar" />
+            </h2>
           </div>
 
-          <div className="space-y-6">
-            {steps.map((s, i) => (
-              <div key={s.step} className="flex gap-6 p-6 rounded-2xl transition-all" style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a' }}>
-                <div className="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center font-extrabold text-sm" style={{ background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)', color: '#fff' }}>
-                  {s.step}
-                </div>
+          <div className="space-y-4">
+            {steps.map(s => (
+              <div key={s.step} className="card p-6 sm:p-7 flex flex-col sm:flex-row gap-5">
+                <span className="mono text-[13px] font-semibold flex-shrink-0" style={{ color: '#F2A93B', paddingTop: 2 }}>
+                  /{s.step}
+                </span>
                 <div className="flex-1">
-                  <div className="flex items-center space-x-2 mb-2">
-                    <span className="text-xl">{s.icon}</span>
-                    <h3 className="font-bold text-lg" style={{ color: '#f0f4ff' }}>{s.title}</h3>
-                  </div>
-                  <p className="text-sm mb-3 leading-relaxed" style={{ color: '#64748b' }}>{s.desc}</p>
+                  <h3 className="display text-lg font-bold mb-2" style={{ color: '#E9E7E2' }}>{s.title}</h3>
+                  <p className="text-sm leading-relaxed mb-4" style={{ color: '#79818A' }}>{s.desc}</p>
                   {s.code && (
-                    <div className="inline-flex items-center space-x-3 px-4 py-2.5 rounded-xl" style={{ backgroundColor: '#02040a', border: '1px solid rgba(37,99,235,0.3)' }}>
-                      <span className="font-mono font-bold text-sm" style={{ color: '#60a5fa' }}>{s.code}</span>
-                      <span className="text-xs" style={{ color: '#475569' }}>{s.step === '04' ? '— the code from your bot' : '— send this to the bot'}</span>
+                    <div className="inline-flex items-center gap-3 px-4 py-2.5" style={{ background: '#0F1215', border: '1px solid #262C33' }}>
+                      <code className="mono font-semibold text-[13px]" style={{ color: '#F2A93B' }}>{s.code}</code>
+                      <span className="mono text-[10px] uppercase tracking-[0.12em]" style={{ color: '#4C535B' }}>
+                        {s.step === '04' ? '— the code from your bot' : '— send this to the bot'}
+                      </span>
                     </div>
                   )}
                   {s.action && (
                     <a href={s.action.href}
-                      className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all"
-                      style={{ background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)', color: '#fff', textDecoration: 'none' }}>
-                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.833.941z"/>
-                      </svg>
-                      <span>{s.action.label}</span>
+                      className="mono inline-flex items-center gap-2 px-4 py-2.5 text-[11px] uppercase tracking-[0.12em]"
+                      style={{ background: '#F2A93B', color: '#14100A', textDecoration: 'none' }}>
+                      {s.action.label} →
                     </a>
                   )}
                 </div>
@@ -149,21 +135,23 @@ export default function WhatsAppBotPage() {
           </div>
 
           {/* Which bot? */}
-          <div className="mt-10 p-6 rounded-2xl" style={{ backgroundColor: '#060b16', border: '1px solid rgba(37,99,235,0.3)' }}>
-            <h3 className="font-bold text-lg mb-2" style={{ color: '#f0f4ff' }}>🤖 Which bot should I use?</h3>
-            <p className="text-sm mb-4 leading-relaxed" style={{ color: '#64748b' }}>
-              We run <strong style={{ color: '#f0f4ff' }}>4 separate bots</strong> so you can connect up to 4 different WhatsApp numbers.
-              Each bot is an independent session — one bot = one WhatsApp number. Start with <strong style={{ color: '#93c5fd' }}>Bot 1</strong>.
-              Once you send <code className="font-mono text-xs" style={{ color: '#60a5fa' }}>/pair</code> to a bot, keep using that same bot for that number.
+          <div className="card p-6 sm:p-8 mt-10">
+            <h3 className="display text-lg font-bold mb-2" style={{ color: '#E9E7E2' }}>Which bot should I use?</h3>
+            <p className="text-sm mb-6 leading-relaxed" style={{ color: '#79818A' }}>
+              We run <strong style={{ color: '#E9E7E2' }}>4 separate bots</strong> so you can connect up to 4 different
+              WhatsApp numbers. Each bot is an independent session — one bot = one WhatsApp number.
+              Start with <strong style={{ color: '#F2A93B' }}>Bot 1</strong>. Once you send{' '}
+              <code className="mono text-xs" style={{ color: '#F2A93B' }}>/pair</code> to a bot, keep using that same bot for that number.
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {BOTS.map(bot => (
-                <div key={bot.handle} className="flex items-center justify-between gap-3 p-3 rounded-xl" style={{ backgroundColor: '#02040a', border: bot.recommended ? '1px solid rgba(37,99,235,0.4)' : '1px solid #1e3a8a' }}>
+                <div key={bot.handle} className="flex items-center justify-between gap-3 px-4 py-3" style={{ background: '#0F1215', border: bot.recommended ? '1px solid rgba(242,169,59,0.4)' : '1px solid #262C33' }}>
                   <div className="min-w-0">
-                    <p className="text-sm font-bold" style={{ color: '#f0f4ff' }}>
-                      {bot.name} {bot.recommended && <span className="text-[10px] font-bold px-1.5 py-0.5 rounded ml-1" style={{ backgroundColor: 'rgba(74,222,128,0.1)', color: '#4ade80' }}>Recommended</span>}
+                    <p className="text-sm font-semibold" style={{ color: '#E9E7E2' }}>
+                      {bot.name}
+                      {bot.recommended && <span className="mono text-[9px] uppercase tracking-[0.1em] px-1.5 py-0.5 ml-2" style={{ background: 'rgba(62,207,142,0.1)', color: '#3ECF8E' }}>Recommended</span>}
                     </p>
-                    <p className="text-xs font-mono truncate" style={{ color: '#64748b' }}>t.me/{bot.handle}</p>
+                    <p className="mono text-[11px] truncate mt-0.5" style={{ color: '#4C535B' }}>t.me/{bot.handle}</p>
                   </div>
                   <TelegramButton bot={bot} size="sm" />
                 </div>
@@ -172,8 +160,8 @@ export default function WhatsAppBotPage() {
           </div>
 
           {/* Command reference */}
-          <div className="mt-10 p-6 rounded-2xl" style={{ backgroundColor: '#060b16', border: '1px solid rgba(37,99,235,0.3)' }}>
-            <h3 className="font-bold text-lg mb-4" style={{ color: '#f0f4ff' }}>📋 Quick Command Reference</h3>
+          <div className="card p-6 sm:p-8 mt-10">
+            <h3 className="display text-lg font-bold mb-5" style={{ color: '#E9E7E2' }}>Quick command reference</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {[
                 { cmd: '/start', desc: 'Initialize the bot' },
@@ -181,61 +169,75 @@ export default function WhatsAppBotPage() {
                 { cmd: '/status', desc: 'Check your connection status' },
                 { cmd: '/help', desc: 'List all available commands' },
               ].map(c => (
-                <div key={c.cmd} className="flex items-start space-x-3 p-3 rounded-xl" style={{ backgroundColor: '#02040a' }}>
-                  <code className="font-mono text-sm font-bold" style={{ color: '#60a5fa' }}>{c.cmd}</code>
-                  <span className="text-sm" style={{ color: '#64748b' }}>{c.desc}</span>
+                <div key={c.cmd} className="flex items-start justify-between gap-3 px-4 py-3" style={{ background: '#0F1215', border: '1px solid #1B2026' }}>
+                  <code className="mono text-[12px] font-semibold" style={{ color: '#F2A93B' }}>{c.cmd}</code>
+                  <span className="text-xs text-right" style={{ color: '#79818A' }}>{c.desc}</span>
                 </div>
               ))}
             </div>
-            <p className="text-xs mt-4" style={{ color: '#475569' }}>
-              💡 International format: country code + number without leading 0 or +. Kenya: 254712345678 · Nigeria: 2348012345678 · US: 14155552671
+            <p className="mono text-[10px] uppercase tracking-[0.12em] mt-5" style={{ color: '#4C535B' }}>
+              International format: country code + number without leading 0 or + — KE 254712345678 · NG 2348012345678 · US 14155552671
             </p>
           </div>
         </div>
       </section>
 
-      {/* Pair online — no Telegram needed */}
-      <section className="py-20" style={{ backgroundColor: 'rgba(2,4,9,0.45)' }}>
-        <div className="max-w-5xl mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-extrabold mb-3" style={{ color: '#f0f4ff' }}>Pair Directly Here — No Telegram Needed</h2>
-            <p style={{ color: '#64748b' }}>Enter your number, get the code, link your WhatsApp. Manage your devices and plans from your wallet.</p>
+      {/* ─── Pair online — no Telegram needed ─── */}
+      <section className="section" style={{ background: 'rgba(255,255,255,0.014)' }}>
+        <div className="container-site max-w-5xl">
+          <div className="mb-12">
+            <p className="eyebrow">No Telegram?</p>
+            <h2 className="section-title text-3xl sm:text-4xl mt-4" style={{ color: '#E9E7E2' }}>
+              Pair directly here
+              <span className="bar" />
+            </h2>
+            <p className="mt-4 text-sm" style={{ color: '#79818A' }}>
+              Enter your number, get the code, link your WhatsApp. Manage devices and plans from your wallet.
+            </p>
           </div>
           <PairingPanel />
         </div>
       </section>
 
-      {/* Features */}
-      <section className="py-20" style={{ backgroundColor: 'rgba(2,4,9,0.45)' }}>
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="text-center mb-14">
-            <h2 className="text-3xl font-extrabold" style={{ color: '#f0f4ff' }}>Bot Features</h2>
-            <p className="mt-3" style={{ color: '#64748b' }}>Everything you get with your WhatsApp bot</p>
+      {/* ─── Features — asymmetric list ─── */}
+      <section className="section">
+        <div className="container-site max-w-4xl">
+          <div className="mb-12">
+            <p className="eyebrow">Bot features</p>
+            <h2 className="section-title text-3xl sm:text-4xl mt-4" style={{ color: '#E9E7E2' }}>
+              What you get
+              <span className="bar" />
+            </h2>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {features.map(f => (
-              <div key={f.title} className="p-6 rounded-2xl transition-all hover:scale-105" style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a' }}>
-                <div className="text-3xl mb-3">{f.icon}</div>
-                <h3 className="font-bold mb-2" style={{ color: '#f0f4ff' }}>{f.title}</h3>
-                <p className="text-sm" style={{ color: '#64748b' }}>{f.desc}</p>
+          <div>
+            {features.map((f, i) => (
+              <div key={f.title} className="row-item" style={{ gridTemplateColumns: '56px 1fr' }}>
+                <span className="row-num">/{String(i + 1).padStart(2, '0')}</span>
+                <div>
+                  <h3 style={{ color: '#E9E7E2' }}>{f.title}</h3>
+                  <p>{f.desc}</p>
+                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-16" style={{ backgroundColor: 'rgba(2,4,9,0.45)' }}>
-        <div className="max-w-2xl mx-auto text-center px-4">
-          <h2 className="text-3xl font-extrabold mb-4" style={{ color: '#f0f4ff' }}>Ready to connect?</h2>
-          <p className="mb-8" style={{ color: '#64748b' }}>
-            Open <strong style={{ color: '#93c5fd' }}>Bot 1</strong> on Telegram and send <code className="text-blue-400">/pair 254XXXXXXXXX</code> to link your number in seconds.
+      {/* ─── CTA ─── */}
+      <section className="section" style={{ paddingTop: 40, paddingBottom: 110 }}>
+        <div className="container-site max-w-3xl text-center">
+          <p className="eyebrow center">Ready to connect?</p>
+          <h2 className="headline mt-5" style={{ fontSize: 'clamp(1.8rem, 4vw, 2.6rem)' }}>
+            Open Bot 1 and send <span className="accent">/pair</span><span className="accent">.</span>
+          </h2>
+          <p className="lede mt-4 text-sm" style={{ maxWidth: 420, margin: '1rem auto 0' }}>
+            Or skip Telegram entirely and pair right on this page.
           </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-lg mx-auto mt-8">
             {BOTS.map(bot => <TelegramButton key={bot.handle} bot={bot} />)}
           </div>
         </div>
       </section>
-    </div>
+    </>
   );
 }

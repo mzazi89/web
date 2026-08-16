@@ -1,9 +1,8 @@
 'use client';
 import React, { useEffect, useState, useRef } from 'react';
-import TypingHeading from '@/components/TypingHeading';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { fmtMtc, fmtMtcValue, mtcToKsh } from '@/lib/currency';
+import { fmtMtc } from '@/lib/currency';
 
 export default function DashboardPage() {
   const [user, setUser]           = useState(null);
@@ -93,7 +92,7 @@ export default function DashboardPage() {
 
   const saveSecurity = async () => {
     if (!secForm.question || secForm.answer.length < 2) {
-      setSecNotice('❌ Choose a question and enter an answer (min 2 characters).');
+      setSecNotice('Choose a question and enter an answer (min 2 characters).');
       return;
     }
     setSecSaving(true);
@@ -105,14 +104,14 @@ export default function DashboardPage() {
         body: JSON.stringify(secForm),
       });
       const d = await res.json();
-      if (!res.ok) { setSecNotice(`❌ ${d.error || 'Failed to save'}`); }
+      if (!res.ok) { setSecNotice(d.error || 'Failed to save'); }
       else {
         setSecQuestion(secForm.question);
-        setSecNotice('✅ Security question saved.');
+        setSecNotice('Security question saved.');
         setSecForm({ question: '', answer: '' });
       }
     } catch {
-      setSecNotice('❌ Connection error.');
+      setSecNotice('Connection error.');
     }
     setSecSaving(false);
   };
@@ -128,21 +127,21 @@ export default function DashboardPage() {
         body: JSON.stringify({ number }),
       });
       const data = await res.json();
-      if (!res.ok) { setDevNotice(`❌ ${data.error || 'Failed to unlink'}`); setUnlinking(null); return; }
-      setDevNotice(`⏳ Unlinking ${number}…`);
+      if (!res.ok) { setDevNotice(data.error || 'Failed to unlink'); setUnlinking(null); return; }
+      setDevNotice(`Unlinking ${number}…`);
       setTimeout(fetchDevices, 14000); // the bot picks it up within ~15s
     } catch {
-      setDevNotice('❌ Connection error.');
+      setDevNotice('Connection error.');
       setUnlinking(null);
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'rgba(2,4,9,0.45)' }}>
+      <div className="min-h-[60vh] flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-10 h-10 rounded-full border-2 animate-spin" style={{ borderColor: '#1e3a8a', borderTopColor: '#3b82f6' }} />
-          <p className="text-sm" style={{ color: '#475569' }}>Loading dashboard…</p>
+          <div className="spinner" />
+          <p className="mono text-[11px] uppercase tracking-[0.18em]" style={{ color: '#4C535B' }}>Loading dashboard…</p>
         </div>
       </div>
     );
@@ -152,168 +151,203 @@ export default function DashboardPage() {
   const activePanels = panels.filter(p => p.status === 'active').length;
 
   const stats = [
-    { label: 'Wallet Balance', value: fmtMtc(balance), icon: '💳', color: '#3b82f6', href: '/wallet' },
-    { label: 'Active Panels',  value: activePanels,                                   icon: '🖥️', color: '#10b981', href: '/products' },
-    { label: 'API Keys',       value: apiStats ? apiStats.keys : '—',                 icon: '🔑', color: '#a78bfa', href: '/api/dashboard/keys' },
-    { label: 'API Requests',   value: apiStats ? apiStats.requests.toLocaleString() : '—', icon: '📡', color: '#f472b6', href: '/api/dashboard' },
+    { label: 'Wallet balance', value: fmtMtc(balance), href: '/wallet', tone: '#F2A93B' },
+    { label: 'Active panels',  value: activePanels, href: '/products', tone: '#E9E7E2' },
+    { label: 'API keys',       value: apiStats ? apiStats.keys : '—', href: '/api/dashboard/keys', tone: '#E9E7E2' },
+    { label: 'API requests',   value: apiStats ? apiStats.requests.toLocaleString() : '—', href: '/api/dashboard', tone: '#E9E7E2' },
   ];
 
   return (
-    <div className="min-h-screen py-8 sm:py-10" style={{ backgroundColor: 'rgba(2,4,9,0.45)' }}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+    <div className="py-10 sm:py-14">
+      <div className="container-site">
 
         {/* ── Header ── */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 sm:mb-10">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-5 mb-10">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold" style={{ color: '#f0f4ff' }}>
-              <TypingHeading as="span" text={`Welcome back, ${firstName} 👋`} speed={40} highlight={firstName} highlightStyle={{ color: '#3b82f6' }} />
+            <p className="eyebrow">Account</p>
+            <h1 className="headline mt-3" style={{ fontSize: 'clamp(1.7rem, 3.6vw, 2.5rem)' }}>
+              Welcome back, {firstName}<span className="accent">.</span>
             </h1>
-            <p className="mt-1 text-sm" style={{ color: '#64748b' }}>{user?.email}</p>
+            <p className="mono text-[11px] uppercase tracking-[0.14em] mt-2" style={{ color: '#4C535B' }}>{user?.email}</p>
           </div>
-          <div className="flex gap-2 sm:gap-3 w-full sm:w-auto">
-            <Link href="/wallet"
-              className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl text-sm font-semibold"
-              style={{ backgroundColor: 'rgba(37,99,235,0.1)', color: '#60a5fa', border: '1px solid rgba(37,99,235,0.3)', textDecoration: 'none' }}>
-              💳 Top Up
-            </Link>
-            <Link href="/products"
-              className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl text-sm font-semibold text-white"
-              style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', textDecoration: 'none' }}>
-              🚀 New Panel
-            </Link>
+          <div className="flex gap-3 w-full sm:w-auto">
+            <Link href="/wallet" className="btn btn-ghost flex-1 sm:flex-none">Top up</Link>
+            <Link href="/products" className="btn btn-primary flex-1 sm:flex-none">New panel</Link>
           </div>
         </div>
 
-        {/* ── Stats grid ── */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5 mb-8 sm:mb-10">
-          {stats.map(s => (
-            <div key={s.label}
-              className="p-4 sm:p-5 rounded-2xl transition-all"
-              style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a' }}>
-              {s.href ? (
-                <Link href={s.href} style={{ textDecoration: 'none' }}><StatInner s={s} /></Link>
-              ) : (
-                <StatInner s={s} />
-              )}
-            </div>
+        {/* ── Stats ledger ── */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 mb-10" style={{ border: '1px solid #262C33' }}>
+          {stats.map((s, i) => (
+            <Link
+              key={s.label}
+              href={s.href}
+              className="p-6 transition-colors"
+              style={{
+                textDecoration: 'none',
+                borderLeft: i > 0 ? '1px solid #1B2026' : 'none',
+                borderTop: i > 1 && i % 2 === 0 ? '1px solid #1B2026' : 'none',
+                background: 'rgba(255,255,255,0.012)',
+              }}
+            >
+              <div className="stat-num" style={{ color: s.tone }}>{s.value}</div>
+              <div className="stat-label">{s.label}</div>
+            </Link>
           ))}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-          {/* ── Panels list (2/3) ── */}
-          <div className="lg:col-span-2 rounded-2xl p-5 sm:p-6" style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a' }}>
-            <div className="flex items-center justify-between mb-5">
-              <div>
-                <h2 className="font-bold text-base sm:text-lg" style={{ color: '#f0f4ff' }}>My Panels</h2>
-                <p className="text-xs mt-0.5" style={{ color: '#475569' }}>{panels.length} total</p>
-              </div>
-              <Link href="/products"
-                className="text-xs px-3 py-1.5 rounded-lg font-semibold"
-                style={{ backgroundColor: 'rgba(37,99,235,0.1)', color: '#60a5fa', border: '1px solid rgba(37,99,235,0.2)', textDecoration: 'none' }}>
-                + Deploy New
-              </Link>
-            </div>
-
-            {panels.length === 0 ? (
-              <div className="py-12 sm:py-16 text-center">
-                <div className="text-4xl sm:text-5xl mb-4">🖥️</div>
-                <p className="font-semibold mb-2" style={{ color: '#f0f4ff' }}>No panels yet</p>
-                <p className="text-sm mb-5" style={{ color: '#64748b' }}>Deploy your first Pterodactyl panel in minutes.</p>
-                <Link href="/products"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white"
-                  style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', textDecoration: 'none' }}>
-                  🚀 Deploy Now
+          {/* ── Left column (2/3): panels + activity ── */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Panels */}
+            <section className="card overflow-hidden">
+              <header className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid #1B2026' }}>
+                <div>
+                  <h2 className="display text-base font-bold" style={{ color: '#E9E7E2' }}>My panels</h2>
+                  <p className="mono text-[10px] uppercase tracking-[0.14em] mt-0.5" style={{ color: '#4C535B' }}>{panels.length} total · {activePanels} active</p>
+                </div>
+                <Link href="/products" className="mono text-[11px] uppercase tracking-[0.12em]" style={{ color: '#F2A93B', textDecoration: 'none' }}>
+                  Deploy new →
                 </Link>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {panels.map(p => (
-                  <div key={p.id}
-                    className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl"
-                    style={{ backgroundColor: 'rgba(2,4,9,0.45)', border: '1px solid #1e3a8a' }}>
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
-                        style={{ backgroundColor: 'rgba(37,99,235,0.15)', color: '#60a5fa' }}>
-                        🖥️
-                      </div>
+              </header>
+
+              {panels.length === 0 ? (
+                <div className="py-16 text-center">
+                  <p className="display font-bold mb-2" style={{ color: '#E9E7E2' }}>No panels yet</p>
+                  <p className="text-sm mb-6" style={{ color: '#79818A' }}>Deploy your first Pterodactyl panel in minutes.</p>
+                  <Link href="/products" className="btn btn-primary">Deploy now</Link>
+                </div>
+              ) : (
+                <div className="divide-y" style={{ borderBottom: '1px solid #1B2026' }}>
+                  {panels.map(p => (
+                    <div key={p.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-6 py-4">
                       <div className="min-w-0">
-                        <p className="font-semibold text-sm truncate" style={{ color: '#f0f4ff' }}>
-                          {p.ptero_username || `Panel #${p.id}`}
-                        </p>
-                        <p className="text-xs mt-0.5" style={{ color: '#64748b' }}>
+                        <div className="flex items-center gap-3">
+                          <span className="mono text-[10px]" style={{ color: '#4C535B' }}>#{p.id}</span>
+                          <p className="text-sm font-semibold truncate" style={{ color: '#E9E7E2' }}>
+                            {p.ptero_username || `Panel #${p.id}`}
+                          </p>
+                          <span className="tag" style={{ color: p.status === 'active' ? '#3ECF8E' : '#AEB5BD' }}>
+                            <span className="dot" style={{ color: p.status === 'active' ? '#3ECF8E' : '#4C535B' }} />
+                            {p.status}
+                          </span>
+                        </div>
+                        <p className="mono text-[11px] mt-1.5" style={{ color: '#4C535B' }}>
                           {p.package_name} · {fmtMtc(p.package_price || 0)}
                           {p.expires_at && (
-                            <span className="ml-1" style={{ color: p.is_expired ? '#f87171' : '#a78bfa' }}>
-                              · {p.is_expired ? '⏱ Expired' : `⏱ Expires ${new Date(p.expires_at).toLocaleString()}`}
+                            <span className="ml-2" style={{ color: p.is_expired ? '#E5484D' : '#79818A' }}>
+                              {p.is_expired ? 'EXPIRED' : `expires ${new Date(p.expires_at).toLocaleString()}`}
                             </span>
                           )}
                         </p>
                       </div>
-                    </div>
-                    <div className="flex items-center gap-2 sm:flex-shrink-0">
-                      <span className="text-xs px-2.5 py-1 rounded-full font-medium"
-                        style={{
-                          backgroundColor: p.status === 'active' ? 'rgba(34,197,94,0.1)' : 'rgba(100,116,139,0.1)',
-                          color: p.status === 'active' ? '#4ade80' : '#94a3b8',
-                          border: `1px solid ${p.status === 'active' ? 'rgba(34,197,94,0.25)' : 'rgba(100,116,139,0.25)'}`,
-                        }}>
-                        {p.status}
-                      </span>
-                      {/* 🔐 View Credentials button */}
                       <button
                         onClick={() => setCredModal({ panel: p })}
-                        className="text-xs px-2.5 py-1 rounded-full font-medium transition-all"
-                        style={{
-                          backgroundColor: 'rgba(168,85,247,0.1)',
-                          color: '#c084fc',
-                          border: '1px solid rgba(168,85,247,0.25)',
-                          cursor: 'pointer',
-                        }}>
-                        🔐 Credentials
+                        className="btn btn-dark flex-shrink-0"
+                        style={{ padding: '8px 16px', fontSize: 11 }}
+                      >
+                        Credentials
                       </button>
                     </div>
-                  </div>
-                ))}
-              </div>
-            )}
+                  ))}
+                </div>
+              )}
+            </section>
+
+            {/* Recent activity */}
+            <section className="card overflow-hidden">
+              <header className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid #1B2026' }}>
+                <div>
+                  <h2 className="display text-base font-bold" style={{ color: '#E9E7E2' }}>Recent activity</h2>
+                  <p className="mono text-[10px] uppercase tracking-[0.14em] mt-0.5" style={{ color: '#4C535B' }}>Wallet transactions</p>
+                </div>
+                <Link href="/wallet" className="mono text-[11px] uppercase tracking-[0.12em]" style={{ color: '#F2A93B', textDecoration: 'none' }}>
+                  All →
+                </Link>
+              </header>
+              {transactions.length === 0 ? (
+                <p className="text-sm text-center py-10" style={{ color: '#4C535B' }}>No transactions yet.</p>
+              ) : (
+                <div className="divide-y" style={{ borderBottom: '1px solid #1B2026' }}>
+                  {transactions.slice(0, 5).map(t => (
+                    <div key={t.id} className="flex items-center justify-between gap-3 px-6 py-3.5">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <span
+                          className="mono text-[10px] px-2 py-1 flex-shrink-0"
+                          style={{
+                            color: t.type === 'deposit' ? '#3ECF8E' : '#E5484D',
+                            border: `1px solid ${t.type === 'deposit' ? 'rgba(62,207,142,0.3)' : 'rgba(229,72,77,0.3)'}`,
+                            borderRadius: 2,
+                          }}
+                        >
+                          {t.type === 'deposit' ? 'IN' : 'OUT'}
+                        </span>
+                        <div className="min-w-0">
+                          <p className="text-[13px] truncate" style={{ color: '#AEB5BD' }}>{t.description || t.type}</p>
+                          <p className="mono text-[10px]" style={{ color: '#4C535B' }}>{new Date(t.created_at).toLocaleDateString()}</p>
+                        </div>
+                      </div>
+                      <span className="mono text-[13px] font-semibold flex-shrink-0" style={{ color: t.type === 'deposit' ? '#3ECF8E' : '#E5484D' }}>
+                        {t.type === 'deposit' ? '+' : '−'}{fmtMtc(t.amount)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </section>
           </div>
 
-          {/* ── Right sidebar (1/3) ── */}
-          <div className="space-y-5">
-            {/* Linked WhatsApp devices */}
-            <div className="rounded-2xl p-5 sm:p-6" style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a' }}>
+          {/* ── Right column (1/3) ── */}
+          <div className="space-y-6">
+
+            {/* Wallet */}
+            <section className="card p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="font-bold text-sm sm:text-base" style={{ color: '#f0f4ff' }}>🤖 Linked Devices</h2>
-                <Link href="/whatsapp-bot" className="text-xs" style={{ color: '#3b82f6', textDecoration: 'none' }}>Manage →</Link>
+                <h2 className="mono text-[10px] uppercase tracking-[0.18em]" style={{ color: '#4C535B' }}>Wallet</h2>
+                <Link href="/wallet" className="mono text-[10px] uppercase tracking-[0.12em]" style={{ color: '#F2A93B', textDecoration: 'none' }}>Manage →</Link>
+              </div>
+              <div className="stat-num mb-1" style={{ color: '#F2A93B' }}>{fmtMtc(balance)}</div>
+              <p className="mono text-[10px] uppercase tracking-[0.14em] mb-5" style={{ color: '#4C535B' }}>Available balance</p>
+              <Link href="/wallet" className="btn btn-ghost w-full" style={{ padding: '10px 0', fontSize: 11 }}>
+                Deposit funds
+              </Link>
+            </section>
+
+            {/* Linked WhatsApp devices */}
+            <section className="card p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="mono text-[10px] uppercase tracking-[0.18em]" style={{ color: '#4C535B' }}>Linked devices</h2>
+                <Link href="/whatsapp-bot" className="mono text-[10px] uppercase tracking-[0.12em]" style={{ color: '#F2A93B', textDecoration: 'none' }}>Manage →</Link>
               </div>
               {devices ? (
                 <>
-                  <p className="font-extrabold mb-2" style={{ fontSize: 'clamp(1.4rem,3.5vw,1.8rem)', color: '#4ade80' }}>
-                    {devices.devices.length} <span className="text-sm font-semibold" style={{ color: '#64748b' }}>/ {devices.maxDevices === 999 ? '∞' : devices.maxDevices} linked</span>
-                  </p>
-                  <p className="text-xs mb-3" style={{ color: '#64748b' }}>
-                    Plan: <span className="font-bold" style={{ color: '#93c5fd' }}>{devices.plan.replace('_', ' ')}</span>
+                  <div className="stat-num mb-2" style={{ color: '#3ECF8E' }}>
+                    {devices.devices.length}
+                    <span className="text-sm font-semibold" style={{ color: '#4C535B' }}> / {devices.maxDevices === 999 ? '∞' : devices.maxDevices} linked</span>
+                  </div>
+                  <p className="mono text-[10px] uppercase tracking-[0.12em] mb-3" style={{ color: '#4C535B' }}>
+                    Plan: <span style={{ color: '#AEB5BD' }}>{devices.plan.replace('_', ' ')}</span>
                     {devices.endDate && <> · until {new Date(devices.endDate).toLocaleDateString()}</>}
                   </p>
-                  {devNotice && <p className="text-xs mb-2" style={{ color: '#4ade80' }}>{devNotice}</p>}
+                  {devNotice && <p className="text-xs mb-3" style={{ color: '#F2A93B' }}>{devNotice}</p>}
                   {devices.devices.length === 0 ? (
-                    <p className="text-xs text-center py-3" style={{ color: '#475569' }}>
+                    <p className="text-xs py-3" style={{ color: '#4C535B' }}>
                       No devices yet.{' '}
-                      <Link href="/whatsapp-bot" className="underline" style={{ color: '#60a5fa' }}>Pair your first number →</Link>
+                      <Link href="/whatsapp-bot" className="link" style={{ fontSize: 12 }}>Pair your first number →</Link>
                     </p>
                   ) : (
                     <div className="space-y-2">
                       {devices.devices.map((d) => (
-                        <div key={d.number} className="flex items-center justify-between gap-2 p-2.5 rounded-xl"
-                          style={{ backgroundColor: 'rgba(2,4,9,0.45)', border: '1px solid #1e3a8a' }}>
-                          <span className="font-mono text-xs font-bold truncate" style={{ color: '#f0f4ff' }}>{d.number}</span>
+                        <div key={d.number} className="flex items-center justify-between gap-2 px-3 py-2.5" style={{ background: '#0F1215', border: '1px solid #1B2026' }}>
+                          <span className="mono text-xs font-semibold truncate" style={{ color: '#E9E7E2' }}>{d.number}</span>
                           <button onClick={() => unlinkDevice(d.number)} disabled={unlinking === d.number}
-                            className="text-[11px] px-2.5 py-1 rounded-lg font-semibold flex-shrink-0"
+                            className="mono text-[10px] uppercase tracking-[0.1em] flex-shrink-0"
                             style={{
-                              color: '#f87171',
-                              border: '1px solid rgba(248,113,113,0.3)',
-                              backgroundColor: 'rgba(248,113,113,0.05)',
+                              color: '#E5484D',
+                              border: '1px solid rgba(229,72,77,0.3)',
+                              background: 'rgba(229,72,77,0.05)',
+                              padding: '5px 10px',
                               cursor: unlinking === d.number ? 'not-allowed' : 'pointer',
                               opacity: unlinking === d.number ? 0.5 : 1,
                             }}>
@@ -325,24 +359,24 @@ export default function DashboardPage() {
                   )}
                 </>
               ) : (
-                <p className="text-xs text-center py-4" style={{ color: '#475569' }}>Loading…</p>
+                <p className="text-xs" style={{ color: '#4C535B' }}>Loading…</p>
               )}
-            </div>
+            </section>
 
-            {/* Security question — password recovery */}
-            <div className="rounded-2xl p-5 sm:p-6" style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a' }}>
-              <h2 className="font-bold text-sm sm:text-base mb-1" style={{ color: '#f0f4ff' }}>🔐 Security Question</h2>
-              <p className="text-xs mb-4" style={{ color: '#64748b' }}>
+            {/* Security question */}
+            <section className="card p-6">
+              <h2 className="mono text-[10px] uppercase tracking-[0.18em] mb-1" style={{ color: '#4C535B' }}>Security question</h2>
+              <p className="text-xs mb-4" style={{ color: '#79818A' }}>
                 Answer it correctly to reset your password if you ever forget it.
               </p>
 
               {secQuestion !== null && secQuestion !== '' && (
-                <p className="text-xs mb-4 p-3 rounded-xl" style={{ backgroundColor: 'rgba(37,99,235,0.08)', border: '1px solid rgba(37,99,235,0.25)', color: '#93c5fd' }}>
-                  Current: <b style={{ color: '#f0f4ff' }}>{secQuestion}</b>
+                <p className="text-xs mb-4 px-3 py-2.5" style={{ background: 'rgba(242,169,59,0.05)', border: '1px solid rgba(242,169,59,0.25)', color: '#AEB5BD' }}>
+                  Current: <b style={{ color: '#E9E7E2' }}>{secQuestion}</b>
                 </p>
               )}
               {secQuestion === '' && (
-                <p className="text-xs mb-4 p-3 rounded-xl" style={{ backgroundColor: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.25)', color: '#fbbf24' }}>
+                <p className="text-xs mb-4 px-3 py-2.5" style={{ background: 'rgba(76,125,252,0.05)', border: '1px solid rgba(76,125,252,0.25)', color: '#AEB5BD' }}>
                   Not set yet — set one below so you can recover your password.
                 </p>
               )}
@@ -350,9 +384,9 @@ export default function DashboardPage() {
               <select
                 value={secForm.question}
                 onChange={(e) => setSecForm({ ...secForm, question: e.target.value })}
-                className="w-full rounded-xl px-3 py-2.5 text-xs outline-none mb-2.5"
-                style={{ backgroundColor: 'rgba(2,4,9,0.45)', border: '1px solid #1e3a8a', color: '#f0f4ff' }}>
-                <option value="" disabled style={{ color: '#64748b' }}>Choose a question…</option>
+                className="input mb-2.5"
+                style={{ padding: '9px 12px', fontSize: 13 }}>
+                <option value="" disabled style={{ color: '#4C535B' }}>Choose a question…</option>
                 {[
                   "What is your mother's maiden name?",
                   'What was the name of your first pet?',
@@ -360,7 +394,7 @@ export default function DashboardPage() {
                   'What was the name of your primary school?',
                   'What is your favourite food?',
                 ].map((q) => (
-                  <option key={q} value={q} style={{ color: '#f0f4ff' }}>{q}</option>
+                  <option key={q} value={q} style={{ color: '#E9E7E2' }}>{q}</option>
                 ))}
               </select>
               <input
@@ -368,161 +402,98 @@ export default function DashboardPage() {
                 value={secForm.answer}
                 onChange={(e) => setSecForm({ ...secForm, answer: e.target.value })}
                 placeholder="Your answer"
-                className="w-full rounded-xl px-3 py-2.5 text-xs outline-none mb-3"
-                style={{ backgroundColor: 'rgba(2,4,9,0.45)', border: '1px solid #1e3a8a', color: '#f0f4ff' }}
+                className="input mb-3"
+                style={{ padding: '9px 12px', fontSize: 13 }}
               />
-              {secNotice && <p className="text-xs mb-2" style={{ color: secNotice.startsWith('❌') ? '#f87171' : '#4ade80' }}>{secNotice}</p>}
+              {secNotice && <p className="text-xs mb-2" style={{ color: '#F2A93B' }}>{secNotice}</p>}
               <button onClick={saveSecurity} disabled={secSaving}
-                className="w-full py-2.5 rounded-xl text-xs font-bold text-white"
-                style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', cursor: secSaving ? 'not-allowed' : 'pointer', opacity: secSaving ? 0.6 : 1 }}>
-                {secSaving ? 'Saving…' : secQuestion ? 'Update Security Question' : 'Set Security Question'}
+                className="btn btn-dark w-full"
+                style={{ padding: '10px 0', fontSize: 11, opacity: secSaving ? 0.6 : 1 }}>
+                {secSaving ? 'Saving…' : secQuestion ? 'Update security question' : 'Set security question'}
               </button>
-            </div>
+            </section>
 
-            {/* Wallet card */}
-            <div className="rounded-2xl p-5 sm:p-6" style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a' }}>
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="font-bold text-sm sm:text-base" style={{ color: '#f0f4ff' }}>Wallet</h2>
-                <Link href="/wallet" className="text-xs" style={{ color: '#3b82f6', textDecoration: 'none' }}>Manage →</Link>
-              </div>
-              <p className="font-extrabold mb-1" style={{ fontSize: 'clamp(1.5rem,4vw,2rem)', color: '#3b82f6' }}>
-                {fmtMtc(balance)}
-              </p>
-              <p className="text-xs mb-4" style={{ color: '#475569' }}>Available balance</p>
-              <Link href="/wallet"
-                className="block w-full py-2.5 rounded-xl text-sm font-semibold text-center"
-                style={{ backgroundColor: 'rgba(37,99,235,0.1)', color: '#60a5fa', border: '1px solid rgba(37,99,235,0.2)', textDecoration: 'none' }}>
-                + Deposit Funds
-              </Link>
-            </div>
-
-            {/* Recent transactions */}
-            <div className="rounded-2xl p-5 sm:p-6" style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a' }}>
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="font-bold text-sm sm:text-base" style={{ color: '#f0f4ff' }}>Recent Activity</h2>
-                <Link href="/wallet" className="text-xs" style={{ color: '#3b82f6', textDecoration: 'none' }}>All →</Link>
-              </div>
-              {transactions.length === 0 ? (
-                <p className="text-sm text-center py-6" style={{ color: '#374151' }}>No transactions yet</p>
-              ) : (
-                <div className="space-y-2.5">
-                  {transactions.slice(0, 5).map(t => (
-                    <div key={t.id} className="flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 text-xs"
-                          style={{ backgroundColor: t.type === 'deposit' ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)' }}>
-                          {t.type === 'deposit' ? '⬆' : '⬇'}
-                        </div>
-                        <div className="min-w-0">
-                          <p className="text-xs truncate" style={{ color: '#cbd5e1' }}>{t.description || t.type}</p>
-                          <p className="text-xs" style={{ color: '#374151' }}>{new Date(t.created_at).toLocaleDateString()}</p>
-                        </div>
-                      </div>
-                      <span className="text-xs font-bold flex-shrink-0"
-                        style={{ color: t.type === 'deposit' ? '#4ade80' : '#f87171' }}>
-                        {t.type === 'deposit' ? '+' : '-'}{fmtMtc(t.amount)}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* MZAZI API card */}
-            <div className="rounded-2xl p-5 sm:p-6" style={{ backgroundColor: '#060b16', border: '1px solid rgba(168,85,247,0.25)' }}>
+            {/* MZAZI API */}
+            <section className="card p-6">
               <div className="flex items-center justify-between mb-3">
-                <h2 className="font-bold text-sm sm:text-base" style={{ color: '#f0f4ff' }}>🔌 MZAZI API</h2>
-                <Link href="/api/dashboard" className="text-xs" style={{ color: '#a78bfa', textDecoration: 'none' }}>Dashboard →</Link>
+                <h2 className="mono text-[10px] uppercase tracking-[0.18em]" style={{ color: '#4C535B' }}>MZAZI API</h2>
+                <Link href="/api/dashboard" className="mono text-[10px] uppercase tracking-[0.12em]" style={{ color: '#F2A93B', textDecoration: 'none' }}>Dashboard →</Link>
               </div>
-              <p className="text-xs leading-relaxed mb-3" style={{ color: '#64748b' }}>
+              <p className="text-xs leading-relaxed mb-4" style={{ color: '#79818A' }}>
                 Downloads, AI, search and 200+ more endpoints — one key, one envelope.
               </p>
               {apiStats && apiStats.usage && (
-                <div className="grid grid-cols-2 gap-2 mb-3">
-                  <div className="p-2.5 rounded-xl" style={{ backgroundColor: 'rgba(2,4,9,0.45)', border: '1px solid #1e3a8a' }}>
-                    <p className="text-[10px] uppercase tracking-wide" style={{ color: '#475569' }}>Today</p>
-                    <p className="text-sm font-bold" style={{ color: '#93c5fd' }}>{apiStats.usage.requests_today.toLocaleString()}</p>
+                <div className="grid grid-cols-2 gap-3 mb-4">
+                  <div>
+                    <div className="stat-num" style={{ fontSize: '1.35rem', color: '#E9E7E2' }}>{apiStats.usage.requests_today.toLocaleString()}</div>
+                    <div className="stat-label">Requests today</div>
                   </div>
-                  <div className="p-2.5 rounded-xl" style={{ backgroundColor: 'rgba(2,4,9,0.45)', border: '1px solid #1e3a8a' }}>
-                    <p className="text-[10px] uppercase tracking-wide" style={{ color: '#475569' }}>Avg ms</p>
-                    <p className="text-sm font-bold" style={{ color: '#4ade80' }}>{apiStats.usage.avg_response_ms !== null ? `${Number(apiStats.usage.avg_response_ms).toFixed(0)}ms` : '—'}</p>
+                  <div>
+                    <div className="stat-num" style={{ fontSize: '1.35rem', color: '#3ECF8E' }}>{apiStats.usage.avg_response_ms !== null ? `${Number(apiStats.usage.avg_response_ms).toFixed(0)}ms` : '—'}</div>
+                    <div className="stat-label">Avg response</div>
                   </div>
                 </div>
               )}
-              <div className="grid grid-cols-2 gap-2">
-                <Link href="/api/dashboard/keys"
-                  className="px-3 py-2 rounded-xl text-xs font-semibold text-center"
-                  style={{ backgroundColor: 'rgba(168,85,247,0.1)', color: '#c084fc', border: '1px solid rgba(168,85,247,0.25)', textDecoration: 'none' }}>
-                  + API Keys
-                </Link>
-                <Link href="/api/docs"
-                  className="px-3 py-2 rounded-xl text-xs font-semibold text-center"
-                  style={{ backgroundColor: 'rgba(37,99,235,0.1)', color: '#60a5fa', border: '1px solid rgba(37,99,235,0.25)', textDecoration: 'none' }}>
-                  Docs &amp; Tester
-                </Link>
+              <div className="grid grid-cols-2 gap-3">
+                <Link href="/api/dashboard/keys" className="btn btn-ghost" style={{ padding: '9px 0', fontSize: 11 }}>API keys</Link>
+                <Link href="/api/docs" className="btn btn-ghost" style={{ padding: '9px 0', fontSize: 11 }}>Docs & tester</Link>
               </div>
-            </div>
+            </section>
 
-            {/* Referral card */}
+            {/* Referral */}
             {referral && (
-              <div className="rounded-2xl p-5" style={{ backgroundColor: '#060b16', border: '1px solid rgba(74,222,128,0.25)' }}>
+              <section className="card p-6">
                 <div className="flex items-center justify-between mb-3">
-                  <h2 className="font-bold text-sm sm:text-base" style={{ color: '#f0f4ff' }}>🎁 Refer &amp; Earn</h2>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded" style={{ backgroundColor: 'rgba(74,222,128,0.1)', color: '#4ade80' }}>
-                    2 MTC / purchase
-                  </span>
+                  <h2 className="mono text-[10px] uppercase tracking-[0.18em]" style={{ color: '#4C535B' }}>Refer & earn</h2>
+                  <span className="tag tag-amber">2 MTC / purchase</span>
                 </div>
-                <p className="text-xs leading-relaxed mb-3" style={{ color: '#64748b' }}>
+                <p className="text-xs leading-relaxed mb-4" style={{ color: '#79818A' }}>
                   Share your link — when someone signs up and buys a panel, you get 2 MTC (KSH 20) in your wallet.
                 </p>
-                <div className="grid grid-cols-2 gap-2 mb-3">
-                  <div className="p-2.5 rounded-xl" style={{ backgroundColor: 'rgba(2,4,9,0.45)', border: '1px solid #1e3a8a' }}>
-                    <p className="text-[10px] uppercase tracking-wide" style={{ color: '#475569' }}>Referred</p>
-                    <p className="text-sm font-bold" style={{ color: '#4ade80' }}>{referral.referred_count}</p>
+                <div className="grid grid-cols-2 gap-3 mb-4">
+                  <div>
+                    <div className="stat-num" style={{ fontSize: '1.35rem', color: '#3ECF8E' }}>{referral.referred_count}</div>
+                    <div className="stat-label">Referred</div>
                   </div>
-                  <div className="p-2.5 rounded-xl" style={{ backgroundColor: 'rgba(2,4,9,0.45)', border: '1px solid #1e3a8a' }}>
-                    <p className="text-[10px] uppercase tracking-wide" style={{ color: '#475569' }}>Earned</p>
-                    <p className="text-sm font-bold" style={{ color: '#fbbf24' }}>{fmtMtc(referral.total_earned)}</p>
+                  <div>
+                    <div className="stat-num" style={{ fontSize: '1.35rem', color: '#F2A93B' }}>{fmtMtc(referral.total_earned)}</div>
+                    <div className="stat-label">Earned</div>
                   </div>
                 </div>
                 <div className="flex gap-2 mb-2">
-                  <code className="flex-1 px-3 py-2 rounded-lg text-xs font-mono truncate"
-                    style={{ backgroundColor: 'rgba(2,4,9,0.45)', border: '1px solid #1e3a8a', color: '#93c5fd' }}>
+                  <code className="flex-1 mono text-[11px] px-3 py-2 truncate" style={{ background: '#0F1215', border: '1px solid #1B2026', color: '#AEB5BD' }}>
                     {referral.link}
                   </code>
                   <button
                     onClick={() => { navigator.clipboard.writeText(referral.link).then(() => setCopied(true)).catch(() => {}); setTimeout(() => setCopied(false), 2000); }}
-                    className="px-3 py-2 rounded-lg text-xs font-bold"
-                    style={{ backgroundColor: 'rgba(74,222,128,0.1)', color: '#4ade80', border: '1px solid rgba(74,222,128,0.3)', cursor: 'pointer' }}>
-                    Copy
+                    className="btn btn-dark"
+                    style={{ padding: '8px 14px', fontSize: 11 }}>
+                    {copied ? 'Copied' : 'Copy'}
                   </button>
                 </div>
-                <p className="text-[10px] font-mono" style={{ color: '#475569' }}>Your code: <span style={{ color: '#4ade80' }}>{referral.code}</span></p>
-              </div>
+                <p className="mono text-[10px]" style={{ color: '#4C535B' }}>Your code: <span style={{ color: '#F2A93B' }}>{referral.code}</span></p>
+              </section>
             )}
 
             {/* Quick links */}
-            <div className="rounded-2xl p-5" style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a' }}>
-              <p className="text-xs font-bold uppercase tracking-wider mb-3" style={{ color: '#475569' }}>Quick Links</p>
-              <div className="space-y-2">
+            <section className="card p-6">
+              <p className="mono text-[10px] uppercase tracking-[0.18em] mb-3" style={{ color: '#4C535B' }}>Quick links</p>
+              <div className="divide-y" style={{ borderTop: '1px solid #1B2026', borderBottom: '1px solid #1B2026' }}>
                 {[
-                  { label: 'Deploy Panel',   href: '/products', icon: '🚀' },
-                  { label: 'WhatsApp Bot',   href: '/whatsapp-bot', icon: '🤖' },
-                  { label: 'MZAZI API',      href: '/api',      icon: '🔌' },
-                  { label: 'Contact Support',href: '/contact',  icon: '💬' },
+                  { label: 'Deploy panel',   href: '/products' },
+                  { label: 'WhatsApp bot',   href: '/whatsapp-bot' },
+                  { label: 'MZAZI API',      href: '/api' },
+                  { label: 'Contact support',href: '/contact' },
                 ].map(l => (
                   <Link key={l.href} href={l.href}
-                    className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm transition-all"
-                    style={{ color: '#94a3b8', backgroundColor: 'rgba(2,4,9,0.45)', border: '1px solid #1e3a8a', textDecoration: 'none' }}>
-                    <span>{l.icon}</span>
-                    <span>{l.label}</span>
-                    <svg className="w-3.5 h-3.5 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
+                    className="flex items-center justify-between py-2.5 text-sm transition-colors"
+                    style={{ color: '#AEB5BD', textDecoration: 'none' }}>
+                    {l.label}
+                    <span className="mono text-[10px]" style={{ color: '#4C535B' }}>→</span>
                   </Link>
                 ))}
               </div>
-            </div>
+            </section>
           </div>
         </div>
       </div>
@@ -536,19 +507,6 @@ export default function DashboardPage() {
         />
       )}
     </div>
-  );
-}
-
-function StatInner({ s }) {
-  return (
-    <>
-      <div className="flex items-center justify-between mb-3">
-        <span className="text-xl sm:text-2xl">{s.icon}</span>
-        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: s.color }} />
-      </div>
-      <p className="font-extrabold text-xl sm:text-2xl mb-1" style={{ color: s.color }}>{s.value}</p>
-      <p className="text-xs" style={{ color: '#64748b' }}>{s.label}</p>
-    </>
   );
 }
 
@@ -600,51 +558,41 @@ function CredentialsModal({ panel, user, onClose }) {
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
       style={{ backgroundColor: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(6px)' }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
-      <div className="w-full max-w-md rounded-2xl overflow-hidden" style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a' }}>
+      <div className="w-full max-w-md overflow-hidden" style={{ backgroundColor: '#14181D', border: '1px solid #262C33', borderRadius: 4 }}>
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid #1e3a8a' }}>
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg,#7c3aed,#6d28d9)' }}>
-              🔐
-            </div>
-            <div>
-              <p className="font-bold text-sm" style={{ color: '#f0f4ff' }}>Panel Credentials</p>
-              <p className="text-xs" style={{ color: '#475569' }}>{panel.ptero_username || `Panel #${panel.id}`}</p>
-            </div>
+        <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid #1B2026' }}>
+          <div>
+            <p className="display text-sm font-bold" style={{ color: '#E9E7E2' }}>Panel credentials</p>
+            <p className="mono text-[10px] uppercase tracking-[0.12em] mt-0.5" style={{ color: '#4C535B' }}>{panel.ptero_username || `Panel #${panel.id}`}</p>
           </div>
-          <button onClick={onClose} className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ color: '#475569', border: '1px solid #1e3a8a', background: 'transparent', cursor: 'pointer' }}>✕</button>
+          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center" style={{ color: '#79818A', border: '1px solid #262C33', background: 'transparent', cursor: 'pointer' }}>✕</button>
         </div>
 
         <div className="p-6">
           {!creds ? (
             /* Password gate */
             <form onSubmit={handleReveal} className="space-y-4">
-              <div className="p-4 rounded-xl" style={{ backgroundColor: 'rgba(168,85,247,0.06)', border: '1px solid rgba(168,85,247,0.2)' }}>
-                <p className="text-xs leading-relaxed" style={{ color: '#c084fc' }}>
-                  🔒 For your security, enter your account password to view the credentials for this panel.
+              <div className="px-4 py-3" style={{ background: 'rgba(242,169,59,0.05)', border: '1px solid rgba(242,169,59,0.25)' }}>
+                <p className="text-xs leading-relaxed" style={{ color: '#AEB5BD' }}>
+                  For your security, enter your account password to view the credentials for this panel.
                 </p>
               </div>
 
               {error && (
-                <div className="p-3 rounded-xl text-xs" style={{ backgroundColor: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: '#f87171' }}>
+                <div className="px-3 py-2.5 text-xs" style={{ background: 'rgba(229,72,77,0.08)', border: '1px solid rgba(229,72,77,0.3)', color: '#E5484D' }}>
                   {error}
                 </div>
               )}
 
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: '#475569' }}>
-                  Account Password
-                </label>
+                <label className="label">Account password</label>
                 <input
                   ref={inputRef}
                   type="password"
                   value={password}
                   onChange={e => setPassword(e.target.value)}
                   placeholder="Enter your login password"
-                  className="w-full px-4 py-3 rounded-xl text-sm outline-none"
-                  style={{ backgroundColor: 'rgba(2,4,9,0.45)', border: '1px solid #1e3a8a', color: '#f0f4ff' }}
-                  onFocus={e => e.target.style.borderColor = '#7c3aed'}
-                  onBlur={e => e.target.style.borderColor = '#1e3a8a'}
+                  className="input"
                   required
                 />
               </div>
@@ -652,64 +600,43 @@ function CredentialsModal({ panel, user, onClose }) {
               <button
                 type="submit"
                 disabled={loading || !password}
-                className="w-full py-3 rounded-xl font-bold text-sm text-white transition-all"
-                style={{
-                  background: loading || !password ? '#1e3a8a' : 'linear-gradient(135deg,#7c3aed,#6d28d9)',
-                  cursor: loading || !password ? 'not-allowed' : 'pointer',
-                }}>
-                {loading ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
-                    </svg>
-                    Verifying…
-                  </span>
-                ) : '🔓 Reveal Credentials'}
+                className="btn btn-primary w-full"
+                style={{ opacity: loading || !password ? 0.6 : 1 }}>
+                {loading ? 'Verifying…' : 'Reveal credentials'}
               </button>
             </form>
           ) : (
             /* Credentials view */
             <div className="space-y-3">
-              <div className="p-3 rounded-xl text-xs" style={{ backgroundColor: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.2)', color: '#4ade80' }}>
-                ✅ Identity verified — credentials revealed below.
+              <div className="px-3 py-2.5 text-xs" style={{ background: 'rgba(62,207,142,0.06)', border: '1px solid rgba(62,207,142,0.25)', color: '#3ECF8E' }}>
+                Identity verified — credentials revealed below.
               </div>
 
               {[
-                { label: 'Panel URL',  value: creds.panel_url,  key: 'url',   icon: '🌐', link: creds.panel_url },
-                { label: 'Username',   value: creds.username,   key: 'user',  icon: '👤' },
-                { label: 'Email',      value: creds.email,      key: 'email', icon: '📧' },
-                { label: 'Password',   value: creds.password,   key: 'pass',  icon: '🔑' },
-              ].map(({ label, value, key, icon, link }) => (
-                <div key={key} className="flex items-center justify-between gap-3 p-3 rounded-xl"
-                  style={{ backgroundColor: 'rgba(2,4,9,0.45)', border: '1px solid #1e3a8a' }}>
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <span className="text-base">{icon}</span>
-                    <div className="min-w-0">
-                      <p className="text-xs" style={{ color: '#475569' }}>{label}</p>
-                      <p className="text-sm font-mono font-semibold truncate" style={{ color: key === 'pass' ? '#c084fc' : '#f0f4ff' }}>
-                        {key === 'pass' ? '••••••••' : value}
-                      </p>
-                    </div>
+                { label: 'Panel URL',  value: creds.panel_url,  key: 'url',   link: creds.panel_url },
+                { label: 'Username',   value: creds.username,   key: 'user' },
+                { label: 'Email',      value: creds.email,      key: 'email' },
+                { label: 'Password',   value: creds.password,   key: 'pass' },
+              ].map(({ label, value, key, link }) => (
+                <div key={key} className="flex items-center justify-between gap-3 px-3 py-3"
+                  style={{ background: '#0F1215', border: '1px solid #1B2026' }}>
+                  <div className="min-w-0">
+                    <p className="mono text-[9px] uppercase tracking-[0.14em]" style={{ color: '#4C535B' }}>{label}</p>
+                    <p className="mono text-sm font-semibold truncate mt-0.5" style={{ color: key === 'pass' ? '#F2A93B' : '#E9E7E2' }}>
+                      {key === 'pass' ? '••••••••' : value}
+                    </p>
                   </div>
                   <div className="flex gap-1.5 flex-shrink-0">
                     {link && (
                       <a href={link} target="_blank" rel="noopener noreferrer"
-                        className="px-2.5 py-1.5 rounded-lg text-xs font-semibold"
-                        style={{ backgroundColor: 'rgba(37,99,235,0.1)', color: '#60a5fa', border: '1px solid rgba(37,99,235,0.2)', textDecoration: 'none' }}>
-                        Open ↗
+                        className="btn btn-dark" style={{ padding: '6px 12px', fontSize: 10 }}>
+                        Open
                       </a>
                     )}
                     <button
                       onClick={() => copy(value, key)}
-                      className="px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all"
-                      style={{
-                        backgroundColor: copied === key ? 'rgba(34,197,94,0.15)' : 'rgba(168,85,247,0.1)',
-                        color: copied === key ? '#4ade80' : '#c084fc',
-                        border: `1px solid ${copied === key ? 'rgba(34,197,94,0.3)' : 'rgba(168,85,247,0.25)'}`,
-                        cursor: 'pointer',
-                      }}>
-                      {copied === key ? '✓ Copied' : 'Copy'}
+                      className="btn btn-dark" style={{ padding: '6px 12px', fontSize: 10, color: copied === key ? '#3ECF8E' : undefined }}>
+                      {copied === key ? 'Copied' : 'Copy'}
                     </button>
                   </div>
                 </div>
@@ -718,11 +645,9 @@ function CredentialsModal({ panel, user, onClose }) {
               {/* Show real password (toggle) */}
               <PasswordReveal password={creds.password} />
 
-              <div className="pt-1">
-                <p className="text-xs text-center" style={{ color: '#374151' }}>
-                  Keep these credentials safe — do not share them with anyone.
-                </p>
-              </div>
+              <p className="text-xs text-center" style={{ color: '#4C535B' }}>
+                Keep these credentials safe — do not share them with anyone.
+              </p>
             </div>
           )}
         </div>
@@ -734,19 +659,18 @@ function CredentialsModal({ panel, user, onClose }) {
 function PasswordReveal({ password }) {
   const [show, setShow] = useState(false);
   return (
-    <div className="flex items-center justify-between p-3 rounded-xl"
-      style={{ backgroundColor: 'rgba(168,85,247,0.06)', border: '1px solid rgba(168,85,247,0.2)' }}>
+    <div className="flex items-center justify-between px-3 py-3"
+      style={{ background: 'rgba(242,169,59,0.04)', border: '1px solid rgba(242,169,59,0.2)' }}>
       <div>
-        <p className="text-xs mb-0.5" style={{ color: '#475569' }}>Password (visible)</p>
-        <p className="text-sm font-mono font-bold" style={{ color: '#c084fc', letterSpacing: show ? 0 : '0.1em' }}>
+        <p className="mono text-[9px] uppercase tracking-[0.14em] mb-0.5" style={{ color: '#4C535B' }}>Password (visible)</p>
+        <p className="mono text-sm font-bold" style={{ color: '#F2A93B', letterSpacing: show ? 0 : '0.1em' }}>
           {show ? password : '••••••••••••'}
         </p>
       </div>
       <button
         onClick={() => setShow(v => !v)}
-        className="px-3 py-1.5 rounded-lg text-xs font-semibold"
-        style={{ backgroundColor: 'rgba(168,85,247,0.1)', color: '#c084fc', border: '1px solid rgba(168,85,247,0.25)', cursor: 'pointer' }}>
-        {show ? '🙈 Hide' : '👁 Show'}
+        className="btn btn-dark" style={{ padding: '6px 12px', fontSize: 10 }}>
+        {show ? 'Hide' : 'Show'}
       </button>
     </div>
   );

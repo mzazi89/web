@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import TypingHeading from '@/components/TypingHeading';
 import { neon } from '@neondatabase/serverless';
 import ApiTester from '@/components/api/ApiTester';
 import AuthSwap from '@/components/AuthSwap';
@@ -8,12 +7,12 @@ import { unstable_noStore as noStore } from 'next/cache';
 export const dynamic = 'force-dynamic';
 
 const FEATURES = [
-  { icon: '⚡', title: 'Fast', desc: 'Low-latency responses backed by reliable infrastructure.' },
-  { icon: '🔒', title: 'Secure', desc: 'Hashed API keys, rate limiting, and strict validation on every request.' },
-  { icon: '🧑‍💻', title: 'Developer-friendly', desc: 'Clean JSON envelopes, predictable errors, and clear documentation.' },
-  { icon: '🔑', title: 'API Key Authentication', desc: 'Generate, revoke and rotate keys from your dashboard in seconds.' },
-  { icon: '📊', title: 'Usage Analytics', desc: 'Real-time request logs, response times and quota tracking.' },
-  { icon: '🛡️', title: 'Reliable Infrastructure', desc: 'Built on Neon PostgreSQL and deployed on Vercel.' },
+  { title: 'Fast', desc: 'Low-latency responses backed by reliable infrastructure.' },
+  { title: 'Secure', desc: 'Hashed API keys, rate limiting, and strict validation on every request.' },
+  { title: 'Developer-friendly', desc: 'Clean JSON envelopes, predictable errors, and clear documentation.' },
+  { title: 'API Key Authentication', desc: 'Generate, revoke and rotate keys from your dashboard in seconds.' },
+  { title: 'Usage Analytics', desc: 'Real-time request logs, response times and quota tracking.' },
+  { title: 'Reliable Infrastructure', desc: 'Built on Neon PostgreSQL and deployed on Vercel.' },
 ];
 
 const CATEGORY_LABELS = {
@@ -77,207 +76,224 @@ export default async function ApiLanding() {
   const activeEndpoints = endpoints.filter(e => e.is_active);
 
   return (
-    <div style={{ backgroundColor: 'rgba(2,4,9,0.45)' }}>
+    <div style={{ backgroundColor: 'rgba(15,18,21,0.35)' }}>
 
       {/* ── Hero ── */}
-      <section className="relative overflow-hidden"
-        style={{ background: 'linear-gradient(180deg,rgba(7,20,40,0.98) 0%,rgba(2,4,9,1) 100%)' }}>
-        <div className="absolute inset-0 pointer-events-none" style={{
-          backgroundImage: 'linear-gradient(rgba(37,99,235,0.06) 1px,transparent 1px),linear-gradient(90deg,rgba(37,99,235,0.06) 1px,transparent 1px)',
-          backgroundSize: '40px 40px',
-        }} />
-        <div className="absolute top-10 right-1/4 w-72 h-72 rounded-full pointer-events-none"
-          style={{ background: 'radial-gradient(circle,rgba(37,99,235,0.18) 0%,transparent 70%)', filter: 'blur(48px)' }} />
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none grid-bg" style={{ maskImage: 'linear-gradient(180deg, rgba(0,0,0,0.5), transparent 75%)', WebkitMaskImage: 'linear-gradient(180deg, rgba(0,0,0,0.5), transparent 75%)' }} />
+        <div className="absolute top-10 right-1/4 w-96 h-96 rounded-full pointer-events-none"
+          style={{ background: 'radial-gradient(circle, rgba(242,169,59,0.07) 0%, transparent 70%)', filter: 'blur(56px)' }} />
 
-        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 py-20 sm:py-28 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-6"
-            style={{ backgroundColor: 'rgba(37,99,235,0.1)', border: '1px solid rgba(37,99,235,0.3)' }}>
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-xs font-semibold tracking-wide" style={{ color: '#60a5fa' }}>MZAZI TECH · Developer Platform</span>
-          </div>
+        <div className="container-site relative pt-20 pb-16 sm:pt-28 sm:pb-24">
+          <div className="grid lg:grid-cols-12 gap-12 items-center">
+            {/* Copy */}
+            <div className="lg:col-span-7">
+              <p className="eyebrow anim-fade-up">Developer platform</p>
+              <h1 className="headline anim-fade-up d1 mt-5" style={{ color: '#E9E7E2' }}>
+                One API.<br />Every service<span className="accent">.</span>
+              </h1>
+              <p className="lede anim-fade-up d2 mt-6 max-w-xl">
+                {stats.active} live endpoints across downloads, AI, search, tools, games, news and more —
+                one key, one envelope, real data. Built by MZAZI TECH.
+              </p>
 
-          <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight mb-4">
-            <TypingHeading as="span" text="MZAZI API" speed={80} className="gradient-text" />
-          </h1>
-          <p className="text-lg sm:text-2xl font-medium mb-3" style={{ color: '#f0f4ff' }}>
-            One API. Multiple services.
-          </p>
-          <p className="text-sm sm:text-base max-w-2xl mx-auto mb-6" style={{ color: '#94a3b8' }}>
-            {stats.active} live endpoints across downloads, AI, search, tools, games, news and more —
-            one key, one envelope, real data. Built by MZAZI TECH.
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-2 mb-10">
-            {stats.categories.map(c => (
-              <a key={c.category} href={`/api/docs#cat-${encodeURIComponent(c.category)}`}
-                className="px-3 py-1.5 rounded-full text-xs font-semibold"
-                style={{ color: '#60a5fa', border: '1px solid rgba(37,99,235,0.25)', backgroundColor: 'rgba(37,99,235,0.06)', textDecoration: 'none' }}>
-                {CATEGORY_LABELS[c.category] || c.category} · {parseInt(c.active, 10) || 0}
-              </a>
-            ))}
-          </div>
-
-          <div className="flex flex-wrap items-center justify-center gap-3">
-            <AuthSwap
-              signedOut={
-                <Link href="/signup"
-                  className="px-6 py-3 rounded-xl font-semibold text-white transition-all hover:opacity-90"
-                  style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', boxShadow: '0 0 24px rgba(37,99,235,0.35)', textDecoration: 'none' }}>
-                  GET STARTED
-                </Link>
-              }
-              signedIn={
-                <Link href="/api/dashboard/keys"
-                  className="px-6 py-3 rounded-xl font-semibold text-white transition-all hover:opacity-90"
-                  style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', boxShadow: '0 0 24px rgba(37,99,235,0.35)', textDecoration: 'none' }}>
-                  CREATE API KEY
-                </Link>
-              }
-            />
-            <Link href="/api/explorer"
-              className="px-6 py-3 rounded-xl font-semibold transition-all"
-              style={{ color: '#a78bfa', border: '1px solid rgba(167,139,250,0.35)', textDecoration: 'none' }}>
-              EXPLORE APIs
-            </Link>
-            <Link href="/api/docs"
-              className="px-6 py-3 rounded-xl font-semibold transition-all"
-              style={{ color: '#60a5fa', border: '1px solid rgba(37,99,235,0.35)', textDecoration: 'none' }}>
-              DOCUMENTATION
-            </Link>
-            <Link href="/api/dashboard"
-              className="px-6 py-3 rounded-xl font-semibold transition-all"
-              style={{ color: '#94a3b8', border: '1px solid #1e3a8a', textDecoration: 'none' }}>
-              DASHBOARD
-            </Link>
-            <Link href="/api/dashboard/keys"
-              className="px-6 py-3 rounded-xl font-semibold transition-all"
-              style={{ color: '#4ade80', border: '1px solid rgba(74,222,128,0.3)', textDecoration: 'none' }}>
-              + CREATE API KEY
-            </Link>
-          </div>
-
-          {/* Live example */}
-          <div className="mt-12 text-left max-w-2xl mx-auto">
-            <div className="rounded-xl overflow-hidden" style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a' }}>
-              <div className="px-4 py-2 flex items-center gap-2 border-b" style={{ borderColor: '#1e3a8a' }}>
-                <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: '#f87171' }} />
-                <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: '#fbbf24' }} />
-                <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: '#4ade80' }} />
-                <span className="ml-2 text-xs font-mono" style={{ color: '#475569' }}>GET /api/download/play</span>
+              <div className="flex flex-wrap items-center gap-4 mt-9 anim-fade-up d3">
+                <AuthSwap
+                  signedOut={
+                    <Link href="/signup" className="btn btn-primary" style={{ textDecoration: 'none' }}>
+                      Get started
+                    </Link>
+                  }
+                  signedIn={
+                    <Link href="/api/dashboard/keys" className="btn btn-primary" style={{ textDecoration: 'none' }}>
+                      Create API key
+                    </Link>
+                  }
+                />
+                <Link href="/api/explorer" className="btn btn-ghost" style={{ textDecoration: 'none' }}>Explore APIs</Link>
+                <Link href="/api/docs" className="btn btn-ghost" style={{ textDecoration: 'none' }}>Documentation</Link>
               </div>
-              <pre className="p-4 overflow-x-auto text-xs font-mono leading-relaxed" style={{ color: '#cbd5e1' }}>
-{`curl "https://mzazi.shop/api/download/play?query=Faded%20Alan%20Walker&apikey=mzazi_xxxxxxxxxxxxxxxxxxxxxxxxx"`}
-              </pre>
+
+              <div className="flex flex-wrap gap-2 mt-10 anim-fade-up d3">
+                {stats.categories.map(c => (
+                  <a key={c.category} href={`/api/docs#cat-${encodeURIComponent(c.category)}`}
+                    className="tag"
+                    style={{ color: '#AEB5BD', textDecoration: 'none' }}>
+                    {CATEGORY_LABELS[c.category] || c.category}
+                    <strong style={{ color: '#F2A93B' }}>{parseInt(c.active, 10) || 0}</strong>
+                  </a>
+                ))}
+              </div>
             </div>
+
+            {/* Live example */}
+            <div className="lg:col-span-5 anim-fade-up d2">
+              <div className="card overflow-hidden" style={{ background: '#0F1215' }}>
+                <div className="flex items-center justify-between px-4 py-2.5" style={{ borderBottom: '1px solid #1B2026' }}>
+                  <span className="mono text-[10px] uppercase tracking-[0.14em]" style={{ color: '#4C535B' }}>
+                    Quickstart
+                  </span>
+                  <span className="tag tag-green"><span className="dot anim-pulse" /> Live API</span>
+                </div>
+                <div className="p-4 overflow-x-auto">
+                  <p className="mono text-[10px] uppercase tracking-[0.14em] mb-2" style={{ color: '#4C535B' }}>GET /api/download/play</p>
+                  <pre className="mono text-xs leading-relaxed" style={{ color: '#AEB5BD' }}>
+{`curl "https://mzazi.shop/api/download/play?query=Faded%20Alan%20Walker&apikey=mzazi_xxxxxxxxxxxxxxxxxxxxxxxxx"`}
+                  </pre>
+                </div>
+                <div className="px-4 py-3 flex items-center justify-between" style={{ borderTop: '1px solid #1B2026', background: 'rgba(242,169,59,0.04)' }}>
+                  <span className="mono text-[10px] uppercase tracking-[0.14em]" style={{ color: '#F2A93B' }}>No key? Test it below</span>
+                  <span style={{ color: '#4C535B' }}>→</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Stats strip */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16 sm:mt-20 pt-10" style={{ borderTop: '1px solid #1B2026' }}>
+            {[
+              { value: stats.active, label: 'Live endpoints' },
+              { value: stats.total, label: 'Total registered' },
+              { value: stats.categories.length, label: 'Categories' },
+              { value: '1 key', label: 'All services' },
+            ].map(s => (
+              <div key={s.label}>
+                <div className="stat-num" style={{ color: '#E9E7E2' }}>{s.value}</div>
+                <div className="stat-label">{s.label}</div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* ── Try the API ── */}
-      <section className="container-site py-16">
-        <div className="text-center mb-8">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-2">
-            <span className="gradient-text">Try It Right Now</span>
-          </h2>
-          <p className="text-sm" style={{ color: '#94a3b8' }}>
-            Enter a song name and hit send. API key is <strong style={{ color: '#4ade80' }}>optional</strong> —
-            without one you'll see the JSON error, with one you get live results.
-          </p>
-        </div>
-        <div className="max-w-3xl mx-auto">
-          <ApiTester />
+      <section className="section" style={{ paddingTop: 40 }}>
+        <div className="container-site max-w-4xl">
+          <div className="grid lg:grid-cols-12 gap-10 items-start">
+            <div className="lg:col-span-4 lg:sticky lg:top-32">
+              <p className="eyebrow">Live test</p>
+              <h2 className="section-title text-3xl mt-4" style={{ color: '#E9E7E2' }}>
+                Try it right now
+                <span className="bar" />
+              </h2>
+              <p className="text-sm mt-5 leading-relaxed" style={{ color: '#79818A' }}>
+                Enter a song name and hit send. The API key is{' '}
+                <strong style={{ color: '#3ECF8E' }}>optional</strong> — without one you see the
+                proper JSON error, with one you get live results.
+              </p>
+            </div>
+            <div className="lg:col-span-8">
+              <ApiTester />
+            </div>
+          </div>
         </div>
       </section>
 
       {/* ── Features ── */}
-      <section className="container-site py-16">
-        <h2 className="text-2xl sm:text-3xl font-bold text-center mb-10">
-          <span className="gradient-text">Why MZAZI API?</span>
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {FEATURES.map(f => (
-            <div key={f.title} className="card p-6 transition-transform hover:-translate-y-1">
-              <div className="text-3xl mb-3">{f.icon}</div>
-              <h3 className="font-bold mb-1.5" style={{ color: '#f0f4ff' }}>{f.title}</h3>
-              <p className="text-sm leading-relaxed" style={{ color: '#94a3b8' }}>{f.desc}</p>
-            </div>
-          ))}
+      <section className="section" style={{ background: 'rgba(255,255,255,0.014)' }}>
+        <div className="container-site">
+          <div className="max-w-3xl mb-12">
+            <p className="eyebrow">Why MZAZI API</p>
+            <h2 className="section-title text-3xl sm:text-4xl mt-4" style={{ color: '#E9E7E2' }}>
+              Built for production traffic
+              <span className="bar" />
+            </h2>
+          </div>
+
+          <div>
+            {FEATURES.map((f, i) => (
+              <div key={f.title} className="row-item">
+                <span className="row-num">{String(i + 1).padStart(2, '0')}</span>
+                <div>
+                  <h3 style={{ color: '#E9E7E2' }}>{f.title}</h3>
+                  <p>{f.desc}</p>
+                </div>
+                <span className="row-tag" style={{ color: '#4C535B' }}>—</span>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* ── Endpoints ── */}
-      <section className="container-site py-16">
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-2xl sm:text-3xl font-bold">
-            <span className="gradient-text">API Endpoints</span>
-          </h2>
-          <Link href="/api/status" className="text-sm font-semibold" style={{ color: '#60a5fa', textDecoration: 'none' }}>
-            System status →
-          </Link>
-        </div>
+      <section className="section">
+        <div className="container-site">
+          <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
+            <div>
+              <p className="eyebrow">Registry</p>
+              <h2 className="section-title text-3xl sm:text-4xl mt-4" style={{ color: '#E9E7E2' }}>
+                API endpoints
+                <span className="bar" />
+              </h2>
+            </div>
+            <Link href="/api/status" className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: '#F2A93B', textDecoration: 'none' }}>
+              System status →
+            </Link>
+          </div>
 
-        {activeEndpoints.length === 0 ? (
-          <div className="card p-10 text-center">
-            <p className="text-sm" style={{ color: '#475569' }}>Endpoint registry unavailable — run database initialization first.</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {activeEndpoints.map(e => (
-              <div key={e.path} className="card p-5"
-                style={{ opacity: e.is_active ? 1 : 0.55 }}>
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wide"
-                    style={{ backgroundColor: 'rgba(37,99,235,0.12)', color: '#60a5fa', border: '1px solid rgba(37,99,235,0.2)' }}>
-                    {CATEGORY_LABELS[e.category] || e.category}
-                  </span>
-                  <span className="flex items-center gap-1.5 text-[11px] font-semibold" style={{ color: '#4ade80' }}>
-                    <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: '#4ade80' }} />
-                    LIVE
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 mb-1.5">
-                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded" style={{ backgroundColor: '#1e3a8a', color: '#93c5fd' }}>
-                    {e.method}
-                  </span>
-                  <code className="text-xs font-mono" style={{ color: '#e2e8f0' }}>{e.path}</code>
-                </div>
-                <p className="text-sm font-semibold mb-1" style={{ color: '#f0f4ff' }}>{e.name}</p>
-                <p className="text-xs leading-relaxed" style={{ color: '#64748b' }}>{e.description}</p>
-              </div>
-            ))}
-          </div>
-        )}
+          {activeEndpoints.length === 0 ? (
+            <div className="card card-pad text-center">
+              <p className="text-sm" style={{ color: '#4C535B' }}>Endpoint registry unavailable — run database initialization first.</p>
+            </div>
+          ) : (
+            <div className="card overflow-hidden scroll-x">
+              <table className="table-plain table-responsive">
+                <thead>
+                  <tr>
+                    <th>Method</th>
+                    <th>Endpoint</th>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {activeEndpoints.map(e => (
+                    <tr key={e.path} data-label="Endpoint">
+                      <td data-label="Method">
+                        <span className="mono text-[10px] font-bold px-1.5 py-0.5"
+                          style={{ background: e.method === 'GET' ? 'rgba(76,125,252,0.12)' : 'rgba(242,169,59,0.1)', color: e.method === 'GET' ? '#4C7DFC' : '#F2A93B', border: `1px solid ${e.method === 'GET' ? 'rgba(76,125,252,0.35)' : 'rgba(242,169,59,0.3)'}` }}>
+                          {e.method}
+                        </span>
+                      </td>
+                      <td data-label="Endpoint"><code className="mono text-[12px]" style={{ color: '#E9E7E2' }}>{e.path}</code></td>
+                      <td data-label="Name" className="font-semibold" style={{ color: '#E9E7E2' }}>{e.name}</td>
+                      <td data-label="Category"><span className="tag">{CATEGORY_LABELS[e.category] || e.category}</span></td>
+                      <td data-label="Description" style={{ color: '#79818A' }}>{e.description}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </section>
 
       {/* ── CTA ── */}
-      <section className="container-site py-16 pb-24">
-        <div className="card p-10 sm:p-14 text-center"
-          style={{ background: 'linear-gradient(135deg,rgba(37,99,235,0.08),rgba(2,4,9,0.60))' }}>
-          <h2 className="text-2xl sm:text-3xl font-bold mb-3">Start building with MZAZI API</h2>
-          <p className="text-sm mb-8" style={{ color: '#94a3b8' }}>
-            Create your free account, generate an API key, and make your first request in minutes.
-          </p>
-          <div className="flex flex-wrap justify-center gap-3">
-            <AuthSwap
-              signedOut={
-                <Link href="/signup"
-                  className="px-6 py-3 rounded-xl font-semibold text-white transition-all hover:opacity-90"
-                  style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', textDecoration: 'none' }}>
-                  Get Started Free
-                </Link>
-              }
-              signedIn={
-                <Link href="/api/dashboard"
-                  className="px-6 py-3 rounded-xl font-semibold text-white transition-all hover:opacity-90"
-                  style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', textDecoration: 'none' }}>
-                  Open API Dashboard
-                </Link>
-              }
-            />
-            <Link href="/api/docs"
-              className="px-6 py-3 rounded-xl font-semibold transition-all"
-              style={{ color: '#60a5fa', border: '1px solid rgba(37,99,235,0.35)', textDecoration: 'none' }}>
-              Read the Docs
-            </Link>
+      <section className="section" style={{ paddingBottom: 110 }}>
+        <div className="container-site">
+          <div className="card card-pad text-center relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #14181D 0%, #0F1215 100%)' }}>
+            <div aria-hidden="true" className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(circle at 80% 20%, rgba(242,169,59,0.08) 0%, transparent 55%)' }} />
+            <div className="relative">
+              <p className="eyebrow center">Start building</p>
+              <h2 className="headline mt-6" style={{ fontSize: 'clamp(1.8rem, 4vw, 2.8rem)' }}>
+                First request in minutes<span className="accent">.</span>
+              </h2>
+              <p className="lede max-w-lg mx-auto mt-4 text-sm">
+                Create your free account, generate an API key, and make your first request — no tickets, no waiting.
+              </p>
+              <div className="flex flex-wrap justify-center gap-4 mt-8">
+                <AuthSwap
+                  signedOut={
+                    <Link href="/signup" className="btn btn-primary" style={{ textDecoration: 'none' }}>Get started free</Link>
+                  }
+                  signedIn={
+                    <Link href="/api/dashboard" className="btn btn-primary" style={{ textDecoration: 'none' }}>Open API dashboard</Link>
+                  }
+                />
+                <Link href="/api/docs" className="btn btn-ghost" style={{ textDecoration: 'none' }}>Read the docs</Link>
+              </div>
+            </div>
           </div>
         </div>
       </section>

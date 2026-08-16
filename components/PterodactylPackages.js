@@ -5,9 +5,8 @@ import Link from 'next/link';
 export default function PterodactylPackages() {
   return (
     <div className="py-8 text-center">
-      <Link href="/products" className="px-6 py-3 rounded-xl font-bold text-white inline-block"
-        style={{ background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)' }}>
-        View All Plans →
+      <Link href="/products" className="btn btn-primary" style={{ textDecoration: 'none' }}>
+        View all plans →
       </Link>
     </div>
   );
