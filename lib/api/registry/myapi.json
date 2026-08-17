@@ -1,0 +1,17 @@
+[
+  {
+    "path": "/api/myapi/ping",
+    "upstream": "/ping",
+    "category": "Tools",
+    "name": "My API — Ping (replace with your endpoints)",
+    "method": "GET",
+    "params": {
+      "required": [],
+      "optional": ["q"]
+    },
+    "active": true,
+    "examples": {
+      "q": "hello"
+    }
+  }
+]
