@@ -12,7 +12,47 @@
     "active": true,
     "examples": {
       "category": "Programming"
-    }
+    },
+    "fallbacks": [
+      { "provider": "keyless", "upstream": "https://icanhazdadjoke.com/" },
+      { "provider": "keyless", "upstream": "https://official-joke-api.appspot.com/jokes/random" },
+      { "provider": "keyless", "upstream": "https://api.chucknorris.io/jokes/random" }
+    ]
+  },
+  {
+    "path": "/api/free/quote",
+    "upstream": "https://dummyjson.com/quotes/random",
+    "category": "Fun",
+    "name": "Random Quote",
+    "method": "GET",
+    "params": {
+      "required": [],
+      "optional": []
+    },
+    "active": true,
+    "examples": {},
+    "fallbacks": [
+      { "provider": "keyless", "upstream": "https://zenquotes.io/api/random" },
+      { "provider": "keyless", "upstream": "https://api.kanye.rest/" },
+      { "provider": "keyless", "upstream": "https://api.github.com/zen" },
+      { "provider": "keyless", "upstream": "https://favqs.com/api/qotd" }
+    ]
+  },
+  {
+    "path": "/api/free/catfact",
+    "upstream": "https://catfact.ninja/fact",
+    "category": "Random",
+    "name": "Cat Fact",
+    "method": "GET",
+    "params": {
+      "required": [],
+      "optional": ["max_length"]
+    },
+    "active": true,
+    "examples": {},
+    "fallbacks": [
+      { "provider": "keyless", "upstream": "https://meowfacts.herokuapp.com/" }
+    ]
   },
   {
     "path": "/api/free/trivia",
@@ -27,33 +67,11 @@
     "active": true,
     "examples": {
       "difficulty": "medium"
-    }
-  },
-  {
-    "path": "/api/free/catfact",
-    "upstream": "https://catfact.ninja/fact",
-    "category": "Random",
-    "name": "Cat Fact",
-    "method": "GET",
-    "params": {
-      "required": [],
-      "optional": ["max_length"]
     },
-    "active": true,
-    "examples": {}
-  },
-  {
-    "path": "/api/free/quote",
-    "upstream": "https://dummyjson.com/quotes/random",
-    "category": "Fun",
-    "name": "Random Quote",
-    "method": "GET",
-    "params": {
-      "required": [],
-      "optional": []
-    },
-    "active": true,
-    "examples": {}
+    "fallbacks": [
+      { "provider": "keyless", "upstream": "https://the-trivia-api.com/v2/questions?limit=1" },
+      { "provider": "keyless", "upstream": "https://trivia.willfry.co.uk/api/questions?categories=general_knowledge&limit=1" }
+    ]
   },
   {
     "path": "/api/free/yesno",
@@ -82,7 +100,10 @@
     "examples": {
       "latitude": "-1.2864",
       "longitude": "36.8172"
-    }
+    },
+    "fallbacks": [
+      { "provider": "keyless", "upstream": "https://wttr.in/?format=j1" }
+    ]
   },
   {
     "path": "/api/free/crypto",
@@ -98,7 +119,12 @@
     "examples": {
       "ids": "bitcoin,ethereum",
       "vs_currencies": "kes,usd"
-    }
+    },
+    "fallbacks": [
+      { "provider": "keyless", "upstream": "https://api.coinbase.com/v2/prices/BTC-USD/spot" },
+      { "provider": "keyless", "upstream": "https://api-pub.bitfinex.com/v2/ticker/tBTCUSD" },
+      { "provider": "keyless", "upstream": "https://api.gemini.com/v1/pubticker/btcusd" }
+    ]
   },
   {
     "path": "/api/free/translate",
@@ -142,7 +168,10 @@
       "optional": []
     },
     "active": true,
-    "examples": {}
+    "examples": {},
+    "fallbacks": [
+      { "provider": "keyless", "upstream": "https://random.dog/woof.json" }
+    ]
   },
   {
     "path": "/api/free/currency-rates",
@@ -155,7 +184,11 @@
       "optional": []
     },
     "active": true,
-    "examples": {}
+    "examples": {},
+    "fallbacks": [
+      { "provider": "keyless", "upstream": "https://api.frankfurter.app/latest" },
+      { "provider": "keyless", "upstream": "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.json" }
+    ]
   },
   {
     "path": "/api/free/music-search",
@@ -218,5 +251,158 @@
     "examples": {
       "url": "https://www.tiktok.com/@scout2015/video/6718335390845095173"
     }
+  },
+  {
+    "path": "/api/free/ip",
+    "upstream": "https://api.ipify.org?format=json",
+    "category": "Tools",
+    "name": "My IP Address",
+    "method": "GET",
+    "params": {
+      "required": [],
+      "optional": []
+    },
+    "active": true,
+    "examples": {}
+  },
+  {
+    "path": "/api/free/anime-top",
+    "upstream": "https://api.jikan.moe/v4/top/anime?limit=1",
+    "category": "Anime",
+    "name": "Top Anime (Jikan)",
+    "method": "GET",
+    "params": {
+      "required": [],
+      "optional": ["limit", "type", "filter"]
+    },
+    "active": true,
+    "examples": {
+      "limit": "5"
+    }
+  },
+  {
+    "path": "/api/free/tv-search",
+    "upstream": "https://api.tvmaze.com/singlesearch/shows",
+    "category": "Search",
+    "name": "TV Show Search",
+    "method": "GET",
+    "params": {
+      "required": ["q"],
+      "optional": []
+    },
+    "active": true,
+    "examples": {
+      "q": "breaking bad"
+    }
+  },
+  {
+    "path": "/api/free/name-gender",
+    "upstream": "https://api.genderize.io/",
+    "category": "Tools",
+    "name": "Name Gender Guess",
+    "method": "GET",
+    "params": {
+      "required": ["name"],
+      "optional": ["country_id"]
+    },
+    "active": true,
+    "examples": {
+      "name": "john"
+    }
+  },
+  {
+    "path": "/api/free/name-age",
+    "upstream": "https://api.agify.io/",
+    "category": "Tools",
+    "name": "Name Age Guess",
+    "method": "GET",
+    "params": {
+      "required": ["name"],
+      "optional": ["country_id"]
+    },
+    "active": true,
+    "examples": {
+      "name": "john"
+    }
+  },
+  {
+    "path": "/api/free/name-nationality",
+    "upstream": "https://api.nationalize.io/",
+    "category": "Tools",
+    "name": "Name Nationality Guess",
+    "method": "GET",
+    "params": {
+      "required": ["name"],
+      "optional": []
+    },
+    "active": true,
+    "examples": {
+      "name": "john"
+    }
+  },
+  {
+    "path": "/api/free/fox",
+    "upstream": "https://randomfox.ca/floof/",
+    "category": "Random",
+    "name": "Random Fox Image",
+    "method": "GET",
+    "params": {
+      "required": [],
+      "optional": []
+    },
+    "active": true,
+    "examples": {}
+  },
+  {
+    "path": "/api/free/cat-image",
+    "upstream": "https://api.thecatapi.com/v1/images/search",
+    "category": "Random",
+    "name": "Random Cat Image",
+    "method": "GET",
+    "params": {
+      "required": [],
+      "optional": []
+    },
+    "active": true,
+    "examples": {}
+  },
+  {
+    "path": "/api/free/corporate-bs",
+    "upstream": "https://corporatebs-generator.sameerkumar.website/",
+    "category": "Fun",
+    "name": "Corporate Buzzwords",
+    "method": "GET",
+    "params": {
+      "required": [],
+      "optional": []
+    },
+    "active": true,
+    "examples": {}
+  },
+  {
+    "path": "/api/free/iss",
+    "upstream": "https://api.wheretheiss.at/v1/satellites/25544",
+    "category": "Tools",
+    "name": "ISS Location",
+    "method": "GET",
+    "params": {
+      "required": [],
+      "optional": []
+    },
+    "active": true,
+    "examples": {}
+  },
+  {
+    "path": "/api/free/zen",
+    "upstream": "https://api.github.com/zen",
+    "category": "Fun",
+    "name": "GitHub Zen",
+    "method": "GET",
+    "params": {
+      "required": [],
+      "optional": []
+    },
+    "active": true,
+    "examples": {}
   }
 ]
