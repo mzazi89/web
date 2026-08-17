@@ -253,6 +253,51 @@
     }
   },
   {
+    "path": "/api/download/tiktokv2",
+    "upstream": "https://www.tikwm.com/api/",
+    "category": "Download",
+    "name": "TikTok Downloader V2",
+    "method": "GET",
+    "params": {
+      "required": ["url"],
+      "optional": []
+    },
+    "active": true,
+    "examples": {
+      "url": "https://www.tiktok.com/@scout2015/video/6718335390845095173"
+    }
+  },
+  {
+    "path": "/api/download/tiktokv3",
+    "upstream": "https://www.tikwm.com/api/",
+    "category": "Download",
+    "name": "TikTok Downloader V3",
+    "method": "GET",
+    "params": {
+      "required": ["url"],
+      "optional": []
+    },
+    "active": true,
+    "examples": {
+      "url": "https://www.tiktok.com/@scout2015/video/6718335390845095173"
+    }
+  },
+  {
+    "path": "/api/download/tiktokv4",
+    "upstream": "https://www.tikwm.com/api/",
+    "category": "Download",
+    "name": "TikTok Downloader V4",
+    "method": "GET",
+    "params": {
+      "required": ["url"],
+      "optional": []
+    },
+    "active": true,
+    "examples": {
+      "url": "https://www.tiktok.com/@scout2015/video/6718335390845095173"
+    }
+  },
+  {
     "path": "/api/free/ip",
     "upstream": "https://api.ipify.org?format=json",
     "category": "Tools",

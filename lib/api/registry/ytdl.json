@@ -1,0 +1,49 @@
+[
+  {
+    "path": "/api/download/youtube",
+    "upstream": "",
+    "category": "Download",
+    "name": "YouTube Downloader",
+    "method": "GET",
+    "params": {
+      "required": ["url"],
+      "optional": ["format"]
+    },
+    "active": true,
+    "examples": {
+      "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+    }
+  },
+  {
+    "path": "/api/download/youtube-mp3",
+    "upstream": "",
+    "category": "Download",
+    "name": "YouTube MP3",
+    "method": "GET",
+    "params": {
+      "required": ["url"],
+      "optional": ["format"]
+    },
+    "active": true,
+    "examples": {
+      "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "format": "mp3"
+    }
+  },
+  {
+    "path": "/api/download/youtube-mp4-v2",
+    "upstream": "",
+    "category": "Download",
+    "name": "YouTube MP4",
+    "method": "GET",
+    "params": {
+      "required": ["url"],
+      "optional": ["format"]
+    },
+    "active": true,
+    "examples": {
+      "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "format": "mp4"
+    }
+  }
+]
