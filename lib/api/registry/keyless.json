@@ -156,5 +156,67 @@
     },
     "active": true,
     "examples": {}
+  },
+  {
+    "path": "/api/free/music-search",
+    "upstream": "https://itunes.apple.com/search",
+    "category": "Search",
+    "name": "Music Search (iTunes)",
+    "method": "GET",
+    "params": {
+      "required": ["term"],
+      "optional": ["limit", "country"]
+    },
+    "active": true,
+    "examples": {
+      "term": "Faded",
+      "limit": "5"
+    }
+  },
+  {
+    "path": "/api/free/tiktok",
+    "upstream": "https://www.tikwm.com/api/",
+    "category": "Download",
+    "name": "TikTok Downloader",
+    "method": "GET",
+    "params": {
+      "required": ["url"],
+      "optional": []
+    },
+    "active": true,
+    "examples": {
+      "url": "https://www.tiktok.com/@scout2015/video/6718335390845095173"
+    }
+  },
+  {
+    "path": "/api/download/play",
+    "upstream": "https://itunes.apple.com/search",
+    "category": "Download",
+    "name": "Play Music (Search)",
+    "method": "GET",
+    "params": {
+      "required": ["term"],
+      "optional": ["limit", "country"]
+    },
+    "active": true,
+    "examples": {
+      "term": "Faded",
+      "limit": "5"
+    }
+  },
+  {
+    "path": "/api/download/tiktok",
+    "upstream": "https://www.tikwm.com/api/",
+    "category": "Download",
+    "name": "TikTok Downloader",
+    "method": "GET",
+    "params": {
+      "required": ["url"],
+      "optional": []
+    },
+    "active": true,
+    "examples": {
+      "url": "https://www.tiktok.com/@scout2015/video/6718335390845095173"
+    }
   }
 ]
