@@ -1,0 +1,18 @@
+[
+  {
+    "path": "/api/ai/pollinations",
+    "upstream": "/",
+    "category": "AI",
+    "name": "Pollinations AI Chat",
+    "method": "GET",
+    "params": {
+      "required": ["prompt"],
+      "optional": ["model", "system"]
+    },
+    "active": true,
+    "examples": {
+      "prompt": "Explain quantum computing in simple terms",
+      "model": "openai"
+    }
+  }
+]

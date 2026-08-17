@@ -1,0 +1,160 @@
+[
+  {
+    "path": "/api/free/joke",
+    "upstream": "https://v2.jokeapi.dev/joke/Any",
+    "category": "Fun",
+    "name": "Random Joke",
+    "method": "GET",
+    "params": {
+      "required": [],
+      "optional": ["category"]
+    },
+    "active": true,
+    "examples": {
+      "category": "Programming"
+    }
+  },
+  {
+    "path": "/api/free/trivia",
+    "upstream": "https://opentdb.com/api.php?amount=1",
+    "category": "Games",
+    "name": "Trivia Question",
+    "method": "GET",
+    "params": {
+      "required": [],
+      "optional": ["category", "difficulty", "type"]
+    },
+    "active": true,
+    "examples": {
+      "difficulty": "medium"
+    }
+  },
+  {
+    "path": "/api/free/catfact",
+    "upstream": "https://catfact.ninja/fact",
+    "category": "Random",
+    "name": "Cat Fact",
+    "method": "GET",
+    "params": {
+      "required": [],
+      "optional": ["max_length"]
+    },
+    "active": true,
+    "examples": {}
+  },
+  {
+    "path": "/api/free/quote",
+    "upstream": "https://dummyjson.com/quotes/random",
+    "category": "Fun",
+    "name": "Random Quote",
+    "method": "GET",
+    "params": {
+      "required": [],
+      "optional": []
+    },
+    "active": true,
+    "examples": {}
+  },
+  {
+    "path": "/api/free/yesno",
+    "upstream": "https://yesno.wtf/api",
+    "category": "Fun",
+    "name": "Yes or No",
+    "method": "GET",
+    "params": {
+      "required": [],
+      "optional": []
+    },
+    "active": true,
+    "examples": {}
+  },
+  {
+    "path": "/api/free/weather",
+    "upstream": "https://api.open-meteo.com/v1/forecast?current_weather=true",
+    "category": "Tools",
+    "name": "Weather Forecast",
+    "method": "GET",
+    "params": {
+      "required": ["latitude", "longitude"],
+      "optional": ["temperature_unit", "wind_speed_unit"]
+    },
+    "active": true,
+    "examples": {
+      "latitude": "-1.2864",
+      "longitude": "36.8172"
+    }
+  },
+  {
+    "path": "/api/free/crypto",
+    "upstream": "https://api.coingecko.com/api/v3/simple/price",
+    "category": "Tools",
+    "name": "Crypto Price",
+    "method": "GET",
+    "params": {
+      "required": ["ids", "vs_currencies"],
+      "optional": []
+    },
+    "active": true,
+    "examples": {
+      "ids": "bitcoin,ethereum",
+      "vs_currencies": "kes,usd"
+    }
+  },
+  {
+    "path": "/api/free/translate",
+    "upstream": "https://api.mymemory.translated.net/get",
+    "category": "Tools",
+    "name": "Translate Text",
+    "method": "GET",
+    "params": {
+      "required": ["q", "langpair"],
+      "optional": []
+    },
+    "active": true,
+    "examples": {
+      "q": "Hello world",
+      "langpair": "en|fr"
+    }
+  },
+  {
+    "path": "/api/free/random-user",
+    "upstream": "https://randomuser.me/api/",
+    "category": "Random",
+    "name": "Random User",
+    "method": "GET",
+    "params": {
+      "required": [],
+      "optional": ["gender", "nat"]
+    },
+    "active": true,
+    "examples": {
+      "nat": "ke"
+    }
+  },
+  {
+    "path": "/api/free/dog",
+    "upstream": "https://dog.ceo/api/breeds/image/random",
+    "category": "Random",
+    "name": "Random Dog Image",
+    "method": "GET",
+    "params": {
+      "required": [],
+      "optional": []
+    },
+    "active": true,
+    "examples": {}
+  },
+  {
+    "path": "/api/free/currency-rates",
+    "upstream": "https://open.er-api.com/v6/latest/USD",
+    "category": "Tools",
+    "name": "Currency Rates",
+    "method": "GET",
+    "params": {
+      "required": [],
+      "optional": []
+    },
+    "active": true,
+    "examples": {}
+  }
+]
