@@ -1,85 +1,363 @@
 -- QUARTZ XD — live-DB command updates
--- Run ONCE in the Neon SQL console (or psql) against the shared database.
--- The 591 NEW commands seed automatically on next app restart (DB count < file count);
--- these UPDATEs fix EXISTING rows that the seed never overwrites.
+-- Run ONCE in the Neon SQL console against the shared database.
+-- The 591 new commands seed automatically on next app restart; these UPDATEs fix EXISTING rows.
 
 -- menu6
 UPDATE bot_commands SET code = 'try {
-  const customMenuPic = `./database/sessions/${botPhoneNum}/menu.jpg`;
-  const defaultMenuPic = "./media/menu.jpg";
-  const pic = fs.existsSync(customMenuPic) ? customMenuPic : (fs.existsSync(defaultMenuPic) ? defaultMenuPic : null);
-  const sec = Math.floor((Date.now() - startTime) / 1000);
-  const dd = Math.floor(sec / 86400), hh = Math.floor((sec % 86400) / 3600), mm = Math.floor((sec % 3600) / 60), ss = sec % 60;
-  const menuTxt = `╔═══════════════════════╗
-║   QUARTZ XD · MZAZI TECH   ║
-╚═══════════════════════╝
+    // ── Play welcome audio first ──
+    const audioPath = "./media/menu.mp3";
+    if (fs.existsSync(audioPath)) {
+        try {
+            const audioBuf = fs.readFileSync(audioPath);
+            await mzazi.sendMessage(sender, { audio: audioBuf, mimetype: "audio/mpeg", ptt: false }, { quoted: m });
+        } catch (audioErr) {
+            logger.warn(''Audio playback failed:'', audioErr);
+        }
+    }
 
-🤖 *${botName}*
-📱 +${jidToNumber(botPhoneNum || '''')}
-⏱️ ${dd}d ${hh}h ${mm}m ${ss}s · 1000 commands loaded
+    // ── Load menu image ──
+    const customMenuPic = `./database/sessions/${botPhoneNum}/menu.jpg`;
+    const defaultMenuPic = "./media/menu.jpg";
+    const menuPicPath = fs.existsSync(customMenuPic) ? customMenuPic : defaultMenuPic;
 
-╔═⟪ 🛡️ GENERAL ⟫═╗
-╠❏ ${prefix}pair — pair a WhatsApp number
-╠❏ ${prefix}ping / uptime / owner
-╠❏ ${prefix}ai <question> — MZAZI AI
-╠❏ ${prefix}menu6 — this menu
-╚════════════════════
+    // ── Get bot statistics ──
+    const botName2 = getBotName ? getBotName(botPhoneNum) : botName;
+    const uptimeSeconds = (Date.now() - startTime) / 1000;
+    const days = Math.floor(uptimeSeconds / 86400);
+    const hours = Math.floor((uptimeSeconds % 86400) / 3600);
+    const minutes = Math.floor((uptimeSeconds % 3600) / 60);
+    const seconds = Math.floor(uptimeSeconds % 60);
+    const uptimeStr = `${days}d ${hours}h ${minutes}m ${seconds}s`;
 
-╔═⟪ 👥 GROUP ⟫═╗
-╠❏ kick · promote · demote · add <num>
-╠❏ tagall · hidetag · groupopen · groupclose
-╠❏ setname <name> · setdesc <text>
-╠❏ grouplink · revoke · delete
-╠❏ warn · unwarn · groupstats · listadmin
-╠❏ antilink · antiviewonce · antimentiongroup
-╠❏ pickmember · kickme
-╚════════════════════
+    const now = new Date();
+    const dateStr = now.toLocaleDateString(''en-US'', { weekday: ''long'', year: ''numeric'', month: ''long'', day: ''numeric'' });
+    const timeStr = now.toLocaleTimeString(''en-US'', { hour: ''2-digit'', minute: ''2-digit'', second: ''2-digit'', hour12: true });
 
-╔═⟪ 👑 OWNER ⟫═╗
-╠❏ broadcast <msg> · sendto <jid> <msg>
-╠❏ join <link> · leave · block · unblock
-╠❏ addowner <num> · delowner · ownerlist
-╠❏ ownergroups · setbotname · botuptime
-╠❏ toggleflood · toggleonline · setpp
-╠❏ backup · restart
-╚════════════════════
+    // ── Get user info ──
+    const pushname = (m && m.pushName) || ''User'';
+    const userNumber = sender.split(''@'')[0];
 
-╔═⟪ 🧠 AI ⟫═╗
-╠❏ ai · ask · gpt · brain · explain
-╠❏ translate · summarize · rewrite · code
-╠❏ math · solve · poem · story · define
-╠❏ imagine · img · draw · genimg <prompt>
-╚════════════════════
+    // ── Get bot mode ──
+    const currentSettings = loadJSON(settingsPath, { publicMode: true, selfMode: false });
+    const mode = currentSettings.selfMode ? ''🔒 SELF'' : ''🌐 PUBLIC'';
 
-╔═⟪ 📥 DOWNLOADS ⟫═╗
-╠❏ play <song> · song · mp3 · yta · ytv
-╠❏ video <link> · tiktok · insta · ig
-╠❏ facebook · fb · spotify · soundcloud
-╚════════════════════
+    // ── Build the menu with vertical command list ──
+    const menuCaption = `╔═════════════╗
+║➥ ✦ 𝐐𝐔𝐀𝐑𝐓𝐙 𝐗𝐃 ✦
+╠═════════════╣
+║➥┌──────────┐
+║➥│ 👤 USER    : \${pushname.padEnd(20)}
+║➥│ 📱 NUMBER  : \${botPhoneNum.padEnd(20)}
+║➥│ ⏱ UPTIME  : \${uptimeStr.padEnd(20)}
+║➥│ 🕐 TIME    : \${timeStr.padEnd(20)}
+║➥│ 📅 DATE    : \${dateStr.padEnd(20)}
+║➥│ 📌 VERSION : V3.0.0\${'' ''.padEnd(13)}
+║➥│ ⚙️ MODE    : \${mode.padEnd(20)}
+║➥│ 🔱 PREFIX  : \${prefix.padEnd(20)}
+║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
+║➥└──────────┘
+╚═════════════╝
 
-╔═⟪ 🎮 GAMES ⟫═╗
-╠❏ slots · dice · coin · rps <choice>
-╠❏ guess · ttt · highlow · anagram · hangman
-╠❏ quickquiz · capitalquiz · blackjack
-╠❏ truth · dare · wyr · 8ball · lovecalc
-╚════════════════════
+╔═════════════╗
+║➥🏠 GENERAL
+╠═════════════╣
+║➥• menu6
+║➥• ping
+║➥• uptime
+║➥• owner
+║➥• runtime
+║➥• sticker
+║➥• addsticker
+║➥• chatbot
+║➥• vv
+║➥• vv2
+║➥• tqto
+║➥• rules
+║➥• welcome
+║➥• goodbye
+║➥• setbotpic
+║➥• wantam
+║➥• mercy
+║➥• friends
+║➥• playdoc
+║➥• exit
+╚═════════════╝
 
-╔═⟪ 😂 FUN ⟫═╗
-╠❏ joke · fact · quote · roast · compliment
-╠❏ pickup · meme · say <text> · shout
-╠❏ clap · uwu · horoscope · zodiac · ship
-╠❏ goodmorning · goodnight · monday
-╚════════════════════
+╔═════════════╗
+║➥🤖 AI COMMANDS
+╠═════════════╣
+║➥• ai
+║➥• ask
+║➥• gpt
+║➥• chat
+║➥• brain
+║➥• deepseek
+║➥• explain
+║➥• define
+║➥• synonym
+║➥• antonym
+║➥• translate
+║➥• translatefr
+║➥• translatesp
+║➥• translatekis
+║➥• translatetr
+║➥• translatear
+║➥• translatept
+║➥• translatehi
+║➥• tr
+║➥• summarize
+║➥• tldr
+║➥• rewrite
+║➥• rephrase
+║➥• paraphrase
+║➥• formal
+║➥• casual
+║➥• emojify
+║➥• hashtags
+║➥• caption
+║➥• bio
+╚═════════════╝
 
-_Made with ⚡ by MZAZI TECH INC_
-_Type ${prefix}remote to list all commands_`;
-  if (pic) {
-    const buf = fs.readFileSync(pic);
-    await mzazi.sendMessage(sender, { image: buf, caption: menuTxt }, { quoted: m });
-  } else {
-    mzazireply(menuTxt);
-  }
-} catch (e) { return mzazireply(''❌ '' + (e.message || ''Menu error'')); }
+╔═════════════╗
+║➥🎵 MEDIA & DOWNLOAD
+╠═════════════╣
+║➥• play
+║➥• song
+║➥• musica
+║➥• audio
+║➥• mp3
+║➥• yta
+║➥• ytmp3
+║➥• ytdl
+║➥• ytmusic
+║➥• video
+║➥• mp4
+║➥• ytv
+║➥• ytmp4
+║➥• yt
+║➥• youtube
+║➥• vd
+║➥• vid
+║➥• tiktok
+║➥• tiktokdl
+║➥• tik
+║➥• insta
+║➥• instagram
+║➥• ig
+║➥• igdl
+║➥• twitter
+║➥• twt
+╚═════════════╝
+
+╔═════════════╗
+║➥👥 GROUP MANAGEMENT
+╠═════════════╣
+║➥• remove
+║➥• unwarn
+║➥• delwarn
+║➥• groupopen
+║➥• groupclose
+║➥• opengroup
+║➥• closegroup
+║➥• setname
+║➥• setgroupname
+║➥• settopic
+║➥• grouplink
+║➥• getlink
+║➥• linkgroup
+║➥• resetlink
+║➥• newlink
+║➥• del
+║➥• tagall2
+║➥• mentionall
+║➥• notifyall
+║➥• callall
+║➥• calladmin
+║➥• listmembers
+║➥• members
+║➥• memberlist
+║➥• who
+║➥• adduser
+║➥• addmember
+║➥• groupstats
+║➥• gcstats
+║➥• statsgroup
+║➥• listadmin
+║➥• adminlist
+║➥• getadmin
+║➥• groupowner
+║➥• gcowner
+║➥• owngroup
+║➥• gcname
+║➥• groupname
+║➥• getname
+║➥• gcdesc
+╚═════════════╝
+
+╔═════════════╗
+║➥🛡 GROUP PROTECTION
+╠═════════════╣
+║➥• anticall
+╚═════════════╝
+
+╔═════════════╗
+║➥👑 OWNER
+╠═════════════╣
+║➥• blocklist
+║➥• ownerinfo
+║➥• getid
+║➥• jid
+║➥• bottime
+║➥• botdate
+║➥• ownergroups
+║➥• grouplist
+║➥• groupcount
+║➥• sendto
+║➥• ownerlist
+║➥• delowner
+║➥• ownerhelp
+║➥• ownersay
+║➥• botmsg
+║➥• gcids
+║➥• groupjids
+║➥• allgroups
+║➥• whoowner
+║➥• ownernum
+║➥• sysinfo
+║➥• runtime2
+║➥• uptime2
+║➥• sessioninfo
+║➥• toggleflood
+║➥• togglensfw
+║➥• togglebadword
+║➥• togglesticker
+║➥• togglegif
+║➥• toggleimage
+║➥• togglevideo
+║➥• toggleaudio
+║➥• toggleautotyping
+║➥• toggleonline
+╚═════════════╝
+
+╔═════════════╗
+║➥🎮 GAMES
+╠═════════════╣
+║➥• slots
+║➥• slot
+║➥• jackpot
+║➥• spin
+║➥• dice
+║➥• dadu
+║➥• roll
+║➥• coin
+║➥• coinflip
+║➥• flip
+║➥• rps
+║➥• janken
+║➥• 8ball
+║➥• magic8
+║➥• guess
+║➥• guessnumber
+║➥• numbergame
+║➥• mathgame
+║➥• mathquiz
+║➥• addition
+║➥• ttt
+║➥• tictactoe
+║➥• truth
+║➥• dare
+║➥• wyr
+║➥• nhie
+║➥• fortune
+║➥• horoscope
+║➥• zodiac
+║➥• lovecalc
+║➥• ship
+║➥• quiztrivia
+║➥• russianroulette
+║➥• lottery
+║➥• luck
+║➥• casino
+║➥• cards
+║➥• blackjack
+║➥• highlow
+║➥• anagram
+║➥• hangman
+║➥• quickquiz
+╚═════════════╝
+
+╔═════════════╗
+║➥😂 FUN
+╠═════════════╣
+║➥• joke
+║➥• dadjoke
+║➥• meme
+║➥• fact
+║➥• quote
+║➥• lifequote
+║➥• roast
+║➥• compliment
+║➥• pickupline
+║➥• happy
+║➥• merry
+║➥• happynewyear
+║➥• valentine
+║➥• easter
+║➥• ramadan
+║➥• eid
+║➥• goodmorning
+║➥• goodnight
+║➥• goodafternoon
+║➥• greet
+║➥• showerthoughts
+║➥• puns
+║➥• riddles
+║➥• tonguetwister
+║➥• affirmation
+║➥• motivation
+║➥• comebacks
+║➥• animalfact
+║➥• spacefact
+║➥• techfact
+║➥• foodfact
+║➥• thisorthat
+║➥• thanksgiving
+║➥• halloween
+╚═════════════╝
+
+╔═════════════╗
+║➥⚡ Powered by Mzazi Systems
+║➥🔧 Switch Case Based
+║➥🌐 https://mzazi.shop
+║➥📌 You can copy me but
+║➥   you can never be me
+╚═════════════╝`;
+
+    const forwardCtx = {
+        forwardingScore: 999,
+        isForwarded: true,
+        forwardedNewsletterMessageInfo: {
+            newsletterJid: ''120363430368431358@newsletter'',
+            newsletterName: "✦ QUARTZ XD ✦",
+            serverMessageId: 143,
+        },
+    };
+
+    // ── Send the menu as image with caption ──
+    if (fs.existsSync(menuPicPath)) {
+        const imageBuffer = fs.readFileSync(menuPicPath);
+        await mzazi.sendMessage(sender, { image: imageBuffer, caption: menuCaption, contextInfo: forwardCtx }, { quoted: m });
+    } else {
+        await mzazi.sendMessage(sender, { text: menuCaption, contextInfo: forwardCtx }, { quoted: m });
+    }
+} catch (err) {
+    logger.error(''Menu error:'', err);
+    try {
+        await mzazi.sendMessage(sender, { text: ''❌ Failed to load menu. Please try again.\n\n📌 Use .help for assistance.'' });
+    } catch (finalErr) {
+        logger.error(''Final fallback error:'', finalErr);
+    }
+}
 return;'
 , description = 'QUARTZ XD main menu (1000 commands)'
 WHERE name = 'menu6';
