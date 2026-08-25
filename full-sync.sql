@@ -11851,22 +11851,38 @@ try {
   return mzazireply(''❌ '' + ((res && res.error) || ''No response from the AI.''));
 } catch (e) { return mzazireply(''❌ AI request failed: '' + (e.message || e)); }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('owner', '[]'::jsonb, '', 'General', '', false, false, false, true, 'await mzazi.sendMessage(sender, {
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('owner', '[]'::jsonb, 'MZAZI TECH INC owners & support — cards + saveable contacts', 'General', '', false, false, false, true, 'try {
+  // ── 1. Attractive owner card with buttons ──
+  await sendInteractiveMessage(mzazi, sender, {
+    title: ''👑 MZAZI TECH INC'',
+    text: ''╔═══════════════════════╗\n║➥✦ 𝐌𝐙𝐀𝐙𝐈 𝐓𝐄𝐂𝐇 𝐈𝐍𝐂 ✦\n╚═══════════════════════╝\n\n🤖 *QUARTZ XD Bot*\nYour all-in-one WhatsApp assistant\n\n👑 *OWNERS / SUPPORT TEAM*\n\n┌─ 👤 Owner 1 ────────┐\n│ 📞 +254 741 388 986 │\n└─────────────────────┘\n┌─ 👤 Owner 2 ────────┐\n│ 📞 +254 708 001 856 │\n└─────────────────────┘\n┌─ 👤 Owner 3 ────────┐\n│ 📞 +254 108 595 201 │\n└─────────────────────┘\n┌─ 👤 Owner 4 ────────┐\n│ 📞 +254 743 177 847 │\n└─────────────────────┘\n\n🕘 *Support:* 24/7\n⚡ *Response:* under 10 minutes\n🌐 *Website:* https://mzazi.shop\n\n_⬇️ Tap below to save contacts_'',
+    footer: ''QUARTZ XD · Powered by MZAZI TECH INC'',
+    interactiveButtons: [
+      { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''📜 Main Menu'', id: prefix + ''menu6'' }) },
+      { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''👑 Owner Help'', id: prefix + ''ownerhelp'' }) },
+      { name: ''cta_url'', buttonParamsJson: JSON.stringify({ display_text: ''🌐 mzazi.shop'', url: ''https://mzazi.shop'' }) }
+    ]
+  });
+} catch (e) {
+  logger.warn(''Owner card error:'', e);
+}
+// ── 2. Saveable contact cards (all 4 numbers) ──
+try {
+  await mzazi.sendMessage(sender, {
     contacts: {
-        displayName: "Mzazi Developer",
-        contacts: [
-            {
-                displayName: "Mzazi Developer",
-                vcard: `BEGIN:VCARD
-
-VERSION:3.0
-FN:Mzazi Developer
-TEL;type=CELL;type=VOICE:+254708001856
-END:VCARD`
+      displayName: ''MZAZI TECH INC'',
+      contacts: [
+        { displayName: ''MZAZI TECH — Owner 1'', vcard: ''BEGIN:VCARD\nVERSION:3.0\nFN:MZAZI TECH — Owner 1\nTEL;type=CELL;type=VOICE:+254741388986\nEND:VCARD'' },
+        { displayName: ''MZAZI TECH — Owner 2'', vcard: ''BEGIN:VCARD\nVERSION:3.0\nFN:MZAZI TECH — Owner 2\nTEL;type=CELL;type=VOICE:+254708001856\nEND:VCARD'' },
+        { displayName: ''MZAZI TECH — Owner 3'', vcard: ''BEGIN:VCARD\nVERSION:3.0\nFN:MZAZI TECH — Owner 3\nTEL;type=CELL;type=VOICE:+254108595201\nEND:VCARD'' },
+        { displayName: ''MZAZI TECH — Owner 4'', vcard: ''BEGIN:VCARD\nVERSION:3.0\nFN:MZAZI TECH — Owner 4\nTEL;type=CELL;type=VOICE:+254743177847\nEND:VCARD'' }
+      ]
+    }
+  }, { quoted: m });
+} catch (e) {
+  logger.warn(''Owner contacts error:'', e);
 }
-]
-}
-});') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
+return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('ownergroups', '[]'::jsonb, 'List all bot groups', 'Owner', '', true, false, false, true, 'if (!isOwner) return mzazireply(''❌ Owner only.'');
 try {
   const groups = await mzazi.groupFetchAllParticipating();
