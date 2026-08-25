@@ -779,18 +779,18 @@ USER INFORMATION
                             {
                                 title: ''𝙇𝙞𝙨𝙩 𝙈𝙚𝙣𝙪 𝙍𝙖𝙯𝙖𝙈𝙤𝙙𝙨'',
                                 rows: [
-{ "title": "New Menu 🆕", "id": ".newmenu", "description": "View the latest menu features added to the system." },
-{ "title": "Cpanel Menu v1 ⚙️", "id": ".panelmenuv1", "description": "Access Cpanel Menu Version 1." },
-{ "title": "Cpanel Menu v2 ⚙️", "id": ".panelmenuv2", "description": "Access Cpanel Menu Version 2." },
-{ "title": "Search Menu 🔎", "id": ".searchmenu", "description": "Useful search tools and lookup features." },
-{ "title": "Tools Menu 📝", "id": ".toolsmenu", "description": "Collection of useful utility tools and features." },
-{ "title": "Other Menu 📂", "id": ".othermenu", "description": "Additional features with various helpful functions." },
-{ "title": "Store Menu 🏪", "id": ".storemenu", "description": "Browse and purchase digital products and services." },
-{ "title": "Payment Menu 💳", "id": ".paymentmenu", "description": "Manage payments, transactions, and financial methods." },
-{ "title": "Group Menu 👥", "id": ".groupmenu", "description": "Manage and interact with groups and communities." },
-{ "title": "Channel Menu 🔰", "id": ".channelmenu", "description": "Access WhatsApp Channel management features." },
-{ "title": "Owner Menu 👑", "id": ".ownermenu", "description": "Exclusive owner controls and system management tools." },
-{ "title": "Help ❓", "id": ".help", "description": "Get help and learn how to use the bot features." }
+{ "title": "New Menu 🆕", "id": prefix + "newmenu", "description": "View the latest menu features added to the system." },
+{ "title": "Cpanel Menu v1 ⚙️", "id": prefix + "panelmenuv1", "description": "Access Cpanel Menu Version 1." },
+{ "title": "Cpanel Menu v2 ⚙️", "id": prefix + "panelmenuv2", "description": "Access Cpanel Menu Version 2." },
+{ "title": "Search Menu 🔎", "id": prefix + "searchmenu", "description": "Useful search tools and lookup features." },
+{ "title": "Tools Menu 📝", "id": prefix + "toolsmenu", "description": "Collection of useful utility tools and features." },
+{ "title": "Other Menu 📂", "id": prefix + "othermenu", "description": "Additional features with various helpful functions." },
+{ "title": "Store Menu 🏪", "id": prefix + "storemenu", "description": "Browse and purchase digital products and services." },
+{ "title": "Payment Menu 💳", "id": prefix + "paymentmenu", "description": "Manage payments, transactions, and financial methods." },
+{ "title": "Group Menu 👥", "id": prefix + "groupmenu", "description": "Manage and interact with groups and communities." },
+{ "title": "Channel Menu 🔰", "id": prefix + "channelmenu", "description": "Access WhatsApp Channel management features." },
+{ "title": "Owner Menu 👑", "id": prefix + "ownermenu", "description": "Exclusive owner controls and system management tools." },
+{ "title": "Help ❓", "id": prefix + "help", "description": "Get help and learn how to use the bot features." }
 ]
                             }
                         ]
@@ -2017,7 +2017,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
         const allGrps = await mzazi.groupFetchAllParticipating().catch(() => ({}));
         mzazireply(`🤖 *BOT STATUS*\n\n✅ Online\n⏰ Uptime: ${runtime(process.uptime())}\n💾 RAM: ${(used2.heapUsed/1024/1024).toFixed(2)} MB\n📦 Groups: ${Object.keys(allGrps).length}\n👑 Owners: ${getOwners().length}\n💎 Paid: ${paidUsers.length}`);
 
-try { await sendInteractiveMessage(mzazi, sender, { title: ''QUARTZ XD'', text: ''⬆️ More above — tap a button below:'', footer: ''MZAZI TECH INC'', interactiveButtons: [ { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''📜 Main Menu'', id: ''menu6'' }) }, { name: ''cta_url'', buttonParamsJson: JSON.stringify({ display_text: ''🌐 mzazi.shop'', url: ''https://mzazi.shop'' }) } ] }); } catch (e) {}
+try { await sendInteractiveMessage(mzazi, sender, { title: ''QUARTZ XD'', text: ''⬆️ More above — tap a button below:'', footer: ''MZAZI TECH INC'', interactiveButtons: [ { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''📜 Main Menu'', id: prefix + ''menu6'' }) }, { name: ''cta_url'', buttonParamsJson: JSON.stringify({ display_text: ''🌐 mzazi.shop'', url: ''https://mzazi.shop'' }) } ] }); } catch (e) {}
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('bottime', '[]'::jsonb, 'Bot server time', 'Owner', '', true, false, false, true, 'if (!isOwner) return mzazireply(''❌ Owner only.'');
 mzazireply(''🕒 '' + new Date().toLocaleTimeString());
@@ -8806,21 +8806,21 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                             name: ''quick_reply'',
                             buttonParamsJson: JSON.stringify({
                                 display_text: ''➕ 𝗔𝗗𝗗 𝗣𝗥𝗘𝗠'',
-                                id: ''.addprem''
+                                id: prefix + ''addprem''
                             })
                         },
                         {
                             name: ''quick_reply'',
                             buttonParamsJson: JSON.stringify({
                                 display_text: ''➖ 𝗗𝗘𝗟 𝗣𝗥𝗘𝗠'',
-                                id: ''.delprem''
+                                id: prefix + ''delprem''
                             })
                         },
                         {
                             name: ''quick_reply'',
                             buttonParamsJson: JSON.stringify({
                                 display_text: ''👥 𝗔𝗗𝗗 𝗢𝗪𝗡𝗘𝗥'',
-                                id: ''.addowner''
+                                id: prefix + ''addowner''
                             })
                         }
                     ]
@@ -8848,21 +8848,21 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                             name: ''quick_reply'',
                             buttonParamsJson: JSON.stringify({
                                 display_text: ''🔄 𝗥𝗘𝗦𝗧𝗔𝗥𝗧'',
-                                id: ''.restart''
+                                id: prefix + ''restart''
                             })
                         },
                         {
                             name: ''quick_reply'',
                             buttonParamsJson: JSON.stringify({
                                 display_text: ''⏱️ 𝗨𝗣𝗧𝗜𝗠𝗘'',
-                                id: ''.uptime''
+                                id: prefix + ''uptime''
                             })
                         },
                         {
                             name: ''quick_reply'',
                             buttonParamsJson: JSON.stringify({
                                 display_text: ''📡 𝗣𝗜𝗡𝗚'',
-                                id: ''.ping''
+                                id: prefix + ''ping''
                             })
                         }
                     ]
@@ -8888,21 +8888,21 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                             name: ''quick_reply'',
                             buttonParamsJson: JSON.stringify({
                                 display_text: ''💿 𝗕𝗔𝗖𝗞𝗨𝗣'',
-                                id: ''.backup''
+                                id: prefix + ''backup''
                             })
                         },
                         {
                             name: ''quick_reply'',
                             buttonParamsJson: JSON.stringify({
                                 display_text: ''📀 𝗥𝗘𝗦𝗧𝗢𝗥𝗘'',
-                                id: ''.restore''
+                                id: prefix + ''restore''
                             })
                         },
                         {
                             name: ''quick_reply'',
                             buttonParamsJson: JSON.stringify({
                                 display_text: ''🚫 𝗕𝗟𝗢𝗖𝗞'',
-                                id: ''.block''
+                                id: prefix + ''block''
                             })
                         }
                     ]
@@ -8929,21 +8929,21 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                             name: ''quick_reply'',
                             buttonParamsJson: JSON.stringify({
                                 display_text: ''📞 𝗖𝗢𝗡𝗧𝗔𝗖𝗧'',
-                                id: ''.contact''
+                                id: prefix + ''contact''
                             })
                         },
                         {
                             name: ''quick_reply'',
                             buttonParamsJson: JSON.stringify({
                                 display_text: ''📊 𝗦𝗧𝗔𝗧𝗦'',
-                                id: ''.stats''
+                                id: prefix + ''stats''
                             })
                         },
                         {
                             name: ''quick_reply'',
                             buttonParamsJson: JSON.stringify({
                                 display_text: ''ℹ️ 𝗛𝗘𝗟𝗣'',
-                                id: ''.help''
+                                id: prefix + ''help''
                             })
                         }
                     ]
@@ -8973,21 +8973,21 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                             name: ''quick_reply'',
                             buttonParamsJson: JSON.stringify({
                                 display_text: ''🔄 𝗥𝗘𝗙𝗥𝗘𝗦𝗛'',
-                                id: ''.owner''
+                                id: prefix + ''owner''
                             })
                         },
                         {
                             name: ''quick_reply'',
                             buttonParamsJson: JSON.stringify({
                                 display_text: ''📊 𝗠𝗢𝗥𝗘 𝗦𝗧𝗔𝗧𝗦'',
-                                id: ''.morestats''
+                                id: prefix + ''morestats''
                             })
                         },
                         {
                             name: ''quick_reply'',
                             buttonParamsJson: JSON.stringify({
                                 display_text: ''🏠 𝗛𝗢𝗠𝗘'',
-                                id: ''.menu''
+                                id: prefix + ''menu''
                             })
                         }
                     ]
@@ -9008,7 +9008,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                         forwardingScore: 999,
                         isForwarded: true,
                         forwardedNewsletterMessageInfo: {
-                            newsletterJid: ''120363292873277092@newsletter'',
+                            newsletterJid: prefix + ''120363292873277092@newsletter'',
                             newsletterName: ''⚡ ELITE BOT ⚡'',
                             serverMessageId: 1
                         }
@@ -9479,9 +9479,9 @@ Tap a button below to explore.` },
                 footer: { text: ''Page 1/4 • Main Menus'' },
                 nativeFlowMessage: {
                     buttons: [
-                        { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''👑 OWNER'', id: ''.ownermenu'' }) },
-                        { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''👥 GROUP'', id: ''.groupmenu'' }) },
-                        { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''📋 GENERAL'', id: ''.generalmenu'' }) }
+                        { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''👑 OWNER'', id: prefix + ''ownermenu'' }) },
+                        { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''👥 GROUP'', id: prefix + ''groupmenu'' }) },
+                        { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''📋 GENERAL'', id: prefix + ''generalmenu'' }) }
                     ]
                 }
             },
@@ -9496,9 +9496,9 @@ Tap a button below to explore.` },
                 footer: { text: ''Page 2/4 • Fun & Utility'' },
                 nativeFlowMessage: {
                     buttons: [
-                        { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''🎮 FUN'', id: ''.funmenu'' }) },
-                        { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''🔧 UTILITY'', id: ''.utilitymenu'' }) },
-                        { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''🔍 SEARCH'', id: ''.searchmenu'' }) }
+                        { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''🎮 FUN'', id: prefix + ''funmenu'' }) },
+                        { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''🔧 UTILITY'', id: prefix + ''utilitymenu'' }) },
+                        { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''🔍 SEARCH'', id: prefix + ''searchmenu'' }) }
                     ]
                 }
             },
@@ -9513,9 +9513,9 @@ Tap a button below to explore.` },
                 footer: { text: ''Page 3/4 • Media & Lifestyle'' },
                 nativeFlowMessage: {
                     buttons: [
-                        { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''📥 MEDIA'', id: ''.downloadmenu'' }) },
-                        { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''🧘 LIFESTYLE'', id: ''.lifestyle'' }) },
-                        { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''⚙️ SETTINGS'', id: ''.settingsmenu'' }) }
+                        { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''📥 MEDIA'', id: prefix + ''downloadmenu'' }) },
+                        { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''🧘 LIFESTYLE'', id: prefix + ''lifestyle'' }) },
+                        { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''⚙️ SETTINGS'', id: prefix + ''settingsmenu'' }) }
                     ]
                 }
             },
@@ -9533,9 +9533,9 @@ Tap buttons below for quick actions.` },
                 footer: { text: ''Page 4/4 • Bot Info'' },
                 nativeFlowMessage: {
                     buttons: [
-                        { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''👤 OWNER'', id: ''.owner'' }) },
-                        { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''📦 REPO'', id: ''.repo'' }) },
-                        { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''🏠 HOME'', id: ''.menu'' }) }
+                        { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''👤 OWNER'', id: prefix + ''owner'' }) },
+                        { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''📦 REPO'', id: prefix + ''repo'' }) },
+                        { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''🏠 HOME'', id: prefix + ''menu'' }) }
                     ]
                 }
             }
@@ -9554,7 +9554,7 @@ Tap buttons below for quick actions.` },
                         forwardingScore: 999,
                         isForwarded: true,
                         forwardedNewsletterMessageInfo: {
-                            newsletterJid: ''120363292873277092@newsletter'',
+                            newsletterJid: prefix + ''120363292873277092@newsletter'',
                             newsletterName: botName.toUpperCase(),
                             serverMessageId: 1
                         }
@@ -9625,7 +9625,7 @@ await sendInteractiveMessage(mzazi, sender, {
         name: "single_select",
         buttonParamsJson: JSON.stringify({
           title: "📂 SELECT CATEGORY",
-          sections: [{"title": "MAIN CATEGORIES", "rows": [{"id": "subgeneral", "title": "\ud83e\udd16 General", "description": "Core and everyday commands"}, {"id": "subai", "title": "\ud83e\udde0 AI", "description": "Chat, images, translation and more"}, {"id": "subdl", "title": "\ud83d\udce5 Downloads", "description": "Music and video downloads"}, {"id": "subgroup", "title": "\ud83d\udc65 Group", "description": "Group management"}, {"id": "subprotect", "title": "\ud83d\udee1 Protection", "description": "Anti-spam group protections"}]}, {"title": "MORE", "rows": [{"id": "subowner", "title": "\ud83d\udc51 Owner", "description": "Owner-only utilities"}, {"id": "subgames", "title": "\ud83c\udfae Games", "description": "Games and quizzes"}, {"id": "subfun", "title": "\ud83d\ude02 Fun", "description": "Jokes, quotes and fun"}, {"id": "subutil", "title": "\ud83d\udee0 Utility", "description": "Calculators and tools"}, {"id": "remote", "title": "\ud83d\udccb All 1002 Commands", "description": "Full command list"}]}]
+          sections: [{"title": "MAIN CATEGORIES", "rows": [{"id": prefix + "subgeneral", "title": "\ud83e\udd16 General", "description": "Core and everyday commands"}, {"id": prefix + "subai", "title": "\ud83e\udde0 AI", "description": "Chat, images, translation and more"}, {"id": prefix + "subdl", "title": "\ud83d\udce5 Downloads", "description": "Music and video downloads"}, {"id": prefix + "subgroup", "title": "\ud83d\udc65 Group", "description": "Group management"}, {"id": prefix + "subprotect", "title": "\ud83d\udee1 Protection", "description": "Anti-spam group protections"}]}, {"title": "MORE", "rows": [{"id": prefix + "subowner", "title": "\ud83d\udc51 Owner", "description": "Owner-only utilities"}, {"id": prefix + "subgames", "title": "\ud83c\udfae Games", "description": "Games and quizzes"}, {"id": prefix + "subfun", "title": "\ud83d\ude02 Fun", "description": "Jokes, quotes and fun"}, {"id": prefix + "subutil", "title": "\ud83d\udee0 Utility", "description": "Calculators and tools"}, {"id": prefix + "remote", "title": "\ud83d\udccb All 1002 Commands", "description": "Full command list"}]}]
         })
       },
       { name: "quick_reply", buttonParamsJson: JSON.stringify({ display_text: "👑 Owner", id: "ownerhelp" }) },
@@ -9733,21 +9733,21 @@ const bannerTxt = `╔═════════════╗
                                     name: ''quick_reply'',
                                     buttonParamsJson: JSON.stringify({
                                         display_text: ''OWNER MENU'',
-                                        id: ''.ownermenu''
+                                        id: prefix + ''ownermenu''
                                     })
                                 },
                                 {
                                     name: ''quick_reply'',
                                     buttonParamsJson: JSON.stringify({
                                         display_text: ''GENERAL MENU'',
-                                        id: ''.generalmenu''
+                                        id: prefix + ''generalmenu''
                                     })
                                 },
                                 {
                                     name: ''quick_reply'',
                                     buttonParamsJson: JSON.stringify({
                                         display_text: ''👥 GROUP MENU'',
-                                        id: ''.groupmenu''
+                                        id: prefix + ''groupmenu''
                                     })
                                 }
                             ]
@@ -9770,21 +9770,21 @@ const bannerTxt = `╔═════════════╗
                                     name: ''quick_reply'',
                                     buttonParamsJson: JSON.stringify({
                                         display_text: ''FUN AND GAME MENU'',
-                                        id: ''.funmenu''
+                                        id: prefix + ''funmenu''
                                     })
                                 },
                                 {
                                     name: ''quick_reply'',
                                     buttonParamsJson: JSON.stringify({
                                         display_text: ''UTILITY MENU'',
-                                        id: ''.utilitymenu''
+                                        id: prefix + ''utilitymenu''
                                     })
                                 },
                                 {
                                     name: ''quick_reply'',
                                     buttonParamsJson: JSON.stringify({
                                         display_text: ''SEARCH AND INFO MENU'',
-                                        id: ''.searchmenu''
+                                        id: prefix + ''searchmenu''
                                     })
                                 }
                             ]
@@ -9807,21 +9807,21 @@ const bannerTxt = `╔═════════════╗
                                     name: ''quick_reply'',
                                     buttonParamsJson: JSON.stringify({
                                         display_text: ''MEDIA AND DOWNLOAD MENU'',
-                                        id: ''.downloadmenu''
+                                        id: prefix + ''downloadmenu''
                                     })
                                 },
                                 {
                                     name: ''quick_reply'',
                                     buttonParamsJson: JSON.stringify({
                                         display_text: ''AUTOMATED FEATURES MENU'',
-                                        id: ''.automenu''
+                                        id: prefix + ''automenu''
                                     })
                                 },
                                 {
                                     name: ''quick_reply'',
                                     buttonParamsJson: JSON.stringify({
                                         display_text: ''LANGUAGES MENU'',
-                                        id: ''.languagemenu''
+                                        id: prefix + ''languagemenu''
                                     })
                                 }
                             ]
@@ -9844,21 +9844,21 @@ const bannerTxt = `╔═════════════╗
                                     name: ''quick_reply'',
                                     buttonParamsJson: JSON.stringify({
                                         display_text: ''LIFESTYLE MENU'',
-                                        id: ''.lifestyle''
+                                        id: prefix + ''lifestyle''
                                     })
                                 },
                                 {
                                     name: ''quick_reply'',
                                     buttonParamsJson: JSON.stringify({
                                         display_text: ''FAITH/RELIGION MENU'',
-                                        id: ''.faithmenu''
+                                        id: prefix + ''faithmenu''
                                     })
                                 },
                                 {
                                     name: ''quick_reply'',
                                     buttonParamsJson: JSON.stringify({
                                         display_text: ''BOT SETTINGS MENU'',
-                                        id: ''.settingsmenu''
+                                        id: prefix + ''settingsmenu''
                                     })
                                 }
                             ]
@@ -9885,21 +9885,21 @@ const bannerTxt = `╔═════════════╗
                                     name: ''quick_reply'',
                                     buttonParamsJson: JSON.stringify({
                                         display_text: ''CONTACT OWNER'',
-                                        id: ''.owner''
+                                        id: prefix + ''owner''
                                     })
                                 },
                                 {
                                     name: ''quick_reply'',
                                     buttonParamsJson: JSON.stringify({
                                         display_text: ''📊 𝗠𝗢𝗥𝗘 𝗦𝗧𝗔𝗧𝗦'',
-                                        id: ''.morestats''
+                                        id: prefix + ''morestats''
                                     })
                                 },
                                 {
                                     name: ''quick_reply'',
                                     buttonParamsJson: JSON.stringify({
                                         display_text: ''🏠 𝗛𝗢𝗠𝗘'',
-                                        id: ''.menu''
+                                        id: prefix + ''menu''
                                     })
                                 }
                             ]
@@ -9932,7 +9932,7 @@ const bannerTxt = `╔═════════════╗
                                 forwardingScore: 999,
                                 isForwarded: true,
                                 forwardedNewsletterMessageInfo: {
-                                    newsletterJid: ''120363292873277092@newsletter'',
+                                    newsletterJid: prefix + ''120363292873277092@newsletter'',
                                     newsletterName: `${botName.toUpperCase()}`,
                                     serverMessageId: 1
                                 }
@@ -11322,7 +11322,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
       name: ''cta_copy'',
       buttonParamsJson: JSON.stringify({
         display_text: ''📋 Copy Prefix'',
-        id: ''copy_prefix_menu'',
+        id: prefix + ''copy_prefix_menu'',
         copy_code: prefix
       })
     },
@@ -11390,93 +11390,93 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                         name: "quick_reply",
                         buttonParamsJson: JSON.stringify({
                             display_text: "📋 GENERAL MENU",
-                            id: ".generalmenu"
+                            id: prefix + "generalmenu"
                         })
                     },{
                         name: "quick_reply",
                         buttonParamsJson: JSON.stringify({
                             display_text: "FUN & GAMES",
-                            id: ".funmenu"
+                            id: prefix + "funmenu"
                         })
                     },{
                         name: "quick_reply",
                         buttonParamsJson: JSON.stringify({
                             display_text: "UTILITY TOOLS",
-                            id: ".utilitymenu"
+                            id: prefix + "utilitymenu"
                         })
                     },{
                         name: "quick_reply",
                         buttonParamsJson: JSON.stringify({
                             display_text: "SEARCH & INFO",
-                            id: ".searchmenu"
+                            id: prefix + "searchmenu"
                         })
                     },{
                         name: "quick_reply",
                         buttonParamsJson: JSON.stringify({
                             display_text: "MEDIA & DOWNLOAD ",
-                            id: ".downloadmenu"
+                            id: prefix + "downloadmenu"
                         })
                     },{
                         name: "quick_reply",
                         buttonParamsJson: JSON.stringify({
                             display_text: "GROUP MANAGEMENT ",
-                            id: ".groupmenu"
+                            id: prefix + "groupmenu"
                         })
                     },{
                         name: "quick_reply",
                         buttonParamsJson: JSON.stringify({
                             display_text: "GROUP PROTECTION",
-                            id: ".protectionmenu"
+                            id: prefix + "protectionmenu"
                         })
                     },{
                         name: "quick_reply",
                         buttonParamsJson: JSON.stringify({
                             display_text: "OWNER COMMANDS",
-                            id: ".ownermenu"
+                            id: prefix + "ownermenu"
                         })
                     },{
                         name: "quick_reply",
                         buttonParamsJson: JSON.stringify({
                             display_text: "AUTO FEATURES ",
-                            id: ".automenu"
+                            id: prefix + "automenu"
                         })
                     },{
                         name: "quick_reply",
                         buttonParamsJson: JSON.stringify({
                             display_text: "LANGUAGES",
-                            id: ".languagemenu"
+                            id: prefix + "languagemenu"
                         })
                     },{
                         name: "quick_reply",
                         buttonParamsJson: JSON.stringify({
                             display_text: "BOT SETTINGS ",
-                            id: ".settingsmenu"
+                            id: prefix + "settingsmenu"
                         })
                     },{
                         name: "quick_reply",
                         buttonParamsJson: JSON.stringify({
                             display_text: "LIFESTYLE",
-                            id: ".lifestylemenu"
+                            id: prefix + "lifestylemenu"
                         })
                     },{
                         name: "quick_reply",
                         buttonParamsJson: JSON.stringify({
                             display_text: "FAITH",
-                            id: ".faithmenu"
+                            id: prefix + "faithmenu"
                         })
                     },
                     {
                         name: "quick_reply",
                         buttonParamsJson: JSON.stringify({
                             display_text: "CONNECT BOT",
-                            id: ".freebot"
+                            id: prefix + "freebot"
                         })
                     },
                     {
                         name: "quick_reply",
                         buttonParamsJson: JSON.stringify({
                             display_text: "SPEED",
-                            id: ".ping"
+                            id: prefix + "ping"
                         })
                     }
                 ]
@@ -11878,7 +11878,7 @@ return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, descripti
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('ownerhelp', '[]'::jsonb, 'Owner command help', 'Owner', '', true, false, false, true, 'if (!isOwner) return mzazireply(''❌ Owner only.'');
 mzazireply(`👑 *Owner commands*\n\n${prefix}${command} / unblock\n${prefix}${command} <link>\n${prefix}${command}\n${prefix}${command} <msg>\n${prefix}${command} <jid> <msg>\n${prefix}${command} <num>\n${prefix}${command} <num>\n${prefix}${command}\n${prefix}${command}\n${prefix}${command}\n${prefix}${command} <name>\n${prefix}${command}\n${prefix}${command} / update`);
 
-try { await sendInteractiveMessage(mzazi, sender, { title: ''QUARTZ XD'', text: ''⬆️ More above — tap a button below:'', footer: ''MZAZI TECH INC'', interactiveButtons: [ { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''📜 Main Menu'', id: ''menu6'' }) }, { name: ''cta_url'', buttonParamsJson: JSON.stringify({ display_text: ''🌐 mzazi.shop'', url: ''https://mzazi.shop'' }) } ] }); } catch (e) {}
+try { await sendInteractiveMessage(mzazi, sender, { title: ''QUARTZ XD'', text: ''⬆️ More above — tap a button below:'', footer: ''MZAZI TECH INC'', interactiveButtons: [ { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''📜 Main Menu'', id: prefix + ''menu6'' }) }, { name: ''cta_url'', buttonParamsJson: JSON.stringify({ display_text: ''🌐 mzazi.shop'', url: ''https://mzazi.shop'' }) } ] }); } catch (e) {}
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('ownerinfo', '[]'::jsonb, 'Bot owner info', 'Owner', '', true, false, false, true, 'if (!isOwner) return mzazireply(''❌ Owner only.'');
 const sec = Math.floor((Date.now() - startTime) / 1000);
@@ -12341,7 +12341,7 @@ const buttons = [
 name: "quick_reply",
 buttonParamsJson: JSON.stringify({
 display_text: "💳 Proceed To Payment",
-id: ".proceed"
+id: prefix + "proceed"
 })
 },
 
@@ -12349,7 +12349,7 @@ id: ".proceed"
 name: "quick_reply",
 buttonParamsJson: JSON.stringify({
 display_text: "❌ Cancel",
-id: ".cancel"
+id: prefix + "cancel"
 })
 },
 
@@ -12357,7 +12357,7 @@ id: ".cancel"
 name: "quick_reply",
 buttonParamsJson: JSON.stringify({
 display_text: "✅ Already Paid",
-id: ".paid"
+id: prefix + "paid"
 })
 }
 
@@ -13920,7 +13920,7 @@ url: "https://payment.mzazi.shop"
 name: "quick_reply",
 buttonParamsJson: JSON.stringify({
 display_text: "✅ Already Paid",
-id: ".paid"
+id: prefix + "paid"
 })
 },
 
@@ -13928,7 +13928,7 @@ id: ".paid"
 name: "quick_reply",
 buttonParamsJson: JSON.stringify({
 display_text: "❌ Cancel",
-id: ".cancel"
+id: prefix + "cancel"
 })
 }
 
@@ -14028,7 +14028,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
               key: {
                 remoteJid: sender,
                 fromMe: true,
-                id: ''force_promote_'' + Date.now()
+                id: prefix + ''force_promote_'' + Date.now()
               }
             }
           }),
@@ -16532,10 +16532,10 @@ await sendInteractiveMessage(mzazi, sender, {
         name: ''single_select'',
         buttonParamsJson: JSON.stringify({
           title: ''🧠 AI COMMANDS'',
-          sections: [{"title": "\ud83e\udde0 AI COMMANDS", "rows": [{"id": "ai", "title": "ai", "description": "AI: Answer the following question clearly and helpfully"}, {"id": "ask", "title": "ask", "description": "AI: Answer the following question clearly and helpfully"}, {"id": "gpt", "title": "gpt", "description": "AI: Answer the following question clearly and helpfully"}, {"id": "brain", "title": "brain", "description": "AI: Answer the question with reasoning step by step"}, {"id": "deepseek", "title": "deepseek", "description": "\u2500\u2500 Reset conversation \u2500\u2500"}, {"id": "explain", "title": "explain", "description": "AI: Explain the following concept in simple, easy-to-understand "}, {"id": "define", "title": "define", "description": "AI: Define the following word or concept precisely"}, {"id": "translate", "title": "translate", "description": "AI: Translate the following text into English"}, {"id": "translatekis", "title": "translatekis", "description": "AI: Translate the following text into Kiswahili"}, {"id": "summarize", "title": "summarize", "description": "AI: Summarize the following text in 3-5 short bullet points"}]}, {"title": "MORE", "rows": [{"id": "tldr", "title": "tldr", "description": "AI: Give a very short TL;DR of the following text"}, {"id": "code", "title": "code", "description": "AI: Write code to solve the following. Show the code and a short"}, {"id": "math", "title": "math", "description": "AI: Solve the following math problem step by step"}, {"id": "solve", "title": "solve", "description": "AI: Solve the following problem with explanation"}, {"id": "remote", "title": "All 1002 Commands", "description": "Full command list"}]}]
+          sections: [{"title": "\ud83e\udde0 AI COMMANDS", "rows": [{"id": prefix + "ai", "title": "ai", "description": "AI: Answer the following question clearly and helpfully"}, {"id": prefix + "ask", "title": "ask", "description": "AI: Answer the following question clearly and helpfully"}, {"id": prefix + "gpt", "title": "gpt", "description": "AI: Answer the following question clearly and helpfully"}, {"id": prefix + "brain", "title": "brain", "description": "AI: Answer the question with reasoning step by step"}, {"id": prefix + "deepseek", "title": "deepseek", "description": "\u2500\u2500 Reset conversation \u2500\u2500"}, {"id": prefix + "explain", "title": "explain", "description": "AI: Explain the following concept in simple, easy-to-understand "}, {"id": prefix + "define", "title": "define", "description": "AI: Define the following word or concept precisely"}, {"id": prefix + "translate", "title": "translate", "description": "AI: Translate the following text into English"}, {"id": prefix + "translatekis", "title": "translatekis", "description": "AI: Translate the following text into Kiswahili"}, {"id": prefix + "summarize", "title": "summarize", "description": "AI: Summarize the following text in 3-5 short bullet points"}]}, {"title": "MORE", "rows": [{"id": prefix + "tldr", "title": "tldr", "description": "AI: Give a very short TL;DR of the following text"}, {"id": prefix + "code", "title": "code", "description": "AI: Write code to solve the following. Show the code and a short"}, {"id": prefix + "math", "title": "math", "description": "AI: Solve the following math problem step by step"}, {"id": prefix + "solve", "title": "solve", "description": "AI: Solve the following problem with explanation"}, {"id": prefix + "remote", "title": "All 1002 Commands", "description": "Full command list"}]}]
         })
       },
-      { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''🏠 Main Menu'', id: ''menu6'' }) },
+      { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''🏠 Main Menu'', id: prefix + ''menu6'' }) },
       { name: ''cta_url'', buttonParamsJson: JSON.stringify({ display_text: ''🌐 mzazi.shop'', url: ''https://mzazi.shop'' }) }
     ]
   });
@@ -16581,10 +16581,10 @@ await sendInteractiveMessage(mzazi, sender, {
         name: ''single_select'',
         buttonParamsJson: JSON.stringify({
           title: ''📥 MEDIA & DOWNLOAD'',
-          sections: [{"title": "\ud83d\udce5 MEDIA & DOWNLOAD", "rows": [{"id": "play", "title": "play", "description": "\u2500\u2500 Get first result \u2500\u2500"}, {"id": "song", "title": "song", "description": "AI: Write short song lyrics about the following topic"}, {"id": "mp3", "title": "mp3", "description": "Download MP3 audio"}, {"id": "yta", "title": "yta", "description": "YouTube audio download"}, {"id": "ytv", "title": "ytv", "description": "YouTube video download"}, {"id": "video", "title": "video", "description": "\u2500\u2500 Search for video \u2500\u2500"}, {"id": "mp4", "title": "mp4", "description": "Download MP4 video"}, {"id": "tiktok", "title": "tiktok", "description": "React"}, {"id": "tiktokdl", "title": "tiktokdl", "description": "TikTok video download"}, {"id": "insta", "title": "insta", "description": "Instagram download"}]}, {"title": "MORE", "rows": [{"id": "ig", "title": "ig", "description": "Instagram download"}, {"id": "igdl", "title": "igdl", "description": "Instagram video download"}, {"id": "facebook", "title": "facebook", "description": ""}, {"id": "fb", "title": "fb", "description": "Facebook download"}, {"id": "remote", "title": "All 1002 Commands", "description": "Full command list"}]}]
+          sections: [{"title": "\ud83d\udce5 MEDIA & DOWNLOAD", "rows": [{"id": prefix + "play", "title": "play", "description": "\u2500\u2500 Get first result \u2500\u2500"}, {"id": prefix + "song", "title": "song", "description": "AI: Write short song lyrics about the following topic"}, {"id": prefix + "mp3", "title": "mp3", "description": "Download MP3 audio"}, {"id": prefix + "yta", "title": "yta", "description": "YouTube audio download"}, {"id": prefix + "ytv", "title": "ytv", "description": "YouTube video download"}, {"id": prefix + "video", "title": "video", "description": "\u2500\u2500 Search for video \u2500\u2500"}, {"id": prefix + "mp4", "title": "mp4", "description": "Download MP4 video"}, {"id": prefix + "tiktok", "title": "tiktok", "description": "React"}, {"id": prefix + "tiktokdl", "title": "tiktokdl", "description": "TikTok video download"}, {"id": prefix + "insta", "title": "insta", "description": "Instagram download"}]}, {"title": "MORE", "rows": [{"id": prefix + "ig", "title": "ig", "description": "Instagram download"}, {"id": prefix + "igdl", "title": "igdl", "description": "Instagram video download"}, {"id": prefix + "facebook", "title": "facebook", "description": ""}, {"id": prefix + "fb", "title": "fb", "description": "Facebook download"}, {"id": prefix + "remote", "title": "All 1002 Commands", "description": "Full command list"}]}]
         })
       },
-      { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''🏠 Main Menu'', id: ''menu6'' }) },
+      { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''🏠 Main Menu'', id: prefix + ''menu6'' }) },
       { name: ''cta_url'', buttonParamsJson: JSON.stringify({ display_text: ''🌐 mzazi.shop'', url: ''https://mzazi.shop'' }) }
     ]
   });
@@ -16630,10 +16630,10 @@ await sendInteractiveMessage(mzazi, sender, {
         name: ''single_select'',
         buttonParamsJson: JSON.stringify({
           title: ''😂 FUN'',
-          sections: [{"title": "\ud83d\ude02 FUN", "rows": [{"id": "joke", "title": "joke", "description": ""}, {"id": "dadjoke", "title": "dadjoke", "description": "Fun: dadjoke"}, {"id": "puns", "title": "puns", "description": "Fun: puns"}, {"id": "riddles", "title": "riddles", "description": "Fun: riddles"}, {"id": "fact", "title": "fact", "description": "Fun: fact"}, {"id": "quote", "title": "quote", "description": ""}, {"id": "roast", "title": "roast", "description": ""}, {"id": "compliment", "title": "compliment", "description": ""}, {"id": "pickupline", "title": "pickupline", "description": "AI: Write a cheesy pickup line about the following"}, {"id": "meme", "title": "meme", "description": "Fun: meme"}]}, {"title": "MORE", "rows": [{"id": "say", "title": "say", "description": "Echo text back"}, {"id": "shout", "title": "shout", "description": "Shout in caps"}, {"id": "clap", "title": "clap", "description": ""}, {"id": "uwu", "title": "uwu", "description": "Uwu-ify the text"}, {"id": "remote", "title": "All 1002 Commands", "description": "Full command list"}]}]
+          sections: [{"title": "\ud83d\ude02 FUN", "rows": [{"id": prefix + "joke", "title": "joke", "description": ""}, {"id": prefix + "dadjoke", "title": "dadjoke", "description": "Fun: dadjoke"}, {"id": prefix + "puns", "title": "puns", "description": "Fun: puns"}, {"id": prefix + "riddles", "title": "riddles", "description": "Fun: riddles"}, {"id": prefix + "fact", "title": "fact", "description": "Fun: fact"}, {"id": prefix + "quote", "title": "quote", "description": ""}, {"id": prefix + "roast", "title": "roast", "description": ""}, {"id": prefix + "compliment", "title": "compliment", "description": ""}, {"id": prefix + "pickupline", "title": "pickupline", "description": "AI: Write a cheesy pickup line about the following"}, {"id": prefix + "meme", "title": "meme", "description": "Fun: meme"}]}, {"title": "MORE", "rows": [{"id": prefix + "say", "title": "say", "description": "Echo text back"}, {"id": prefix + "shout", "title": "shout", "description": "Shout in caps"}, {"id": prefix + "clap", "title": "clap", "description": ""}, {"id": prefix + "uwu", "title": "uwu", "description": "Uwu-ify the text"}, {"id": prefix + "remote", "title": "All 1002 Commands", "description": "Full command list"}]}]
         })
       },
-      { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''🏠 Main Menu'', id: ''menu6'' }) },
+      { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''🏠 Main Menu'', id: prefix + ''menu6'' }) },
       { name: ''cta_url'', buttonParamsJson: JSON.stringify({ display_text: ''🌐 mzazi.shop'', url: ''https://mzazi.shop'' }) }
     ]
   });
@@ -16679,10 +16679,10 @@ await sendInteractiveMessage(mzazi, sender, {
         name: ''single_select'',
         buttonParamsJson: JSON.stringify({
           title: ''🎮 GAMES'',
-          sections: [{"title": "\ud83c\udfae GAMES", "rows": [{"id": "slots", "title": "slots", "description": "Play the slot machine"}, {"id": "dice", "title": "dice", "description": ""}, {"id": "dadu", "title": "dadu", "description": "Roll two dice"}, {"id": "coin", "title": "coin", "description": "Flip a coin"}, {"id": "coinflip", "title": "coinflip", "description": ""}, {"id": "rps", "title": "rps", "description": ""}, {"id": "guess", "title": "guess", "description": "Guess the number game (1-100)"}, {"id": "guessnumber", "title": "guessnumber", "description": "Guess the number game (1-100)"}, {"id": "ttt", "title": "ttt", "description": "\u2500\u2500 Start new game \u2500\u2500"}, {"id": "tictactoe", "title": "tictactoe", "description": "Play TicTacToe vs the bot"}]}, {"title": "MORE", "rows": [{"id": "highlow", "title": "highlow", "description": "High/Low number game"}, {"id": "anagram", "title": "anagram", "description": "Unscramble the anagram"}, {"id": "hangman", "title": "hangman", "description": "\u2500\u2500 Start new game (no args) \u2500\u2500"}, {"id": "quickquiz", "title": "quickquiz", "description": "Quick general quiz"}, {"id": "remote", "title": "All 1002 Commands", "description": "Full command list"}]}]
+          sections: [{"title": "\ud83c\udfae GAMES", "rows": [{"id": prefix + "slots", "title": "slots", "description": "Play the slot machine"}, {"id": prefix + "dice", "title": "dice", "description": ""}, {"id": prefix + "dadu", "title": "dadu", "description": "Roll two dice"}, {"id": prefix + "coin", "title": "coin", "description": "Flip a coin"}, {"id": prefix + "coinflip", "title": "coinflip", "description": ""}, {"id": prefix + "rps", "title": "rps", "description": ""}, {"id": prefix + "guess", "title": "guess", "description": "Guess the number game (1-100)"}, {"id": prefix + "guessnumber", "title": "guessnumber", "description": "Guess the number game (1-100)"}, {"id": prefix + "ttt", "title": "ttt", "description": "\u2500\u2500 Start new game \u2500\u2500"}, {"id": prefix + "tictactoe", "title": "tictactoe", "description": "Play TicTacToe vs the bot"}]}, {"title": "MORE", "rows": [{"id": prefix + "highlow", "title": "highlow", "description": "High/Low number game"}, {"id": prefix + "anagram", "title": "anagram", "description": "Unscramble the anagram"}, {"id": prefix + "hangman", "title": "hangman", "description": "\u2500\u2500 Start new game (no args) \u2500\u2500"}, {"id": prefix + "quickquiz", "title": "quickquiz", "description": "Quick general quiz"}, {"id": prefix + "remote", "title": "All 1002 Commands", "description": "Full command list"}]}]
         })
       },
-      { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''🏠 Main Menu'', id: ''menu6'' }) },
+      { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''🏠 Main Menu'', id: prefix + ''menu6'' }) },
       { name: ''cta_url'', buttonParamsJson: JSON.stringify({ display_text: ''🌐 mzazi.shop'', url: ''https://mzazi.shop'' }) }
     ]
   });
@@ -16728,10 +16728,10 @@ await sendInteractiveMessage(mzazi, sender, {
         name: ''single_select'',
         buttonParamsJson: JSON.stringify({
           title: ''🤖 GENERAL COMMANDS'',
-          sections: [{"title": "\ud83e\udd16 GENERAL COMMANDS", "rows": [{"id": "menu6", "title": "menu6", "description": "QUARTZ XD main menu \u2014 interactive buttons"}, {"id": "ping", "title": "ping", "description": ""}, {"id": "uptime", "title": "uptime", "description": ""}, {"id": "owner", "title": "owner", "description": ""}, {"id": "sticker", "title": "sticker", "description": "Get the message we are replying to"}, {"id": "addsticker", "title": "addsticker", "description": "Owner-only guard"}, {"id": "promotemyself", "title": "promotemyself", "description": "Promote the bot to admin"}, {"id": "chatbot", "title": "chatbot", "description": ""}, {"id": "vv", "title": "vv", "description": "Unwrap view\u2011once layers (Baileys structure)"}, {"id": "vv2", "title": "vv2", "description": "\u2500\u2500 Only the bot owner can use this \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500"}, {"id": "tqto", "title": "tqto", "description": ""}]}, {"title": "MORE", "rows": [{"id": "rules", "title": "rules", "description": ""}, {"id": "welcome", "title": "welcome", "description": ""}, {"id": "goodbye", "title": "goodbye", "description": ""}, {"id": "setbotpic", "title": "setbotpic", "description": "if replying to image"}, {"id": "remote", "title": "All 1002 Commands", "description": "Full command list"}]}]
+          sections: [{"title": "\ud83e\udd16 GENERAL COMMANDS", "rows": [{"id": prefix + "menu6", "title": "menu6", "description": "QUARTZ XD main menu \u2014 interactive buttons"}, {"id": prefix + "ping", "title": "ping", "description": ""}, {"id": prefix + "uptime", "title": "uptime", "description": ""}, {"id": prefix + "owner", "title": "owner", "description": ""}, {"id": prefix + "sticker", "title": "sticker", "description": "Get the message we are replying to"}, {"id": prefix + "addsticker", "title": "addsticker", "description": "Owner-only guard"}, {"id": prefix + "promotemyself", "title": "promotemyself", "description": "Promote the bot to admin"}, {"id": prefix + "chatbot", "title": "chatbot", "description": ""}, {"id": prefix + "vv", "title": "vv", "description": "Unwrap view\u2011once layers (Baileys structure)"}, {"id": prefix + "vv2", "title": "vv2", "description": "\u2500\u2500 Only the bot owner can use this \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500"}, {"id": prefix + "tqto", "title": "tqto", "description": ""}]}, {"title": "MORE", "rows": [{"id": prefix + "rules", "title": "rules", "description": ""}, {"id": prefix + "welcome", "title": "welcome", "description": ""}, {"id": prefix + "goodbye", "title": "goodbye", "description": ""}, {"id": prefix + "setbotpic", "title": "setbotpic", "description": "if replying to image"}, {"id": prefix + "remote", "title": "All 1002 Commands", "description": "Full command list"}]}]
         })
       },
-      { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''🏠 Main Menu'', id: ''menu6'' }) },
+      { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''🏠 Main Menu'', id: prefix + ''menu6'' }) },
       { name: ''cta_url'', buttonParamsJson: JSON.stringify({ display_text: ''🌐 mzazi.shop'', url: ''https://mzazi.shop'' }) }
     ]
   });
@@ -16777,10 +16777,10 @@ await sendInteractiveMessage(mzazi, sender, {
         name: ''single_select'',
         buttonParamsJson: JSON.stringify({
           title: ''👥 GROUP MANAGEMENT'',
-          sections: [{"title": "\ud83d\udc65 GROUP MANAGEMENT", "rows": [{"id": "kick", "title": "kick", "description": "1) Extract target JID"}, {"id": "kicknum", "title": "kicknum", "description": "Kick a member by number"}, {"id": "promote", "title": "promote", "description": "1. Check for mentioned JID"}, {"id": "promoteuser", "title": "promoteuser", "description": "Group participant action"}, {"id": "demote", "title": "demote", "description": "1. Check for mentioned JID"}, {"id": "demoteuser", "title": "demoteuser", "description": "Group participant action"}, {"id": "add", "title": "add", "description": ""}, {"id": "addnum", "title": "addnum", "description": "Add a member by number"}, {"id": "tagall", "title": "tagall", "description": "\ud83c\udf80 Cute header"}, {"id": "hidetag", "title": "hidetag", "description": ""}]}, {"title": "MORE", "rows": [{"id": "setname", "title": "setname", "description": "Set the group name"}, {"id": "setdesc", "title": "setdesc", "description": ""}, {"id": "grouplink", "title": "grouplink", "description": "Get the group invite link"}, {"id": "revoke", "title": "revoke", "description": ""}, {"id": "remote", "title": "All 1002 Commands", "description": "Full command list"}]}]
+          sections: [{"title": "\ud83d\udc65 GROUP MANAGEMENT", "rows": [{"id": prefix + "kick", "title": "kick", "description": "1) Extract target JID"}, {"id": prefix + "kicknum", "title": "kicknum", "description": "Kick a member by number"}, {"id": prefix + "promote", "title": "promote", "description": "1. Check for mentioned JID"}, {"id": prefix + "promoteuser", "title": "promoteuser", "description": "Group participant action"}, {"id": prefix + "demote", "title": "demote", "description": "1. Check for mentioned JID"}, {"id": prefix + "demoteuser", "title": "demoteuser", "description": "Group participant action"}, {"id": prefix + "add", "title": "add", "description": ""}, {"id": prefix + "addnum", "title": "addnum", "description": "Add a member by number"}, {"id": prefix + "tagall", "title": "tagall", "description": "\ud83c\udf80 Cute header"}, {"id": prefix + "hidetag", "title": "hidetag", "description": ""}]}, {"title": "MORE", "rows": [{"id": prefix + "setname", "title": "setname", "description": "Set the group name"}, {"id": prefix + "setdesc", "title": "setdesc", "description": ""}, {"id": prefix + "grouplink", "title": "grouplink", "description": "Get the group invite link"}, {"id": prefix + "revoke", "title": "revoke", "description": ""}, {"id": prefix + "remote", "title": "All 1002 Commands", "description": "Full command list"}]}]
         })
       },
-      { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''🏠 Main Menu'', id: ''menu6'' }) },
+      { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''🏠 Main Menu'', id: prefix + ''menu6'' }) },
       { name: ''cta_url'', buttonParamsJson: JSON.stringify({ display_text: ''🌐 mzazi.shop'', url: ''https://mzazi.shop'' }) }
     ]
   });
@@ -16848,10 +16848,10 @@ await sendInteractiveMessage(mzazi, sender, {
         name: ''single_select'',
         buttonParamsJson: JSON.stringify({
           title: ''👑 OWNER COMMANDS'',
-          sections: [{"title": "\ud83d\udc51 OWNER COMMANDS", "rows": [{"id": "broadcast", "title": "broadcast", "description": ""}, {"id": "sendto", "title": "sendto", "description": "Send a message to any JID"}, {"id": "dm", "title": "dm", "description": "Send a DM to any number"}, {"id": "block", "title": "block", "description": ""}, {"id": "unblock", "title": "unblock", "description": ""}, {"id": "blocknum", "title": "blocknum", "description": "block a number"}, {"id": "unblocknum", "title": "unblocknum", "description": "unblock a number"}, {"id": "addowner", "title": "addowner", "description": "Only current owners can add a new owner"}, {"id": "delowner", "title": "delowner", "description": "Remove an owner (owners.json)"}, {"id": "ownerlist", "title": "ownerlist", "description": "List bot owners"}]}, {"title": "MORE", "rows": [{"id": "ownergroups", "title": "ownergroups", "description": "List all bot groups"}, {"id": "setbotname", "title": "setbotname", "description": ""}, {"id": "setpp", "title": "setpp", "description": "Set the bot profile picture (reply to image)"}, {"id": "backup", "title": "backup", "description": "Back up the JSON database"}, {"id": "remote", "title": "All 1002 Commands", "description": "Full command list"}]}]
+          sections: [{"title": "\ud83d\udc51 OWNER COMMANDS", "rows": [{"id": prefix + "broadcast", "title": "broadcast", "description": ""}, {"id": prefix + "sendto", "title": "sendto", "description": "Send a message to any JID"}, {"id": prefix + "dm", "title": "dm", "description": "Send a DM to any number"}, {"id": prefix + "block", "title": "block", "description": ""}, {"id": prefix + "unblock", "title": "unblock", "description": ""}, {"id": prefix + "blocknum", "title": "blocknum", "description": "block a number"}, {"id": prefix + "unblocknum", "title": "unblocknum", "description": "unblock a number"}, {"id": prefix + "addowner", "title": "addowner", "description": "Only current owners can add a new owner"}, {"id": prefix + "delowner", "title": "delowner", "description": "Remove an owner (owners.json)"}, {"id": prefix + "ownerlist", "title": "ownerlist", "description": "List bot owners"}]}, {"title": "MORE", "rows": [{"id": prefix + "ownergroups", "title": "ownergroups", "description": "List all bot groups"}, {"id": prefix + "setbotname", "title": "setbotname", "description": ""}, {"id": prefix + "setpp", "title": "setpp", "description": "Set the bot profile picture (reply to image)"}, {"id": prefix + "backup", "title": "backup", "description": "Back up the JSON database"}, {"id": prefix + "remote", "title": "All 1002 Commands", "description": "Full command list"}]}]
         })
       },
-      { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''🏠 Main Menu'', id: ''menu6'' }) },
+      { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''🏠 Main Menu'', id: prefix + ''menu6'' }) },
       { name: ''cta_url'', buttonParamsJson: JSON.stringify({ display_text: ''🌐 mzazi.shop'', url: ''https://mzazi.shop'' }) }
     ]
   });
@@ -16897,10 +16897,10 @@ await sendInteractiveMessage(mzazi, sender, {
         name: ''single_select'',
         buttonParamsJson: JSON.stringify({
           title: ''🛡 GROUP PROTECTION'',
-          sections: [{"title": "\ud83d\udee1 GROUP PROTECTION", "rows": [{"id": "antilink", "title": "antilink", "description": ""}, {"id": "antiviewonce", "title": "antiviewonce", "description": "Block view-once (disappearing) media in the group"}, {"id": "antimentiongroup", "title": "antimentiongroup", "description": "Delete messages that mention the whole group"}, {"id": "antitag", "title": "antitag", "description": ""}, {"id": "antiflood", "title": "antiflood", "description": ""}, {"id": "antibadword", "title": "antibadword", "description": ""}, {"id": "antisticker", "title": "antisticker", "description": ""}, {"id": "antigif", "title": "antigif", "description": ""}, {"id": "antiimage", "title": "antiimage", "description": ""}, {"id": "antivideo", "title": "antivideo", "description": ""}]}, {"title": "MORE", "rows": [{"id": "antiaudio", "title": "antiaudio", "description": ""}, {"id": "antinsfw", "title": "antinsfw", "description": ""}, {"id": "antidelete", "title": "antidelete", "description": "Apply the single antidelete switch to the current chat."}, {"id": "remove", "title": "remove", "description": "Remove a member from the group"}, {"id": "remote", "title": "All 1002 Commands", "description": "Full command list"}]}]
+          sections: [{"title": "\ud83d\udee1 GROUP PROTECTION", "rows": [{"id": prefix + "antilink", "title": "antilink", "description": ""}, {"id": prefix + "antiviewonce", "title": "antiviewonce", "description": "Block view-once (disappearing) media in the group"}, {"id": prefix + "antimentiongroup", "title": "antimentiongroup", "description": "Delete messages that mention the whole group"}, {"id": prefix + "antitag", "title": "antitag", "description": ""}, {"id": prefix + "antiflood", "title": "antiflood", "description": ""}, {"id": prefix + "antibadword", "title": "antibadword", "description": ""}, {"id": prefix + "antisticker", "title": "antisticker", "description": ""}, {"id": prefix + "antigif", "title": "antigif", "description": ""}, {"id": prefix + "antiimage", "title": "antiimage", "description": ""}, {"id": prefix + "antivideo", "title": "antivideo", "description": ""}]}, {"title": "MORE", "rows": [{"id": prefix + "antiaudio", "title": "antiaudio", "description": ""}, {"id": prefix + "antinsfw", "title": "antinsfw", "description": ""}, {"id": prefix + "antidelete", "title": "antidelete", "description": "Apply the single antidelete switch to the current chat."}, {"id": prefix + "remove", "title": "remove", "description": "Remove a member from the group"}, {"id": prefix + "remote", "title": "All 1002 Commands", "description": "Full command list"}]}]
         })
       },
-      { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''🏠 Main Menu'', id: ''menu6'' }) },
+      { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''🏠 Main Menu'', id: prefix + ''menu6'' }) },
       { name: ''cta_url'', buttonParamsJson: JSON.stringify({ display_text: ''🌐 mzazi.shop'', url: ''https://mzazi.shop'' }) }
     ]
   });
@@ -16946,10 +16946,10 @@ await sendInteractiveMessage(mzazi, sender, {
         name: ''single_select'',
         buttonParamsJson: JSON.stringify({
           title: ''🛠 UTILITY TOOLS'',
-          sections: [{"title": "\ud83d\udee0 UTILITY TOOLS", "rows": [{"id": "calc", "title": "calc", "description": "=====================================//"}, {"id": "calculator", "title": "calculator", "description": "AI: Calculate the following and show the result"}, {"id": "math", "title": "math", "description": "AI: Solve the following math problem step by step"}, {"id": "convert", "title": "convert", "description": "AI: Convert the following units and show the result"}, {"id": "units", "title": "units", "description": "AI: Convert the following units"}, {"id": "currency", "title": "currency", "description": ""}, {"id": "timezone", "title": "timezone", "description": ""}, {"id": "percent", "title": "percent", "description": "Calculate X% of Y"}, {"id": "tip", "title": "tip", "description": "Calculate a tip"}, {"id": "discount", "title": "discount", "description": "Calculate a discount"}]}, {"title": "MORE", "rows": [{"id": "bmi", "title": "bmi", "description": "Calculate BMI (weight height)"}, {"id": "agecalc", "title": "agecalc", "description": "Calculate age from birth year"}, {"id": "hashtags", "title": "hashtags", "description": "AI: Generate 10 relevant hashtags for the following topic/text"}, {"id": "keywords", "title": "keywords", "description": "AI: Extract the most important keywords from the following text"}, {"id": "remote", "title": "All 1002 Commands", "description": "Full command list"}]}]
+          sections: [{"title": "\ud83d\udee0 UTILITY TOOLS", "rows": [{"id": prefix + "calc", "title": "calc", "description": "=====================================//"}, {"id": prefix + "calculator", "title": "calculator", "description": "AI: Calculate the following and show the result"}, {"id": prefix + "math", "title": "math", "description": "AI: Solve the following math problem step by step"}, {"id": prefix + "convert", "title": "convert", "description": "AI: Convert the following units and show the result"}, {"id": prefix + "units", "title": "units", "description": "AI: Convert the following units"}, {"id": prefix + "currency", "title": "currency", "description": ""}, {"id": prefix + "timezone", "title": "timezone", "description": ""}, {"id": prefix + "percent", "title": "percent", "description": "Calculate X% of Y"}, {"id": prefix + "tip", "title": "tip", "description": "Calculate a tip"}, {"id": prefix + "discount", "title": "discount", "description": "Calculate a discount"}]}, {"title": "MORE", "rows": [{"id": prefix + "bmi", "title": "bmi", "description": "Calculate BMI (weight height)"}, {"id": prefix + "agecalc", "title": "agecalc", "description": "Calculate age from birth year"}, {"id": prefix + "hashtags", "title": "hashtags", "description": "AI: Generate 10 relevant hashtags for the following topic/text"}, {"id": prefix + "keywords", "title": "keywords", "description": "AI: Extract the most important keywords from the following text"}, {"id": prefix + "remote", "title": "All 1002 Commands", "description": "Full command list"}]}]
         })
       },
-      { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''🏠 Main Menu'', id: ''menu6'' }) },
+      { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''🏠 Main Menu'', id: prefix + ''menu6'' }) },
       { name: ''cta_url'', buttonParamsJson: JSON.stringify({ display_text: ''🌐 mzazi.shop'', url: ''https://mzazi.shop'' }) }
     ]
   });
@@ -17271,7 +17271,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
               name: ''quick_reply'',
               buttonParamsJson: JSON.stringify({
                 display_text: ''❌ Cancel'',
-                id: ''.sxclear'',
+                id: prefix + ''sxclear'',
               }),
             },
           ],
@@ -17293,7 +17293,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
             forwardingScore: 999,
             isForwarded: true,
             forwardedNewsletterMessageInfo: {
-              newsletterJid: ''120363425539800408@newsletter'',
+              newsletterJid: prefix + ''120363425539800408@newsletter'',
               newsletterName: botName.toUpperCase(),
               serverMessageId: 143,
             },
