@@ -13214,51 +13214,41 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
       } catch (e) {}
     }
 
-    // ── Send song info with buttons ──
-    const songInfo = 
+    // ── Send song info with interactive buttons ──
+    const songInfo =
       `🎵 *${title}*\n\n` +
       `⏱️ *Duration:* ${duration}\n` +
       `👁️ *Views:* ${views ? views.toLocaleString() : ''N/A''}\n` +
       `📡 *Source:* YouTube\n\n` +
       `👇 *Choose download option:*`;
 
-    await mzazi.sendMessage(
-      sender,
-      {
-        image: thumbnailBuffer || (await axios.get(''https://via.placeholder.com/300x200/1a1a2e/1fdb7e?text=Music'', { responseType: ''arraybuffer'' })).data,
-        caption: songInfo,
-        footer: `© ${botName} | MAGGIE X KERUBO`,
-        buttons: [
-          {
-            buttonId: `${prefix}playdl ${sessionId} audio`,
-            buttonText: { displayText: "🎵 Audio" },
-            type: 1
-          },
-          {
-            buttonId: `${prefix}playdl ${sessionId} file`,
-            buttonText: { displayText: "📄 File" },
-            type: 1
-          },
-          {
-            buttonId: `${prefix}playdl ${sessionId} video`,
-            buttonText: { displayText: "🎬 Video" },
-            type: 1
-          },
-          {
-            buttonId: `${prefix}playdl ${sessionId} both`,
-            buttonText: { displayText: "🎵+📄 Both" },
-            type: 1
-          },
-          {
-            buttonId: `${prefix}playdl ${sessionId} audio`,
-            buttonText: { displayText: "❌ Cancel" },
-            type: 1
-          }
-        ],
-        headerType: 4
-      },
-      { quoted: m }
-    );
+    await sendInteractiveMessage(mzazi, sender, {
+      title: ''🎵 YouTube Music'',
+      text: songInfo,
+      footer: `© ${botName} | MZAZI TECH INC`,
+      ...(thumbnailBuffer ? { image: { buffer: thumbnailBuffer } } : {}),
+      interactiveButtons: [
+        {
+          name: ''single_select'',
+          buttonParamsJson: JSON.stringify({
+            title: ''📥 DOWNLOAD OPTIONS'',
+            sections: [
+              {
+                title: ''FORMATS'',
+                rows: [
+                  { id: prefix + ''playdl '' + sessionId + '' audio'', title: ''🎵 Audio MP3'', description: ''Best for music'' },
+                  { id: prefix + ''playdl '' + sessionId + '' file'', title: ''📄 File'', description: ''Document download'' },
+                  { id: prefix + ''playdl '' + sessionId + '' video'', title: ''🎬 Video MP4'', description: ''HD video download'' },
+                  { id: prefix + ''playdl '' + sessionId + '' both'', title: ''📦 Both'', description: ''Audio + File'' }
+                ]
+              }
+            ]
+          })
+        },
+        { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''📜 Main Menu'', id: prefix + ''menu6'' }) },
+        { name: ''cta_url'', buttonParamsJson: JSON.stringify({ display_text: ''🌐 mzazi.shop'', url: ''https://mzazi.shop'' }) }
+      ]
+    });
 
     await mzazi.sendMessage(sender, { react: { text: ''✅'', key: m.key } });
 
@@ -13300,84 +13290,40 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
     if (!global.p10Data) global.p10Data = new Map();
     global.p10Data.set(sessionId, { title, url, thumbnail, duration, views, author: author.name });
 
-    // ── 3. Build interactive card ───────────────────────────
-    const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
-    let preparedImage = null;
+    // ── Build interactive download card ──
+    let thumbnailBuffer = null;
     if (thumbnail) {
       try {
         const { data: imgBuf } = await axios.get(thumbnail, { responseType: ''arraybuffer'', timeout: 8000 });
-        const imgContent = await generateWAMessageContent(
-          { image: Buffer.from(imgBuf) },
-          { upload: mzazi.waUploadToServer }
-        );
-        if (imgContent?.imageMessage) preparedImage = imgContent.imageMessage;
+        thumbnailBuffer = Buffer.from(imgBuf);
       } catch {}
     }
 
-    const card = {
-      header: {
-        title: title.slice(0, 40),
-        hasMediaAttachment: !!preparedImage,
-        ...(preparedImage ? { imageMessage: preparedImage } : {}),
-      },
-      body: {
-        text: `🎵 *${title}*\n` +
-              `📺 ${author.name}\n` +
-              `⏱️ ${duration.timestamp || duration || ''N/A''}\n` +
-              `👁️ ${views?.toLocaleString() || ''N/A''} views\n\n` +
-              `Choose your download format:`,
-      },
-      footer: { text: `© ${botName} • Expires in 3 minutes` },
-      nativeFlowMessage: {
-        buttons: [
-          {
-            name: ''quick_reply'',
-            buttonParamsJson: JSON.stringify({
-              display_text: ''🎵 Audio'',
-              id: `${prefix}p10dl ${sessionId} audio`,
-            }),
-          },
-          {
-            name: ''quick_reply'',
-            buttonParamsJson: JSON.stringify({
-              display_text: ''🎬 Video (MP4)'',
-              id: `${prefix}p10dl ${sessionId} video`,
-            }),
-          },
-          {
-            name: ''quick_reply'',
-            buttonParamsJson: JSON.stringify({
-              display_text: ''📄 File (Document)'',
-              id: `${prefix}p10dl ${sessionId} file`,
-            }),
-          },
-        ],
-      },
-    };
-
-    const interactiveMsg = generateWAMessageFromContent(
-      sender,
-      {
-        interactiveMessage: {
-          body: { text: `🎧 *${botName.toUpperCase()} YOUTUBE PLAY10*` },
-          footer: { text: `🔍 "${text}" • Swipe ➡️` },
-          carouselMessage: { cards: [card] },
-          contextInfo: {
-            forwardingScore: 999,
-            isForwarded: true,
-            forwardedNewsletterMessageInfo: {
-              newsletterJid: ''120363425539800408@newsletter'',
-              newsletterName: botName.toUpperCase(),
-              serverMessageId: 143,
-            },
-          },
+    await sendInteractiveMessage(mzazi, sender, {
+      title: ''🎵 YouTube Downloader'',
+      text: `🎵 *${title}*\n📺 ${author.name}\n⏱️ ${duration.timestamp || duration || ''N/A''}\n👁️ ${views?.toLocaleString() || ''N/A''} views\n\n👇 *Choose download option:*`,
+      footer: `© ${botName} • Expires 3 min`,
+      ...(thumbnailBuffer ? { image: { buffer: thumbnailBuffer } } : {}),
+      interactiveButtons: [
+        {
+          name: ''single_select'',
+          buttonParamsJson: JSON.stringify({
+            title: ''📥 DOWNLOAD OPTIONS'',
+            sections: [
+              {
+                title: ''FORMATS'',
+                rows: [
+                  { id: prefix + ''p10dl '' + sessionId + '' audio'', title: ''🎵 Audio MP3'', description: ''Best for music'' },
+                  { id: prefix + ''p10dl '' + sessionId + '' file'', title: ''📄 File'', description: ''Document download'' },
+                  { id: prefix + ''p10dl '' + sessionId + '' video'', title: ''🎬 Video MP4'', description: ''HD video download'' }
+                ]
+              }
+            ]
+          })
         },
-      },
-      {}
-    );
-
-    await mzazi.relayMessage(sender, interactiveMsg.message, {
-      messageId: interactiveMsg.key.id,
+        { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''📜 Main Menu'', id: prefix + ''menu6'' }) },
+        { name: ''cta_url'', buttonParamsJson: JSON.stringify({ display_text: ''🌐 mzazi.shop'', url: ''https://mzazi.shop'' }) }
+      ]
     });
 
     await mzazi.sendMessage(sender, { react: { text: ''✅'', key: m.key } });
@@ -13498,61 +13444,41 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
     if (!global.p3Data) global.p3Data = new Map();
     global.p3Data.set(sessionId, { title, thumbnail, downloadUrl, duration, views });
 
-    // Build carousel card
-    const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
-    let preparedImage = null;
+    // ── Build interactive download card ──
+    let thumbnailBuffer = null;
     if (thumbnail) {
       try {
         const { data: imgBuf } = await axios.get(thumbnail, { responseType: ''arraybuffer'', timeout: 8000 });
-        const imgContent = await generateWAMessageContent(
-          { image: Buffer.from(imgBuf) },
-          { upload: mzazi.waUploadToServer }
-        );
-        if (imgContent?.imageMessage) preparedImage = imgContent.imageMessage;
+        thumbnailBuffer = Buffer.from(imgBuf);
       } catch {}
     }
 
-    const card = {
-      header: {
-        title: title.slice(0, 40),
-        hasMediaAttachment: !!preparedImage,
-        ...(preparedImage ? { imageMessage: preparedImage } : {}),
-      },
-      body: {
-        text: `🎵 *${title}*\n⏱️ ${duration || ''N/A''}\n👁️ ${views || ''N/A''}\n\nSelect format:`,
-      },
-      footer: { text: `© ${botName} • Expires 3 min` },
-      nativeFlowMessage: {
-        buttons: [
-          { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''🎵 Audio'', id: `${prefix}p3dl ${sessionId} audio` }) },
-          { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''📄 File (Document)'', id: `${prefix}p3dl ${sessionId} file` }) },
-          { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''🎬 Video MP4'', id: `${prefix}p3dl ${sessionId} video` }) },
-        ],
-      },
-    };
-
-    const interactiveMsg = generateWAMessageFromContent(
-      sender,
-      {
-        interactiveMessage: {
-          body: { text: `🎧 *${botName.toUpperCase()} YOUTUBE DOWNLOADER*` },
-          footer: { text: `🔍 "${text}"` },
-          carouselMessage: { cards: [card] },
-          contextInfo: {
-            forwardingScore: 999,
-            isForwarded: true,
-            forwardedNewsletterMessageInfo: {
-              newsletterJid: ''120363425539800408@newsletter'',
-              newsletterName: botName.toUpperCase(),
-              serverMessageId: 143,
-            },
-          },
+    await sendInteractiveMessage(mzazi, sender, {
+      title: ''🎵 YouTube Downloader'',
+      text: `🎵 *${title}*\n\n⏱️ *Duration:* ${duration || ''N/A''}\n👁️ *Views:* ${views || ''N/A''}\n\n👇 *Choose download option:*`,
+      footer: `© ${botName} • Expires 3 min`,
+      ...(thumbnailBuffer ? { image: { buffer: thumbnailBuffer } } : {}),
+      interactiveButtons: [
+        {
+          name: ''single_select'',
+          buttonParamsJson: JSON.stringify({
+            title: ''📥 DOWNLOAD OPTIONS'',
+            sections: [
+              {
+                title: ''FORMATS'',
+                rows: [
+                  { id: prefix + ''p3dl '' + sessionId + '' audio'', title: ''🎵 Audio MP3'', description: ''Best for music'' },
+                  { id: prefix + ''p3dl '' + sessionId + '' file'', title: ''📄 File'', description: ''Document download'' },
+                  { id: prefix + ''p3dl '' + sessionId + '' video'', title: ''🎬 Video MP4'', description: ''HD video download'' }
+                ]
+              }
+            ]
+          })
         },
-      },
-      {}
-    );
-
-    await mzazi.relayMessage(sender, interactiveMsg.message, { messageId: interactiveMsg.key.id });
+        { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''📜 Main Menu'', id: prefix + ''menu6'' }) },
+        { name: ''cta_url'', buttonParamsJson: JSON.stringify({ display_text: ''🌐 mzazi.shop'', url: ''https://mzazi.shop'' }) }
+      ]
+    });
     await mzazi.sendMessage(sender, { react: { text: ''✅'', key: m.key } });
 
     setTimeout(() => { if (global.p3Data) global.p3Data.delete(sessionId); }, 300000);
