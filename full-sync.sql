@@ -3732,25 +3732,46 @@ if (!target) {
     return mzazireply(`📌 Usage:\n${prefix}${command} @user\nOR reply to the user''s message with:\n${prefix}${command}\nOR: ${prefix}${command} <phone number>`);
 }
 
-target = await resolveJid(target);
-const targetNum = target.split(''@'')[0].split('':'')[0].replace(/[^0-9]/g, '''');
+// WhatsApp mentions can arrive as @lid jids (Linked IDs). Build a lid→PN map
+// and an admin number set (PN + LID forms) from the group roster so the
+// target resolves to a phone-number jid and admin checks cannot false-negative.
+const lidToPnMap = {};
+const adminNums = new Set();
+for (const p of participants || []) {
+    if (!p) continue;
+    const idStr = String(p.id || '''');
+    const pn = p.phoneNumber ? jidToNumber(p.phoneNumber) : (idStr.endsWith(''@lid'') ? null : jidToNumber(idStr));
+    const lid = p.lid ? jidToNumber(p.lid) : (idStr.endsWith(''@lid'') ? jidToNumber(idStr) : null);
+    if (pn && lid) lidToPnMap[lid] = pn;
+    if (p.admin) {
+        if (pn) adminNums.add(pn);
+        if (lid) adminNums.add(lid);
+    }
+}
+
+let rawJid = await resolveJid(target);
+if (String(rawJid).endsWith(''@lid'')) {
+    const mapped = lidToPnMap[jidToNumber(rawJid)];
+    if (!mapped) {
+        return mzazireply("❌ Could not resolve that user (Linked ID). Try the phone number instead.");
+    }
+    rawJid = mapped + ''@s.whatsapp.net'';
+}
+const targetNum = jidToNumber(rawJid);
 if (!targetNum) {
     return mzazireply("❌ Invalid target user.");
 }
 const targetJid = targetNum + ''@s.whatsapp.net'';
 
-// Compare numbers, not jids (lists may hold full jids or plain digits)
-const adminNums = (groupAdmins || []).map(jidToNumber);
+// Protect owner and bot
 const ownerNums = (ownersList || []).map(jidToNumber);
-
-// Prevent owner/bot changes
 if (ownerNums.includes(targetNum)) {
     return mzazireply("❌ Cannot demote the bot owner.");
 }
 if (targetNum === jidToNumber(botJid)) {
     return mzazireply("❌ Cannot demote the bot itself.");
 }
-if (!adminNums.includes(targetNum)) {
+if (!adminNums.has(targetNum)) {
     return mzazireply("⚠️ User is not an admin.");
 }
 
@@ -14064,25 +14085,46 @@ if (!target) {
     return mzazireply(`📌 Usage:\n${prefix}${command} @user\nOR reply to the user''s message with:\n${prefix}${command}\nOR: ${prefix}${command} <phone number>`);
 }
 
-target = await resolveJid(target);
-const targetNum = target.split(''@'')[0].split('':'')[0].replace(/[^0-9]/g, '''');
+// WhatsApp mentions can arrive as @lid jids (Linked IDs). Build a lid→PN map
+// and an admin number set (PN + LID forms) from the group roster so the
+// target resolves to a phone-number jid and admin checks cannot false-negative.
+const lidToPnMap = {};
+const adminNums = new Set();
+for (const p of participants || []) {
+    if (!p) continue;
+    const idStr = String(p.id || '''');
+    const pn = p.phoneNumber ? jidToNumber(p.phoneNumber) : (idStr.endsWith(''@lid'') ? null : jidToNumber(idStr));
+    const lid = p.lid ? jidToNumber(p.lid) : (idStr.endsWith(''@lid'') ? jidToNumber(idStr) : null);
+    if (pn && lid) lidToPnMap[lid] = pn;
+    if (p.admin) {
+        if (pn) adminNums.add(pn);
+        if (lid) adminNums.add(lid);
+    }
+}
+
+let rawJid = await resolveJid(target);
+if (String(rawJid).endsWith(''@lid'')) {
+    const mapped = lidToPnMap[jidToNumber(rawJid)];
+    if (!mapped) {
+        return mzazireply("❌ Could not resolve that user (Linked ID). Try the phone number instead.");
+    }
+    rawJid = mapped + ''@s.whatsapp.net'';
+}
+const targetNum = jidToNumber(rawJid);
 if (!targetNum) {
     return mzazireply("❌ Invalid target user.");
 }
 const targetJid = targetNum + ''@s.whatsapp.net'';
 
-// Compare numbers, not jids (lists may hold full jids or plain digits)
-const adminNums = (groupAdmins || []).map(jidToNumber);
+// Protect owner and bot
 const ownerNums = (ownersList || []).map(jidToNumber);
-
-// Prevent owner/bot changes
 if (ownerNums.includes(targetNum)) {
     return mzazireply("❌ Cannot promote the bot owner.");
 }
 if (targetNum === jidToNumber(botJid)) {
     return mzazireply("❌ Cannot promote the bot itself.");
 }
-if (adminNums.includes(targetNum)) {
+if (adminNums.has(targetNum)) {
     return mzazireply("⚠️ User is already an admin.");
 }
 
