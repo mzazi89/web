@@ -517,14 +517,6 @@ const bannerTxt = `╔═════════════╗
 ║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
 ║➥└──────────┘
 ╚═════════════╝`;
-try {
-  if (fs.existsSync(bPicPath)) {
-    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
-  } else {
-    mzazireply(bannerTxt);
-  }
-} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
-
 const currentDate = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" }));
     const days = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
     const day = days[currentDate.getDay()];
@@ -772,7 +764,7 @@ USER INFORMATION
     await mzazi.sendMessage(sender, { // ✅ Changed m.chat to sender
 
         ...(__hasMenuPic ? { image: fs.readFileSync(__menuPic) } : {}),
-        caption: teks,
+        caption: bannerTxt + ''\n\n'' + teks,
         footer: `© 2025 ${global.botname2}`,
         buttons: [
             {
@@ -1353,14 +1345,6 @@ const bannerTxt = `╔═════════════╗
 ║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
 ║➥└──────────┘
 ╚═════════════╝`;
-try {
-  if (fs.existsSync(bPicPath)) {
-    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
-  } else {
-    mzazireply(bannerTxt);
-  }
-} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
-
 
     const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
 
@@ -1391,7 +1375,7 @@ try {
         const cards = [
             {
                 header: commonHeader,
-                body: { text: `
+                body: { text: bannerTxt + ''\n\n'' + `
 ╔═⟪ 🤖 AUTO FEATURES (1/2) ⟫═╗
 ╠❏ ${prefix}${command} on/off
 ╠❏ ${prefix}${command} on/off
@@ -1415,7 +1399,7 @@ try {
             },
             {
                 header: commonHeader,
-                body: { text: `
+                body: { text: bannerTxt + ''\n\n'' + `
 ╔═⟪ 🤖 AUTO FEATURES (2/3) ⟫═╗
 ╠❏ ${prefix}${command} on/off
 ╠❏ ${prefix}${command} on/off
@@ -1438,7 +1422,7 @@ try {
             },
             {
                 header: commonHeader,
-                body: { text: `
+                body: { text: bannerTxt + ''\n\n'' + `
 ╔═⟪ 🤖 AUTO FEATURES (3/3) ⟫═╗
 ╠❏ ${prefix}${command} on/off
 ╠❏ ${prefix}${command} <text>
@@ -1467,7 +1451,7 @@ try {
             chatId,
             {
                 interactiveMessage: {
-                    body: { text: `🤖 *${botName.toUpperCase()} - AUTO FEATURES*` },
+                    body: { text: bannerTxt + ''\n\n'' + `🤖 *${botName.toUpperCase()} - AUTO FEATURES*` },
                     footer: { text: `Swipe ➡️ to see all ${cards.length} pages` },
                     carouselMessage: { cards },
                     contextInfo: {}
@@ -4042,14 +4026,6 @@ const bannerTxt = `╔═════════════╗
 ║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
 ║➥└──────────┘
 ╚═════════════╝`;
-try {
-  if (fs.existsSync(bPicPath)) {
-    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
-  } else {
-    mzazireply(bannerTxt);
-  }
-} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
-
 
     const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
 
@@ -4080,7 +4056,7 @@ try {
         const cards = [
             {
                 header: commonHeader,
-                body: { text: `
+                body: { text: bannerTxt + ''\n\n'' + `
 ╔═⟪ 📱 MEDIA & DOWNLOAD (1/2) ⟫═╗
 ╠❏ ${prefix}${command}  
 ╠❏ ${prefix}${command}  
@@ -4116,7 +4092,7 @@ try {
             },
             {
                 header: commonHeader,
-                body: { text: `
+                body: { text: bannerTxt + ''\n\n'' + `
 ╔═⟪ 📱 MEDIA & DOWNLOAD (2/2) ⟫═╗
 ╠❏ ${prefix}${command}  
 ╠❏ ${prefix}${command}  
@@ -4153,7 +4129,7 @@ try {
             chatId,
             {
                 interactiveMessage: {
-                    body: { text: `📥 *${botName.toUpperCase()} - MEDIA & DOWNLOAD*` },
+                    body: { text: bannerTxt + ''\n\n'' + `📥 *${botName.toUpperCase()} - MEDIA & DOWNLOAD*` },
                     footer: { text: `Swipe ➡️ to see all ${cards.length} pages` },
                     carouselMessage: { cards },
                     contextInfo: {}
@@ -4612,14 +4588,6 @@ const bannerTxt = `╔═════════════╗
 ║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
 ║➥└──────────┘
 ╚═════════════╝`;
-try {
-  if (fs.existsSync(bPicPath)) {
-    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
-  } else {
-    mzazireply(bannerTxt);
-  }
-} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
-
 
     const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
 
@@ -4650,7 +4618,7 @@ try {
         const cards = [
             {
                 header: commonHeader,
-                body: { text: `
+                body: { text: bannerTxt + ''\n\n'' + `
 ╔═⟪ ☪️✝️ FAITH ⟫═╗
 ╠❏ ${prefix}${command}  
 ╠❏ ${prefix}${command}  
@@ -4695,7 +4663,7 @@ try {
             chatId,
             {
                 interactiveMessage: {
-                    body: { text: `🕋 *${botName.toUpperCase()} - FAITH & PRAYER*` },
+                    body: { text: bannerTxt + ''\n\n'' + `🕋 *${botName.toUpperCase()} - FAITH & PRAYER*` },
                     footer: { text: `Tap a command for spiritual content` },
                     carouselMessage: { cards },
                     contextInfo: {}
@@ -5276,14 +5244,6 @@ const bannerTxt = `╔═════════════╗
 ║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
 ║➥└──────────┘
 ╚═════════════╝`;
-try {
-  if (fs.existsSync(bPicPath)) {
-    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
-  } else {
-    mzazireply(bannerTxt);
-  }
-} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
-
 
     const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
 
@@ -5314,7 +5274,7 @@ try {
         const cards = [
             {
                 header: commonHeader,
-                body: { text: `
+                body: { text: bannerTxt + ''\n\n'' + `
 ╔═⟪ 🎮 FUN & GAMES (1/4) ⟫═╗
 ╠❏ ${prefix}8ball  
 ╠❏ ${prefix}${command}  
@@ -5351,7 +5311,7 @@ try {
             },
             {
                 header: commonHeader,
-                body: { text: `
+                body: { text: bannerTxt + ''\n\n'' + `
 ╔═⟪ 🎮 FUN & GAMES (2/4) ⟫═╗
 ╠❏ ${prefix}${command}  
 ╠❏ ${prefix}${command}
@@ -5387,7 +5347,7 @@ try {
             },
             {
                 header: commonHeader,
-                body: { text: `
+                body: { text: bannerTxt + ''\n\n'' + `
 ╔═⟪ 🎮 FUN & GAMES (3/4) ⟫═╗
 ╠❏ ${prefix}${command}  
 ╠❏ ${prefix}${command}  
@@ -5420,7 +5380,7 @@ try {
             },
             {
                 header: commonHeader,
-                body: { text: `
+                body: { text: bannerTxt + ''\n\n'' + `
 ╔═⟪ 🎮 FUN & GAMES (4/4) ⟫═╗
 ╠❏ ${prefix}${command}  
 ╠❏ ${prefix}${command}  
@@ -5454,7 +5414,7 @@ try {
             chatId,
             {
                 interactiveMessage: {
-                    body: { text: `🎮 *${botName.toUpperCase()} - FUN & GAMES*` },
+                    body: { text: bannerTxt + ''\n\n'' + `🎮 *${botName.toUpperCase()} - FUN & GAMES*` },
                     footer: { text: `Swipe ➡️ to see all ${cards.length} pages • Tap a command to use it` },
                     carouselMessage: { cards },
                     contextInfo: {}
@@ -5995,14 +5955,6 @@ const bannerTxt = `╔═════════════╗
 ║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
 ║➥└──────────┘
 ╚═════════════╝`;
-try {
-  if (fs.existsSync(bPicPath)) {
-    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
-  } else {
-    mzazireply(bannerTxt);
-  }
-} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
-
 
     const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
 
@@ -6033,7 +5985,7 @@ try {
         const cards = [
             {
                 header: commonHeader,
-                body: { text: `
+                body: { text: bannerTxt + ''\n\n'' + `
 ╔════════════════╗
 ╠❏ ${prefix}${command}  
 ╠❏ ${prefix}${command}  
@@ -6068,7 +6020,7 @@ try {
             },
             {
                 header: commonHeader,
-                body: { text: `
+                body: { text: bannerTxt + ''\n\n'' + `
 ╔════════════════╗ 
 ╠❏ ${prefix}${command}  
 ╠❏ ${prefix}${command}
@@ -6104,7 +6056,7 @@ try {
             },
             {
                 header: commonHeader,
-                body: { text: `
+                body: { text: bannerTxt + ''\n\n'' + `
 ╔════════════════╗
 ╠❏ ${prefix}${command}  
 ╠❏ ${prefix}${command}  
@@ -6145,7 +6097,7 @@ try {
             chatId,
             {
                 interactiveMessage: {
-                    body: { text: `
+                    body: { text: bannerTxt + ''\n\n'' + `
 ╔═════════════════════╗
 ╠❏ BOT: ${botName.toUpperCase()}
 ╠❏ VERSION: ${version}
@@ -6670,14 +6622,6 @@ const bannerTxt = `╔═════════════╗
 ║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
 ║➥└──────────┘
 ╚═════════════╝`;
-try {
-  if (fs.existsSync(bPicPath)) {
-    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
-  } else {
-    mzazireply(bannerTxt);
-  }
-} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
-
 
     const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
 
@@ -6708,7 +6652,7 @@ try {
         const cards = [
             {
                 header: commonHeader,
-                body: { text: `
+                body: { text: bannerTxt + ''\n\n'' + `
 ╔═⟪ 👥 GROUP MANAGEMENT (1/4) ⟫═╗
 ╠❏ ${prefix}${command}  
 ╠❏ ${prefix}${command}  
@@ -6741,7 +6685,7 @@ try {
             },
             {
                 header: commonHeader,
-                body: { text: `
+                body: { text: bannerTxt + ''\n\n'' + `
 ╔═⟪ 👥 GROUP MANAGEMENT (2/4) ⟫═╗
 ╠❏ ${prefix}${command}  
 ╠❏ ${prefix}${command}  
@@ -6775,7 +6719,7 @@ try {
             },
             {
                 header: commonHeader,
-                body: { text: `
+                body: { text: bannerTxt + ''\n\n'' + `
 ╔═⟪ 👥 GROUP MANAGEMENT (3/4) ⟫═╗
 ╠❏ ${prefix}${command}  
 ╠❏ ${prefix}${command}  
@@ -6808,7 +6752,7 @@ try {
             },
             {
                 header: commonHeader,
-                body: { text: `
+                body: { text: bannerTxt + ''\n\n'' + `
 ╔═⟪ 👥 GROUP MANAGEMENT (4/4) ⟫═╗
 ╠❏ ${prefix}${command}  
 ╠❏ ${prefix}${command}  
@@ -6840,7 +6784,7 @@ try {
             chatId,
             {
                 interactiveMessage: {
-                    body: { text: `👥 *${botName.toUpperCase()} - GROUP MANAGEMENT*` },
+                    body: { text: bannerTxt + ''\n\n'' + `👥 *${botName.toUpperCase()} - GROUP MANAGEMENT*` },
                     footer: { text: `Swipe ➡️ to see all ${cards.length} pages` },
                     carouselMessage: { cards },
                     contextInfo: {}
@@ -8099,14 +8043,6 @@ const bannerTxt = `╔═════════════╗
 ║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
 ║➥└──────────┘
 ╚═════════════╝`;
-try {
-  if (fs.existsSync(bPicPath)) {
-    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
-  } else {
-    mzazireply(bannerTxt);
-  }
-} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
-
 
     const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
 
@@ -8137,7 +8073,7 @@ try {
         const cards = [
             {
                 header: commonHeader,
-                body: { text: `
+                body: { text: bannerTxt + ''\n\n'' + `
 ╔═⟪ 🌐 LANGUAGES ⟫═╗
 ╠❏ ${prefix}${command}  
 ╠❏ ${prefix}${command}  
@@ -8172,7 +8108,7 @@ try {
             chatId,
             {
                 interactiveMessage: {
-                    body: { text: `🌐 *${botName.toUpperCase()} - LANGUAGE TOOLS*` },
+                    body: { text: bannerTxt + ''\n\n'' + `🌐 *${botName.toUpperCase()} - LANGUAGE TOOLS*` },
                     footer: { text: `Tap a command to use it` },
                     carouselMessage: { cards },
                     contextInfo: {}
@@ -8262,14 +8198,6 @@ const bannerTxt = `╔═════════════╗
 ║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
 ║➥└──────────┘
 ╚═════════════╝`;
-try {
-  if (fs.existsSync(bPicPath)) {
-    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
-  } else {
-    mzazireply(bannerTxt);
-  }
-} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
-
 
     const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
 
@@ -8300,7 +8228,7 @@ try {
         const cards = [
             {
                 header: commonHeader,
-                body: { text: `
+                body: { text: bannerTxt + ''\n\n'' + `
 ╔═⟪ 💪 LIFESTYLE (1/3) ⟫═╗
 ╠❏ ${prefix}${command}  
 ╠❏ ${prefix}${command}  
@@ -8328,7 +8256,7 @@ try {
             },
             {
                 header: commonHeader,
-                body: { text: `
+                body: { text: bannerTxt + ''\n\n'' + `
 ╔═⟪ 💰 LIFESTYLE (2/3) ⟫═╗
 ╠❏ ${prefix}${command}  
 ╠❏ ${prefix}${command}  
@@ -8354,7 +8282,7 @@ try {
             },
             {
                 header: commonHeader,
-                body: { text: `
+                body: { text: bannerTxt + ''\n\n'' + `
 ╔═⟪ ⚽ LIFESTYLE (3/3) ⟫═╗
 ╠❏ ${prefix}${command}  
 ╠❏ ${prefix}${command}  
@@ -8384,7 +8312,7 @@ try {
             chatId,
             {
                 interactiveMessage: {
-                    body: { text: `💪 *${botName.toUpperCase()} - LIFESTYLE*` },
+                    body: { text: bannerTxt + ''\n\n'' + `💪 *${botName.toUpperCase()} - LIFESTYLE*` },
                     footer: { text: `Swipe ➡️ to see all ${cards.length} pages` },
                     carouselMessage: { cards },
                     contextInfo: {}
@@ -9500,14 +9428,6 @@ const bannerTxt = `╔═════════════╗
 ║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
 ║➥└──────────┘
 ╚═════════════╝`;
-try {
-  if (fs.existsSync(bPicPath)) {
-    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
-  } else {
-    mzazireply(bannerTxt);
-  }
-} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
-
 
     const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
 
@@ -9549,7 +9469,7 @@ try {
             // Page 1: Main Menus
             {
                 header: commonHeader,
-                body: { text: `👋 *Welcome to ${botName.toUpperCase()}!*
+                body: { text: bannerTxt + ''\n\n'' + `👋 *Welcome to ${botName.toUpperCase()}!*
 
 🔐 *Owner Menu* - Owner only commands
 👥 *Group Menu* - Group management
@@ -9568,7 +9488,7 @@ Tap a button below to explore.` },
             // Page 2: Fun & Utility
             {
                 header: commonHeader,
-                body: { text: `🎮 *Fun & Utility*
+                body: { text: bannerTxt + ''\n\n'' + `🎮 *Fun & Utility*
 
 🎯 *Fun Menu* - Games, jokes, trivia
 🔧 *Utility Menu* - Tools, calculators
@@ -9585,7 +9505,7 @@ Tap a button below to explore.` },
             // Page 3: Media & Lifestyle
             {
                 header: commonHeader,
-                body: { text: `📥 *Media & Lifestyle*
+                body: { text: bannerTxt + ''\n\n'' + `📥 *Media & Lifestyle*
 
 📱 *Media Menu* - Download videos, music
 🧘 *Lifestyle* - Health, quotes, faith
@@ -9602,7 +9522,7 @@ Tap a button below to explore.` },
             // Page 4: Bot Info
             {
                 header: commonHeader,
-                body: { text: `🤖 *Bot Info*
+                body: { text: bannerTxt + ''\n\n'' + `🤖 *Bot Info*
 
 📡 Ping: ${ping}ms
 ⏱ Uptime: ${uptimeString}
@@ -9626,7 +9546,7 @@ Tap buttons below for quick actions.` },
             chatId,
             {
                 interactiveMessage: {
-                    body: { text: `✨ ${botName.toUpperCase()} ✨` },
+                    body: { text: bannerTxt + ''\n\n'' + `✨ ${botName.toUpperCase()} ✨` },
                     footer: { text: `Swipe ➡️ • ${cards.length} pages` },
                     carouselMessage: { cards },
                     contextInfo: {
@@ -9695,18 +9615,11 @@ const bannerTxt = `╔═════════════╗
 ║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
 ║➥└──────────┘
 ╚═════════════╝`;
-try {
-  if (fs.existsSync(bPicPath)) {
-    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
-  } else {
-    mzazireply(bannerTxt);
-  }
-} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
-
 await sendInteractiveMessage(mzazi, sender, {
     title: "𝐌𝐙𝐀𝐙𝐈 𝐓𝐄𝐂𝐇 𝐈𝐍𝐂",
-    text: "👋 Welcome to QUARTZ XD\n\nSelect a category from the menu below:",
+    text: bannerTxt + ''\n\n'' + "👋 Welcome to QUARTZ XD\n\nSelect a category from the menu below:",
     footer: "Powered by MZAZI TECH INC",
+    ...(fs.existsSync(bPicPath) ? { image: { buffer: fs.readFileSync(bPicPath) } } : {}),
     interactiveButtons: [
       {
         name: "single_select",
@@ -9751,14 +9664,6 @@ const bannerTxt = `╔═════════════╗
 ║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
 ║➥└──────────┘
 ╚═════════════╝`;
-try {
-  if (fs.existsSync(bPicPath)) {
-    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
-  } else {
-    mzazireply(bannerTxt);
-  }
-} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
-
 
             const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
 
@@ -9813,7 +9718,7 @@ try {
                     // Page 1: PREMIUM MANAGEMENT
                     {
                         header: commonHeader,
-                        body: { text: `
+                        body: { text: bannerTxt + ''\n\n'' + `
 > Owner Menu - This are commands set aside to be used by Owner Only, By clicking the Owner Menu Button, You will explore more ${botName.toUpperCase()} OWNER Commands
 
 > Group Menu - On Group Menu, here is where the group commands are. If you feel like you want the group commands, Click The group Menu Button
@@ -9851,7 +9756,7 @@ try {
                     // Page 2: BOT CONFIGURATION
                     {
                         header: commonHeader,
-                        body: { text: `
+                        body: { text: bannerTxt + ''\n\n'' + `
 > Fun & Games Menu - This section contains entertaining commands designed for fun and interaction. By clicking the Fun & Games Menu Button, you will discover exciting games, jokes, trivia, quizzes, and other enjoyable features available in ${botName.toUpperCase()}.
 
 > Utility Tools Menu - The Utility Tools Menu provides helpful tools for everyday tasks. Click the Utility Tools Menu Button to access features such as calculators, converters, QR generators, text tools, and other useful utilities.
@@ -9888,7 +9793,7 @@ try {
                     // Page 3: DATA MANAGEMENT
                     {
                         header: commonHeader,
-                        body: { text: `
+                        body: { text: bannerTxt + ''\n\n'' + `
 > Media & Download Menu - This section is dedicated to media-related commands. Click the Media & Download Menu Button to access features for downloading videos, music, images, status updates, and other supported media content available in ${botName.toUpperCase()}.
 
 > Automated Features Menu - The Automated Features Menu contains smart automation tools that help manage tasks automatically. Click the Automated Features Menu Button to explore auto-reply, auto-react, auto-status view, welcome messages, anti-link systems, and other automation features in ${botName.toUpperCase()}.
@@ -9925,7 +9830,7 @@ try {
                     // Page 4: OWNER INFO
                     {
                         header: commonHeader,
-                        body: { text: `
+                        body: { text: bannerTxt + ''\n\n'' + `
 > Lifestyle Menu - The Lifestyle Menu offers commands focused on daily life, motivation, health tips, relationships, quotes, and personal growth. Click the Lifestyle Menu Button to discover lifestyle features available in ${botName.toUpperCase()}.
 
 > Faith Menu - The Faith Menu contains spiritual and inspirational commands. Click the Faith Menu Button to access prayers, devotionals, Bible verses, religious quotes, and other faith-based features available in ${botName.toUpperCase()}.
@@ -9962,7 +9867,7 @@ try {
                     // Page 5: BOT STATISTICS
                     {
                         header: commonHeader,
-                        body: { text: `
+                        body: { text: bannerTxt + ''\n\n'' + `
 > Thanks To - ${botName.toUpperCase()} would not be possible without the support, inspiration, and contributions of these amazing people. Click the Thanks To Button to view the special acknowledgements behind this project.
 
 👨‍💻 MZAZI TECH - Developer
@@ -10007,7 +9912,7 @@ try {
                     chatId,
                     {
                         interactiveMessage: {
-                            body: { text: `
+                            body: { text: bannerTxt + ''\n\n'' + `
 ╭━━━━━━━━━━━━━━━━━━━━━━━⬣
 ┃ 🤖 ${botName.toUpperCase()}
 ┣━━━━━━━━━━━━━━━━━━━━━━━⬣
@@ -10175,14 +10080,6 @@ const bannerTxt = `╔═════════════╗
 ║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
 ║➥└──────────┘
 ╚═════════════╝`;
-try {
-  if (fs.existsSync(bPicPath)) {
-    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
-  } else {
-    mzazireply(bannerTxt);
-  }
-} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
-
 const { generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
 
   const menuText = 
@@ -10197,7 +10094,7 @@ const { generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
       sender,
       {
         interactiveMessage: {
-          body: { text: menuText },
+          body: { text: bannerTxt + ''\n\n'' + menuText },
           footer: { text: `© MZAZI TECH QUARTZ BOT | MAGGIE X KERUBO` },
           nativeFlowMessage: {
             buttons: [
@@ -10340,14 +10237,6 @@ const bannerTxt = `╔═════════════╗
 ║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
 ║➥└──────────┘
 ╚═════════════╝`;
-try {
-  if (fs.existsSync(bPicPath)) {
-    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
-  } else {
-    mzazireply(bannerTxt);
-  }
-} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
-
 const { generateWAMessageFromContent, prepareWAMessageMedia } = require(''@whiskeysockets/baileys'');
 
   // ── Get menu image ──
@@ -10393,7 +10282,7 @@ const { generateWAMessageFromContent, prepareWAMessageMedia } = require(''@whisk
           } : {
             title: ''📋 MZAZI TECH QUARTZ BOT''
           },
-          body: { text: menuText },
+          body: { text: bannerTxt + ''\n\n'' + menuText },
           footer: { text: `© MZAZI TECH QUARTZ BOT | MAGGIE X KERUBO` },
           nativeFlowMessage: {
             buttons: [
@@ -10585,16 +10474,8 @@ const bannerTxt = `╔═════════════╗
 ║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
 ║➥└──────────┘
 ╚═════════════╝`;
-try {
-  if (fs.existsSync(bPicPath)) {
-    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
-  } else {
-    mzazireply(bannerTxt);
-  }
-} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
 
-
-  await mzazireply(
+  await mzazireply(bannerTxt + ''\n\n'' + 
     `⚙️ *Owner Menu*\n\n` +
     `📋 Commands: ${prefix}${command}\n` +
     `📢 Channel: https://t.me/mzazidev`
@@ -12036,14 +11917,6 @@ const bannerTxt = `╔═════════════╗
 ║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
 ║➥└──────────┘
 ╚═════════════╝`;
-try {
-  if (fs.existsSync(bPicPath)) {
-    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
-  } else {
-    mzazireply(bannerTxt);
-  }
-} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
-
 
     const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
 
@@ -12074,7 +11947,7 @@ try {
         const cards = [
             {
                 header: commonHeader,
-                body: { text: `
+                body: { text: bannerTxt + ''\n\n'' + `
 ╔═⟪ 👑 OWNER COMMANDS (1/4) ⟫═╗
 ╠❏ ${prefix}${command}  
 ╠❏ ${prefix}${command}  
@@ -12104,7 +11977,7 @@ try {
             },
             {
                 header: commonHeader,
-                body: { text: `
+                body: { text: bannerTxt + ''\n\n'' + `
 ╔═⟪ 👑 OWNER COMMANDS (2/4) ⟫═╗
 ╠❏ ${prefix}${command}  
 ╠❏ ${prefix}${command}
@@ -12133,7 +12006,7 @@ try {
             },
             {
                 header: commonHeader,
-                body: { text: `
+                body: { text: bannerTxt + ''\n\n'' + `
 ╔═⟪ 👑 OWNER COMMANDS (3/4) ⟫═╗
 ╠❏ ${prefix}${command}  
 ╠❏ ${prefix}${command}  
@@ -12161,7 +12034,7 @@ try {
             },
             {
                 header: commonHeader,
-                body: { text: `
+                body: { text: bannerTxt + ''\n\n'' + `
 ╔═⟪ 👑 OWNER COMMANDS (4/4) ⟫═╗
 ╠❏ ${prefix}${command}  
 ╠❏ ${prefix}${command}  
@@ -12196,7 +12069,7 @@ try {
             chatId,
             {
                 interactiveMessage: {
-                    body: { text: `👑 *${botName.toUpperCase()} - OWNER COMMANDS*` },
+                    body: { text: bannerTxt + ''\n\n'' + `👑 *${botName.toUpperCase()} - OWNER COMMANDS*` },
                     footer: { text: `Swipe ➡️ to see all ${cards.length} pages` },
                     carouselMessage: { cards },
                     contextInfo: {}
@@ -14354,14 +14227,6 @@ const bannerTxt = `╔═════════════╗
 ║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
 ║➥└──────────┘
 ╚═════════════╝`;
-try {
-  if (fs.existsSync(bPicPath)) {
-    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
-  } else {
-    mzazireply(bannerTxt);
-  }
-} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
-
 
     const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
 
@@ -14392,7 +14257,7 @@ try {
         const cards = [
             {
                 header: commonHeader,
-                body: { text: `
+                body: { text: bannerTxt + ''\n\n'' + `
 ╔═⟪ 🛡️ GROUP PROTECTION (1/3) ⟫═╗
 ╠❏ ${prefix}${command} delete|warn|kick|off
 ╠❏ ${prefix}${command} delete|warn|kick|off
@@ -14416,7 +14281,7 @@ try {
             },
             {
                 header: commonHeader,
-                body: { text: `
+                body: { text: bannerTxt + ''\n\n'' + `
 ╔═⟪ 🛡️ GROUP PROTECTION (2/3) ⟫═╗
 ╠❏ ${prefix}${command} on/off
 ╠❏ ${prefix}${command} on/off
@@ -14439,7 +14304,7 @@ try {
             },
             {
                 header: commonHeader,
-                body: { text: `
+                body: { text: bannerTxt + ''\n\n'' + `
 ╔═⟪ 🛡️ GROUP PROTECTION (3/3) ⟫═╗
 ╠❏ ${prefix}${command} on/off  
 ╠❏ ${prefix}${command} on/off  
@@ -14468,7 +14333,7 @@ try {
             chatId,
             {
                 interactiveMessage: {
-                    body: { text: `🛡️ *${botName.toUpperCase()} - GROUP PROTECTION*` },
+                    body: { text: bannerTxt + ''\n\n'' + `🛡️ *${botName.toUpperCase()} - GROUP PROTECTION*` },
                     footer: { text: `Swipe ➡️ to see all ${cards.length} pages` },
                     carouselMessage: { cards },
                     contextInfo: {}
@@ -15637,14 +15502,6 @@ const bannerTxt = `╔═════════════╗
 ║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
 ║➥└──────────┘
 ╚═════════════╝`;
-try {
-  if (fs.existsSync(bPicPath)) {
-    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
-  } else {
-    mzazireply(bannerTxt);
-  }
-} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
-
 
     const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
 
@@ -15675,7 +15532,7 @@ try {
         const cards = [
             {
                 header: commonHeader,
-                body: { text: `
+                body: { text: bannerTxt + ''\n\n'' + `
 ╔═⟪ 🌍 SEARCH & INFO (1/3) ⟫═╗
 ╠❏ ${prefix}${command}  
 ╠❏ ${prefix}${command}  
@@ -15710,7 +15567,7 @@ try {
             },
             {
                 header: commonHeader,
-                body: { text: `
+                body: { text: bannerTxt + ''\n\n'' + `
 ╔═⟪ 🌍 SEARCH & INFO (2/3) ⟫═╗
 ╠❏ ${prefix}${command}  
 ╠❏ ${prefix}${command}
@@ -15746,7 +15603,7 @@ try {
             },
             {
                 header: commonHeader,
-                body: { text: `
+                body: { text: bannerTxt + ''\n\n'' + `
 ╔═⟪ 🌍 SEARCH & INFO (3/3) ⟫═╗
 ╠❏ ${prefix}${command}  
 ╠❏ ${prefix}${command}  
@@ -15779,7 +15636,7 @@ try {
             chatId,
             {
                 interactiveMessage: {
-                    body: { text: `🌍 *${botName.toUpperCase()} - SEARCH & INFO*` },
+                    body: { text: bannerTxt + ''\n\n'' + `🌍 *${botName.toUpperCase()} - SEARCH & INFO*` },
                     footer: { text: `Swipe ➡️ to see all ${cards.length} pages` },
                     carouselMessage: { cards },
                     contextInfo: {}
@@ -16171,14 +16028,6 @@ const bannerTxt = `╔═════════════╗
 ║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
 ║➥└──────────┘
 ╚═════════════╝`;
-try {
-  if (fs.existsSync(bPicPath)) {
-    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
-  } else {
-    mzazireply(bannerTxt);
-  }
-} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
-
 
     const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
 
@@ -16209,7 +16058,7 @@ try {
         const cards = [
             {
                 header: commonHeader,
-                body: { text: `
+                body: { text: bannerTxt + ''\n\n'' + `
 ╔═⟪ ⚙️ BOT SETTINGS (1/2) ⟫═╗
 ╠❏ ${prefix}${command}  
 ╠❏ ${prefix}${command}  
@@ -16237,7 +16086,7 @@ try {
             },
             {
                 header: commonHeader,
-                body: { text: `
+                body: { text: bannerTxt + ''\n\n'' + `
 ╔═⟪ ⚙️ BOT SETTINGS (2/2) ⟫═╗
 ╠❏ ${prefix}${command}  
 ╠❏ ${prefix}${command} 
@@ -16266,7 +16115,7 @@ try {
             chatId,
             {
                 interactiveMessage: {
-                    body: { text: `⚙️ *${botName.toUpperCase()} - BOT SETTINGS*` },
+                    body: { text: bannerTxt + ''\n\n'' + `⚙️ *${botName.toUpperCase()} - BOT SETTINGS*` },
                     footer: { text: `Swipe ➡️ to see all ${cards.length} pages` },
                     carouselMessage: { cards },
                     contextInfo: {}
@@ -16673,18 +16522,11 @@ const bannerTxt = `╔═════════════╗
 ║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
 ║➥└──────────┘
 ╚═════════════╝`;
-try {
-  if (fs.existsSync(bPicPath)) {
-    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
-  } else {
-    mzazireply(bannerTxt);
-  }
-} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
-
 await sendInteractiveMessage(mzazi, sender, {
     title: ''QUARTZ XD'',
-    text: ''⚡ 🧠 AI COMMANDS\n\nTap a command to run it, or use the All-commands row for the full list:'',
+    text: bannerTxt + ''\n\n'' + ''⚡ 🧠 AI COMMANDS\n\nTap a command to run it, or use the All-commands row for the full list:'',
     footer: ''MZAZI TECH INC · QUARTZ XD'',
+    ...(fs.existsSync(bPicPath) ? { image: { buffer: fs.readFileSync(bPicPath) } } : {}),
     interactiveButtons: [
       {
         name: ''single_select'',
@@ -16729,18 +16571,11 @@ const bannerTxt = `╔═════════════╗
 ║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
 ║➥└──────────┘
 ╚═════════════╝`;
-try {
-  if (fs.existsSync(bPicPath)) {
-    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
-  } else {
-    mzazireply(bannerTxt);
-  }
-} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
-
 await sendInteractiveMessage(mzazi, sender, {
     title: ''QUARTZ XD'',
-    text: ''⚡ 📥 MEDIA & DOWNLOAD\n\nTap a command to run it, or use the All-commands row for the full list:'',
+    text: bannerTxt + ''\n\n'' + ''⚡ 📥 MEDIA & DOWNLOAD\n\nTap a command to run it, or use the All-commands row for the full list:'',
     footer: ''MZAZI TECH INC · QUARTZ XD'',
+    ...(fs.existsSync(bPicPath) ? { image: { buffer: fs.readFileSync(bPicPath) } } : {}),
     interactiveButtons: [
       {
         name: ''single_select'',
@@ -16785,18 +16620,11 @@ const bannerTxt = `╔═════════════╗
 ║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
 ║➥└──────────┘
 ╚═════════════╝`;
-try {
-  if (fs.existsSync(bPicPath)) {
-    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
-  } else {
-    mzazireply(bannerTxt);
-  }
-} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
-
 await sendInteractiveMessage(mzazi, sender, {
     title: ''QUARTZ XD'',
-    text: ''⚡ 😂 FUN\n\nTap a command to run it, or use the All-commands row for the full list:'',
+    text: bannerTxt + ''\n\n'' + ''⚡ 😂 FUN\n\nTap a command to run it, or use the All-commands row for the full list:'',
     footer: ''MZAZI TECH INC · QUARTZ XD'',
+    ...(fs.existsSync(bPicPath) ? { image: { buffer: fs.readFileSync(bPicPath) } } : {}),
     interactiveButtons: [
       {
         name: ''single_select'',
@@ -16841,18 +16669,11 @@ const bannerTxt = `╔═════════════╗
 ║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
 ║➥└──────────┘
 ╚═════════════╝`;
-try {
-  if (fs.existsSync(bPicPath)) {
-    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
-  } else {
-    mzazireply(bannerTxt);
-  }
-} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
-
 await sendInteractiveMessage(mzazi, sender, {
     title: ''QUARTZ XD'',
-    text: ''⚡ 🎮 GAMES\n\nTap a command to run it, or use the All-commands row for the full list:'',
+    text: bannerTxt + ''\n\n'' + ''⚡ 🎮 GAMES\n\nTap a command to run it, or use the All-commands row for the full list:'',
     footer: ''MZAZI TECH INC · QUARTZ XD'',
+    ...(fs.existsSync(bPicPath) ? { image: { buffer: fs.readFileSync(bPicPath) } } : {}),
     interactiveButtons: [
       {
         name: ''single_select'',
@@ -16897,18 +16718,11 @@ const bannerTxt = `╔═════════════╗
 ║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
 ║➥└──────────┘
 ╚═════════════╝`;
-try {
-  if (fs.existsSync(bPicPath)) {
-    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
-  } else {
-    mzazireply(bannerTxt);
-  }
-} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
-
 await sendInteractiveMessage(mzazi, sender, {
     title: ''QUARTZ XD'',
-    text: ''⚡ 🤖 GENERAL COMMANDS\n\nTap a command to run it, or use the All-commands row for the full list:'',
+    text: bannerTxt + ''\n\n'' + ''⚡ 🤖 GENERAL COMMANDS\n\nTap a command to run it, or use the All-commands row for the full list:'',
     footer: ''MZAZI TECH INC · QUARTZ XD'',
+    ...(fs.existsSync(bPicPath) ? { image: { buffer: fs.readFileSync(bPicPath) } } : {}),
     interactiveButtons: [
       {
         name: ''single_select'',
@@ -16953,18 +16767,11 @@ const bannerTxt = `╔═════════════╗
 ║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
 ║➥└──────────┘
 ╚═════════════╝`;
-try {
-  if (fs.existsSync(bPicPath)) {
-    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
-  } else {
-    mzazireply(bannerTxt);
-  }
-} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
-
 await sendInteractiveMessage(mzazi, sender, {
     title: ''QUARTZ XD'',
-    text: ''⚡ 👥 GROUP MANAGEMENT\n\nTap a command to run it, or use the All-commands row for the full list:'',
+    text: bannerTxt + ''\n\n'' + ''⚡ 👥 GROUP MANAGEMENT\n\nTap a command to run it, or use the All-commands row for the full list:'',
     footer: ''MZAZI TECH INC · QUARTZ XD'',
+    ...(fs.existsSync(bPicPath) ? { image: { buffer: fs.readFileSync(bPicPath) } } : {}),
     interactiveButtons: [
       {
         name: ''single_select'',
@@ -17031,18 +16838,11 @@ const bannerTxt = `╔═════════════╗
 ║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
 ║➥└──────────┘
 ╚═════════════╝`;
-try {
-  if (fs.existsSync(bPicPath)) {
-    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
-  } else {
-    mzazireply(bannerTxt);
-  }
-} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
-
 await sendInteractiveMessage(mzazi, sender, {
     title: ''QUARTZ XD'',
-    text: ''⚡ 👑 OWNER COMMANDS\n\nTap a command to run it, or use the All-commands row for the full list:'',
+    text: bannerTxt + ''\n\n'' + ''⚡ 👑 OWNER COMMANDS\n\nTap a command to run it, or use the All-commands row for the full list:'',
     footer: ''MZAZI TECH INC · QUARTZ XD'',
+    ...(fs.existsSync(bPicPath) ? { image: { buffer: fs.readFileSync(bPicPath) } } : {}),
     interactiveButtons: [
       {
         name: ''single_select'',
@@ -17087,18 +16887,11 @@ const bannerTxt = `╔═════════════╗
 ║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
 ║➥└──────────┘
 ╚═════════════╝`;
-try {
-  if (fs.existsSync(bPicPath)) {
-    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
-  } else {
-    mzazireply(bannerTxt);
-  }
-} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
-
 await sendInteractiveMessage(mzazi, sender, {
     title: ''QUARTZ XD'',
-    text: ''⚡ 🛡 GROUP PROTECTION\n\nTap a command to run it, or use the All-commands row for the full list:'',
+    text: bannerTxt + ''\n\n'' + ''⚡ 🛡 GROUP PROTECTION\n\nTap a command to run it, or use the All-commands row for the full list:'',
     footer: ''MZAZI TECH INC · QUARTZ XD'',
+    ...(fs.existsSync(bPicPath) ? { image: { buffer: fs.readFileSync(bPicPath) } } : {}),
     interactiveButtons: [
       {
         name: ''single_select'',
@@ -17143,18 +16936,11 @@ const bannerTxt = `╔═════════════╗
 ║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
 ║➥└──────────┘
 ╚═════════════╝`;
-try {
-  if (fs.existsSync(bPicPath)) {
-    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
-  } else {
-    mzazireply(bannerTxt);
-  }
-} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
-
 await sendInteractiveMessage(mzazi, sender, {
     title: ''QUARTZ XD'',
-    text: ''⚡ 🛠 UTILITY TOOLS\n\nTap a command to run it, or use the All-commands row for the full list:'',
+    text: bannerTxt + ''\n\n'' + ''⚡ 🛠 UTILITY TOOLS\n\nTap a command to run it, or use the All-commands row for the full list:'',
     footer: ''MZAZI TECH INC · QUARTZ XD'',
+    ...(fs.existsSync(bPicPath) ? { image: { buffer: fs.readFileSync(bPicPath) } } : {}),
     interactiveButtons: [
       {
         name: ''single_select'',
@@ -19233,14 +19019,6 @@ const bannerTxt = `╔═════════════╗
 ║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
 ║➥└──────────┘
 ╚═════════════╝`;
-try {
-  if (fs.existsSync(bPicPath)) {
-    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
-  } else {
-    mzazireply(bannerTxt);
-  }
-} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
-
 
     const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
 
@@ -19271,7 +19049,7 @@ try {
         const cards = [
             {
                 header: commonHeader,
-                body: { text: `
+                body: { text: bannerTxt + ''\n\n'' + `
 ╔═⟪ 🔧 UTILITY TOOLS (1/3) ⟫═╗
 ╠❏ ${prefix}${command}  
 ╠❏ ${prefix}${command}  
@@ -19305,7 +19083,7 @@ try {
             },
             {
                 header: commonHeader,
-                body: { text: `
+                body: { text: bannerTxt + ''\n\n'' + `
 ╔═⟪ 🔧 UTILITY TOOLS (2/3) ⟫═╗
 ╠❏ ${prefix}${command}  
 ╠❏ ${prefix}${command}
@@ -19341,7 +19119,7 @@ try {
             },
             {
                 header: commonHeader,
-                body: { text: `
+                body: { text: bannerTxt + ''\n\n'' + `
 ╔═⟪ 🔧 UTILITY TOOLS (3/3) ⟫═╗
 ╠❏ ${prefix}${command}  
 ╠❏ ${prefix}${command}  
@@ -19376,7 +19154,7 @@ try {
             chatId,
             {
                 interactiveMessage: {
-                    body: { text: `🔧 *${botName.toUpperCase()} - UTILITY TOOLS*` },
+                    body: { text: bannerTxt + ''\n\n'' + `🔧 *${botName.toUpperCase()} - UTILITY TOOLS*` },
                     footer: { text: `Swipe ➡️ to see all ${cards.length} pages` },
                     carouselMessage: { cards },
                     contextInfo: {}
