@@ -13230,27 +13230,27 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
         footer: `© ${botName} | MAGGIE X KERUBO`,
         buttons: [
           {
-            buttonId: `${prefix}${command} ${sessionId} audio`,
+            buttonId: `${prefix}playdl ${sessionId} audio`,
             buttonText: { displayText: "🎵 Audio" },
             type: 1
           },
           {
-            buttonId: `${prefix}${command} ${sessionId} file`,
+            buttonId: `${prefix}playdl ${sessionId} file`,
             buttonText: { displayText: "📄 File" },
             type: 1
           },
           {
-            buttonId: `${prefix}${command} ${sessionId} video`,
+            buttonId: `${prefix}playdl ${sessionId} video`,
             buttonText: { displayText: "🎬 Video" },
             type: 1
           },
           {
-            buttonId: `${prefix}${command} ${sessionId} both`,
+            buttonId: `${prefix}playdl ${sessionId} both`,
             buttonText: { displayText: "🎵+📄 Both" },
             type: 1
           },
           {
-            buttonId: `${prefix}${command} ${sessionId}`,
+            buttonId: `${prefix}playdl ${sessionId} audio`,
             buttonText: { displayText: "❌ Cancel" },
             type: 1
           }
@@ -13334,21 +13334,21 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
             name: ''quick_reply'',
             buttonParamsJson: JSON.stringify({
               display_text: ''🎵 Audio'',
-              id: `.p10dl ${sessionId} audio`,
+              id: `${prefix}p10dl ${sessionId} audio`,
             }),
           },
           {
             name: ''quick_reply'',
             buttonParamsJson: JSON.stringify({
               display_text: ''🎬 Video (MP4)'',
-              id: `.p10dl ${sessionId} video`,
+              id: `${prefix}p10dl ${sessionId} video`,
             }),
           },
           {
             name: ''quick_reply'',
             buttonParamsJson: JSON.stringify({
               display_text: ''📄 File (Document)'',
-              id: `.p10dl ${sessionId} file`,
+              id: `${prefix}p10dl ${sessionId} file`,
             }),
           },
         ],
@@ -13524,9 +13524,9 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
       footer: { text: `© ${botName} • Expires 3 min` },
       nativeFlowMessage: {
         buttons: [
-          { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''🎵 Audio'', id: `.p3dl ${sessionId} audio` }) },
-          { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''📄 File (Document)'', id: `.p3dl ${sessionId} file` }) },
-          { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''🎬 Video MP4'', id: `.p3dl ${sessionId} video` }) },
+          { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''🎵 Audio'', id: `${prefix}p3dl ${sessionId} audio` }) },
+          { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''📄 File (Document)'', id: `${prefix}p3dl ${sessionId} file` }) },
+          { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''🎬 Video MP4'', id: `${prefix}p3dl ${sessionId} video` }) },
         ],
       },
     };
