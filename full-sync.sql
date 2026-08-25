@@ -490,7 +490,42 @@ return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, descripti
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('allgroups', '[]'::jsonb, 'List all bot groups', 'Owner', '', true, false, false, true, 'if (!isOwner) return mzazireply(''❌ Owner only.'');
 mzazireply(`👋 Message sent from the bot. Use ${prefix}${command} <jid> <msg> to send to a specific chat.`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('allmenu', '[]'::jsonb, '', 'General', '', false, false, false, true, 'const currentDate = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" }));
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('allmenu', '[]'::jsonb, '', 'General', '', false, false, false, true, '// ── Menu banner + picture ──
+const bCustomPic = `./database/sessions/${botPhoneNum}/menu.jpg`;
+const bDefaultPic = "./media/menu.jpg";
+const bPicPath = fs.existsSync(bCustomPic) ? bCustomPic : bDefaultPic;
+const bUpSec = Math.floor((Date.now() - startTime) / 1000);
+const bUpStr = Math.floor(bUpSec / 86400) + ''d '' + Math.floor((bUpSec % 86400) / 3600) + ''h '' + Math.floor((bUpSec % 3600) / 60) + ''m '' + (bUpSec % 60) + ''s'';
+const bNow = new Date();
+const bTimeStr = bNow.toLocaleTimeString(''en-US'', { hour: ''2-digit'', minute: ''2-digit'', second: ''2-digit'', hour12: true });
+const bDateStr = bNow.toLocaleDateString(''en-US'', { weekday: ''long'', year: ''numeric'', month: ''long'', day: ''numeric'' });
+const bPushName = (m && m.pushName) || ''User'';
+let bMode = ''🌐 PUBLIC'';
+try { const _s = loadJSON(settingsPath, { selfMode: false }); if (_s.selfMode) bMode = ''🔒 SELF''; } catch (e) {}
+const bannerTxt = `╔═════════════╗
+║➥✦ 𝐐𝐔𝐀𝐑𝐓𝐙 𝐗𝐃 ✦
+╠═════════════╣
+║➥┌──────────┐
+║➥│ 👤 USER    : ${bPushName}
+║➥│ 📱 NUMBER  : ${botPhoneNum}
+║➥│ ⏱ UPTIME  : ${bUpStr}
+║➥│ 🕐 TIME    : ${bTimeStr}
+║➥│ 📅 DATE    : ${bDateStr}
+║➥│ 📌 VERSION : 3.2.1
+║➥│ ⚙️ MODE    : ${bMode}
+║➥│ 🔱 PREFIX  : ${prefix}
+║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
+║➥└──────────┘
+╚═════════════╝`;
+try {
+  if (fs.existsSync(bPicPath)) {
+    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
+  } else {
+    mzazireply(bannerTxt);
+  }
+} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
+
+const currentDate = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" }));
     const days = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
     const day = days[currentDate.getDay()];
     const date = currentDate.toLocaleDateString("id-ID", { 
@@ -1291,6 +1326,42 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
         mzazireply(`❤️ Auto like status: ${sub6 === "on" ? "✅ ON" : "❌ OFF"}`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('automenu', '[]'::jsonb, 'Load menu image', 'General', '', false, false, false, true, 'const chatId = sender;
+// ── Menu banner + picture ──
+const bCustomPic = `./database/sessions/${botPhoneNum}/menu.jpg`;
+const bDefaultPic = "./media/menu.jpg";
+const bPicPath = fs.existsSync(bCustomPic) ? bCustomPic : bDefaultPic;
+const bUpSec = Math.floor((Date.now() - startTime) / 1000);
+const bUpStr = Math.floor(bUpSec / 86400) + ''d '' + Math.floor((bUpSec % 86400) / 3600) + ''h '' + Math.floor((bUpSec % 3600) / 60) + ''m '' + (bUpSec % 60) + ''s'';
+const bNow = new Date();
+const bTimeStr = bNow.toLocaleTimeString(''en-US'', { hour: ''2-digit'', minute: ''2-digit'', second: ''2-digit'', hour12: true });
+const bDateStr = bNow.toLocaleDateString(''en-US'', { weekday: ''long'', year: ''numeric'', month: ''long'', day: ''numeric'' });
+const bPushName = (m && m.pushName) || ''User'';
+let bMode = ''🌐 PUBLIC'';
+try { const _s = loadJSON(settingsPath, { selfMode: false }); if (_s.selfMode) bMode = ''🔒 SELF''; } catch (e) {}
+const bannerTxt = `╔═════════════╗
+║➥✦ 𝐐𝐔𝐀𝐑𝐓𝐙 𝐗𝐃 ✦
+╠═════════════╣
+║➥┌──────────┐
+║➥│ 👤 USER    : ${bPushName}
+║➥│ 📱 NUMBER  : ${botPhoneNum}
+║➥│ ⏱ UPTIME  : ${bUpStr}
+║➥│ 🕐 TIME    : ${bTimeStr}
+║➥│ 📅 DATE    : ${bDateStr}
+║➥│ 📌 VERSION : 3.2.1
+║➥│ ⚙️ MODE    : ${bMode}
+║➥│ 🔱 PREFIX  : ${prefix}
+║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
+║➥└──────────┘
+╚═════════════╝`;
+try {
+  if (fs.existsSync(bPicPath)) {
+    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
+  } else {
+    mzazireply(bannerTxt);
+  }
+} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
+
+
     const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
 
     try {
@@ -3944,6 +4015,42 @@ mzazireply(
 
 }') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('downloadmenu', '[]'::jsonb, 'Load menu image', 'General', '', false, false, false, true, 'const chatId = sender;
+// ── Menu banner + picture ──
+const bCustomPic = `./database/sessions/${botPhoneNum}/menu.jpg`;
+const bDefaultPic = "./media/menu.jpg";
+const bPicPath = fs.existsSync(bCustomPic) ? bCustomPic : bDefaultPic;
+const bUpSec = Math.floor((Date.now() - startTime) / 1000);
+const bUpStr = Math.floor(bUpSec / 86400) + ''d '' + Math.floor((bUpSec % 86400) / 3600) + ''h '' + Math.floor((bUpSec % 3600) / 60) + ''m '' + (bUpSec % 60) + ''s'';
+const bNow = new Date();
+const bTimeStr = bNow.toLocaleTimeString(''en-US'', { hour: ''2-digit'', minute: ''2-digit'', second: ''2-digit'', hour12: true });
+const bDateStr = bNow.toLocaleDateString(''en-US'', { weekday: ''long'', year: ''numeric'', month: ''long'', day: ''numeric'' });
+const bPushName = (m && m.pushName) || ''User'';
+let bMode = ''🌐 PUBLIC'';
+try { const _s = loadJSON(settingsPath, { selfMode: false }); if (_s.selfMode) bMode = ''🔒 SELF''; } catch (e) {}
+const bannerTxt = `╔═════════════╗
+║➥✦ 𝐐𝐔𝐀𝐑𝐓𝐙 𝐗𝐃 ✦
+╠═════════════╣
+║➥┌──────────┐
+║➥│ 👤 USER    : ${bPushName}
+║➥│ 📱 NUMBER  : ${botPhoneNum}
+║➥│ ⏱ UPTIME  : ${bUpStr}
+║➥│ 🕐 TIME    : ${bTimeStr}
+║➥│ 📅 DATE    : ${bDateStr}
+║➥│ 📌 VERSION : 3.2.1
+║➥│ ⚙️ MODE    : ${bMode}
+║➥│ 🔱 PREFIX  : ${prefix}
+║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
+║➥└──────────┘
+╚═════════════╝`;
+try {
+  if (fs.existsSync(bPicPath)) {
+    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
+  } else {
+    mzazireply(bannerTxt);
+  }
+} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
+
+
     const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
 
     try {
@@ -4478,6 +4585,42 @@ try {
 } catch (e) { return mzazireply(''❌ AI request failed: '' + (e.message || e)); }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('faithmenu', '[]'::jsonb, 'Load menu image', 'General', '', false, false, false, true, 'const chatId = sender;
+// ── Menu banner + picture ──
+const bCustomPic = `./database/sessions/${botPhoneNum}/menu.jpg`;
+const bDefaultPic = "./media/menu.jpg";
+const bPicPath = fs.existsSync(bCustomPic) ? bCustomPic : bDefaultPic;
+const bUpSec = Math.floor((Date.now() - startTime) / 1000);
+const bUpStr = Math.floor(bUpSec / 86400) + ''d '' + Math.floor((bUpSec % 86400) / 3600) + ''h '' + Math.floor((bUpSec % 3600) / 60) + ''m '' + (bUpSec % 60) + ''s'';
+const bNow = new Date();
+const bTimeStr = bNow.toLocaleTimeString(''en-US'', { hour: ''2-digit'', minute: ''2-digit'', second: ''2-digit'', hour12: true });
+const bDateStr = bNow.toLocaleDateString(''en-US'', { weekday: ''long'', year: ''numeric'', month: ''long'', day: ''numeric'' });
+const bPushName = (m && m.pushName) || ''User'';
+let bMode = ''🌐 PUBLIC'';
+try { const _s = loadJSON(settingsPath, { selfMode: false }); if (_s.selfMode) bMode = ''🔒 SELF''; } catch (e) {}
+const bannerTxt = `╔═════════════╗
+║➥✦ 𝐐𝐔𝐀𝐑𝐓𝐙 𝐗𝐃 ✦
+╠═════════════╣
+║➥┌──────────┐
+║➥│ 👤 USER    : ${bPushName}
+║➥│ 📱 NUMBER  : ${botPhoneNum}
+║➥│ ⏱ UPTIME  : ${bUpStr}
+║➥│ 🕐 TIME    : ${bTimeStr}
+║➥│ 📅 DATE    : ${bDateStr}
+║➥│ 📌 VERSION : 3.2.1
+║➥│ ⚙️ MODE    : ${bMode}
+║➥│ 🔱 PREFIX  : ${prefix}
+║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
+║➥└──────────┘
+╚═════════════╝`;
+try {
+  if (fs.existsSync(bPicPath)) {
+    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
+  } else {
+    mzazireply(bannerTxt);
+  }
+} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
+
+
     const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
 
     try {
@@ -5106,6 +5249,42 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('funmenu', '[]'::jsonb, 'Load menu image', 'General', '', false, false, false, true, 'const chatId = sender;
+// ── Menu banner + picture ──
+const bCustomPic = `./database/sessions/${botPhoneNum}/menu.jpg`;
+const bDefaultPic = "./media/menu.jpg";
+const bPicPath = fs.existsSync(bCustomPic) ? bCustomPic : bDefaultPic;
+const bUpSec = Math.floor((Date.now() - startTime) / 1000);
+const bUpStr = Math.floor(bUpSec / 86400) + ''d '' + Math.floor((bUpSec % 86400) / 3600) + ''h '' + Math.floor((bUpSec % 3600) / 60) + ''m '' + (bUpSec % 60) + ''s'';
+const bNow = new Date();
+const bTimeStr = bNow.toLocaleTimeString(''en-US'', { hour: ''2-digit'', minute: ''2-digit'', second: ''2-digit'', hour12: true });
+const bDateStr = bNow.toLocaleDateString(''en-US'', { weekday: ''long'', year: ''numeric'', month: ''long'', day: ''numeric'' });
+const bPushName = (m && m.pushName) || ''User'';
+let bMode = ''🌐 PUBLIC'';
+try { const _s = loadJSON(settingsPath, { selfMode: false }); if (_s.selfMode) bMode = ''🔒 SELF''; } catch (e) {}
+const bannerTxt = `╔═════════════╗
+║➥✦ 𝐐𝐔𝐀𝐑𝐓𝐙 𝐗𝐃 ✦
+╠═════════════╣
+║➥┌──────────┐
+║➥│ 👤 USER    : ${bPushName}
+║➥│ 📱 NUMBER  : ${botPhoneNum}
+║➥│ ⏱ UPTIME  : ${bUpStr}
+║➥│ 🕐 TIME    : ${bTimeStr}
+║➥│ 📅 DATE    : ${bDateStr}
+║➥│ 📌 VERSION : 3.2.1
+║➥│ ⚙️ MODE    : ${bMode}
+║➥│ 🔱 PREFIX  : ${prefix}
+║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
+║➥└──────────┘
+╚═════════════╝`;
+try {
+  if (fs.existsSync(bPicPath)) {
+    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
+  } else {
+    mzazireply(bannerTxt);
+  }
+} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
+
+
     const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
 
     try {
@@ -5789,6 +5968,42 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
     }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('generalmenu', '[]'::jsonb, 'Load local menu image', 'General', '', false, false, false, true, 'const chatId = sender;
+// ── Menu banner + picture ──
+const bCustomPic = `./database/sessions/${botPhoneNum}/menu.jpg`;
+const bDefaultPic = "./media/menu.jpg";
+const bPicPath = fs.existsSync(bCustomPic) ? bCustomPic : bDefaultPic;
+const bUpSec = Math.floor((Date.now() - startTime) / 1000);
+const bUpStr = Math.floor(bUpSec / 86400) + ''d '' + Math.floor((bUpSec % 86400) / 3600) + ''h '' + Math.floor((bUpSec % 3600) / 60) + ''m '' + (bUpSec % 60) + ''s'';
+const bNow = new Date();
+const bTimeStr = bNow.toLocaleTimeString(''en-US'', { hour: ''2-digit'', minute: ''2-digit'', second: ''2-digit'', hour12: true });
+const bDateStr = bNow.toLocaleDateString(''en-US'', { weekday: ''long'', year: ''numeric'', month: ''long'', day: ''numeric'' });
+const bPushName = (m && m.pushName) || ''User'';
+let bMode = ''🌐 PUBLIC'';
+try { const _s = loadJSON(settingsPath, { selfMode: false }); if (_s.selfMode) bMode = ''🔒 SELF''; } catch (e) {}
+const bannerTxt = `╔═════════════╗
+║➥✦ 𝐐𝐔𝐀𝐑𝐓𝐙 𝐗𝐃 ✦
+╠═════════════╣
+║➥┌──────────┐
+║➥│ 👤 USER    : ${bPushName}
+║➥│ 📱 NUMBER  : ${botPhoneNum}
+║➥│ ⏱ UPTIME  : ${bUpStr}
+║➥│ 🕐 TIME    : ${bTimeStr}
+║➥│ 📅 DATE    : ${bDateStr}
+║➥│ 📌 VERSION : 3.2.1
+║➥│ ⚙️ MODE    : ${bMode}
+║➥│ 🔱 PREFIX  : ${prefix}
+║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
+║➥└──────────┘
+╚═════════════╝`;
+try {
+  if (fs.existsSync(bPicPath)) {
+    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
+  } else {
+    mzazireply(bannerTxt);
+  }
+} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
+
+
     const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
 
     try {
@@ -6428,6 +6643,42 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
         await mzazi.sendMessage(sender, { text: memberList, mentions: participants.map(p=>p.id) }, { quoted: m });
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('groupmenu', '[]'::jsonb, 'Load menu image', 'General', '', false, false, false, true, 'const chatId = sender;
+// ── Menu banner + picture ──
+const bCustomPic = `./database/sessions/${botPhoneNum}/menu.jpg`;
+const bDefaultPic = "./media/menu.jpg";
+const bPicPath = fs.existsSync(bCustomPic) ? bCustomPic : bDefaultPic;
+const bUpSec = Math.floor((Date.now() - startTime) / 1000);
+const bUpStr = Math.floor(bUpSec / 86400) + ''d '' + Math.floor((bUpSec % 86400) / 3600) + ''h '' + Math.floor((bUpSec % 3600) / 60) + ''m '' + (bUpSec % 60) + ''s'';
+const bNow = new Date();
+const bTimeStr = bNow.toLocaleTimeString(''en-US'', { hour: ''2-digit'', minute: ''2-digit'', second: ''2-digit'', hour12: true });
+const bDateStr = bNow.toLocaleDateString(''en-US'', { weekday: ''long'', year: ''numeric'', month: ''long'', day: ''numeric'' });
+const bPushName = (m && m.pushName) || ''User'';
+let bMode = ''🌐 PUBLIC'';
+try { const _s = loadJSON(settingsPath, { selfMode: false }); if (_s.selfMode) bMode = ''🔒 SELF''; } catch (e) {}
+const bannerTxt = `╔═════════════╗
+║➥✦ 𝐐𝐔𝐀𝐑𝐓𝐙 𝐗𝐃 ✦
+╠═════════════╣
+║➥┌──────────┐
+║➥│ 👤 USER    : ${bPushName}
+║➥│ 📱 NUMBER  : ${botPhoneNum}
+║➥│ ⏱ UPTIME  : ${bUpStr}
+║➥│ 🕐 TIME    : ${bTimeStr}
+║➥│ 📅 DATE    : ${bDateStr}
+║➥│ 📌 VERSION : 3.2.1
+║➥│ ⚙️ MODE    : ${bMode}
+║➥│ 🔱 PREFIX  : ${prefix}
+║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
+║➥└──────────┘
+╚═════════════╝`;
+try {
+  if (fs.existsSync(bPicPath)) {
+    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
+  } else {
+    mzazireply(bannerTxt);
+  }
+} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
+
+
     const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
 
     try {
@@ -7821,6 +8072,42 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 mzazireply(list[Math.floor(Math.random() * list.length)]);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('languagemenu', '[]'::jsonb, 'Load menu image', 'General', '', false, false, false, true, 'const chatId = sender;
+// ── Menu banner + picture ──
+const bCustomPic = `./database/sessions/${botPhoneNum}/menu.jpg`;
+const bDefaultPic = "./media/menu.jpg";
+const bPicPath = fs.existsSync(bCustomPic) ? bCustomPic : bDefaultPic;
+const bUpSec = Math.floor((Date.now() - startTime) / 1000);
+const bUpStr = Math.floor(bUpSec / 86400) + ''d '' + Math.floor((bUpSec % 86400) / 3600) + ''h '' + Math.floor((bUpSec % 3600) / 60) + ''m '' + (bUpSec % 60) + ''s'';
+const bNow = new Date();
+const bTimeStr = bNow.toLocaleTimeString(''en-US'', { hour: ''2-digit'', minute: ''2-digit'', second: ''2-digit'', hour12: true });
+const bDateStr = bNow.toLocaleDateString(''en-US'', { weekday: ''long'', year: ''numeric'', month: ''long'', day: ''numeric'' });
+const bPushName = (m && m.pushName) || ''User'';
+let bMode = ''🌐 PUBLIC'';
+try { const _s = loadJSON(settingsPath, { selfMode: false }); if (_s.selfMode) bMode = ''🔒 SELF''; } catch (e) {}
+const bannerTxt = `╔═════════════╗
+║➥✦ 𝐐𝐔𝐀𝐑𝐓𝐙 𝐗𝐃 ✦
+╠═════════════╣
+║➥┌──────────┐
+║➥│ 👤 USER    : ${bPushName}
+║➥│ 📱 NUMBER  : ${botPhoneNum}
+║➥│ ⏱ UPTIME  : ${bUpStr}
+║➥│ 🕐 TIME    : ${bTimeStr}
+║➥│ 📅 DATE    : ${bDateStr}
+║➥│ 📌 VERSION : 3.2.1
+║➥│ ⚙️ MODE    : ${bMode}
+║➥│ 🔱 PREFIX  : ${prefix}
+║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
+║➥└──────────┘
+╚═════════════╝`;
+try {
+  if (fs.existsSync(bPicPath)) {
+    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
+  } else {
+    mzazireply(bannerTxt);
+  }
+} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
+
+
     const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
 
     try {
@@ -7948,6 +8235,42 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 mzazireply(list[Math.floor(Math.random() * list.length)]);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('lifestylemenu', '[]'::jsonb, 'Load menu image', 'General', '', false, false, false, true, 'const chatId = sender;
+// ── Menu banner + picture ──
+const bCustomPic = `./database/sessions/${botPhoneNum}/menu.jpg`;
+const bDefaultPic = "./media/menu.jpg";
+const bPicPath = fs.existsSync(bCustomPic) ? bCustomPic : bDefaultPic;
+const bUpSec = Math.floor((Date.now() - startTime) / 1000);
+const bUpStr = Math.floor(bUpSec / 86400) + ''d '' + Math.floor((bUpSec % 86400) / 3600) + ''h '' + Math.floor((bUpSec % 3600) / 60) + ''m '' + (bUpSec % 60) + ''s'';
+const bNow = new Date();
+const bTimeStr = bNow.toLocaleTimeString(''en-US'', { hour: ''2-digit'', minute: ''2-digit'', second: ''2-digit'', hour12: true });
+const bDateStr = bNow.toLocaleDateString(''en-US'', { weekday: ''long'', year: ''numeric'', month: ''long'', day: ''numeric'' });
+const bPushName = (m && m.pushName) || ''User'';
+let bMode = ''🌐 PUBLIC'';
+try { const _s = loadJSON(settingsPath, { selfMode: false }); if (_s.selfMode) bMode = ''🔒 SELF''; } catch (e) {}
+const bannerTxt = `╔═════════════╗
+║➥✦ 𝐐𝐔𝐀𝐑𝐓𝐙 𝐗𝐃 ✦
+╠═════════════╣
+║➥┌──────────┐
+║➥│ 👤 USER    : ${bPushName}
+║➥│ 📱 NUMBER  : ${botPhoneNum}
+║➥│ ⏱ UPTIME  : ${bUpStr}
+║➥│ 🕐 TIME    : ${bTimeStr}
+║➥│ 📅 DATE    : ${bDateStr}
+║➥│ 📌 VERSION : 3.2.1
+║➥│ ⚙️ MODE    : ${bMode}
+║➥│ 🔱 PREFIX  : ${prefix}
+║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
+║➥└──────────┘
+╚═════════════╝`;
+try {
+  if (fs.existsSync(bPicPath)) {
+    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
+  } else {
+    mzazireply(bannerTxt);
+  }
+} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
+
+
     const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
 
     try {
@@ -9150,6 +9473,42 @@ const tags = list.map((p) => ''@'' + String(p.id || '''').split(''@'')[0]).join(
 await mzazi.sendMessage(sender, { text: msg + ''\n\n'' + tags, mentions }, { quoted: m });
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('menu0', '[]'::jsonb, 'Load menu image', 'General', '', false, false, false, true, 'const chatId = sender;
+// ── Menu banner + picture ──
+const bCustomPic = `./database/sessions/${botPhoneNum}/menu.jpg`;
+const bDefaultPic = "./media/menu.jpg";
+const bPicPath = fs.existsSync(bCustomPic) ? bCustomPic : bDefaultPic;
+const bUpSec = Math.floor((Date.now() - startTime) / 1000);
+const bUpStr = Math.floor(bUpSec / 86400) + ''d '' + Math.floor((bUpSec % 86400) / 3600) + ''h '' + Math.floor((bUpSec % 3600) / 60) + ''m '' + (bUpSec % 60) + ''s'';
+const bNow = new Date();
+const bTimeStr = bNow.toLocaleTimeString(''en-US'', { hour: ''2-digit'', minute: ''2-digit'', second: ''2-digit'', hour12: true });
+const bDateStr = bNow.toLocaleDateString(''en-US'', { weekday: ''long'', year: ''numeric'', month: ''long'', day: ''numeric'' });
+const bPushName = (m && m.pushName) || ''User'';
+let bMode = ''🌐 PUBLIC'';
+try { const _s = loadJSON(settingsPath, { selfMode: false }); if (_s.selfMode) bMode = ''🔒 SELF''; } catch (e) {}
+const bannerTxt = `╔═════════════╗
+║➥✦ 𝐐𝐔𝐀𝐑𝐓𝐙 𝐗𝐃 ✦
+╠═════════════╣
+║➥┌──────────┐
+║➥│ 👤 USER    : ${bPushName}
+║➥│ 📱 NUMBER  : ${botPhoneNum}
+║➥│ ⏱ UPTIME  : ${bUpStr}
+║➥│ 🕐 TIME    : ${bTimeStr}
+║➥│ 📅 DATE    : ${bDateStr}
+║➥│ 📌 VERSION : 3.2.1
+║➥│ ⚙️ MODE    : ${bMode}
+║➥│ 🔱 PREFIX  : ${prefix}
+║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
+║➥└──────────┘
+╚═════════════╝`;
+try {
+  if (fs.existsSync(bPicPath)) {
+    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
+  } else {
+    mzazireply(bannerTxt);
+  }
+} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
+
+
     const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
 
     try {
@@ -9309,7 +9668,42 @@ Tap buttons below for quick actions.` },
     }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('menu6', '["menu"]'::jsonb, 'QUARTZ XD main menu — interactive buttons', 'General', '', false, false, false, true, 'try {
-  await sendInteractiveMessage(mzazi, sender, {
+  // ── Menu banner + picture ──
+const bCustomPic = `./database/sessions/${botPhoneNum}/menu.jpg`;
+const bDefaultPic = "./media/menu.jpg";
+const bPicPath = fs.existsSync(bCustomPic) ? bCustomPic : bDefaultPic;
+const bUpSec = Math.floor((Date.now() - startTime) / 1000);
+const bUpStr = Math.floor(bUpSec / 86400) + ''d '' + Math.floor((bUpSec % 86400) / 3600) + ''h '' + Math.floor((bUpSec % 3600) / 60) + ''m '' + (bUpSec % 60) + ''s'';
+const bNow = new Date();
+const bTimeStr = bNow.toLocaleTimeString(''en-US'', { hour: ''2-digit'', minute: ''2-digit'', second: ''2-digit'', hour12: true });
+const bDateStr = bNow.toLocaleDateString(''en-US'', { weekday: ''long'', year: ''numeric'', month: ''long'', day: ''numeric'' });
+const bPushName = (m && m.pushName) || ''User'';
+let bMode = ''🌐 PUBLIC'';
+try { const _s = loadJSON(settingsPath, { selfMode: false }); if (_s.selfMode) bMode = ''🔒 SELF''; } catch (e) {}
+const bannerTxt = `╔═════════════╗
+║➥✦ 𝐐𝐔𝐀𝐑𝐓𝐙 𝐗𝐃 ✦
+╠═════════════╣
+║➥┌──────────┐
+║➥│ 👤 USER    : ${bPushName}
+║➥│ 📱 NUMBER  : ${botPhoneNum}
+║➥│ ⏱ UPTIME  : ${bUpStr}
+║➥│ 🕐 TIME    : ${bTimeStr}
+║➥│ 📅 DATE    : ${bDateStr}
+║➥│ 📌 VERSION : 3.2.1
+║➥│ ⚙️ MODE    : ${bMode}
+║➥│ 🔱 PREFIX  : ${prefix}
+║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
+║➥└──────────┘
+╚═════════════╝`;
+try {
+  if (fs.existsSync(bPicPath)) {
+    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
+  } else {
+    mzazireply(bannerTxt);
+  }
+} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
+
+await sendInteractiveMessage(mzazi, sender, {
     title: "𝐌𝐙𝐀𝐙𝐈 𝐓𝐄𝐂𝐇 𝐈𝐍𝐂",
     text: "👋 Welcome to QUARTZ XD\n\nSelect a category from the menu below:",
     footer: "Powered by MZAZI TECH INC",
@@ -9330,6 +9724,42 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('menu7', '[]'::jsonb, 'In groups the interactive carousel is silently dropped by WhatsApp,', 'General', '', false, false, false, true, 'const chatId = sender;
+// ── Menu banner + picture ──
+const bCustomPic = `./database/sessions/${botPhoneNum}/menu.jpg`;
+const bDefaultPic = "./media/menu.jpg";
+const bPicPath = fs.existsSync(bCustomPic) ? bCustomPic : bDefaultPic;
+const bUpSec = Math.floor((Date.now() - startTime) / 1000);
+const bUpStr = Math.floor(bUpSec / 86400) + ''d '' + Math.floor((bUpSec % 86400) / 3600) + ''h '' + Math.floor((bUpSec % 3600) / 60) + ''m '' + (bUpSec % 60) + ''s'';
+const bNow = new Date();
+const bTimeStr = bNow.toLocaleTimeString(''en-US'', { hour: ''2-digit'', minute: ''2-digit'', second: ''2-digit'', hour12: true });
+const bDateStr = bNow.toLocaleDateString(''en-US'', { weekday: ''long'', year: ''numeric'', month: ''long'', day: ''numeric'' });
+const bPushName = (m && m.pushName) || ''User'';
+let bMode = ''🌐 PUBLIC'';
+try { const _s = loadJSON(settingsPath, { selfMode: false }); if (_s.selfMode) bMode = ''🔒 SELF''; } catch (e) {}
+const bannerTxt = `╔═════════════╗
+║➥✦ 𝐐𝐔𝐀𝐑𝐓𝐙 𝐗𝐃 ✦
+╠═════════════╣
+║➥┌──────────┐
+║➥│ 👤 USER    : ${bPushName}
+║➥│ 📱 NUMBER  : ${botPhoneNum}
+║➥│ ⏱ UPTIME  : ${bUpStr}
+║➥│ 🕐 TIME    : ${bTimeStr}
+║➥│ 📅 DATE    : ${bDateStr}
+║➥│ 📌 VERSION : 3.2.1
+║➥│ ⚙️ MODE    : ${bMode}
+║➥│ 🔱 PREFIX  : ${prefix}
+║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
+║➥└──────────┘
+╚═════════════╝`;
+try {
+  if (fs.existsSync(bPicPath)) {
+    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
+  } else {
+    mzazireply(bannerTxt);
+  }
+} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
+
+
             const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
 
             // In groups the interactive carousel is silently dropped by WhatsApp,
@@ -9718,7 +10148,42 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                 await mzazi.sendMessage(chatId, { text: fallback, contextInfo: { mentionedJid: [sender] } });
             }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('menun', '[]'::jsonb, '── Send interactive list message ──', 'General', '', false, false, false, true, 'const { generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('menun', '[]'::jsonb, '── Send interactive list message ──', 'General', '', false, false, false, true, '// ── Menu banner + picture ──
+const bCustomPic = `./database/sessions/${botPhoneNum}/menu.jpg`;
+const bDefaultPic = "./media/menu.jpg";
+const bPicPath = fs.existsSync(bCustomPic) ? bCustomPic : bDefaultPic;
+const bUpSec = Math.floor((Date.now() - startTime) / 1000);
+const bUpStr = Math.floor(bUpSec / 86400) + ''d '' + Math.floor((bUpSec % 86400) / 3600) + ''h '' + Math.floor((bUpSec % 3600) / 60) + ''m '' + (bUpSec % 60) + ''s'';
+const bNow = new Date();
+const bTimeStr = bNow.toLocaleTimeString(''en-US'', { hour: ''2-digit'', minute: ''2-digit'', second: ''2-digit'', hour12: true });
+const bDateStr = bNow.toLocaleDateString(''en-US'', { weekday: ''long'', year: ''numeric'', month: ''long'', day: ''numeric'' });
+const bPushName = (m && m.pushName) || ''User'';
+let bMode = ''🌐 PUBLIC'';
+try { const _s = loadJSON(settingsPath, { selfMode: false }); if (_s.selfMode) bMode = ''🔒 SELF''; } catch (e) {}
+const bannerTxt = `╔═════════════╗
+║➥✦ 𝐐𝐔𝐀𝐑𝐓𝐙 𝐗𝐃 ✦
+╠═════════════╣
+║➥┌──────────┐
+║➥│ 👤 USER    : ${bPushName}
+║➥│ 📱 NUMBER  : ${botPhoneNum}
+║➥│ ⏱ UPTIME  : ${bUpStr}
+║➥│ 🕐 TIME    : ${bTimeStr}
+║➥│ 📅 DATE    : ${bDateStr}
+║➥│ 📌 VERSION : 3.2.1
+║➥│ ⚙️ MODE    : ${bMode}
+║➥│ 🔱 PREFIX  : ${prefix}
+║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
+║➥└──────────┘
+╚═════════════╝`;
+try {
+  if (fs.existsSync(bPicPath)) {
+    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
+  } else {
+    mzazireply(bannerTxt);
+  }
+} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
+
+const { generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
 
   const menuText = 
     `🤖 *MZAZI TECH QUARTZ BOT*\n` +
@@ -9848,7 +10313,42 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
     await mzazireply(fallbackText);
   }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('menup', '[]'::jsonb, '── Get menu image ──', 'General', '', false, false, false, true, 'const { generateWAMessageFromContent, prepareWAMessageMedia } = require(''@whiskeysockets/baileys'');
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('menup', '[]'::jsonb, '── Get menu image ──', 'General', '', false, false, false, true, '// ── Menu banner + picture ──
+const bCustomPic = `./database/sessions/${botPhoneNum}/menu.jpg`;
+const bDefaultPic = "./media/menu.jpg";
+const bPicPath = fs.existsSync(bCustomPic) ? bCustomPic : bDefaultPic;
+const bUpSec = Math.floor((Date.now() - startTime) / 1000);
+const bUpStr = Math.floor(bUpSec / 86400) + ''d '' + Math.floor((bUpSec % 86400) / 3600) + ''h '' + Math.floor((bUpSec % 3600) / 60) + ''m '' + (bUpSec % 60) + ''s'';
+const bNow = new Date();
+const bTimeStr = bNow.toLocaleTimeString(''en-US'', { hour: ''2-digit'', minute: ''2-digit'', second: ''2-digit'', hour12: true });
+const bDateStr = bNow.toLocaleDateString(''en-US'', { weekday: ''long'', year: ''numeric'', month: ''long'', day: ''numeric'' });
+const bPushName = (m && m.pushName) || ''User'';
+let bMode = ''🌐 PUBLIC'';
+try { const _s = loadJSON(settingsPath, { selfMode: false }); if (_s.selfMode) bMode = ''🔒 SELF''; } catch (e) {}
+const bannerTxt = `╔═════════════╗
+║➥✦ 𝐐𝐔𝐀𝐑𝐓𝐙 𝐗𝐃 ✦
+╠═════════════╣
+║➥┌──────────┐
+║➥│ 👤 USER    : ${bPushName}
+║➥│ 📱 NUMBER  : ${botPhoneNum}
+║➥│ ⏱ UPTIME  : ${bUpStr}
+║➥│ 🕐 TIME    : ${bTimeStr}
+║➥│ 📅 DATE    : ${bDateStr}
+║➥│ 📌 VERSION : 3.2.1
+║➥│ ⚙️ MODE    : ${bMode}
+║➥│ 🔱 PREFIX  : ${prefix}
+║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
+║➥└──────────┘
+╚═════════════╝`;
+try {
+  if (fs.existsSync(bPicPath)) {
+    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
+  } else {
+    mzazireply(bannerTxt);
+  }
+} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
+
+const { generateWAMessageFromContent, prepareWAMessageMedia } = require(''@whiskeysockets/baileys'');
 
   // ── Get menu image ──
   const customMenuPic = `./database/sessions/${botPhoneNum}/menu.jpg`;
@@ -10058,6 +10558,42 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
   }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('menuv', '[]'::jsonb, '', 'General', '', true, false, false, true, 'if (!isOwner) return;
+// ── Menu banner + picture ──
+const bCustomPic = `./database/sessions/${botPhoneNum}/menu.jpg`;
+const bDefaultPic = "./media/menu.jpg";
+const bPicPath = fs.existsSync(bCustomPic) ? bCustomPic : bDefaultPic;
+const bUpSec = Math.floor((Date.now() - startTime) / 1000);
+const bUpStr = Math.floor(bUpSec / 86400) + ''d '' + Math.floor((bUpSec % 86400) / 3600) + ''h '' + Math.floor((bUpSec % 3600) / 60) + ''m '' + (bUpSec % 60) + ''s'';
+const bNow = new Date();
+const bTimeStr = bNow.toLocaleTimeString(''en-US'', { hour: ''2-digit'', minute: ''2-digit'', second: ''2-digit'', hour12: true });
+const bDateStr = bNow.toLocaleDateString(''en-US'', { weekday: ''long'', year: ''numeric'', month: ''long'', day: ''numeric'' });
+const bPushName = (m && m.pushName) || ''User'';
+let bMode = ''🌐 PUBLIC'';
+try { const _s = loadJSON(settingsPath, { selfMode: false }); if (_s.selfMode) bMode = ''🔒 SELF''; } catch (e) {}
+const bannerTxt = `╔═════════════╗
+║➥✦ 𝐐𝐔𝐀𝐑𝐓𝐙 𝐗𝐃 ✦
+╠═════════════╣
+║➥┌──────────┐
+║➥│ 👤 USER    : ${bPushName}
+║➥│ 📱 NUMBER  : ${botPhoneNum}
+║➥│ ⏱ UPTIME  : ${bUpStr}
+║➥│ 🕐 TIME    : ${bTimeStr}
+║➥│ 📅 DATE    : ${bDateStr}
+║➥│ 📌 VERSION : 3.2.1
+║➥│ ⚙️ MODE    : ${bMode}
+║➥│ 🔱 PREFIX  : ${prefix}
+║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
+║➥└──────────┘
+╚═════════════╝`;
+try {
+  if (fs.existsSync(bPicPath)) {
+    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
+  } else {
+    mzazireply(bannerTxt);
+  }
+} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
+
+
   await mzazireply(
     `⚙️ *Owner Menu*\n\n` +
     `📋 Commands: ${prefix}${command}\n` +
@@ -11473,6 +12009,42 @@ const list = ownerNumbers || [];
 mzazireply(''👑 *Owners* ('' + list.length + '')\n\n'' + list.map((o, i) => (i + 1) + ''. +'' + String(o).replace(''@s.whatsapp.net'', '''')).join(''\n''));
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('ownermenu', '[]'::jsonb, 'Load menu image', 'General', '', false, false, false, true, 'const chatId = sender;
+// ── Menu banner + picture ──
+const bCustomPic = `./database/sessions/${botPhoneNum}/menu.jpg`;
+const bDefaultPic = "./media/menu.jpg";
+const bPicPath = fs.existsSync(bCustomPic) ? bCustomPic : bDefaultPic;
+const bUpSec = Math.floor((Date.now() - startTime) / 1000);
+const bUpStr = Math.floor(bUpSec / 86400) + ''d '' + Math.floor((bUpSec % 86400) / 3600) + ''h '' + Math.floor((bUpSec % 3600) / 60) + ''m '' + (bUpSec % 60) + ''s'';
+const bNow = new Date();
+const bTimeStr = bNow.toLocaleTimeString(''en-US'', { hour: ''2-digit'', minute: ''2-digit'', second: ''2-digit'', hour12: true });
+const bDateStr = bNow.toLocaleDateString(''en-US'', { weekday: ''long'', year: ''numeric'', month: ''long'', day: ''numeric'' });
+const bPushName = (m && m.pushName) || ''User'';
+let bMode = ''🌐 PUBLIC'';
+try { const _s = loadJSON(settingsPath, { selfMode: false }); if (_s.selfMode) bMode = ''🔒 SELF''; } catch (e) {}
+const bannerTxt = `╔═════════════╗
+║➥✦ 𝐐𝐔𝐀𝐑𝐓𝐙 𝐗𝐃 ✦
+╠═════════════╣
+║➥┌──────────┐
+║➥│ 👤 USER    : ${bPushName}
+║➥│ 📱 NUMBER  : ${botPhoneNum}
+║➥│ ⏱ UPTIME  : ${bUpStr}
+║➥│ 🕐 TIME    : ${bTimeStr}
+║➥│ 📅 DATE    : ${bDateStr}
+║➥│ 📌 VERSION : 3.2.1
+║➥│ ⚙️ MODE    : ${bMode}
+║➥│ 🔱 PREFIX  : ${prefix}
+║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
+║➥└──────────┘
+╚═════════════╝`;
+try {
+  if (fs.existsSync(bPicPath)) {
+    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
+  } else {
+    mzazireply(bannerTxt);
+  }
+} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
+
+
     const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
 
     try {
@@ -13755,6 +14327,42 @@ try {
 } catch (e) { return mzazireply(''❌ AI request failed: '' + (e.message || e)); }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('protectionmenu', '[]'::jsonb, 'Load menu image', 'General', '', false, false, false, true, 'const chatId = sender;
+// ── Menu banner + picture ──
+const bCustomPic = `./database/sessions/${botPhoneNum}/menu.jpg`;
+const bDefaultPic = "./media/menu.jpg";
+const bPicPath = fs.existsSync(bCustomPic) ? bCustomPic : bDefaultPic;
+const bUpSec = Math.floor((Date.now() - startTime) / 1000);
+const bUpStr = Math.floor(bUpSec / 86400) + ''d '' + Math.floor((bUpSec % 86400) / 3600) + ''h '' + Math.floor((bUpSec % 3600) / 60) + ''m '' + (bUpSec % 60) + ''s'';
+const bNow = new Date();
+const bTimeStr = bNow.toLocaleTimeString(''en-US'', { hour: ''2-digit'', minute: ''2-digit'', second: ''2-digit'', hour12: true });
+const bDateStr = bNow.toLocaleDateString(''en-US'', { weekday: ''long'', year: ''numeric'', month: ''long'', day: ''numeric'' });
+const bPushName = (m && m.pushName) || ''User'';
+let bMode = ''🌐 PUBLIC'';
+try { const _s = loadJSON(settingsPath, { selfMode: false }); if (_s.selfMode) bMode = ''🔒 SELF''; } catch (e) {}
+const bannerTxt = `╔═════════════╗
+║➥✦ 𝐐𝐔𝐀𝐑𝐓𝐙 𝐗𝐃 ✦
+╠═════════════╣
+║➥┌──────────┐
+║➥│ 👤 USER    : ${bPushName}
+║➥│ 📱 NUMBER  : ${botPhoneNum}
+║➥│ ⏱ UPTIME  : ${bUpStr}
+║➥│ 🕐 TIME    : ${bTimeStr}
+║➥│ 📅 DATE    : ${bDateStr}
+║➥│ 📌 VERSION : 3.2.1
+║➥│ ⚙️ MODE    : ${bMode}
+║➥│ 🔱 PREFIX  : ${prefix}
+║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
+║➥└──────────┘
+╚═════════════╝`;
+try {
+  if (fs.existsSync(bPicPath)) {
+    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
+  } else {
+    mzazireply(bannerTxt);
+  }
+} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
+
+
     const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
 
     try {
@@ -15002,6 +15610,42 @@ try {
 } catch (e) { return mzazireply(''❌ AI request failed: '' + (e.message || e)); }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('searchmenu', '[]'::jsonb, 'Load menu image', 'General', '', false, false, false, true, 'const chatId = sender;
+// ── Menu banner + picture ──
+const bCustomPic = `./database/sessions/${botPhoneNum}/menu.jpg`;
+const bDefaultPic = "./media/menu.jpg";
+const bPicPath = fs.existsSync(bCustomPic) ? bCustomPic : bDefaultPic;
+const bUpSec = Math.floor((Date.now() - startTime) / 1000);
+const bUpStr = Math.floor(bUpSec / 86400) + ''d '' + Math.floor((bUpSec % 86400) / 3600) + ''h '' + Math.floor((bUpSec % 3600) / 60) + ''m '' + (bUpSec % 60) + ''s'';
+const bNow = new Date();
+const bTimeStr = bNow.toLocaleTimeString(''en-US'', { hour: ''2-digit'', minute: ''2-digit'', second: ''2-digit'', hour12: true });
+const bDateStr = bNow.toLocaleDateString(''en-US'', { weekday: ''long'', year: ''numeric'', month: ''long'', day: ''numeric'' });
+const bPushName = (m && m.pushName) || ''User'';
+let bMode = ''🌐 PUBLIC'';
+try { const _s = loadJSON(settingsPath, { selfMode: false }); if (_s.selfMode) bMode = ''🔒 SELF''; } catch (e) {}
+const bannerTxt = `╔═════════════╗
+║➥✦ 𝐐𝐔𝐀𝐑𝐓𝐙 𝐗𝐃 ✦
+╠═════════════╣
+║➥┌──────────┐
+║➥│ 👤 USER    : ${bPushName}
+║➥│ 📱 NUMBER  : ${botPhoneNum}
+║➥│ ⏱ UPTIME  : ${bUpStr}
+║➥│ 🕐 TIME    : ${bTimeStr}
+║➥│ 📅 DATE    : ${bDateStr}
+║➥│ 📌 VERSION : 3.2.1
+║➥│ ⚙️ MODE    : ${bMode}
+║➥│ 🔱 PREFIX  : ${prefix}
+║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
+║➥└──────────┘
+╚═════════════╝`;
+try {
+  if (fs.existsSync(bPicPath)) {
+    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
+  } else {
+    mzazireply(bannerTxt);
+  }
+} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
+
+
     const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
 
     try {
@@ -15500,6 +16144,42 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
         mzazireply("✅ Group rules updated!");
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('settingsmenu', '[]'::jsonb, 'Load menu image', 'General', '', false, false, false, true, 'const chatId = sender;
+// ── Menu banner + picture ──
+const bCustomPic = `./database/sessions/${botPhoneNum}/menu.jpg`;
+const bDefaultPic = "./media/menu.jpg";
+const bPicPath = fs.existsSync(bCustomPic) ? bCustomPic : bDefaultPic;
+const bUpSec = Math.floor((Date.now() - startTime) / 1000);
+const bUpStr = Math.floor(bUpSec / 86400) + ''d '' + Math.floor((bUpSec % 86400) / 3600) + ''h '' + Math.floor((bUpSec % 3600) / 60) + ''m '' + (bUpSec % 60) + ''s'';
+const bNow = new Date();
+const bTimeStr = bNow.toLocaleTimeString(''en-US'', { hour: ''2-digit'', minute: ''2-digit'', second: ''2-digit'', hour12: true });
+const bDateStr = bNow.toLocaleDateString(''en-US'', { weekday: ''long'', year: ''numeric'', month: ''long'', day: ''numeric'' });
+const bPushName = (m && m.pushName) || ''User'';
+let bMode = ''🌐 PUBLIC'';
+try { const _s = loadJSON(settingsPath, { selfMode: false }); if (_s.selfMode) bMode = ''🔒 SELF''; } catch (e) {}
+const bannerTxt = `╔═════════════╗
+║➥✦ 𝐐𝐔𝐀𝐑𝐓𝐙 𝐗𝐃 ✦
+╠═════════════╣
+║➥┌──────────┐
+║➥│ 👤 USER    : ${bPushName}
+║➥│ 📱 NUMBER  : ${botPhoneNum}
+║➥│ ⏱ UPTIME  : ${bUpStr}
+║➥│ 🕐 TIME    : ${bTimeStr}
+║➥│ 📅 DATE    : ${bDateStr}
+║➥│ 📌 VERSION : 3.2.1
+║➥│ ⚙️ MODE    : ${bMode}
+║➥│ 🔱 PREFIX  : ${prefix}
+║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
+║➥└──────────┘
+╚═════════════╝`;
+try {
+  if (fs.existsSync(bPicPath)) {
+    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
+  } else {
+    mzazireply(bannerTxt);
+  }
+} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
+
+
     const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
 
     try {
@@ -15966,7 +16646,42 @@ if (!t) return mzazireply(`Usage: ${prefix}${command} <text>`);
 mzazireply(String(t.split('' '').map((w) => w.slice(0, 2) + ''-'' + w).join('' '')));
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('subai', '[]'::jsonb, 'Sub-menu: 🧠 AI COMMANDS', 'General', '', false, false, false, true, 'try {
-  await sendInteractiveMessage(mzazi, sender, {
+  // ── Menu banner + picture ──
+const bCustomPic = `./database/sessions/${botPhoneNum}/menu.jpg`;
+const bDefaultPic = "./media/menu.jpg";
+const bPicPath = fs.existsSync(bCustomPic) ? bCustomPic : bDefaultPic;
+const bUpSec = Math.floor((Date.now() - startTime) / 1000);
+const bUpStr = Math.floor(bUpSec / 86400) + ''d '' + Math.floor((bUpSec % 86400) / 3600) + ''h '' + Math.floor((bUpSec % 3600) / 60) + ''m '' + (bUpSec % 60) + ''s'';
+const bNow = new Date();
+const bTimeStr = bNow.toLocaleTimeString(''en-US'', { hour: ''2-digit'', minute: ''2-digit'', second: ''2-digit'', hour12: true });
+const bDateStr = bNow.toLocaleDateString(''en-US'', { weekday: ''long'', year: ''numeric'', month: ''long'', day: ''numeric'' });
+const bPushName = (m && m.pushName) || ''User'';
+let bMode = ''🌐 PUBLIC'';
+try { const _s = loadJSON(settingsPath, { selfMode: false }); if (_s.selfMode) bMode = ''🔒 SELF''; } catch (e) {}
+const bannerTxt = `╔═════════════╗
+║➥✦ 𝐐𝐔𝐀𝐑𝐓𝐙 𝐗𝐃 ✦
+╠═════════════╣
+║➥┌──────────┐
+║➥│ 👤 USER    : ${bPushName}
+║➥│ 📱 NUMBER  : ${botPhoneNum}
+║➥│ ⏱ UPTIME  : ${bUpStr}
+║➥│ 🕐 TIME    : ${bTimeStr}
+║➥│ 📅 DATE    : ${bDateStr}
+║➥│ 📌 VERSION : 3.2.1
+║➥│ ⚙️ MODE    : ${bMode}
+║➥│ 🔱 PREFIX  : ${prefix}
+║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
+║➥└──────────┘
+╚═════════════╝`;
+try {
+  if (fs.existsSync(bPicPath)) {
+    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
+  } else {
+    mzazireply(bannerTxt);
+  }
+} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
+
+await sendInteractiveMessage(mzazi, sender, {
     title: ''QUARTZ XD'',
     text: ''⚡ 🧠 AI COMMANDS\n\nTap a command to run it, or use the All-commands row for the full list:'',
     footer: ''MZAZI TECH INC · QUARTZ XD'',
@@ -15987,7 +16702,42 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('subdl', '[]'::jsonb, 'Sub-menu: 📥 MEDIA & DOWNLOAD', 'General', '', false, false, false, true, 'try {
-  await sendInteractiveMessage(mzazi, sender, {
+  // ── Menu banner + picture ──
+const bCustomPic = `./database/sessions/${botPhoneNum}/menu.jpg`;
+const bDefaultPic = "./media/menu.jpg";
+const bPicPath = fs.existsSync(bCustomPic) ? bCustomPic : bDefaultPic;
+const bUpSec = Math.floor((Date.now() - startTime) / 1000);
+const bUpStr = Math.floor(bUpSec / 86400) + ''d '' + Math.floor((bUpSec % 86400) / 3600) + ''h '' + Math.floor((bUpSec % 3600) / 60) + ''m '' + (bUpSec % 60) + ''s'';
+const bNow = new Date();
+const bTimeStr = bNow.toLocaleTimeString(''en-US'', { hour: ''2-digit'', minute: ''2-digit'', second: ''2-digit'', hour12: true });
+const bDateStr = bNow.toLocaleDateString(''en-US'', { weekday: ''long'', year: ''numeric'', month: ''long'', day: ''numeric'' });
+const bPushName = (m && m.pushName) || ''User'';
+let bMode = ''🌐 PUBLIC'';
+try { const _s = loadJSON(settingsPath, { selfMode: false }); if (_s.selfMode) bMode = ''🔒 SELF''; } catch (e) {}
+const bannerTxt = `╔═════════════╗
+║➥✦ 𝐐𝐔𝐀𝐑𝐓𝐙 𝐗𝐃 ✦
+╠═════════════╣
+║➥┌──────────┐
+║➥│ 👤 USER    : ${bPushName}
+║➥│ 📱 NUMBER  : ${botPhoneNum}
+║➥│ ⏱ UPTIME  : ${bUpStr}
+║➥│ 🕐 TIME    : ${bTimeStr}
+║➥│ 📅 DATE    : ${bDateStr}
+║➥│ 📌 VERSION : 3.2.1
+║➥│ ⚙️ MODE    : ${bMode}
+║➥│ 🔱 PREFIX  : ${prefix}
+║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
+║➥└──────────┘
+╚═════════════╝`;
+try {
+  if (fs.existsSync(bPicPath)) {
+    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
+  } else {
+    mzazireply(bannerTxt);
+  }
+} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
+
+await sendInteractiveMessage(mzazi, sender, {
     title: ''QUARTZ XD'',
     text: ''⚡ 📥 MEDIA & DOWNLOAD\n\nTap a command to run it, or use the All-commands row for the full list:'',
     footer: ''MZAZI TECH INC · QUARTZ XD'',
@@ -16008,7 +16758,42 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('subfun', '[]'::jsonb, 'Sub-menu: 😂 FUN', 'General', '', false, false, false, true, 'try {
-  await sendInteractiveMessage(mzazi, sender, {
+  // ── Menu banner + picture ──
+const bCustomPic = `./database/sessions/${botPhoneNum}/menu.jpg`;
+const bDefaultPic = "./media/menu.jpg";
+const bPicPath = fs.existsSync(bCustomPic) ? bCustomPic : bDefaultPic;
+const bUpSec = Math.floor((Date.now() - startTime) / 1000);
+const bUpStr = Math.floor(bUpSec / 86400) + ''d '' + Math.floor((bUpSec % 86400) / 3600) + ''h '' + Math.floor((bUpSec % 3600) / 60) + ''m '' + (bUpSec % 60) + ''s'';
+const bNow = new Date();
+const bTimeStr = bNow.toLocaleTimeString(''en-US'', { hour: ''2-digit'', minute: ''2-digit'', second: ''2-digit'', hour12: true });
+const bDateStr = bNow.toLocaleDateString(''en-US'', { weekday: ''long'', year: ''numeric'', month: ''long'', day: ''numeric'' });
+const bPushName = (m && m.pushName) || ''User'';
+let bMode = ''🌐 PUBLIC'';
+try { const _s = loadJSON(settingsPath, { selfMode: false }); if (_s.selfMode) bMode = ''🔒 SELF''; } catch (e) {}
+const bannerTxt = `╔═════════════╗
+║➥✦ 𝐐𝐔𝐀𝐑𝐓𝐙 𝐗𝐃 ✦
+╠═════════════╣
+║➥┌──────────┐
+║➥│ 👤 USER    : ${bPushName}
+║➥│ 📱 NUMBER  : ${botPhoneNum}
+║➥│ ⏱ UPTIME  : ${bUpStr}
+║➥│ 🕐 TIME    : ${bTimeStr}
+║➥│ 📅 DATE    : ${bDateStr}
+║➥│ 📌 VERSION : 3.2.1
+║➥│ ⚙️ MODE    : ${bMode}
+║➥│ 🔱 PREFIX  : ${prefix}
+║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
+║➥└──────────┘
+╚═════════════╝`;
+try {
+  if (fs.existsSync(bPicPath)) {
+    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
+  } else {
+    mzazireply(bannerTxt);
+  }
+} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
+
+await sendInteractiveMessage(mzazi, sender, {
     title: ''QUARTZ XD'',
     text: ''⚡ 😂 FUN\n\nTap a command to run it, or use the All-commands row for the full list:'',
     footer: ''MZAZI TECH INC · QUARTZ XD'',
@@ -16029,7 +16814,42 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('subgames', '[]'::jsonb, 'Sub-menu: 🎮 GAMES', 'General', '', false, false, false, true, 'try {
-  await sendInteractiveMessage(mzazi, sender, {
+  // ── Menu banner + picture ──
+const bCustomPic = `./database/sessions/${botPhoneNum}/menu.jpg`;
+const bDefaultPic = "./media/menu.jpg";
+const bPicPath = fs.existsSync(bCustomPic) ? bCustomPic : bDefaultPic;
+const bUpSec = Math.floor((Date.now() - startTime) / 1000);
+const bUpStr = Math.floor(bUpSec / 86400) + ''d '' + Math.floor((bUpSec % 86400) / 3600) + ''h '' + Math.floor((bUpSec % 3600) / 60) + ''m '' + (bUpSec % 60) + ''s'';
+const bNow = new Date();
+const bTimeStr = bNow.toLocaleTimeString(''en-US'', { hour: ''2-digit'', minute: ''2-digit'', second: ''2-digit'', hour12: true });
+const bDateStr = bNow.toLocaleDateString(''en-US'', { weekday: ''long'', year: ''numeric'', month: ''long'', day: ''numeric'' });
+const bPushName = (m && m.pushName) || ''User'';
+let bMode = ''🌐 PUBLIC'';
+try { const _s = loadJSON(settingsPath, { selfMode: false }); if (_s.selfMode) bMode = ''🔒 SELF''; } catch (e) {}
+const bannerTxt = `╔═════════════╗
+║➥✦ 𝐐𝐔𝐀𝐑𝐓𝐙 𝐗𝐃 ✦
+╠═════════════╣
+║➥┌──────────┐
+║➥│ 👤 USER    : ${bPushName}
+║➥│ 📱 NUMBER  : ${botPhoneNum}
+║➥│ ⏱ UPTIME  : ${bUpStr}
+║➥│ 🕐 TIME    : ${bTimeStr}
+║➥│ 📅 DATE    : ${bDateStr}
+║➥│ 📌 VERSION : 3.2.1
+║➥│ ⚙️ MODE    : ${bMode}
+║➥│ 🔱 PREFIX  : ${prefix}
+║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
+║➥└──────────┘
+╚═════════════╝`;
+try {
+  if (fs.existsSync(bPicPath)) {
+    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
+  } else {
+    mzazireply(bannerTxt);
+  }
+} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
+
+await sendInteractiveMessage(mzazi, sender, {
     title: ''QUARTZ XD'',
     text: ''⚡ 🎮 GAMES\n\nTap a command to run it, or use the All-commands row for the full list:'',
     footer: ''MZAZI TECH INC · QUARTZ XD'',
@@ -16050,7 +16870,42 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('subgeneral', '[]'::jsonb, 'Sub-menu: 🤖 GENERAL COMMANDS', 'General', '', false, false, false, true, 'try {
-  await sendInteractiveMessage(mzazi, sender, {
+  // ── Menu banner + picture ──
+const bCustomPic = `./database/sessions/${botPhoneNum}/menu.jpg`;
+const bDefaultPic = "./media/menu.jpg";
+const bPicPath = fs.existsSync(bCustomPic) ? bCustomPic : bDefaultPic;
+const bUpSec = Math.floor((Date.now() - startTime) / 1000);
+const bUpStr = Math.floor(bUpSec / 86400) + ''d '' + Math.floor((bUpSec % 86400) / 3600) + ''h '' + Math.floor((bUpSec % 3600) / 60) + ''m '' + (bUpSec % 60) + ''s'';
+const bNow = new Date();
+const bTimeStr = bNow.toLocaleTimeString(''en-US'', { hour: ''2-digit'', minute: ''2-digit'', second: ''2-digit'', hour12: true });
+const bDateStr = bNow.toLocaleDateString(''en-US'', { weekday: ''long'', year: ''numeric'', month: ''long'', day: ''numeric'' });
+const bPushName = (m && m.pushName) || ''User'';
+let bMode = ''🌐 PUBLIC'';
+try { const _s = loadJSON(settingsPath, { selfMode: false }); if (_s.selfMode) bMode = ''🔒 SELF''; } catch (e) {}
+const bannerTxt = `╔═════════════╗
+║➥✦ 𝐐𝐔𝐀𝐑𝐓𝐙 𝐗𝐃 ✦
+╠═════════════╣
+║➥┌──────────┐
+║➥│ 👤 USER    : ${bPushName}
+║➥│ 📱 NUMBER  : ${botPhoneNum}
+║➥│ ⏱ UPTIME  : ${bUpStr}
+║➥│ 🕐 TIME    : ${bTimeStr}
+║➥│ 📅 DATE    : ${bDateStr}
+║➥│ 📌 VERSION : 3.2.1
+║➥│ ⚙️ MODE    : ${bMode}
+║➥│ 🔱 PREFIX  : ${prefix}
+║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
+║➥└──────────┘
+╚═════════════╝`;
+try {
+  if (fs.existsSync(bPicPath)) {
+    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
+  } else {
+    mzazireply(bannerTxt);
+  }
+} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
+
+await sendInteractiveMessage(mzazi, sender, {
     title: ''QUARTZ XD'',
     text: ''⚡ 🤖 GENERAL COMMANDS\n\nTap a command to run it, or use the All-commands row for the full list:'',
     footer: ''MZAZI TECH INC · QUARTZ XD'',
@@ -16071,7 +16926,42 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('subgroup', '[]'::jsonb, 'Sub-menu: 👥 GROUP MANAGEMENT', 'General', '', false, false, false, true, 'try {
-  await sendInteractiveMessage(mzazi, sender, {
+  // ── Menu banner + picture ──
+const bCustomPic = `./database/sessions/${botPhoneNum}/menu.jpg`;
+const bDefaultPic = "./media/menu.jpg";
+const bPicPath = fs.existsSync(bCustomPic) ? bCustomPic : bDefaultPic;
+const bUpSec = Math.floor((Date.now() - startTime) / 1000);
+const bUpStr = Math.floor(bUpSec / 86400) + ''d '' + Math.floor((bUpSec % 86400) / 3600) + ''h '' + Math.floor((bUpSec % 3600) / 60) + ''m '' + (bUpSec % 60) + ''s'';
+const bNow = new Date();
+const bTimeStr = bNow.toLocaleTimeString(''en-US'', { hour: ''2-digit'', minute: ''2-digit'', second: ''2-digit'', hour12: true });
+const bDateStr = bNow.toLocaleDateString(''en-US'', { weekday: ''long'', year: ''numeric'', month: ''long'', day: ''numeric'' });
+const bPushName = (m && m.pushName) || ''User'';
+let bMode = ''🌐 PUBLIC'';
+try { const _s = loadJSON(settingsPath, { selfMode: false }); if (_s.selfMode) bMode = ''🔒 SELF''; } catch (e) {}
+const bannerTxt = `╔═════════════╗
+║➥✦ 𝐐𝐔𝐀𝐑𝐓𝐙 𝐗𝐃 ✦
+╠═════════════╣
+║➥┌──────────┐
+║➥│ 👤 USER    : ${bPushName}
+║➥│ 📱 NUMBER  : ${botPhoneNum}
+║➥│ ⏱ UPTIME  : ${bUpStr}
+║➥│ 🕐 TIME    : ${bTimeStr}
+║➥│ 📅 DATE    : ${bDateStr}
+║➥│ 📌 VERSION : 3.2.1
+║➥│ ⚙️ MODE    : ${bMode}
+║➥│ 🔱 PREFIX  : ${prefix}
+║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
+║➥└──────────┘
+╚═════════════╝`;
+try {
+  if (fs.existsSync(bPicPath)) {
+    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
+  } else {
+    mzazireply(bannerTxt);
+  }
+} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
+
+await sendInteractiveMessage(mzazi, sender, {
     title: ''QUARTZ XD'',
     text: ''⚡ 👥 GROUP MANAGEMENT\n\nTap a command to run it, or use the All-commands row for the full list:'',
     footer: ''MZAZI TECH INC · QUARTZ XD'',
@@ -16114,7 +17004,42 @@ try {
 } catch (e) { return mzazireply(''❌ '' + (e.message || ''Action failed'')); }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('subowner', '[]'::jsonb, 'Sub-menu: 👑 OWNER COMMANDS', 'General', '', false, false, false, true, 'try {
-  await sendInteractiveMessage(mzazi, sender, {
+  // ── Menu banner + picture ──
+const bCustomPic = `./database/sessions/${botPhoneNum}/menu.jpg`;
+const bDefaultPic = "./media/menu.jpg";
+const bPicPath = fs.existsSync(bCustomPic) ? bCustomPic : bDefaultPic;
+const bUpSec = Math.floor((Date.now() - startTime) / 1000);
+const bUpStr = Math.floor(bUpSec / 86400) + ''d '' + Math.floor((bUpSec % 86400) / 3600) + ''h '' + Math.floor((bUpSec % 3600) / 60) + ''m '' + (bUpSec % 60) + ''s'';
+const bNow = new Date();
+const bTimeStr = bNow.toLocaleTimeString(''en-US'', { hour: ''2-digit'', minute: ''2-digit'', second: ''2-digit'', hour12: true });
+const bDateStr = bNow.toLocaleDateString(''en-US'', { weekday: ''long'', year: ''numeric'', month: ''long'', day: ''numeric'' });
+const bPushName = (m && m.pushName) || ''User'';
+let bMode = ''🌐 PUBLIC'';
+try { const _s = loadJSON(settingsPath, { selfMode: false }); if (_s.selfMode) bMode = ''🔒 SELF''; } catch (e) {}
+const bannerTxt = `╔═════════════╗
+║➥✦ 𝐐𝐔𝐀𝐑𝐓𝐙 𝐗𝐃 ✦
+╠═════════════╣
+║➥┌──────────┐
+║➥│ 👤 USER    : ${bPushName}
+║➥│ 📱 NUMBER  : ${botPhoneNum}
+║➥│ ⏱ UPTIME  : ${bUpStr}
+║➥│ 🕐 TIME    : ${bTimeStr}
+║➥│ 📅 DATE    : ${bDateStr}
+║➥│ 📌 VERSION : 3.2.1
+║➥│ ⚙️ MODE    : ${bMode}
+║➥│ 🔱 PREFIX  : ${prefix}
+║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
+║➥└──────────┘
+╚═════════════╝`;
+try {
+  if (fs.existsSync(bPicPath)) {
+    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
+  } else {
+    mzazireply(bannerTxt);
+  }
+} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
+
+await sendInteractiveMessage(mzazi, sender, {
     title: ''QUARTZ XD'',
     text: ''⚡ 👑 OWNER COMMANDS\n\nTap a command to run it, or use the All-commands row for the full list:'',
     footer: ''MZAZI TECH INC · QUARTZ XD'',
@@ -16135,7 +17060,42 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('subprotect', '[]'::jsonb, 'Sub-menu: 🛡 GROUP PROTECTION', 'General', '', false, false, false, true, 'try {
-  await sendInteractiveMessage(mzazi, sender, {
+  // ── Menu banner + picture ──
+const bCustomPic = `./database/sessions/${botPhoneNum}/menu.jpg`;
+const bDefaultPic = "./media/menu.jpg";
+const bPicPath = fs.existsSync(bCustomPic) ? bCustomPic : bDefaultPic;
+const bUpSec = Math.floor((Date.now() - startTime) / 1000);
+const bUpStr = Math.floor(bUpSec / 86400) + ''d '' + Math.floor((bUpSec % 86400) / 3600) + ''h '' + Math.floor((bUpSec % 3600) / 60) + ''m '' + (bUpSec % 60) + ''s'';
+const bNow = new Date();
+const bTimeStr = bNow.toLocaleTimeString(''en-US'', { hour: ''2-digit'', minute: ''2-digit'', second: ''2-digit'', hour12: true });
+const bDateStr = bNow.toLocaleDateString(''en-US'', { weekday: ''long'', year: ''numeric'', month: ''long'', day: ''numeric'' });
+const bPushName = (m && m.pushName) || ''User'';
+let bMode = ''🌐 PUBLIC'';
+try { const _s = loadJSON(settingsPath, { selfMode: false }); if (_s.selfMode) bMode = ''🔒 SELF''; } catch (e) {}
+const bannerTxt = `╔═════════════╗
+║➥✦ 𝐐𝐔𝐀𝐑𝐓𝐙 𝐗𝐃 ✦
+╠═════════════╣
+║➥┌──────────┐
+║➥│ 👤 USER    : ${bPushName}
+║➥│ 📱 NUMBER  : ${botPhoneNum}
+║➥│ ⏱ UPTIME  : ${bUpStr}
+║➥│ 🕐 TIME    : ${bTimeStr}
+║➥│ 📅 DATE    : ${bDateStr}
+║➥│ 📌 VERSION : 3.2.1
+║➥│ ⚙️ MODE    : ${bMode}
+║➥│ 🔱 PREFIX  : ${prefix}
+║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
+║➥└──────────┘
+╚═════════════╝`;
+try {
+  if (fs.existsSync(bPicPath)) {
+    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
+  } else {
+    mzazireply(bannerTxt);
+  }
+} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
+
+await sendInteractiveMessage(mzazi, sender, {
     title: ''QUARTZ XD'',
     text: ''⚡ 🛡 GROUP PROTECTION\n\nTap a command to run it, or use the All-commands row for the full list:'',
     footer: ''MZAZI TECH INC · QUARTZ XD'',
@@ -16156,7 +17116,42 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('subutil', '[]'::jsonb, 'Sub-menu: 🛠 UTILITY TOOLS', 'General', '', false, false, false, true, 'try {
-  await sendInteractiveMessage(mzazi, sender, {
+  // ── Menu banner + picture ──
+const bCustomPic = `./database/sessions/${botPhoneNum}/menu.jpg`;
+const bDefaultPic = "./media/menu.jpg";
+const bPicPath = fs.existsSync(bCustomPic) ? bCustomPic : bDefaultPic;
+const bUpSec = Math.floor((Date.now() - startTime) / 1000);
+const bUpStr = Math.floor(bUpSec / 86400) + ''d '' + Math.floor((bUpSec % 86400) / 3600) + ''h '' + Math.floor((bUpSec % 3600) / 60) + ''m '' + (bUpSec % 60) + ''s'';
+const bNow = new Date();
+const bTimeStr = bNow.toLocaleTimeString(''en-US'', { hour: ''2-digit'', minute: ''2-digit'', second: ''2-digit'', hour12: true });
+const bDateStr = bNow.toLocaleDateString(''en-US'', { weekday: ''long'', year: ''numeric'', month: ''long'', day: ''numeric'' });
+const bPushName = (m && m.pushName) || ''User'';
+let bMode = ''🌐 PUBLIC'';
+try { const _s = loadJSON(settingsPath, { selfMode: false }); if (_s.selfMode) bMode = ''🔒 SELF''; } catch (e) {}
+const bannerTxt = `╔═════════════╗
+║➥✦ 𝐐𝐔𝐀𝐑𝐓𝐙 𝐗𝐃 ✦
+╠═════════════╣
+║➥┌──────────┐
+║➥│ 👤 USER    : ${bPushName}
+║➥│ 📱 NUMBER  : ${botPhoneNum}
+║➥│ ⏱ UPTIME  : ${bUpStr}
+║➥│ 🕐 TIME    : ${bTimeStr}
+║➥│ 📅 DATE    : ${bDateStr}
+║➥│ 📌 VERSION : 3.2.1
+║➥│ ⚙️ MODE    : ${bMode}
+║➥│ 🔱 PREFIX  : ${prefix}
+║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
+║➥└──────────┘
+╚═════════════╝`;
+try {
+  if (fs.existsSync(bPicPath)) {
+    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
+  } else {
+    mzazireply(bannerTxt);
+  }
+} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
+
+await sendInteractiveMessage(mzazi, sender, {
     title: ''QUARTZ XD'',
     text: ''⚡ 🛠 UTILITY TOOLS\n\nTap a command to run it, or use the All-commands row for the full list:'',
     footer: ''MZAZI TECH INC · QUARTZ XD'',
@@ -18211,6 +19206,42 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
     mzazireply(`❌ Failed to generate URL: ${err.message || err}`);
   }') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('utilitymenu', '[]'::jsonb, 'Load menu image', 'General', '', false, false, false, true, 'const chatId = sender;
+// ── Menu banner + picture ──
+const bCustomPic = `./database/sessions/${botPhoneNum}/menu.jpg`;
+const bDefaultPic = "./media/menu.jpg";
+const bPicPath = fs.existsSync(bCustomPic) ? bCustomPic : bDefaultPic;
+const bUpSec = Math.floor((Date.now() - startTime) / 1000);
+const bUpStr = Math.floor(bUpSec / 86400) + ''d '' + Math.floor((bUpSec % 86400) / 3600) + ''h '' + Math.floor((bUpSec % 3600) / 60) + ''m '' + (bUpSec % 60) + ''s'';
+const bNow = new Date();
+const bTimeStr = bNow.toLocaleTimeString(''en-US'', { hour: ''2-digit'', minute: ''2-digit'', second: ''2-digit'', hour12: true });
+const bDateStr = bNow.toLocaleDateString(''en-US'', { weekday: ''long'', year: ''numeric'', month: ''long'', day: ''numeric'' });
+const bPushName = (m && m.pushName) || ''User'';
+let bMode = ''🌐 PUBLIC'';
+try { const _s = loadJSON(settingsPath, { selfMode: false }); if (_s.selfMode) bMode = ''🔒 SELF''; } catch (e) {}
+const bannerTxt = `╔═════════════╗
+║➥✦ 𝐐𝐔𝐀𝐑𝐓𝐙 𝐗𝐃 ✦
+╠═════════════╣
+║➥┌──────────┐
+║➥│ 👤 USER    : ${bPushName}
+║➥│ 📱 NUMBER  : ${botPhoneNum}
+║➥│ ⏱ UPTIME  : ${bUpStr}
+║➥│ 🕐 TIME    : ${bTimeStr}
+║➥│ 📅 DATE    : ${bDateStr}
+║➥│ 📌 VERSION : 3.2.1
+║➥│ ⚙️ MODE    : ${bMode}
+║➥│ 🔱 PREFIX  : ${prefix}
+║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
+║➥└──────────┘
+╚═════════════╝`;
+try {
+  if (fs.existsSync(bPicPath)) {
+    await mzazi.sendMessage(sender, { image: fs.readFileSync(bPicPath), caption: bannerTxt }, { quoted: m });
+  } else {
+    mzazireply(bannerTxt);
+  }
+} catch (e) { logger.warn(''Menu banner/pic failed:'', e); }
+
+
     const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
 
     try {
@@ -19529,12 +20560,19 @@ mzazireply(list[Math.floor(Math.random() * list.length)]);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('promotemyself', '[]'::jsonb, 'Promote the bot to group admin', 'Group', '', true, false, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
 if (!isOwner) return mzazireply(''❌ Owner only.'');
-const botJid = (mzazi.user && mzazi.user.id) ? String(mzazi.user.id).split('':'')[0] : String(botPhoneNum) + ''@s.whatsapp.net'';
+// Bot jid must be the FULL jid (number@s.whatsapp.net) — split('':'') strips the
+// device suffix, then re-append the domain.
+const rawId = (mzazi.user && mzazi.user.id) ? String(mzazi.user.id).split('':'')[0] : String(botPhoneNum);
+const botJid = rawId.includes(''@'') ? rawId : rawId + ''@s.whatsapp.net'';
 await mzazireply(''⏳ Trying to promote myself to admin...'');
 try {
-  await mzazi.groupParticipantsUpdate(sender, [botJid], ''promote'');
+  const res = await mzazi.groupParticipantsUpdate(sender, [botJid], ''promote'');
+  const first = (res && res[0]) || {};
+  if (first.status && String(first.status) !== ''200'') {
+    return mzazireply(''❌ Promotion failed (WhatsApp: '' + first.status + '').\n\nThis works when the bot is the group owner, or the group has no admins. Otherwise WhatsApp refuses.'');
+  }
   mzazireply(''✅ Done! I have been promoted to admin in this group.'');
 } catch (e) {
-  return mzazireply(''❌ Promotion failed: '' + (e.message || ''WhatsApp refused. This usually works when the bot is the group owner or the group is open.''));
+  return mzazireply(''❌ Promotion failed: '' + (e.message || ''WhatsApp refused. This works when the bot is the group owner, or the group has no admins.''));
 }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
