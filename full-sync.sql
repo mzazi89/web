@@ -8481,6 +8481,16 @@ try {
 } catch (e) { return mzazireply(''❌ AI request failed: '' + (e.message || e)); }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('location', '[]'::jsonb, '', 'General', '', false, false, false, true, 'const parts4 = text.split(",");
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('lockgc', '[]'::jsonb, 'Group lock: block promote/demote + mass removal (owner/admin)', 'Group', 'on/off', false, false, true, true, 'if (!isGroup) return mzazireply("❌ Group only.");
+if (!isOwner && !isAdmin && !isGroupOwner) return mzazireply("❌ Only the group owner or bot owner/admin can use this command.");
+const sub = (args[0] || "").toLowerCase();
+if (sub !== "on" && sub !== "off") {
+    const gs = getGroupSettings(sender);
+    return mzazireply(`🔒 *GROUP LOCK*\n\nStatus: ${gs.lockgc ? "🔒 LOCKED" : "🔓 UNLOCKED"}\n\nUsage: ${prefix}${command} on/off`);
+}
+setGroupSetting(sender, "lockgc", sub === "on");
+await mzazireply(sub === "on" ? "🔒 GROUP LOCK ENABLED — promote/demote and mass removal are blocked for non-owners." : "🔓 GROUP LOCK DISABLED");
+return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
         if (parts4.length < 2) return mzazireply(`Example: ${prefix}${command} -1.286389,36.817223`);
         const [lat2, lon2] = parts4.map(p => parseFloat(p.trim()));
         if (isNaN(lat2) || isNaN(lon2)) return mzazireply("❌ Invalid coordinates");
