@@ -3705,9 +3705,8 @@ if (!target) return mzazireply(''❌ Reply to a message or @mention the user.'')
 const w = resetWarn(sender, await resolveJid(target));
 mzazireply(''✅ Warnings cleared for @'' + jidToNumber(await resolveJid(target)) + ''.'');
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('demote', '[]'::jsonb, '1. Check for mentioned JID', 'General', '', true, false, true, true, 'if (!isGroup) return mzazireply("❌ Group only!");
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('demote', '[]'::jsonb, 'Demote an admin (mention/reply)', 'General', '', false, true, true, true, 'if (!isGroup) return mzazireply("❌ Group only!");
     if (!isOwner && !isAdmin) return mzazireply("❌ Admins only!");
-    
 
     let target = null;
 
@@ -3729,32 +3728,36 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
     }
 
     if (!target) {
-        return mzazireply(`📌 Usage:\n${prefix}${command} @user\nOR reply to the user''s message with:\n${prefix}${command}`);
+        return mzazireply(`📌 Usage:
+${prefix}${command} @user
+OR reply to the user''s message with:
+${prefix}${command}`);
     }
 
     target = await resolveJid(target);
-    // Normalize JID — strip device suffix, build proper s.whatsapp.net JID
     const targetNum = target.split(''@'')[0].split('':'')[0].replace(/[^0-9]/g, '''');
     if (!targetNum) {
         return mzazireply("❌ Invalid target user.");
     }
-    target = targetNum + ''@s.whatsapp.net'';
+    const targetJid = targetNum + ''@s.whatsapp.net'';
 
-    // Prevent demoting owner/bot
-    if (ownersList.includes(targetNum)) {
+    // Compare numbers, not jids (groupAdmins/ownersList hold full jids)
+    const adminNums = (groupAdmins || []).map(jidToNumber);
+    const ownerNums = (ownersList || []).map(jidToNumber);
+
+    // Prevent owner/bot changes
+    if (ownerNums.includes(targetNum)) {
         return mzazireply("❌ Cannot demote the bot owner.");
     }
-    if (targetNum === botJid) {
+    if (targetNum === jidToNumber(botJid)) {
         return mzazireply("❌ Cannot demote the bot itself.");
     }
-
-    // Check if target is actually an admin (groupAdmins contains normalizeJid digits)
-    if (!groupAdmins.includes(targetNum)) {
+    if (!adminNums.includes(targetNum)) {
         return mzazireply("⚠️ User is not an admin.");
     }
 
-    await mzazi.groupParticipantsUpdate(sender, [await resolveJid(target)], ''demote'');
-    await mzazireply(`✅ @${targetNum} demoted from admin!`, { mentions: [target] });
+    await mzazi.groupParticipantsUpdate(sender, [targetJid], ''demote'');
+    await mzazireply(`✅ @${targetNum} demoted from admin!`, { mentions: [targetJid] });
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('demotemember', '[]'::jsonb, 'Demote a member', 'Group', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
 if (!isAdmin && !isOwner) return mzazireply(''❌ Admins only.'');
@@ -14028,9 +14031,8 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
     mzazireply(`❌ Promotion failed: ${err.message}`);
   }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('promote', '[]'::jsonb, '1. Check for mentioned JID', 'General', '', true, false, true, true, 'if (!isGroup) return mzazireply("❌ Group only!");
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('promote', '[]'::jsonb, 'Promote a member to admin (mention/reply)', 'General', '', false, true, true, true, 'if (!isGroup) return mzazireply("❌ Group only!");
     if (!isOwner && !isAdmin) return mzazireply("❌ Admins only!");
-    
 
     let target = null;
 
@@ -14044,7 +14046,6 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
     if (!target) {
         const quotedMsg = m.message?.extendedTextMessage?.contextInfo?.quotedMessage;
         if (quotedMsg) {
-            // Get the sender of the quoted message
             target = m.message?.extendedTextMessage?.contextInfo?.participant ||
                      m.key?.participant ||
                      quotedMsg?.key?.participant ||
@@ -14053,32 +14054,36 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
     }
 
     if (!target) {
-        return mzazireply(`📌 Usage:\n${prefix}${command} @user\nOR reply to the user''s message with:\n${prefix}${command}`);
+        return mzazireply(`📌 Usage:
+${prefix}${command} @user
+OR reply to the user''s message with:
+${prefix}${command}`);
     }
 
     target = await resolveJid(target);
-    // Normalize JID — strip device suffix, build proper s.whatsapp.net JID
     const targetNum = target.split(''@'')[0].split('':'')[0].replace(/[^0-9]/g, '''');
     if (!targetNum) {
         return mzazireply("❌ Invalid target user.");
     }
-    target = targetNum + ''@s.whatsapp.net'';
+    const targetJid = targetNum + ''@s.whatsapp.net'';
 
-    // Prevent promoting owner/bot
-    if (ownersList.includes(targetNum)) {
+    // Compare numbers, not jids (groupAdmins/ownersList hold full jids)
+    const adminNums = (groupAdmins || []).map(jidToNumber);
+    const ownerNums = (ownersList || []).map(jidToNumber);
+
+    // Prevent owner/bot changes
+    if (ownerNums.includes(targetNum)) {
         return mzazireply("❌ Cannot promote the bot owner.");
     }
-    if (targetNum === botJid) {
+    if (targetNum === jidToNumber(botJid)) {
         return mzazireply("❌ Cannot promote the bot itself.");
     }
-
-    // Check if target is already an admin (groupAdmins contains normalizeJid digits)
-    if (groupAdmins.includes(targetNum)) {
+    if (adminNums.includes(targetNum)) {
         return mzazireply("⚠️ User is already an admin.");
     }
 
-    await mzazi.groupParticipantsUpdate(sender, [await resolveJid(target)], ''promote'');
-    await mzazireply(`✅ @${targetNum} promoted to admin!`, { mentions: [target] });
+    await mzazi.groupParticipantsUpdate(sender, [targetJid], ''promote'');
+    await mzazireply(`✅ @${targetNum} promoted to admin!`, { mentions: [targetJid] });
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('promotemember', '[]'::jsonb, 'Promote a member', 'Group', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
 if (!isAdmin && !isOwner) return mzazireply(''❌ Admins only.'');
