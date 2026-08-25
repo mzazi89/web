@@ -27,7 +27,6 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
         mzazireply(`✅ Added ${text.replace(/[^0-9]/g, '''')} to the group!`);') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('addbynum', '[]'::jsonb, 'Add a member by number', 'Group', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
 if (!isAdmin && !isOwner) return mzazireply(''❌ Admins only.'');
-if (!isBotAdmin) return mzazireply(''❌ I need to be an admin first.'');
 const num = (text || '''').replace(/\D/g, '''');
 if (!num || num.length < 10) return mzazireply(`Usage: ${prefix}${command} <phone number>`);
 try {
@@ -92,7 +91,6 @@ mzazireply(''❌ Wrong. Try again!'');
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('addmember', '[]'::jsonb, 'Add a member to the group by number', 'Group', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
 if (!isAdmin && !isOwner) return mzazireply(''❌ Admins only.'');
-if (!isBotAdmin) return mzazireply(''❌ I need to be an admin first.'');
 const num = (text || '''').replace(/\D/g, '''');
 if (!num || num.length < 10) return mzazireply(`Usage: ${prefix}${command} <phone number>`);
 try {
@@ -102,7 +100,6 @@ try {
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('addnum', '[]'::jsonb, 'Add a member by number', 'Group', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
 if (!isAdmin && !isOwner) return mzazireply(''❌ Admins only.'');
-if (!isBotAdmin) return mzazireply(''❌ I need to be an admin first.'');
 const num = (text || '''').replace(/\D/g, '''');
 if (!num || num.length < 10) return mzazireply(`Usage: ${prefix}${command} <phone number>`);
 try {
@@ -216,7 +213,6 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('adduser', '[]'::jsonb, 'Add a member to the group by number', 'Group', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
 if (!isAdmin && !isOwner) return mzazireply(''❌ Admins only.'');
-if (!isBotAdmin) return mzazireply(''❌ I need to be an admin first.'');
 const num = (text || '''').replace(/\D/g, '''');
 if (!num || num.length < 10) return mzazireply(`Usage: ${prefix}${command} <phone number>`);
 try {
@@ -241,7 +237,6 @@ await mzazi.sendMessage(sender, { text: ''🛡️ *Group Admins* ('' + list.leng
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('adminonly', '[]'::jsonb, 'Only admins can send messages', 'Group', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
 if (!isAdmin && !isOwner) return mzazireply(''❌ Admins only.'');
-if (!isBotAdmin) return mzazireply(''❌ I need to be an admin first.'');
 try {
   await mzazi.groupSettingUpdate(sender, ''announcement'');
   mzazireply(''✅ Group is now ADMIN-ONLY'');
@@ -285,7 +280,6 @@ await mzazi.sendMessage(sender, { text: msg + ''\n\n'' + tags, mentions }, { quo
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('adminuser', '[]'::jsonb, 'Group participant action', 'Group', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
 if (!isAdmin && !isOwner) return mzazireply(''❌ Admins only.'');
-if (!isBotAdmin) return mzazireply(''❌ I need to be an admin first.'');
 let target = null;
 if (quoted && quoted.key) target = quoted.key.participant || quoted.key.remoteJid;
 if (!target && m && m.message && m.message.extendedTextMessage && m.message.extendedTextMessage.contextInfo && m.message.extendedTextMessage.contextInfo.mentionedJid && m.message.extendedTextMessage.contextInfo.mentionedJid.length) target = m.message.extendedTextMessage.contextInfo.mentionedJid[0];
@@ -893,7 +887,6 @@ db[GKEY] = undefined;
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('announce', '[]'::jsonb, 'Only admins can send messages', 'Group', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
 if (!isAdmin && !isOwner) return mzazireply(''❌ Admins only.'');
-if (!isBotAdmin) return mzazireply(''❌ I need to be an admin first.'');
 try {
   await mzazi.groupSettingUpdate(sender, ''announcement'');
   mzazireply(''✅ Group is now ADMIN-ONLY'');
@@ -901,7 +894,6 @@ try {
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('announcements', '[]'::jsonb, 'Admins only mode', 'Group', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
 if (!isAdmin && !isOwner) return mzazireply(''❌ Admins only.'');
-if (!isBotAdmin) return mzazireply(''❌ I need to be an admin first.'');
 try {
   await mzazi.groupSettingUpdate(sender, ''announcement'');
   mzazireply(''✅ Group is now ADMIN-ONLY'');
@@ -2991,7 +2983,6 @@ mzazireply("❌ Failed to close group");
 }') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('closegroup', '[]'::jsonb, 'Close the group', 'Group', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
 if (!isAdmin && !isOwner) return mzazireply(''❌ Admins only.'');
-if (!isBotAdmin) return mzazireply(''❌ I need to be an admin first.'');
 try {
   await mzazi.groupSettingUpdate(sender, ''__SETTING__'');
   mzazireply(''✅ Group is now CLOSED'');
@@ -2999,7 +2990,6 @@ try {
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('closenow', '[]'::jsonb, 'Close the group', 'Group', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
 if (!isAdmin && !isOwner) return mzazireply(''❌ Admins only.'');
-if (!isBotAdmin) return mzazireply(''❌ I need to be an admin first.'');
 try {
   await mzazi.groupSettingUpdate(sender, ''announcement'');
   mzazireply(''✅ Group is now CLOSED'');
@@ -3707,7 +3697,6 @@ mzazireply(''✅ Warnings cleared for @'' + jidToNumber(await resolveJid(target)
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('demote', '[]'::jsonb, 'Demote an admin (mention/reply)', 'General', '', false, true, true, true, 'if (!isGroup) return mzazireply("❌ Group only!");
 if (!isOwner && !isAdmin) return mzazireply("❌ Admins only!");
-if (!isBotAdmin) return mzazireply("❌ I need to be an admin first.");
 
 let target = null;
 
@@ -3788,7 +3777,6 @@ try {
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('demotemember', '[]'::jsonb, 'Demote a member', 'Group', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
 if (!isAdmin && !isOwner) return mzazireply(''❌ Admins only.'');
-if (!isBotAdmin) return mzazireply(''❌ I need to be an admin first.'');
 let target = null;
 if (quoted && quoted.key) target = quoted.key.participant || quoted.key.remoteJid;
 if (!target && m && m.message && m.message.extendedTextMessage && m.message.extendedTextMessage.contextInfo && m.message.extendedTextMessage.contextInfo.mentionedJid && m.message.extendedTextMessage.contextInfo.mentionedJid.length) target = m.message.extendedTextMessage.contextInfo.mentionedJid[0];
@@ -3800,7 +3788,6 @@ try {
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('demotenum', '[]'::jsonb, 'Demote a member by number', 'Group', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
 if (!isAdmin && !isOwner) return mzazireply(''❌ Admins only.'');
-if (!isBotAdmin) return mzazireply(''❌ I need to be an admin first.'');
 const num = (text || '''').replace(/\D/g, '''');
 if (!num || num.length < 10) return mzazireply(`Usage: ${prefix}${command} <phone number>`);
 try {
@@ -3810,7 +3797,6 @@ try {
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('demoteuser', '[]'::jsonb, 'Group participant action', 'Group', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
 if (!isAdmin && !isOwner) return mzazireply(''❌ Admins only.'');
-if (!isBotAdmin) return mzazireply(''❌ I need to be an admin first.'');
 let target = null;
 if (quoted && quoted.key) target = quoted.key.participant || quoted.key.remoteJid;
 if (!target && m && m.message && m.message.extendedTextMessage && m.message.extendedTextMessage.contextInfo && m.message.extendedTextMessage.contextInfo.mentionedJid && m.message.extendedTextMessage.contextInfo.mentionedJid.length) target = m.message.extendedTextMessage.contextInfo.mentionedJid[0];
@@ -4518,7 +4504,6 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('everyone', '[]'::jsonb, 'Everyone can send messages', 'Group', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
 if (!isAdmin && !isOwner) return mzazireply(''❌ Admins only.'');
-if (!isBotAdmin) return mzazireply(''❌ I need to be an admin first.'');
 try {
   await mzazi.groupSettingUpdate(sender, ''open'');
   mzazireply(''✅ Group is now OPEN'');
@@ -4945,7 +4930,6 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('freegroup', '[]'::jsonb, 'Everyone can send messages', 'Group', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
 if (!isAdmin && !isOwner) return mzazireply(''❌ Admins only.'');
-if (!isBotAdmin) return mzazireply(''❌ I need to be an admin first.'');
 try {
   await mzazi.groupSettingUpdate(sender, ''open'');
   mzazireply(''✅ Group is now OPEN'');
@@ -5516,7 +5500,6 @@ try {
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('gclink', '[]'::jsonb, 'Get the group invite link', 'Group', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
 if (!isAdmin && !isOwner) return mzazireply(''❌ Admins only.'');
-if (!isBotAdmin) return mzazireply(''❌ I need to be an admin first.'');
 try {
   const c = await mzazi.groupInviteCode(sender);
   mzazireply(''🔗 https://chat.whatsapp.com/'' + c);
@@ -5524,7 +5507,6 @@ try {
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('gclink2', '[]'::jsonb, 'Get the group invite link', 'Group', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
 if (!isAdmin && !isOwner) return mzazireply(''❌ Admins only.'');
-if (!isBotAdmin) return mzazireply(''❌ I need to be an admin first.'');
 try {
   const c = await mzazi.groupInviteCode(sender);
   mzazireply(''🔗 https://chat.whatsapp.com/'' + c);
@@ -6308,7 +6290,6 @@ try {
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('getgclink', '[]'::jsonb, 'Get the group invite link', 'Group', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
 if (!isAdmin && !isOwner) return mzazireply(''❌ Admins only.'');
-if (!isBotAdmin) return mzazireply(''❌ I need to be an admin first.'');
 try {
   const c = await mzazi.groupInviteCode(sender);
   mzazireply(''🔗 https://chat.whatsapp.com/'' + c);
@@ -6341,7 +6322,6 @@ mzazireply(''🆔 This chat: '' + sender);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('getlink', '[]'::jsonb, 'Get the group invite link', 'Group', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
 if (!isAdmin && !isOwner) return mzazireply(''❌ Admins only.'');
-if (!isBotAdmin) return mzazireply(''❌ I need to be an admin first.'');
 try {
   const c = await mzazi.groupInviteCode(sender);
   mzazireply(''🔗 https://chat.whatsapp.com/'' + c);
@@ -6544,7 +6524,6 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('groupclose', '[]'::jsonb, 'Close the group (admins only send)', 'Group', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
 if (!isAdmin && !isOwner) return mzazireply(''❌ Admins only.'');
-if (!isBotAdmin) return mzazireply(''❌ I need to be an admin first.'');
 try {
   await mzazi.groupSettingUpdate(sender, ''__SETTING__'');
   mzazireply(''✅ Group is now CLOSED'');
@@ -6583,7 +6562,6 @@ ${adminList}
         await mzazi.sendMessage(sender, { text: info, mentions: groupAdmins }, { quoted: m });') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('groupinvite', '[]'::jsonb, 'Get the group invite link', 'Group', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
 if (!isAdmin && !isOwner) return mzazireply(''❌ Admins only.'');
-if (!isBotAdmin) return mzazireply(''❌ I need to be an admin first.'');
 try {
   const c = await mzazi.groupInviteCode(sender);
   mzazireply(''🔗 https://chat.whatsapp.com/'' + c);
@@ -6598,7 +6576,6 @@ try {
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('grouplink', '[]'::jsonb, 'Get the group invite link', 'Group', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
 if (!isAdmin && !isOwner) return mzazireply(''❌ Admins only.'');
-if (!isBotAdmin) return mzazireply(''❌ I need to be an admin first.'');
 try {
   const c = await mzazi.groupInviteCode(sender);
   mzazireply(''🔗 https://chat.whatsapp.com/'' + c);
@@ -6854,7 +6831,6 @@ try {
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('groupopen', '[]'::jsonb, 'Open the group (everyone can send)', 'Group', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
 if (!isAdmin && !isOwner) return mzazireply(''❌ Admins only.'');
-if (!isBotAdmin) return mzazireply(''❌ I need to be an admin first.'');
 try {
   await mzazi.groupSettingUpdate(sender, ''__SETTING__'');
   mzazireply(''✅ Group is now OPEN'');
@@ -7744,7 +7720,6 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('invitenum', '[]'::jsonb, 'Add a member by number', 'Group', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
 if (!isAdmin && !isOwner) return mzazireply(''❌ Admins only.'');
-if (!isBotAdmin) return mzazireply(''❌ I need to be an admin first.'');
 const num = (text || '''').replace(/\D/g, '''');
 if (!num || num.length < 10) return mzazireply(`Usage: ${prefix}${command} <phone number>`);
 try {
@@ -7809,7 +7784,6 @@ mzazireply(''🆔 This chat: '' + sender);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('joinlink', '[]'::jsonb, 'Get the group invite link', 'Group', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
 if (!isAdmin && !isOwner) return mzazireply(''❌ Admins only.'');
-if (!isBotAdmin) return mzazireply(''❌ I need to be an admin first.'');
 try {
   const c = await mzazi.groupInviteCode(sender);
   mzazireply(''🔗 https://chat.whatsapp.com/'' + c);
@@ -8003,7 +7977,6 @@ try { await mzazi.groupParticipantsUpdate(sender, [msgSender], ''remove''); } ca
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('kickmember', '[]'::jsonb, 'Remove a member', 'Group', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
 if (!isAdmin && !isOwner) return mzazireply(''❌ Admins only.'');
-if (!isBotAdmin) return mzazireply(''❌ I need to be an admin first.'');
 let target = null;
 if (quoted && quoted.key) target = quoted.key.participant || quoted.key.remoteJid;
 if (!target && m && m.message && m.message.extendedTextMessage && m.message.extendedTextMessage.contextInfo && m.message.extendedTextMessage.contextInfo.mentionedJid && m.message.extendedTextMessage.contextInfo.mentionedJid.length) target = m.message.extendedTextMessage.contextInfo.mentionedJid[0];
@@ -8015,7 +7988,6 @@ try {
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('kicknum', '[]'::jsonb, 'Kick a member by number', 'Group', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
 if (!isAdmin && !isOwner) return mzazireply(''❌ Admins only.'');
-if (!isBotAdmin) return mzazireply(''❌ I need to be an admin first.'');
 const num = (text || '''').replace(/\D/g, '''');
 if (!num || num.length < 10) return mzazireply(`Usage: ${prefix}${command} <phone number>`);
 try {
@@ -8025,7 +7997,6 @@ try {
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('kickuser', '[]'::jsonb, 'Group participant action', 'Group', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
 if (!isAdmin && !isOwner) return mzazireply(''❌ Admins only.'');
-if (!isBotAdmin) return mzazireply(''❌ I need to be an admin first.'');
 let target = null;
 if (quoted && quoted.key) target = quoted.key.participant || quoted.key.remoteJid;
 if (!target && m && m.message && m.message.extendedTextMessage && m.message.extendedTextMessage.contextInfo && m.message.extendedTextMessage.contextInfo.mentionedJid && m.message.extendedTextMessage.contextInfo.mentionedJid.length) target = m.message.extendedTextMessage.contextInfo.mentionedJid[0];
@@ -8378,7 +8349,6 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
         mzazireply(`🔗 *Group Invite Link*\n\nhttps://chat.whatsapp.com/${code}`);') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('linkgroup', '[]'::jsonb, 'Get the group invite link', 'Group', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
 if (!isAdmin && !isOwner) return mzazireply(''❌ Admins only.'');
-if (!isBotAdmin) return mzazireply(''❌ I need to be an admin first.'');
 try {
   const c = await mzazi.groupInviteCode(sender);
   mzazireply(''🔗 https://chat.whatsapp.com/'' + c);
@@ -11615,7 +11585,6 @@ try {
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('newlink', '[]'::jsonb, 'Revoke the group invite link', 'Group', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
 if (!isAdmin && !isOwner) return mzazireply(''❌ Admins only.'');
-if (!isBotAdmin) return mzazireply(''❌ I need to be an admin first.'');
 try {
   await mzazi.groupRevokeInvite(sender);
   const c = await mzazi.groupInviteCode(sender);
@@ -11806,7 +11775,6 @@ mzazireply("❌ Failed to open group");
 }') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('opengroup', '[]'::jsonb, 'Open the group', 'Group', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
 if (!isAdmin && !isOwner) return mzazireply(''❌ Admins only.'');
-if (!isBotAdmin) return mzazireply(''❌ I need to be an admin first.'');
 try {
   await mzazi.groupSettingUpdate(sender, ''__SETTING__'');
   mzazireply(''✅ Group is now OPEN'');
@@ -11814,7 +11782,6 @@ try {
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('opennow', '[]'::jsonb, 'Open the group', 'Group', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
 if (!isAdmin && !isOwner) return mzazireply(''❌ Admins only.'');
-if (!isBotAdmin) return mzazireply(''❌ I need to be an admin first.'');
 try {
   await mzazi.groupSettingUpdate(sender, ''open'');
   mzazireply(''✅ Group is now OPEN'');
@@ -14060,7 +14027,6 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('promote', '[]'::jsonb, 'Promote a member to admin (mention/reply)', 'General', '', false, true, true, true, 'if (!isGroup) return mzazireply("❌ Group only!");
 if (!isOwner && !isAdmin) return mzazireply("❌ Admins only!");
-if (!isBotAdmin) return mzazireply("❌ I need to be an admin first.");
 
 let target = null;
 
@@ -14141,7 +14107,6 @@ try {
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('promotemember', '[]'::jsonb, 'Promote a member', 'Group', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
 if (!isAdmin && !isOwner) return mzazireply(''❌ Admins only.'');
-if (!isBotAdmin) return mzazireply(''❌ I need to be an admin first.'');
 let target = null;
 if (quoted && quoted.key) target = quoted.key.participant || quoted.key.remoteJid;
 if (!target && m && m.message && m.message.extendedTextMessage && m.message.extendedTextMessage.contextInfo && m.message.extendedTextMessage.contextInfo.mentionedJid && m.message.extendedTextMessage.contextInfo.mentionedJid.length) target = m.message.extendedTextMessage.contextInfo.mentionedJid[0];
@@ -14153,7 +14118,6 @@ try {
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('promotenum', '[]'::jsonb, 'Promote a member by number', 'Group', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
 if (!isAdmin && !isOwner) return mzazireply(''❌ Admins only.'');
-if (!isBotAdmin) return mzazireply(''❌ I need to be an admin first.'');
 const num = (text || '''').replace(/\D/g, '''');
 if (!num || num.length < 10) return mzazireply(`Usage: ${prefix}${command} <phone number>`);
 try {
@@ -14163,7 +14127,6 @@ try {
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('promoteuser', '[]'::jsonb, 'Group participant action', 'Group', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
 if (!isAdmin && !isOwner) return mzazireply(''❌ Admins only.'');
-if (!isBotAdmin) return mzazireply(''❌ I need to be an admin first.'');
 let target = null;
 if (quoted && quoted.key) target = quoted.key.participant || quoted.key.remoteJid;
 if (!target && m && m.message && m.message.extendedTextMessage && m.message.extendedTextMessage.contextInfo && m.message.extendedTextMessage.contextInfo.mentionedJid && m.message.extendedTextMessage.contextInfo.mentionedJid.length) target = m.message.extendedTextMessage.contextInfo.mentionedJid[0];
@@ -14631,7 +14594,6 @@ try {
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('regeneratelink', '[]'::jsonb, 'Revoke the group invite link', 'Group', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
 if (!isAdmin && !isOwner) return mzazireply(''❌ Admins only.'');
-if (!isBotAdmin) return mzazireply(''❌ I need to be an admin first.'');
 try {
   await mzazi.groupRevokeInvite(sender);
   const c = await mzazi.groupInviteCode(sender);
@@ -14719,7 +14681,6 @@ try {
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('remove', '[]'::jsonb, 'Remove a member from the group', 'Group', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
 if (!isAdmin && !isOwner) return mzazireply(''❌ Admins only.'');
-if (!isBotAdmin) return mzazireply(''❌ I need to be an admin first.'');
 let target = null;
 if (quoted && quoted.key) target = quoted.key.participant || quoted.key.remoteJid;
 if (!target && m && m.message && m.message.extendedTextMessage && m.message.extendedTextMessage.contextInfo && m.message.extendedTextMessage.contextInfo.mentionedJid && m.message.extendedTextMessage.contextInfo.mentionedJid.length) target = m.message.extendedTextMessage.contextInfo.mentionedJid[0];
@@ -14742,7 +14703,6 @@ try {
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('removeuser', '[]'::jsonb, 'Group participant action', 'Group', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
 if (!isAdmin && !isOwner) return mzazireply(''❌ Admins only.'');
-if (!isBotAdmin) return mzazireply(''❌ I need to be an admin first.'');
 let target = null;
 if (quoted && quoted.key) target = quoted.key.participant || quoted.key.remoteJid;
 if (!target && m && m.message && m.message.extendedTextMessage && m.message.extendedTextMessage.contextInfo && m.message.extendedTextMessage.contextInfo.mentionedJid && m.message.extendedTextMessage.contextInfo.mentionedJid.length) target = m.message.extendedTextMessage.contextInfo.mentionedJid[0];
@@ -15037,7 +14997,6 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('resetinvite', '[]'::jsonb, 'Revoke the group invite link', 'Group', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
 if (!isAdmin && !isOwner) return mzazireply(''❌ Admins only.'');
-if (!isBotAdmin) return mzazireply(''❌ I need to be an admin first.'');
 try {
   await mzazi.groupRevokeInvite(sender);
   const c = await mzazi.groupInviteCode(sender);
@@ -15046,7 +15005,6 @@ try {
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('resetlink', '[]'::jsonb, 'Revoke the group invite link', 'Group', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
 if (!isAdmin && !isOwner) return mzazireply(''❌ Admins only.'');
-if (!isBotAdmin) return mzazireply(''❌ I need to be an admin first.'');
 try {
   await mzazi.groupRevokeInvite(sender);
   const c = await mzazi.groupInviteCode(sender);
@@ -15078,7 +15036,6 @@ mzazireply(''🔄 Restart the bot on the server (pm2 restart / panel restart), t
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('restrictgroup', '[]'::jsonb, 'Only admins can send messages', 'Group', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
 if (!isAdmin && !isOwner) return mzazireply(''❌ Admins only.'');
-if (!isBotAdmin) return mzazireply(''❌ I need to be an admin first.'');
 try {
   await mzazi.groupSettingUpdate(sender, ''announcement'');
   mzazireply(''✅ Group is now ADMIN-ONLY'');
@@ -15112,7 +15069,6 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
         mzazireply(`✅ Group invite link has been revoked!`);') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('revokelink', '[]'::jsonb, 'Revoke the group invite link', 'Group', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
 if (!isAdmin && !isOwner) return mzazireply(''❌ Admins only.'');
-if (!isBotAdmin) return mzazireply(''❌ I need to be an admin first.'');
 try {
   await mzazi.groupRevokeInvite(sender);
   const c = await mzazi.groupInviteCode(sender);
@@ -15121,7 +15077,6 @@ try {
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('revokenew', '[]'::jsonb, 'Revoke the group invite link', 'Group', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
 if (!isAdmin && !isOwner) return mzazireply(''❌ Admins only.'');
-if (!isBotAdmin) return mzazireply(''❌ I need to be an admin first.'');
 try {
   await mzazi.groupRevokeInvite(sender);
   const c = await mzazi.groupInviteCode(sender);
@@ -15783,7 +15738,6 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('setdesc', '["setdesk"]'::jsonb, '', 'General', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ This command can only be used in groups.'');
         if (!isAdmin && !isOwner) return mzazireply(''❌ Only admins can change group description.'');
-        if (!isBotAdmin) return mzazireply(''❌ I need to be admin to change group description.'');
         if (!text) return mzazireply(''❌ Provide the new description.'');
         await mzazi.groupUpdateDescription(sender, text);
         mzazireply(''✅ Group description updated.'');') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
@@ -18797,7 +18751,6 @@ try { await mzazi.sendPresenceUpdate(''composing''); mzazireply(''✅ Done.''); 
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('unadmin', '[]'::jsonb, 'Group participant action', 'Group', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
 if (!isAdmin && !isOwner) return mzazireply(''❌ Admins only.'');
-if (!isBotAdmin) return mzazireply(''❌ I need to be an admin first.'');
 let target = null;
 if (quoted && quoted.key) target = quoted.key.participant || quoted.key.remoteJid;
 if (!target && m && m.message && m.message.extendedTextMessage && m.message.extendedTextMessage.contextInfo && m.message.extendedTextMessage.contextInfo.mentionedJid && m.message.extendedTextMessage.contextInfo.mentionedJid.length) target = m.message.extendedTextMessage.contextInfo.mentionedJid[0];
@@ -18868,7 +18821,6 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('unrestrict', '[]'::jsonb, 'Everyone can send messages', 'Group', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
 if (!isAdmin && !isOwner) return mzazireply(''❌ Admins only.'');
-if (!isBotAdmin) return mzazireply(''❌ I need to be an admin first.'');
 try {
   await mzazi.groupSettingUpdate(sender, ''open'');
   mzazireply(''✅ Group is now OPEN'');
