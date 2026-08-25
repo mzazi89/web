@@ -1,9 +1,5 @@
--- ═══════════════════════════════════════════════════════════════
 -- QUARTZ XD — FULL COMMAND SYNC (one run = everything live)
--- Inserts/updates ALL 1009 commands in the shared Neon database.
--- Idempotent: safe to run any time. Run in Neon SQL console or psql.
--- After running: on the bot server run .synccmd (or restart the bot).
--- ═══════════════════════════════════════════════════════════════
+-- Inserts/updates ALL commands. Idempotent. Run in Neon SQL console.
 
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('8ball', '["magic8ball"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`🎱 Ask me anything!\nExample: ${prefix}8ball Will I be rich?`);
         const answers8 = ["Yes, definitely! ✅","Without a doubt! ✅","Most likely! ✅","Outlook is good! ✅","Signs point to yes! ✅","Reply hazy, try again 🤔","Ask again later 🤔","Better not tell you now 🤔","Cannot predict now 🤔","Don''t count on it ❌","My reply is no ❌","Very doubtful ❌","Outlook not so good ❌","No way! ❌","Absolutely not! ❌"];
@@ -11,7 +7,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
         mzazireply(`🎱 *MAGIC 8 BALL*\n\n❓ ${text}\n\n${answer}`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('acceptall', '[]'::jsonb, 'Join request help', 'Owner', '', true, false, false, true, 'if (!isOwner) return mzazireply(''❌ Owner only.'');
-mzazireply(`✅ Use ${prefix}approve <jid> or ${prefix}reject <jid> for join requests. Auto-accept-all is not enabled for safety.`);
+mzazireply(`✅ Use ${prefix}${command} <jid> or ${prefix}${command} <jid> for join requests. Auto-accept-all is not enabled for safety.`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('adcopy', '[]'::jsonb, 'AI: Write short ad copy for the following', 'AI', '', false, false, false, true, 'const q = (text || '''').trim();
 if (!q) return mzazireply(`Usage: ${prefix}${command} <text>`);
@@ -25,7 +21,7 @@ return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, descripti
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('add', '[]'::jsonb, '', 'General', '', true, false, true, true, 'if (!isGroup) return mzazireply("❌ Group only!");
         if (!isOwner && !isAdmin) return mzazireply("❌ Admins only!");
         
-        if (!text) return mzazireply(`Usage: ${prefix}add 254XXXXXXXXX`);
+        if (!text) return mzazireply(`Usage: ${prefix}${command} 254XXXXXXXXX`);
         const num = text.replace(/[^0-9]/g, '''') + ''@s.whatsapp.net'';
         await mzazi.groupParticipantsUpdate(sender, [num], ''add'');
         mzazireply(`✅ Added ${text.replace(/[^0-9]/g, '''')} to the group!`);') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
@@ -47,7 +43,7 @@ return mzazireply("❌ Owner only");
 
 if (!text) {
 return mzazireply(
-`Example:\n${prefix}addcase case "test": {\nreply("Hello")\n}\nbreak;`
+`Example:\n${prefix}${command} case "test": {\nreply("Hello")\n}\nbreak;`
 );
 }
 
@@ -120,7 +116,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
   // Check if user mentioned someone
   const mentionedJid = m.message?.extendedTextMessage?.contextInfo?.mentionedJid;
   if (!mentionedJid || mentionedJid.length === 0) {
-    return mzazireply(`Usage: ${prefix}addowner @user\nExample: .addowner @254712345678`);
+    return mzazireply(`Usage: ${prefix}${command} @user\nExample: ${prefix}${command} @254712345678`);
   }
 
   const target = await resolveJid(mentionedJid[0]);
@@ -138,7 +134,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
   mzazireply(`✅ @${targetNum} has been added as a bot owner.`);') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('addpaid', '[]'::jsonb, '', 'General', '', true, false, false, true, 'if (!isOwner) return mzazireply("❌ Owner only!");
         const mentionedJid = m.message?.extendedTextMessage?.contextInfo?.mentionedJid;
-        if (!mentionedJid || mentionedJid.length === 0) return mzazireply(`Usage: ${prefix}addpaid @user`);
+        if (!mentionedJid || mentionedJid.length === 0) return mzazireply(`Usage: ${prefix}${command} @user`);
         const user = await resolveJid(mentionedJid[0]);
         if (sessionPaidUsers.includes(user)) return mzazireply("⚠️ Already paid!");
         sessionPaidUsers.push(user);
@@ -146,7 +142,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
         mzazireply(`✅ @${user.split(''@'')[0]} added to paid users!`);') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('addprem', '[]'::jsonb, '', 'General', '', true, false, false, true, 'if (!isOwner) return mzazireply("❌ Owner only!");
         const mentionedJid = m.message?.extendedTextMessage?.contextInfo?.mentionedJid;
-        if (!mentionedJid || mentionedJid.length === 0) return mzazireply(`Usage: ${prefix}addprem @user`);
+        if (!mentionedJid || mentionedJid.length === 0) return mzazireply(`Usage: ${prefix}${command} @user`);
         const user = await resolveJid(mentionedJid[0]);
         const premiumUsers = loadJSON(''./database/premium.json'', []);
         if (premiumUsers.includes(user)) return mzazireply("⚠️ Already premium!");
@@ -358,8 +354,8 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 if (!text) {
 return mzazireply(
 `🤖 *${botName.toUpperCase()} AI ASSISTANT*\n\n` +
-`Usage: ${prefix}gpt <question>\n` +
-`Example: ${prefix}gpt explain quantum physics`
+`Usage: ${prefix}${command} <question>\n` +
+`Example: ${prefix}${command} explain quantum physics`
 );
 }
 
@@ -492,7 +488,7 @@ const tags = list.map((p) => ''@'' + String(p.id || '''').split(''@'')[0]).join(
 await mzazi.sendMessage(sender, { text: msg + ''\n\n'' + tags, mentions }, { quoted: m });
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('allgroups', '[]'::jsonb, 'List all bot groups', 'Owner', '', true, false, false, true, 'if (!isOwner) return mzazireply(''❌ Owner only.'');
-mzazireply(`👋 Message sent from the bot. Use ${prefix}sendto <jid> <msg> to send to a specific chat.`);
+mzazireply(`👋 Message sent from the bot. Use ${prefix}${command} <jid> <msg> to send to a specific chat.`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('allmenu', '[]'::jsonb, '', 'General', '', false, false, false, true, 'const currentDate = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" }));
     const days = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
@@ -808,7 +804,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
             `🟢 *Always Online*\n` +
               `Status: ${cfg.enabled ? "ON" : "OFF"}\n` +
               `Bot will keep ''online'' status.\n` +
-              `Usage: ${prefix}alwaysonline on/off`
+              `Usage: ${prefix}${command} on/off`
           );
         }
 
@@ -887,14 +883,14 @@ return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, descripti
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('antiaudio', '[]'::jsonb, '', 'General', '', false, true, true, true, 'if (!isGroup) return mzazireply("❌ Group only!");
         if (!isAdmin && !isOwner) return mzazireply("❌ Admins only!");
         const sub = args[0]?.toLowerCase();
-        if (!["on","off"].includes(sub)) return mzazireply(`Usage: ${prefix}antiaudio on/off`);
+        if (!["on","off"].includes(sub)) return mzazireply(`Usage: ${prefix}${command} on/off`);
         setGroupSetting(sender, "antiaudio", sub === "on");
         mzazireply(`🎵 Anti-audio: ${sub === "on" ? "✅ Enabled" : "❌ Disabled"}`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('antibadword', '["antiswear"]'::jsonb, '', 'General', '', false, true, true, true, 'if (!isGroup) return mzazireply("❌ Group only!");
         if (!isAdmin && !isOwner) return mzazireply("❌ Admins only!");
         const sub = args[0]?.toLowerCase();
-        if (!["on","off"].includes(sub)) return mzazireply(`Usage: ${prefix}antibadword on/off`);
+        if (!["on","off"].includes(sub)) return mzazireply(`Usage: ${prefix}${command} on/off`);
         setGroupSetting(sender, "antibadword", sub === "on");
         mzazireply(`🤬 Anti-bad word: ${sub === "on" ? "✅ Enabled" : "❌ Disabled"}`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
@@ -902,7 +898,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
         const sub9 = args[0]?.toLowerCase();
         if (!["on","off"].includes(sub9)) {
           const cfg9 = getToggle("anticall");
-          return mzazireply(`📵 *ANTI CALL*\n\nStatus: ${cfg9.enabled ? "✅ ON" : "❌ OFF"}\n\nUsage: ${prefix}anticall on/off`);
+          return mzazireply(`📵 *ANTI CALL*\n\nStatus: ${cfg9.enabled ? "✅ ON" : "❌ OFF"}\n\nUsage: ${prefix}${command} on/off`);
         }
         setToggle("anticall", sub9 === "on");
         mzazireply(`📵 Anti-call: ${sub9 === "on" ? "✅ ON - Bot will reject all calls" : "❌ OFF"}`);
@@ -931,7 +927,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
             : loadJSON(sessionFile("dm_settings.json"), {})[sender]?.antidelete;
           mzazireply(
             `🗑️ *ANTI-DELETE:* ${currentStatus ? ''✅ ON'' : ''❌ OFF''}\n\n` +
-            `Usage: ${prefix}antidelete on/off\n` +
+            `Usage: ${prefix}${command} on/off\n` +
             `Deleted messages are sent back to their original sender.`
           );
         }
@@ -939,14 +935,14 @@ return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, descripti
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('antiflood', '[]'::jsonb, '', 'General', '', false, true, true, true, 'if (!isGroup) return mzazireply("❌ Group only!");
         if (!isAdmin && !isOwner) return mzazireply("❌ Admins only!");
         const sub = args[0]?.toLowerCase();
-        if (!["on","off"].includes(sub)) return mzazireply(`Usage: ${prefix}antiflood on/off`);
+        if (!["on","off"].includes(sub)) return mzazireply(`Usage: ${prefix}${command} on/off`);
         setGroupSetting(sender, "antiflood", sub === "on");
         mzazireply(`🌊 Anti-flood: ${sub === "on" ? "✅ Enabled" : "❌ Disabled"}`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('antigif', '[]'::jsonb, '', 'General', '', false, true, true, true, 'if (!isGroup) return mzazireply("❌ Group only!");
         if (!isAdmin && !isOwner) return mzazireply("❌ Admins only!");
         const sub = args[0]?.toLowerCase();
-        if (!["on","off"].includes(sub)) return mzazireply(`Usage: ${prefix}antigif on/off`);
+        if (!["on","off"].includes(sub)) return mzazireply(`Usage: ${prefix}${command} on/off`);
         setGroupSetting(sender, "antigif", sub === "on");
         mzazireply(`🎬 Anti-GIF: ${sub === "on" ? "✅ Enabled" : "❌ Disabled"}`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
@@ -958,7 +954,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
           const cur3 = getGroupSettings(sender).antiimage || ''off'';
           return mzazireply(
             `🖼️ *ANTIIMAGE*\n\nCurrent mode: *${cur3.toUpperCase()}*\n\n` +
-            `Usage: ${prefix}antiimage <mode>\n\n` +
+            `Usage: ${prefix}${command} <mode>\n\n` +
             `Modes:\n• *delete* - Delete images silently\n• *warn* - Warn sender (3 warns = kick)\n• *kick* - Kick sender immediately\n• *off* - Disable antiimage`
           );
         }
@@ -974,7 +970,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
           const cur = getGroupSettings(sender).antilink || ''off'';
           return mzazireply(
             `🔗 *ANTILINK*\n\nCurrent mode: *${cur.toUpperCase()}*\n\n` +
-            `Usage: ${prefix}antilink <mode>\n\n` +
+            `Usage: ${prefix}${command} <mode>\n\n` +
             `Modes:\n• *delete* - Delete links silently\n• *warn* - Warn sender (3 warns = kick)\n• *kick* - Kick sender immediately\n• *off* - Disable antilink`
           );
         }
@@ -991,14 +987,14 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('antimsg', '["antimessage"]'::jsonb, '', 'General', '', true, false, false, true, 'if (!isOwner) return mzazireply("❌ Owner only!");
         const sub10 = args[0]?.toLowerCase();
-        if (!["on","off"].includes(sub10)) return mzazireply(`Usage: ${prefix}antimsg on/off`);
+        if (!["on","off"].includes(sub10)) return mzazireply(`Usage: ${prefix}${command} on/off`);
         setToggle("antimsg", sub10 === "on");
         mzazireply(`🔕 Anti-message (DM blocker): ${sub10 === "on" ? "✅ ON" : "❌ OFF"}`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('antinsfw', '[]'::jsonb, '', 'General', '', false, true, true, true, 'if (!isGroup) return mzazireply("❌ Group only!");
         if (!isAdmin && !isOwner) return mzazireply("❌ Admins only!");
         const sub = args[0]?.toLowerCase();
-        if (!["on","off"].includes(sub)) return mzazireply(`Usage: ${prefix}antinsfw on/off`);
+        if (!["on","off"].includes(sub)) return mzazireply(`Usage: ${prefix}${command} on/off`);
         setGroupSetting(sender, "antinsfw", sub === "on");
         mzazireply(`🚫 Anti-NSFW: ${sub === "on" ? "✅ Enabled" : "❌ Disabled"}`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
@@ -1010,7 +1006,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
           const cur2 = getGroupSettings(sender).antisticker || ''off'';
           return mzazireply(
             `🩹 *ANTISTICKER*\n\nCurrent mode: *${cur2.toUpperCase()}*\n\n` +
-            `Usage: ${prefix}antisticker <mode>\n\n` +
+            `Usage: ${prefix}${command} <mode>\n\n` +
             `Modes:\n• *delete* - Delete stickers silently\n• *warn* - Warn sender (3 warns = kick)\n• *kick* - Kick sender immediately\n• *off* - Disable antisticker`
           );
         }
@@ -1032,7 +1028,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('antivideo', '[]'::jsonb, '', 'General', '', false, true, true, true, 'if (!isGroup) return mzazireply("❌ Group only!");
         if (!isAdmin && !isOwner) return mzazireply("❌ Admins only!");
         const sub = args[0]?.toLowerCase();
-        if (!["on","off"].includes(sub)) return mzazireply(`Usage: ${prefix}antivideo on/off`);
+        if (!["on","off"].includes(sub)) return mzazireply(`Usage: ${prefix}${command} on/off`);
         setGroupSetting(sender, "antivideo", sub === "on");
         mzazireply(`📹 Anti-video: ${sub === "on" ? "✅ Enabled" : "❌ Disabled"}`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
@@ -1044,7 +1040,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
         mzazireply(`👁️ *ANTI-VIEW-ONCE* ${enable ? ''✅ ENABLED'' : ''❌ DISABLED''}\n\n${enable ? ''View-once media sent here is downloaded and re-sent so it never disappears.'' : ''View-once media is left untouched.''}`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('antiviewonce2', '[]'::jsonb, '', 'General', '', false, false, false, true, 'const quotedVV = m.message?.extendedTextMessage?.contextInfo?.quotedMessage;
-        if (!quotedVV) return mzazireply(`Reply to a view-once message with ${prefix}vv`);
+        if (!quotedVV) return mzazireply(`Reply to a view-once message with ${prefix}${command}`);
         const vOnceType = Object.keys(quotedVV)[0];
         if (!["viewOnceMessage","viewOnceMessageV2","viewOnceMessageV2Extension"].includes(vOnceType)) {
           return mzazireply("❌ That''s not a view-once message");
@@ -1123,11 +1119,11 @@ try {
   await mzazi.sendMessage(sender, { image: Buffer.from(buf), caption: ''🎨 *AI Image*\nPrompt: '' + p }, { quoted: m });
 } catch (e) { return mzazireply(''❌ Image generation failed: '' + (e.message || e)); }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('asc', '["ascii2"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}asc MZAZI`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('asc', '["ascii2"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} MZAZI`);
         const asciiArt = ["╔╦╦╗","║║║║","╚╩╩╝"];
         mzazireply(`🔡 *ASCII ART*\n\n${text.toUpperCase()}\n\n${asciiArt.join("\n")}`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('ascii', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}ascii Hello`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('ascii', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} Hello`);
         const asciiResult = text.split("").map(c => c.charCodeAt(0)).join(" ");
         mzazireply(`🔢 *ASCII CODES*\n\nText: ${text}\nCodes: ${asciiResult}`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
@@ -1178,7 +1174,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
     if (!text) {
       return mzazireply(
         `✨ *${botName.toUpperCase()} ATTP*\n\n` +
-        `Usage: ${prefix}attp Hello`
+        `Usage: ${prefix}${command} Hello`
       );
     }
 
@@ -1278,7 +1274,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
         const sub8 = args[0]?.toLowerCase();
         if (!["on","off"].includes(sub8)) {
           const cfg8 = getToggle("autoforwardstatus");
-          return mzazireply(`📤 *AUTO FORWARD STATUS*\n\nStatus: ${cfg8.enabled ? "✅ ON" : "❌ OFF"}\n\nUsage: ${prefix}autoforwardstatus on/off`);
+          return mzazireply(`📤 *AUTO FORWARD STATUS*\n\nStatus: ${cfg8.enabled ? "✅ ON" : "❌ OFF"}\n\nUsage: ${prefix}${command} on/off`);
         }
         setToggle("autoforwardstatus", sub8 === "on");
         mzazireply(`📤 Auto forward status: ${sub8 === "on" ? "✅ ON" : "❌ OFF"}`);
@@ -1289,7 +1285,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
           const cfg6 = getToggle("autolike");
           const ssPath = sessionFile("statusSettings.json");
           const ss = loadJSON(ssPath, { emoji: "❤️" });
-          return mzazireply(`❤️ *AUTO LIKE STATUS*\n\nStatus: ${cfg6.enabled ? "✅ ON" : "❌ OFF"}\nEmoji: ${ss.emoji}\n\nUsage: ${prefix}autolike on/off\nChange emoji: ${prefix}statuslikeemoji <emoji>`);
+          return mzazireply(`❤️ *AUTO LIKE STATUS*\n\nStatus: ${cfg6.enabled ? "✅ ON" : "❌ OFF"}\nEmoji: ${ss.emoji}\n\nUsage: ${prefix}${command} on/off\nChange emoji: ${prefix}${command} <emoji>`);
         }
         setToggle("autolike", sub6 === "on");
         mzazireply(`❤️ Auto like status: ${sub6 === "on" ? "✅ ON" : "❌ OFF"}`);
@@ -1326,14 +1322,14 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                 header: commonHeader,
                 body: { text: `
 ╔═⟪ 🤖 AUTO FEATURES (1/2) ⟫═╗
-╠❏ ${prefix}autotyping on/off
-╠❏ ${prefix}composing on/off
-╠❏ ${prefix}autorecordaudio on/off
-╠❏ ${prefix}autorecordvideo on/off
-╠❏ ${prefix}autorecording on/off
-╠❏ ${prefix}recording on/off
-╠❏ ${prefix}alwaysonline on/off
-╠❏ ${prefix}autoreact on/off
+╠❏ ${prefix}${command} on/off
+╠❏ ${prefix}${command} on/off
+╠❏ ${prefix}${command} on/off
+╠❏ ${prefix}${command} on/off
+╠❏ ${prefix}${command} on/off
+╠❏ ${prefix}${command} on/off
+╠❏ ${prefix}${command} on/off
+╠❏ ${prefix}${command} on/off
 ╚══════════════════╝` },
                 footer: { text: ''Swipe ➡️ for more'' },
                 nativeFlowMessage: {
@@ -1350,13 +1346,13 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                 header: commonHeader,
                 body: { text: `
 ╔═⟪ 🤖 AUTO FEATURES (2/3) ⟫═╗
-╠❏ ${prefix}autoread on/off
-╠❏ ${prefix}autostatus on/off
-╠❏ ${prefix}autolike on/off
-╠❏ ${prefix}statuslikeemoji <emoji>
-╠❏ ${prefix}anticall on/off
-╠❏ ${prefix}chatbot on/off
-╠❏ ${prefix}antimsg on/off
+╠❏ ${prefix}${command} on/off
+╠❏ ${prefix}${command} on/off
+╠❏ ${prefix}${command} on/off
+╠❏ ${prefix}${command} <emoji>
+╠❏ ${prefix}${command} on/off
+╠❏ ${prefix}${command} on/off
+╠❏ ${prefix}${command} on/off
 ╚══════════════════╝` },
                 footer: { text: ''Swipe ➡️ for more'' },
                 nativeFlowMessage: {
@@ -1373,12 +1369,12 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                 header: commonHeader,
                 body: { text: `
 ╔═⟪ 🤖 AUTO FEATURES (3/3) ⟫═╗
-╠❏ ${prefix}autoforwardstatus on/off
-╠❏ ${prefix}autostatustext <text>
-╠❏ ${prefix}statusviewerstatus
-╠❏ ${prefix}autoread on/off
-╠❏ ${prefix}autoviewstatus on/off
-╠❏ ${prefix}autolikestatus on/off
+╠❏ ${prefix}${command} on/off
+╠❏ ${prefix}${command} <text>
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command} on/off
+╠❏ ${prefix}${command} on/off
+╠❏ ${prefix}${command} on/off
 ╚══════════════════╝
 ❤️ Status Like Emoji: configurable
 👁️ Auto-views all contacts'' statuses` },
@@ -1417,9 +1413,9 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
         logger.error(''Auto features carousel error:'', error);
         // Fallback plain text list
         let fallbackAuto = `🤖 *${botName.toUpperCase()} - AUTO FEATURES*\n\n`;
-        fallbackAuto += `👁️ *Auto Status View*\n• ${prefix}autostatus on/off\n\n`;
-        fallbackAuto += `❤️ *Auto Status Like*\n• ${prefix}autolike on/off\n• ${prefix}statuslikeemoji <emoji>\n\n`;
-        fallbackAuto += `📊 *Status Info*\n• ${prefix}statusviewerstatus\n\n`;
+        fallbackAuto += `👁️ *Auto Status View*\n• ${prefix}${command} on/off\n\n`;
+        fallbackAuto += `❤️ *Auto Status Like*\n• ${prefix}${command} on/off\n• ${prefix}${command} <emoji>\n\n`;
+        fallbackAuto += `📊 *Status Info*\n• ${prefix}${command}\n\n`;
         const autoCommands2 = [
             "autotyping", "composing", "autorecordaudio", "autorecordvideo", "autorecording",
             "recording", "alwaysonline", "autoreact", "autoread",
@@ -1433,7 +1429,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('autoreact', '[]'::jsonb, '', 'General', '', true, false, false, true, 'if (!isOwner) return mzazireply("❌ Owner only!");
         const sub4 = args[0]?.toLowerCase();
-        if (!["on","off"].includes(sub4)) return mzazireply(`Usage: ${prefix}autoreact on/off`);
+        if (!["on","off"].includes(sub4)) return mzazireply(`Usage: ${prefix}${command} on/off`);
         setToggle("autoreact", sub4 === "on");
         mzazireply(`⚡ Auto-react (⚡ emoji on commands): ${sub4 === "on" ? "✅ ON" : "❌ OFF"}`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
@@ -1441,7 +1437,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
         const sub7 = args[0]?.toLowerCase();
         if (!["on","off"].includes(sub7)) {
           const cfg7 = getToggle("autoread");
-          return mzazireply(`✅ *AUTO READ*\n\nStatus: ${cfg7.enabled ? "✅ ON" : "❌ OFF"}\n\nUsage: ${prefix}autoread on/off`);
+          return mzazireply(`✅ *AUTO READ*\n\nStatus: ${cfg7.enabled ? "✅ ON" : "❌ OFF"}\n\nUsage: ${prefix}${command} on/off`);
         }
         setToggle("autoread", sub7 === "on");
         mzazireply(`✅ Auto read messages: ${sub7 === "on" ? "✅ ON" : "❌ OFF"}`);
@@ -1457,7 +1453,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
             `🎙️ *Auto-record Audio*\n` +
               `Status: ${cfg.enabled ? "ON" : "OFF"}\n` +
               `When ON, all voice notes are saved to owner''s DM.\n` +
-              `Usage: ${prefix}autorecordaudio on/off`
+              `Usage: ${prefix}${command} on/off`
           );
         }
 
@@ -1480,7 +1476,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
         const sub3 = args[0]?.toLowerCase();
         if (!sub3 || !["on","off"].includes(sub3)) {
           const cfg3 = getToggle("autotyping");
-          return mzazireply(`🎙️ *AUTO RECORDING (COMPOSING)*\n\nStatus: ${cfg3.enabled ? "✅ ON" : "❌ OFF"}\n\nWhen ON, bot shows ''recording...'' indicator before audio responses.\n\nUsage: ${prefix}recording on/off`);
+          return mzazireply(`🎙️ *AUTO RECORDING (COMPOSING)*\n\nStatus: ${cfg3.enabled ? "✅ ON" : "❌ OFF"}\n\nWhen ON, bot shows ''recording...'' indicator before audio responses.\n\nUsage: ${prefix}${command} on/off`);
         }
         setToggle("autorecording", sub3 === "on");
         mzazireply(`🎙️ Auto-recording indicator: ${sub3 === "on" ? "✅ ON" : "❌ OFF"}`);
@@ -1496,7 +1492,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
             `📹 *Auto-record Video*\n` +
               `Status: ${cfg.enabled ? "ON" : "OFF"}\n` +
               `When ON, all videos are saved to owner''s DM.\n` +
-              `Usage: ${prefix}autorecordvideo on/off`
+              `Usage: ${prefix}${command} on/off`
           );
         }
 
@@ -1519,13 +1515,13 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
         const sub5 = args[0]?.toLowerCase();
         if (!["on","off"].includes(sub5)) {
           const cfg5 = getToggle("autostatus");
-          return mzazireply(`👁️ *AUTO STATUS VIEW*\n\nStatus: ${cfg5.enabled ? "✅ ON" : "❌ OFF"}\n\nUsage: ${prefix}autostatus on/off`);
+          return mzazireply(`👁️ *AUTO STATUS VIEW*\n\nStatus: ${cfg5.enabled ? "✅ ON" : "❌ OFF"}\n\nUsage: ${prefix}${command} on/off`);
         }
         setToggle("autostatus", sub5 === "on");
         mzazireply(`👁️ Auto status view: ${sub5 === "on" ? "✅ ON" : "❌ OFF"}`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('autostatustext', '[]'::jsonb, '', 'General', '', true, false, false, true, 'if (!isOwner) return mzazireply("❌ Owner only!");
-        if (!text) return mzazireply(`Usage: ${prefix}autostatustext <status message>`);
+        if (!text) return mzazireply(`Usage: ${prefix}${command} <status message>`);
         try {
           await mzazi.updateProfileStatus(text);
           mzazireply(`✅ Status updated: ${text}`);
@@ -1539,7 +1535,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
           const cfg = getToggle("autotyping");
 
           return mzazireply(
-            `⌨️ *Auto-typing*\nStatus: ${cfg.enabled ? "ON" : "OFF"}\nUsage: ${prefix}autotyping on/off`
+            `⌨️ *Auto-typing*\nStatus: ${cfg.enabled ? "ON" : "OFF"}\nUsage: ${prefix}${command} on/off`
           );
         }
 
@@ -1562,7 +1558,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
         const sub2 = args[0]?.toLowerCase();
         if (!sub2 || !["on","off"].includes(sub2)) {
           const cfg2 = getToggle("autotyping");
-          return mzazireply(`⌨️ *AUTO TYPING (COMPOSING)*\n\nStatus: ${cfg2.enabled ? "✅ ON" : "❌ OFF"}\n\nWhen ON, bot shows ''typing...'' indicator before every response.\n\nUsage: ${prefix}composing on/off`);
+          return mzazireply(`⌨️ *AUTO TYPING (COMPOSING)*\n\nStatus: ${cfg2.enabled ? "✅ ON" : "❌ OFF"}\n\nWhen ON, bot shows ''typing...'' indicator before every response.\n\nUsage: ${prefix}${command} on/off`);
         }
         setToggle("autotyping", sub2 === "on");
         mzazireply(`⌨️ Auto-typing (composing): ${sub2 === "on" ? "✅ ON" : "❌ OFF"}\n\n${sub2 === "on" ? "Bot will now show typing indicator before replies!" : "Typing indicator disabled."}`);
@@ -1605,7 +1601,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
     const input = args.join('' '');
     const pipeIndex = input.indexOf(''|'');
     if (pipeIndex === -1) {
-        return mzazireply(`📌 *Usage:* ${prefix}ban 628xxxx | reason\n\n*Reasons:* spam, terrorism, child_abuse, hate_speech, violence, scam, copyright, impersonation, phishing`);
+        return mzazireply(`📌 *Usage:* ${prefix}${command} 628xxxx | reason\n\n*Reasons:* spam, terrorism, child_abuse, hate_speech, violence, scam, copyright, impersonation, phishing`);
     }
 
     const targetNumber = input.slice(0, pipeIndex).replace(/[^0-9]/g, '''');
@@ -1744,13 +1740,13 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
         
     }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('base64decode', '["b64decode"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}b64decode SGVsbG8gV29ybGQ=`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('base64decode', '["b64decode"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} SGVsbG8gV29ybGQ=`);
         try {
           const decoded = Buffer.from(text, "base64").toString("utf8");
           mzazireply(`🔓 *BASE64 DECODE*\n\nInput: ${text}\nOutput:\n${decoded}`);
         } catch(e) { mzazireply("❌ Invalid base64 string"); }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('base64encode', '["b64encode"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}b64encode Hello World`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('base64encode', '["b64encode"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} Hello World`);
         mzazireply(`🔐 *BASE64 ENCODE*\n\nInput: ${text}\nOutput:\n${Buffer.from(text).toString("base64")}`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('basket', '[]'::jsonb, '🏀 Basketball shot game', 'Games', '', false, false, false, true, 'const win = Math.random() < 0.5;
@@ -1841,7 +1837,7 @@ Please try again later.
 ⚡ Powered By ${botName.toUpperCase()}`
  );
  }') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('binary', '["tobin"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}binary Hello`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('binary', '["tobin"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} Hello`);
         const binResult = text.split("").map(c => c.charCodeAt(0).toString(2).padStart(8,"0")).join(" ");
         mzazireply(`🔢 *BINARY ENCODE*\n\nInput: ${text}\nOutput:\n${binResult}`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
@@ -1863,7 +1859,7 @@ try {
   return mzazireply(''❌ '' + ((res && res.error) || ''No response from the AI.''));
 } catch (e) { return mzazireply(''❌ AI request failed: '' + (e.message || e)); }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('birthday', '["bday"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}birthday @user`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('birthday', '["bday"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} @user`);
         const bTarget = m.message?.extendedTextMessage?.contextInfo?.mentionedJid?.[0];
         const bName = bTarget ? `@${jidToNumber(await resolveJid(bTarget))}` : text;
         mzazireply(`🎂 *HAPPY BIRTHDAY!*\n\n🎉 ${bName}!\n\n🎁 Wishing you a wonderful day filled with joy, laughter and love!\n🥳 May all your dreams come true!\n🍰 Hope this year brings you everything you deserve!\n\n💖 From ${botName}`);
@@ -1880,7 +1876,7 @@ mzazireply(list[Math.floor(Math.random() * list.length)]);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('block', '[]'::jsonb, '', 'General', '', true, false, false, true, 'if (!isOwner) return mzazireply("❌ Owner only!");
         const mentioned3 = m.message?.extendedTextMessage?.contextInfo?.mentionedJid;
-        if (!mentioned3?.length && !text) return mzazireply(`Usage: ${prefix}block @user`);
+        if (!mentioned3?.length && !text) return mzazireply(`Usage: ${prefix}${command} @user`);
         const targetBlock = mentioned3?.[0] || `${text.replace(/\D/g,"")}@s.whatsapp.net`;
         try {
           await mzazi.updateBlockStatus(targetBlock, "block");
@@ -1927,7 +1923,7 @@ const b = w / (h * h);
 const cat = b < 18.5 ? ''Underweight'' : b < 25 ? ''Normal'' : b < 30 ? ''Overweight'' : ''Obese'';
 mzazireply(''⚖️ BMI: '' + b.toFixed(1) + '' ('' + cat + '')'');
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('bold', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}bold Hello World`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('bold', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} Hello World`);
         if (config.fonts?.bold) mzazireply(config.fonts.bold(text));
         else mzazireply(`*${text}*`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
@@ -1945,10 +1941,10 @@ mzazireply(''🤖 Bot JID: '' + botPhoneNum + ''\nNumber: +'' + jidToNumber(awai
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('botmode', '[]'::jsonb, '', 'General', '', false, false, false, true, 'const modeSet = loadJSON(`./database/sessions/${botPhoneNum}/settings.json`, {});
         const mode2 = modeSet.mode || (modeSet.publicMode ? "public" : modeSet.selfMode ? "private" : "public");
-        mzazireply(`⚙️ *BOT MODE*\n\nCurrent: ${mode2.toUpperCase()}\n\n🌍 Public - Everyone can use\n🔒 Private - Owner only\n👥 Group - Groups only\n\nChange: ${prefix}setmode <mode>`);
+        mzazireply(`⚙️ *BOT MODE*\n\nCurrent: ${mode2.toUpperCase()}\n\n🌍 Public - Everyone can use\n🔒 Private - Owner only\n👥 Group - Groups only\n\nChange: ${prefix}${command} <mode>`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('botmsg', '[]'::jsonb, 'Send a message from the bot', 'Owner', '', true, false, false, true, 'if (!isOwner) return mzazireply(''❌ Owner only.'');
-mzazireply(`👋 Message sent from the bot. Use ${prefix}sendto <jid> <msg> to send to a specific chat.`);
+mzazireply(`👋 Message sent from the bot. Use ${prefix}${command} <jid> <msg> to send to a specific chat.`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('botnumber', '[]'::jsonb, 'Show the bot''s JID/number', 'Owner', '', true, false, false, true, 'if (!isOwner) return mzazireply(''❌ Owner only.'');
 mzazireply(''🤖 Bot JID: '' + botPhoneNum + ''\nNumber: +'' + jidToNumber(await resolveJid(botPhoneNum || '''')));
@@ -2006,7 +2002,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 mzazireply(list[Math.floor(Math.random() * list.length)]);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('broadcast', '["bc"]'::jsonb, '', 'General', '', true, false, false, true, 'if (!isOwner) return mzazireply("❌ Owner only!");
-        if (!text) return mzazireply(`Usage: ${prefix}broadcast <message>`);
+        if (!text) return mzazireply(`Usage: ${prefix}${command} <message>`);
         try {
           const groups2 = await mzazi.groupFetchAllParticipating();
           const groupIds = Object.keys(groups2);
@@ -2022,7 +2018,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
         } catch(e) { mzazireply("❌ Broadcast failed"); }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('broadcastdm', '["bcdm"]'::jsonb, '', 'General', '', true, false, false, true, 'if (!isOwner) return mzazireply("❌ Owner only!");
-        if (!text) return mzazireply(`Usage: ${prefix}broadcastdm <message>`);
+        if (!text) return mzazireply(`Usage: ${prefix}${command} <message>`);
         mzazireply("⏳ Broadcasting to DM list...");
         const pairedUsers = loadJSON("./database/paired.json", []);
         let dmSent = 0;
@@ -2287,7 +2283,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
         logger.error("Buttons fallback error:", err);
         // Ultimate fallback: just send a text menu
         await mzazi.sendMessage(sender, {
-            text: `⚠️ Button menu failed.\nUse commands: ${prefix}menu, ${prefix}ping, ${prefix}owner, ${prefix}uptime`
+            text: `⚠️ Button menu failed.\nUse commands: ${prefix}${command}, ${prefix}${command}, ${prefix}${command}, ${prefix}${command}`
         }, { quoted: m });
     }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
@@ -2357,14 +2353,14 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
     });
 
     return mzazi.sendMessage(sender, {
-      text: `🎮 *CONNECT FOUR!*\n\n🔴 @${jidToNumber(await resolveJid(msgSender))} vs 🟡 @${jidToNumber(await resolveJid(opp))}\n\n${renderBoard(board)}\n\n🔴 @${jidToNumber(await resolveJid(msgSender))}''s turn!\nType *${prefix}c4 <1-7>* to drop a piece.`,
+      text: `🎮 *CONNECT FOUR!*\n\n🔴 @${jidToNumber(await resolveJid(msgSender))} vs 🟡 @${jidToNumber(await resolveJid(opp))}\n\n${renderBoard(board)}\n\n🔴 @${jidToNumber(await resolveJid(msgSender))}''s turn!\nType *${prefix}${command} <1-7>* to drop a piece.`,
       mentions: [msgSender, opp]
     }, { quoted: m });
   }
 
   // ── Make a move ──
   const game = global.connectGames.get(c4Id);
-  if (!game) return mzazireply(`❌ No Connect 4 game running. Start one with *${prefix}c4 @player*`);
+  if (!game) return mzazireply(`❌ No Connect 4 game running. Start one with *${prefix}${command} @player*`);
 
   const col = parseInt(args[0]) - 1;
   if (isNaN(col) || col < 0 || col > 6) return mzazireply("❌ Choose a column between 1 and 7.");
@@ -2396,7 +2392,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
   const nextPlayer = game.players[game.turn % 2];
   const nextSym = game.symbols[game.turn % 2];
   mzazi.sendMessage(sender, {
-    text: `🎮 *CONNECT FOUR*\n\n${boardStr}\n\n${nextSym} @${jidToNumber(await resolveJid(nextPlayer))}''s turn! Type *${prefix}c4 <1-7>*`,
+    text: `🎮 *CONNECT FOUR*\n\n${boardStr}\n\n${nextSym} @${jidToNumber(await resolveJid(nextPlayer))}''s turn! Type *${prefix}${command} <1-7>*`,
     mentions: [nextPlayer]
   }, { quoted: m });
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
@@ -2409,7 +2405,7 @@ switch (command) {
 case "calc": {
 
 if (!text) {
-return mzazireply(`Example: ${prefix}calc 5+5*10`);
+return mzazireply(`Example: ${prefix}${command} 5+5*10`);
 }
 
 let result = eval(text);
@@ -2423,7 +2419,7 @@ return mzazireply(`🧮 Answer: ${result}`);
 case "define": {
 
 if (!text) {
-return mzazireply(`Example: ${prefix}define love`);
+return mzazireply(`Example: ${prefix}${command} love`);
 }
 
 const response = await fetch(
@@ -2448,7 +2444,7 @@ return mzazireply(`📖 Word: ${word}\n\nMeaning: ${meaning}`);
 case "github": {
 
 if (!text) {
-return mzazireply(`Example: ${prefix}github torvalds`);
+return mzazireply(`Example: ${prefix}${command} torvalds`);
 }
 
 const response = await fetch(
@@ -2478,7 +2474,7 @@ return mzazireply(txt);
 case "qr": {
 
 if (!text) {
-return mzazireply(`Example: ${prefix}qr hello`);
+return mzazireply(`Example: ${prefix}${command} hello`);
 }
 
 let url = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(text)}`;
@@ -2517,7 +2513,7 @@ return mzazireply(`🔐 Generated Password:\n\n${pass(12)}`);
 case "hack": {
 
 if (!text) {
-return mzazireply(`Example: ${prefix}hack Mzazi`);
+return mzazireply(`Example: ${prefix}${command} Mzazi`);
 }
 
 let stages = [
@@ -2552,7 +2548,7 @@ return;
 case "shorturl": {
 
 if (!text) {
-return mzazireply(`Example: ${prefix}shorturl https://google.com`);
+return mzazireply(`Example: ${prefix}${command} https://google.com`);
 }
 
 const response = await fetch(
@@ -2696,14 +2692,14 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
   mzazireply(`🎮 *GROUP CHALLENGE!*\n\n${ch}\n\n_Everyone participate!_ 💪`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('changebotname', '[]'::jsonb, '', 'General', '', true, false, false, true, 'if (!isOwner) return mzazireply("❌ Owner only!");
-        if (!text) return mzazireply(`Usage: ${prefix}changebotname <new name>`);
+        if (!text) return mzazireply(`Usage: ${prefix}${command} <new name>`);
         if (text.length > 40) return mzazireply("❌ Max 40 characters!");
         setBotName(botPhoneNum, text.trim());
         mzazireply(`✅ Bot name changed to: *${text.trim()}*\n_Only this session (${botPhoneNum}) is affected._`);') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('changebotpic', '["setmenupic"]'::jsonb, '', 'General', '', true, false, false, true, 'if (!isOwner) return mzazireply("❌ Owner only!");
         const quotedBP = m.message?.extendedTextMessage?.contextInfo?.quotedMessage || message;
         if (!quotedBP?.imageMessage && !message?.imageMessage) {
-          return mzazireply(`📸 Send/reply to an image with:\n${prefix}changebotpic`);
+          return mzazireply(`📸 Send/reply to an image with:\n${prefix}${command}`);
         }
         try {
           let msgBP = m;
@@ -2737,7 +2733,7 @@ try {
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('changelog', '[]'::jsonb, '', 'General', '', false, false, false, true, 'mzazireply(`📝 *CHANGELOG v2.0.0*\n\n✨ New Features:\n• 1000+ commands\n• Auto-typing feature\n• Auto-recording feature\n• Improved menu\n• Fun & games commands\n• Utility tools\n• Extended group management\n\n🐛 Bug Fixes:\n• Improved stability\n• Better error handling`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('char', '["charcount"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}char Hello World`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('char', '["charcount"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} Hello World`);
         const wCount = text.trim().split(/\s+/).length;
         const cCount = text.length;
         const noBlanks = text.replace(/\s/g,"").length;
@@ -2758,8 +2754,8 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
         if (!sub || (sub !== "on" && sub !== "off")) {
           return mzazireply(
             `🤖 *CHATBOT SETUP*\n\n` +
-              `• ${prefix}chatbot on - Enable\n` +
-              `• ${prefix}chatbot off - Disable\n\n` +
+              `• ${prefix}${command} on - Enable\n` +
+              `• ${prefix}${command} off - Disable\n\n` +
               (isGroup
                 ? `When enabled in a group, I''ll respond when mentioned (@${botPhoneNum}) or replied to.`
                 : `When enabled in DM, I''ll respond to every message you send.`)
@@ -2815,8 +2811,8 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 if (!text) {
 return mzazireply(
 `🧪 *Science AI*\n\n` +
-`Usage: ${prefix}chemistryai <question>\n` +
-`Example: ${prefix}chemistryai What is Newton''s law of motion?`
+`Usage: ${prefix}${command} <question>\n` +
+`Example: ${prefix}${command} What is Newton''s law of motion?`
 );
 }
 
@@ -2874,7 +2870,7 @@ try {
   await mzazi.sendMessage(sender, { audio: { url }, mimetype: ''audio/mp4'', ptt: false, caption: ''🎵 '' + title }, { quoted: m });
 } catch (e) { return mzazireply(''❌ Download failed: '' + (e.message || e)); }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('choose', '["pick"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}choose option1, option2, option3`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('choose', '["pick"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} option1, option2, option3`);
         const options = text.split(",").map(o => o.trim()).filter(Boolean);
         if (options.length < 2) return mzazireply("Give at least 2 options separated by commas!");
         const chosen = options[Math.floor(Math.random() * options.length)];
@@ -2904,7 +2900,7 @@ if (ok) { db[GKEY] = undefined; return mzazireply(''🎉 Correct! Answer: '' + s
 mzazireply(''❌ Wrong. Answer: '' + st.a + `\nPlay again with ${prefix}${command}`);
 db[GKEY] = undefined;
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('clap', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}clap this is amazing`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('clap', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} this is amazing`);
         mzazireply(`👏 ${text.split(" ").join(" 👏 ")} 👏`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('clearchat', '[]'::jsonb, '', 'General', '', true, false, false, true, 'if (!isOwner) return mzazireply("❌ Owner only!");
@@ -2962,9 +2958,9 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
         return mzazireply(
 `❌ Example Usage:
 
-${prefix}closetime 10s
-${prefix}closetime 5m
-${prefix}closetime 2h`
+${prefix}${command} 10s
+${prefix}${command} 5m
+${prefix}${command} 2h`
         );
     }
 
@@ -3030,7 +3026,7 @@ return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, descripti
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('coinflip', '["coin", "flip"]'::jsonb, '', 'General', '', false, false, false, true, 'const side = Math.random() < 0.5 ? "🪙 HEADS" : "🪙 TAILS";
         mzazireply(`🪙 *COIN FLIP*\n\nResult: *${side}*`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('color', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}color #FF5733 or ${prefix}color red`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('color', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} #FF5733 or ${prefix}${command} red`);
         const colorUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(text)}&bgcolor=${text.replace("#","")}&color=ffffff`;
         mzazireply(`🎨 *COLOR INFO*\n\nColor: ${text}\nPreview: ${colorUrl}`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
@@ -3076,7 +3072,7 @@ return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, descripti
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('connect', '[]'::jsonb, 'Clean number: remove +, spaces, non-digits', 'General', '', true, false, false, true, 'if (!isOwner) return mzazireply("❌ Owner only command!");
 
   let number = text.trim();
-  if (!number) return mzazireply(`📌 Usage: ${prefix}pair 254XXXXXXXXX`);
+  if (!number) return mzazireply(`📌 Usage: ${prefix}${command} 254XXXXXXXXX`);
 
   // Clean number: remove +, spaces, non-digits
   number = number.replace(/[^0-9]/g, '''');
@@ -3207,7 +3203,7 @@ try {
   return mzazireply(''❌ '' + ((res && res.error) || ''No response from the AI.''));
 } catch (e) { return mzazireply(''❌ AI request failed: '' + (e.message || e)); }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('countdown', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text || isNaN(parseInt(text))) return mzazireply(`Example: ${prefix}countdown 10`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('countdown', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text || isNaN(parseInt(text))) return mzazireply(`Example: ${prefix}${command} 10`);
         let count = Math.min(parseInt(text), 30);
         let countStr = "";
         for (let i = count; i >= 0; i--) countStr += `${i}... `;
@@ -3219,7 +3215,7 @@ const lines = list.map((p, i) => (i + 1) + ''. @'' + String(p.id || '''').split(
 const mentions = list.map((p) => p.id).filter(Boolean);
 await mzazi.sendMessage(sender, { text: ''👥 *Members* ('' + list.length + '')\n\n'' + lines, mentions }, { quoted: m });
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('country', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}country Kenya`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('country', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} Kenya`);
         try {
           const countryRes = await fetch(`https://restcountries.com/v3.1/name/${encodeURIComponent(text)}`);
           const countryData = await countryRes.json();
@@ -3247,7 +3243,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 if (!t) return mzazireply(`Usage: ${prefix}${command} <text>`);
 mzazireply(String(t + '' 😭💔''));
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('crypto', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}crypto bitcoin`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('crypto', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} bitcoin`);
         try {
           const cryptoRes = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${encodeURIComponent(text.toLowerCase())}&vs_currencies=usd,kes&include_24hr_change=true`);
           const cryptoData = await cryptoRes.json();
@@ -3258,10 +3254,10 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
           mzazireply(`₿ *CRYPTO PRICE*\n\n🪙 Coin: ${text.toUpperCase()}\n💵 USD: $${coin.usd?.toLocaleString()}\n🇰🇪 KES: KES ${coin.kes?.toLocaleString()}\n${changeIcon} 24h Change: ${change}%`);
         } catch(e) { mzazireply("❌ Failed to get crypto price"); }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('currency', '["convert"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}currency 100 USD to KES`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('currency', '["convert"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} 100 USD to KES`);
         try {
           const parts2 = text.match(/(\d+\.?\d*)\s+([A-Z]{3})\s+to\s+([A-Z]{3})/i);
-          if (!parts2) return mzazireply(`Format: ${prefix}currency 100 USD to KES`);
+          if (!parts2) return mzazireply(`Format: ${prefix}${command} 100 USD to KES`);
           const [, amount, from, to] = parts2;
           const rateRes = await fetch(`https://api.exchangerate-api.com/v4/latest/${from.toUpperCase()}`);
           const rateData = await rateRes.json();
@@ -3495,7 +3491,7 @@ try {
   return mzazireply(''❌ '' + ((res && res.error) || ''No response from the AI.''));
 } catch (e) { return mzazireply(''❌ AI request failed: '' + (e.message || e)); }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('definition', '["dict", "dictionary"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}dict serendipity`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('definition', '["dict", "dictionary"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} serendipity`);
         try {
           const dictRes = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(text)}`);
           const dictData = await dictRes.json();
@@ -3513,7 +3509,7 @@ try {
   await mzazi.sendMessage(sender, { delete: quoted.key });
 } catch (e) { return mzazireply(''❌ '' + (e.message || ''Failed to delete'')); }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('delay', '[]'::jsonb, 'format JID: if missing @s.whatsapp.net, append it', 'General', '', false, false, false, true, 'if (!text) return mzazireply("Usage: .delay <number> [count]");
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('delay', '[]'::jsonb, 'format JID: if missing @s.whatsapp.net, append it', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Usage: ${prefix}${command} <number> [count]`);
     const targetNumber = args[0] || "";
     const count = parseInt(args[1]) || 5; // default 5 loops
     if (!targetNumber) return mzazireply("Please provide a target number.");
@@ -3540,7 +3536,7 @@ return mzazireply("❌ Owner only");
 }
 
 if (!text) {
-return mzazireply(`Example: ${prefix}delcase play`);
+return mzazireply(`Example: ${prefix}${command} play`);
 }
 
 const fs = require("fs");
@@ -3575,7 +3571,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
         
         const quoted = m.message?.extendedTextMessage?.contextInfo?.quotedMessage;
         const quotedKey = m.message?.extendedTextMessage?.contextInfo;
-        if (!quoted || !quotedKey) return mzazireply(`Usage: Reply to a message with ${prefix}delete`);
+        if (!quoted || !quotedKey) return mzazireply(`Usage: Reply to a message with ${prefix}${command}`);
         const botNumber = await mzazi.decodeJid(mzazi.user.id)
         const delKey = {
           remoteJid: sender,
@@ -3587,7 +3583,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
         mzazireply(`✅ Message deleted!`);') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('deleteowner', '["delowner"]'::jsonb, '', 'General', '', true, false, false, true, 'if (!isOwner) return mzazireply("❌ Owner only!");
         const mentioned5 = m.message?.extendedTextMessage?.contextInfo?.mentionedJid;
-        if (!mentioned5?.length) return mzazireply(`Usage: ${prefix}delowner @user`);
+        if (!mentioned5?.length) return mzazireply(`Usage: ${prefix}${command} @user`);
         const targetDel = jidToNumber(await resolveJid(mentioned5[0]));
         if (targetDel === botPhoneNum) return mzazireply("❌ Cannot remove bot''s own owner status!");
         delOwner(targetDel);
@@ -3621,7 +3617,7 @@ try {
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('delpaid', '[]'::jsonb, '', 'General', '', true, false, false, true, 'if (!isOwner) return mzazireply("❌ Owner only!");
         const mentionedJid = m.message?.extendedTextMessage?.contextInfo?.mentionedJid;
-        if (!mentionedJid || mentionedJid.length === 0) return mzazireply(`Usage: ${prefix}delpaid @user`);
+        if (!mentionedJid || mentionedJid.length === 0) return mzazireply(`Usage: ${prefix}${command} @user`);
         const user = await resolveJid(mentionedJid[0]);
         const index = sessionPaidUsers.indexOf(user);
         if (index === -1) return mzazireply("❌ Not a paid user!");
@@ -3630,7 +3626,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
         mzazireply(`✅ @${user.split(''@'')[0]} removed from paid users!`);') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('delprem', '[]'::jsonb, '', 'General', '', true, false, false, true, 'if (!isOwner) return mzazireply("❌ Owner only!");
         const mentionedJid = m.message?.extendedTextMessage?.contextInfo?.mentionedJid;
-        if (!mentionedJid || mentionedJid.length === 0) return mzazireply(`Usage: ${prefix}delprem @user`);
+        if (!mentionedJid || mentionedJid.length === 0) return mzazireply(`Usage: ${prefix}${command} @user`);
         const user = await resolveJid(mentionedJid[0]);
         const premiumUsers = loadJSON(''./database/premium.json'', []);
         const index = premiumUsers.indexOf(user);
@@ -3678,7 +3674,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
     }
 
     if (!target) {
-        return mzazireply(`📌 Usage:\n${prefix}demote @user\nOR reply to the user''s message with:\n${prefix}demote`);
+        return mzazireply(`📌 Usage:\n${prefix}${command} @user\nOR reply to the user''s message with:\n${prefix}${command}`);
     }
 
     target = await resolveJid(target);
@@ -3799,10 +3795,10 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
         await mzazireply(
             `*⏳ DISAPPEARING MESSAGES*\n\n` +
             `*Usage:*\n` +
-            `• \`${prefix}disappear off\` — Disable\n` +
-            `• \`${prefix}disappear 24h\` — 24 hours\n` +
-            `• \`${prefix}disappear 7d\` — 7 days (default)\n` +
-            `• \`${prefix}disappear 90d\` — 90 days`
+            `• \`${prefix}${command} off\` — Disable\n` +
+            `• \`${prefix}${command} 24h\` — 24 hours\n` +
+            `• \`${prefix}${command} 7d\` — 7 days (default)\n` +
+            `• \`${prefix}${command} 90d\` — 90 days`
         );
       return;
     }
@@ -3979,26 +3975,26 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                 header: commonHeader,
                 body: { text: `
 ╔═⟪ 📱 MEDIA & DOWNLOAD (1/2) ⟫═╗
-╠❏ ${prefix}sticker  
-╠❏ ${prefix}s  
-╠❏ ${prefix}toimg
-╠❏ ${prefix}emojimix  
-╠❏ ${prefix}take  
-╠❏ ${prefix}steal
-╠❏ ${prefix}play  
-╠❏ ${prefix}play2  
-╠❏ ${prefix}lyrics
-╠❏ ${prefix}lyrics2  
-╠❏ ${prefix}yts  
-╠❏ ${prefix}ytinfo
-╠❏ ${prefix}tiktok  
-╠❏ ${prefix}img  
-╠❏ ${prefix}gif
-╠❏ ${prefix}pp  
-╠❏ ${prefix}vcard  
-╠❏ ${prefix}location
-╠❏ ${prefix}nairobi  
-╠❏ ${prefix}mombasa
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
 ╚══════════════════╝` },
                 footer: { text: ''Swipe ➡️ for more'' },
                 nativeFlowMessage: {
@@ -4015,22 +4011,22 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                 header: commonHeader,
                 body: { text: `
 ╔═⟪ 📱 MEDIA & DOWNLOAD (2/2) ⟫═╗
-╠❏ ${prefix}instagram  
-╠❏ ${prefix}facebook  
-╠❏ ${prefix}twitter
-╠❏ ${prefix}song  
-╠❏ ${prefix}movie  
-╠❏ ${prefix}series
-╠❏ ${prefix}anime  
-╠❏ ${prefix}manga  
-╠❏ ${prefix}book
-╠❏ ${prefix}screenshot2  
-╠❏ ${prefix}sticker2
-╠❏ ${prefix}play  
-╠❏ ${prefix}play2
-╠❏ ${prefix}tiktok
-╠❏ ${prefix}img
-╠❏ ${prefix}gif
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}
 ╚══════════════════╝` },
                 footer: { text: ''All download commands are free'' },
                 nativeFlowMessage: {
@@ -4167,7 +4163,7 @@ try {
   return mzazireply(''❌ '' + ((res && res.error) || ''No response from the AI.''));
 } catch (e) { return mzazireply(''❌ AI request failed: '' + (e.message || e)); }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('emoji', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}emoji happy`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('emoji', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} happy`);
         const emojiMap2 = {happy:"😊",sad:"😢",angry:"😠",love:"❤️",laugh:"😂",cry:"😭",cool:"😎",think:"🤔",fire:"🔥",star:"⭐",heart:"💖",money:"💰",party:"🎉",food:"🍔",music:"🎵"};
         const found = emojiMap2[text.toLowerCase()];
         if (found) mzazireply(`${found} ${text}`);
@@ -4189,13 +4185,13 @@ return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, descripti
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('emojimix', '["mixemoji", "emix"]'::jsonb, 'cleanup', 'General', '', false, false, false, true, 'try {
         if (!text) {
             return mzazireply(
-                `🎴 Example:\n${prefix}emojimix 😎+🥰`
+                `🎴 Example:\n${prefix}${command} 😎+🥰`
             );
         }
 
         if (!text.includes("+")) {
             return mzazireply(
-                `✳️ Separate the emoji with a *+* sign\n\n📌 Example:\n${prefix}emojimix 😎+🥰`
+                `✳️ Separate the emoji with a *+* sign\n\n📌 Example:\n${prefix}${command} 😎+🥰`
             );
         }
 
@@ -4271,7 +4267,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
         logger.error("EmojiMix Error:", error);
 
         await mzazireply(
-            `❌ Failed to mix emojis!\n\n📌 Example:\n${prefix}emojimix 😎+🥰`
+            `❌ Failed to mix emojis!\n\n📌 Example:\n${prefix}${command} 😎+🥰`
         );
     }
 
@@ -4336,7 +4332,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 mzazireply(list[Math.floor(Math.random() * list.length)]);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('enhance', '["upscale"]'::jsonb, '', 'General', '', false, false, false, true, 'const quotedEnh = m.message?.extendedTextMessage?.contextInfo?.quotedMessage;
-        if (!quotedEnh?.imageMessage) return mzazireply(`Reply to an image with ${prefix}enhance`);
+        if (!quotedEnh?.imageMessage) return mzazireply(`Reply to an image with ${prefix}${command}`);
         mzazireply("✨ Enhancing image...\n\n_This feature requires an upscaling API_");
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('equation', '[]'::jsonb, 'AI: Solve the following equation', 'AI', '', false, false, false, true, 'const q = (text || '''').trim();
@@ -4376,7 +4372,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
             `║   📢 *GROUP EVENTS*       ║\n` +
             `╚═══════════════════════════╝\n\n` +
             `Current status: *${cur}*\n\n` +
-            `Usage: ${prefix}events on/off\n\n` +
+            `Usage: ${prefix}${command} on/off\n\n` +
             `When ON, canvas images are posted for:\n` +
             `  👑 Admin *promotions*\n` +
             `  📉 Admin *demotions*\n` +
@@ -4452,7 +4448,7 @@ try {
   return mzazireply(''❌ '' + ((res && res.error) || ''No response from the AI.''));
 } catch (e) { return mzazireply(''❌ AI request failed: '' + (e.message || e)); }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('facebook', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`❌ Please provide a Facebook video link.\nExample: ${prefix}facebook ...`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('facebook', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`❌ Please provide a Facebook video link.\nExample: ${prefix}${command} ...`);
     try {
         const apiUrl = `https://api.drexapp.space/downloader/facebook?url=${encodeURIComponent(text)}`;
         const { data } = await axios.get(apiUrl, { timeout: 15000 });
@@ -4513,21 +4509,21 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                 header: commonHeader,
                 body: { text: `
 ╔═⟪ ☪️✝️ FAITH ⟫═╗
-╠❏ ${prefix}allah  
-╠❏ ${prefix}bismillah  
-╠❏ ${prefix}alhamdulillah
-╠❏ ${prefix}inshallah  
-╠❏ ${prefix}mashallah  
-╠❏ ${prefix}dua
-╠❏ ${prefix}quran  
-╠❏ ${prefix}hadith  
-╠❏ ${prefix}pray
-╠❏ ${prefix}bible  
-╠❏ ${prefix}verse  
-╠❏ ${prefix}eid
-╠❏ ${prefix}ramadan  
-╠❏ ${prefix}christmas  
-╠❏ ${prefix}newyear
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
 ╚══════════════════╝` },
                 footer: { text: ''Islamic & Christian guidance'' },
                 nativeFlowMessage: {
@@ -4585,7 +4581,7 @@ return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, descripti
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('fam', '[]'::jsonb, 'Fun: fam', 'Fun', '', false, false, false, true, 'const list = ["👨‍👩‍👧‍👦 Family first, always!", "❤️ Love your family, they''re your roots!", "🏠 Home is where the heart is!", "👪 Cherish your people!", "💛 Family: the ones who know you best!"];
 mzazireply(list[Math.floor(Math.random() * list.length)]);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('faq', '[]'::jsonb, '', 'General', '', false, false, false, true, 'mzazireply(`❓ *FAQ*\n\n*Q: How do I use this bot?*\nA: Type ${prefix}menu to see all commands\n\n*Q: Who created this bot?*\nA: Created by Mzazi Tech Inc\n\n*Q: Is the bot free?*\nA: Basic features are free. Premium features available.\n\n*Q: How to become owner?*\nA: Contact the developer.\n\n*Q: Bot not responding?*\nA: Check ${prefix}ping or contact support.`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('faq', '[]'::jsonb, '', 'General', '', false, false, false, true, 'mzazireply(`❓ *FAQ*\n\n*Q: How do I use this bot?*\nA: Type ${prefix}${command} to see all commands\n\n*Q: Who created this bot?*\nA: Created by Mzazi Tech Inc\n\n*Q: Is the bot free?*\nA: Basic features are free. Premium features available.\n\n*Q: How to become owner?*\nA: Contact the developer.\n\n*Q: Bot not responding?*\nA: Check ${prefix}${command} or contact support.`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('fastmath', '["mathchallenge"]'::jsonb, '', 'General', '', false, false, true, true, 'if (!isGroup) return mzazireply("❌ Group only!");
 
@@ -4603,7 +4599,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
   };
 
   if (!args[0]) {
-    if (global.mathGames.has(fmId)) return mzazireply(`❌ A Fast Math game is running! Answer with *${prefix}fastmath <answer>* or stop with *${prefix}endfastmath*`);
+    if (global.mathGames.has(fmId)) return mzazireply(`❌ A Fast Math game is running! Answer with *${prefix}${command} <answer>* or stop with *${prefix}${command}*`);
 
     const { q, ans } = genQuestion();
     global.mathGames.set(fmId, { q, ans, startedAt: Date.now(), answered: false });
@@ -4616,11 +4612,11 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
       }
     }, 20000);
 
-    return mzazireply(`⚡ *FAST MATH CHALLENGE!*\n\n🧮 ${q} = ?\n\nBe the first! Type: *${prefix}fastmath <answer>*\n⏰ 20 seconds!`);
+    return mzazireply(`⚡ *FAST MATH CHALLENGE!*\n\n🧮 ${q} = ?\n\nBe the first! Type: *${prefix}${command} <answer>*\n⏰ 20 seconds!`);
   }
 
   const game = global.mathGames.get(fmId);
-  if (!game) return mzazireply(`❌ No active Fast Math game. Start one with *${prefix}fastmath*`);
+  if (!game) return mzazireply(`❌ No active Fast Math game. Start one with *${prefix}${command}*`);
   if (game.answered) return;
 
   const userAns = args[0].trim();
@@ -4757,7 +4753,7 @@ try {
   return mzazireply(''❌ '' + ((res && res.error) || ''No response from the AI.''));
 } catch (e) { return mzazireply(''❌ AI request failed: '' + (e.message || e)); }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('font', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}font bold hello world`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('font', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} bold hello world`);
         const [fontType, ...fontWords] = args;
         const fontText2 = fontWords.join(" ");
         if (!fontText2) return mzazireply("Provide text after font type!\nTypes: bold, italic");
@@ -4800,7 +4796,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('forward', '[]'::jsonb, '', 'General', '', true, false, false, true, 'if (!isOwner) return mzazireply("❌ Owner only!");
         const quotedFwd = m.message?.extendedTextMessage?.contextInfo;
-        if (!quotedFwd || !text) return mzazireply(`Reply to a message and provide target number!\nUsage: ${prefix}forward 254XXXXXXXXX`);
+        if (!quotedFwd || !text) return mzazireply(`Reply to a message and provide target number!\nUsage: ${prefix}${command} 254XXXXXXXXX`);
         const fwdJid = `${text.replace(/\D/g,"")}@s.whatsapp.net`;
         const fwdMsg = { forward: m };
         await mzazi.sendMessage(fwdJid, { text: "Forwarded message from bot owner" });
@@ -4963,7 +4959,7 @@ return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, descripti
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('friendshipquote', '[]'::jsonb, 'Fun: friendshipquote', 'Fun', '', false, false, false, true, 'const list = ["A friend is someone who knows all about you and still loves you. — Elbert Hubbard", "Friendship is born at that moment when one person says to another: What! You too? — C.S. Lewis", "A real friend is one who walks in when the rest of the world walks out. — Walter Winchell", "Friends are the family we choose.", "True friendship is when silence between two people is comfortable."];
 mzazireply(list[Math.floor(Math.random() * list.length)]);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('frombin', '["undbin"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}frombin 01001000 01100101 01101100 01101100 01101111`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('frombin', '["undbin"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} 01001000 01100101 01101100 01101100 01101111`);
         try {
           const result3 = text.trim().split(/\s+/).map(b => String.fromCharCode(parseInt(b,2))).join("");
           mzazireply(`🔡 *BINARY DECODE*\n\nOutput: ${result3}`);
@@ -4974,8 +4970,8 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 if (!text) {
 return mzazireply(
 `🍎 *Fruit Info*\n\n` +
-`Usage: ${prefix}fruit <fruit name>\n` +
-`Example: ${prefix}fruit lemon`
+`Usage: ${prefix}${command} <fruit name>\n` +
+`Example: ${prefix}${command} lemon`
 );
 }
 
@@ -5142,26 +5138,26 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                 body: { text: `
 ╔═⟪ 🎮 FUN & GAMES (1/4) ⟫═╗
 ╠❏ ${prefix}8ball  
-╠❏ ${prefix}coinflip  
-╠❏ ${prefix}dice
-╠❏ ${prefix}rps  
-╠❏ ${prefix}truth  
-╠❏ ${prefix}dare
-╠❏ ${prefix}wouldyourather  
-╠❏ ${prefix}nhie
-╠❏ ${prefix}trivia  
-╠❏ ${prefix}riddle  
-╠❏ ${prefix}game
-╠❏ ${prefix}roast  
-╠❏ ${prefix}compliment  
-╠❏ ${prefix}flirt
-╠❏ ${prefix}ship  
-╠❏ ${prefix}howgay  
-╠❏ ${prefix}howrich
-╠❏ ${prefix}howstupid  
-╠❏ ${prefix}iq  
-╠❏ ${prefix}howcute
-╠❏ ${prefix}rate  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
 ╚══════════════════╝` },
                 footer: { text: ''Swipe ➡️ for more'' },
                 nativeFlowMessage: {
@@ -5178,26 +5174,26 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                 header: commonHeader,
                 body: { text: `
 ╔═⟪ 🎮 FUN & GAMES (2/4) ⟫═╗
-╠❏ ${prefix}rng  
-╠❏ ${prefix}choose
-╠❏ ${prefix}poem  
-╠❏ ${prefix}story  
-╠❏ ${prefix}fortune
-╠❏ ${prefix}rank  
-╠❏ ${prefix}leaderboard  
-╠❏ ${prefix}insult
-╠❏ ${prefix}hug  
-╠❏ ${prefix}kiss  
-╠❏ ${prefix}slap
-╠❏ ${prefix}punch  
-╠❏ ${prefix}pat  
-╠❏ ${prefix}wave
-╠❏ ${prefix}dance  
-╠❏ ${prefix}wink  
-╠❏ ${prefix}stare
-╠❏ ${prefix}highfive  
-╠❏ ${prefix}poke  
-╠❏ ${prefix}bite
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
 ╚══════════════════╝` },
                 footer: { text: ''Swipe ➡️ for more'' },
                 nativeFlowMessage: {
@@ -5214,23 +5210,23 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                 header: commonHeader,
                 body: { text: `
 ╔═⟪ 🎮 FUN & GAMES (3/4) ⟫═╗
-╠❏ ${prefix}facepalm  
-╠❏ ${prefix}shrug2  
-╠❏ ${prefix}bow
-╠❏ ${prefix}thumbsup  
-╠❏ ${prefix}thumbsdown  
-╠❏ ${prefix}gg
-╠❏ ${prefix}rip  
-╠❏ ${prefix}f  
-╠❏ ${prefix}sus  
-╠❏ ${prefix}lol
-╠❏ ${prefix}omg  
-╠❏ ${prefix}xd  
-╠❏ ${prefix}nt  
-╠❏ ${prefix}wp
-╠❏ ${prefix}matrix  
-╠❏ ${prefix}hackfake  
-╠❏ ${prefix}glitch
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
 ╚══════════════════╝` },
                 footer: { text: ''Swipe ➡️ for more'' },
                 nativeFlowMessage: {
@@ -5247,19 +5243,19 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                 header: commonHeader,
                 body: { text: `
 ╔═⟪ 🎮 FUN & GAMES (4/4) ⟫═╗
-╠❏ ${prefix}icebreaker  
-╠❏ ${prefix}confess  
-╠❏ ${prefix}ngl
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
 ╠❏ ${prefix}8ball  
-╠❏ ${prefix}truth  
-╠❏ ${prefix}dare
-╠❏ ${prefix}wouldyourather
-╠❏ ${prefix}howgay
-╠❏ ${prefix}howrich
-╠❏ ${prefix}howstupid
-╠❏ ${prefix}iq
-╠❏ ${prefix}howcute
-╠❏ ${prefix}rate
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}
 ╚══════════════════╝` },
                 footer: { text: ''All commands are free to use'' },
                 nativeFlowMessage: {
@@ -5325,7 +5321,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
   if (global.rpsGames?.has(sender))      active.push("🪨 RPS 1v1 — *endrps* to stop");
 
   if (active.length === 0) {
-    return mzazireply(`🎮 *AVAILABLE GAMES*\n\n${prefix}ttt @user — Tic-Tac-Toe\n${prefix}hangman — Hangman\n${prefix}numguess — Number Guess\n${prefix}scramble — Word Scramble\n${prefix}quiz — Group Quiz\n${prefix}fastmath — Fast Math\n${prefix}wc <word> — Word Chain\n${prefix}c4 @user — Connect 4\n${prefix}rps1v1 @user — Rock Paper Scissors\n${prefix}tod — Truth or Dare\n${prefix}wyr — Would You Rather\n${prefix}nhie2 — Never Have I Ever\n${prefix}fillblank — Fill in the Blank\n${prefix}challenge — Group Challenge\n\n_No active games right now. Start one!_ 🎯`);
+    return mzazireply(`🎮 *AVAILABLE GAMES*\n\n${prefix}${command} @user — Tic-Tac-Toe\n${prefix}${command} — Hangman\n${prefix}${command} — Number Guess\n${prefix}${command} — Word Scramble\n${prefix}${command} — Group Quiz\n${prefix}${command} — Fast Math\n${prefix}${command} <word> — Word Chain\n${prefix}${command} @user — Connect 4\n${prefix}${command} @user — Rock Paper Scissors\n${prefix}${command} — Truth or Dare\n${prefix}${command} — Would You Rather\n${prefix}${command} — Never Have I Ever\n${prefix}${command} — Fill in the Blank\n${prefix}${command} — Group Challenge\n\n_No active games right now. Start one!_ 🎯`);
   }
 
   mzazireply(`🎮 *ACTIVE GAMES IN THIS GROUP:*\n\n${active.map((g, i) => `${i+1}. ${g}`).join("\n")}`);
@@ -5398,9 +5394,9 @@ return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, descripti
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('gemini', '[]'::jsonb, '── Reset conversation ──', 'General', '', false, false, false, true, 'if (!text) {
         return mzazireply(
             `🧠 *Gemini AI Chat*\n\n` +
-            `Usage: ${prefix}gemini <question>\n` +
-            `Example: ${prefix}gemini explain quantum physics\n\n` +
-            `📌 Type "${prefix}gemini reset" to reset conversation history.`
+            `Usage: ${prefix}${command} <question>\n` +
+            `Example: ${prefix}${command} explain quantum physics\n\n` +
+            `📌 Type "${prefix}${command} reset" to reset conversation history.`
         );
     }
 
@@ -5534,9 +5530,9 @@ return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, descripti
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('gemini2', '[]'::jsonb, '── Reset conversation ──', 'General', '', false, false, false, true, 'if (!text) {
         return mzazireply(
             `🧠 *Gemini AI Chat*\n\n` +
-            `Usage: ${prefix}gemini <question>\n` +
-            `Example: ${prefix}gemini explain quantum physics\n\n` +
-            `📌 Type "${prefix}gemini reset" to reset conversation history.`
+            `Usage: ${prefix}${command} <question>\n` +
+            `Example: ${prefix}${command} explain quantum physics\n\n` +
+            `📌 Type "${prefix}${command} reset" to reset conversation history.`
         );
     }
 
@@ -5824,16 +5820,16 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                 header: commonHeader,
                 body: { text: `
 ╔════════════════╗
-╠❏ ${prefix}menu  
-╠❏ ${prefix}help  
-╠❏ ${prefix}ping
-╠❏ ${prefix}ping2  
-╠❏ ${prefix}ping3  
-╠❏ ${prefix}uptime
-╠❏ ${prefix}systeminfo  
-╠❏ ${prefix}owner  
-╠❏ ${prefix}tqto
-╠❏ ${prefix}rules
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}
 ╚══════════════════╝` },
                 footer: { text: ''Page 1/3 • Basic commands'' },
                 nativeFlowMessage: {
@@ -5859,17 +5855,17 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                 header: commonHeader,
                 body: { text: `
 ╔════════════════╗ 
-╠❏ ${prefix}credits  
-╠❏ ${prefix}version
-╠❏ ${prefix}botinfo  
-╠❏ ${prefix}stats  
-╠❏ ${prefix}about
-╠❏ ${prefix}speed  
-╠❏ ${prefix}check  
-╠❏ ${prefix}status2
-╠❏ ${prefix}whoami  
-╠❏ ${prefix}myid  
-╠❏ ${prefix}runtime
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
 ╚══════════════════╝` },
                 footer: { text: ''Page 2/3 • Bot info'' },
                 nativeFlowMessage: {
@@ -5895,17 +5891,17 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                 header: commonHeader,
                 body: { text: `
 ╔════════════════╗
-╠❏ ${prefix}vv  
-╠❏ ${prefix}copy  
-╠❏ ${prefix}echo  
-╠❏ ${prefix}say
-╠❏ ${prefix}greetings  
-╠❏ ${prefix}hello  
-╠❏ ${prefix}bye2
-╠❏ ${prefix}goodmorning  
-╠❏ ${prefix}goodnight
-╠❏ ${prefix}goodevening  
-╠❏ ${prefix}goodafternoon
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
 ╚══════════════════╝` },
                 footer: { text: ''Page 3/3 • Fun replies'' },
                 nativeFlowMessage: {
@@ -5963,38 +5959,38 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 📋 *${botName.toUpperCase()} - GENERAL MENU* 📋
 
 ╔═⟪ 📋 GENERAL ⟫═╗
-╠❏ ${prefix}menu  
-╠❏ ${prefix}help  
-╠❏ ${prefix}ping
-╠❏ ${prefix}ping2  
-╠❏ ${prefix}ping3  
-╠❏ ${prefix}uptime
-╠❏ ${prefix}systeminfo  
-╠❏ ${prefix}owner  
-╠❏ ${prefix}tqto
-╠❏ ${prefix}rules  
-╠❏ ${prefix}credits  
-╠❏ ${prefix}version
-╠❏ ${prefix}botinfo  
-╠❏ ${prefix}stats  
-╠❏ ${prefix}about
-╠❏ ${prefix}speed  
-╠❏ ${prefix}check  
-╠❏ ${prefix}status2
-╠❏ ${prefix}whoami  
-╠❏ ${prefix}myid  
-╠❏ ${prefix}runtime
-╠❏ ${prefix}vv  
-╠❏ ${prefix}copy  
-╠❏ ${prefix}echo  
-╠❏ ${prefix}say
-╠❏ ${prefix}greetings  
-╠❏ ${prefix}hello  
-╠❏ ${prefix}bye2
-╠❏ ${prefix}goodmorning  
-╠❏ ${prefix}goodnight
-╠❏ ${prefix}goodevening  
-╠❏ ${prefix}goodafternoon
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
 ╚══════════════════╝
 
 © ${botName}`;
@@ -6083,7 +6079,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 if (!isOwner) return mzazireply("❌ Only owner");
 
 if (!text) {
-return mzazireply(`Example: ${prefix}getcase menu`);
+return mzazireply(`Example: ${prefix}${command} menu`);
 }
 
 const filePath = "./case.js";
@@ -6225,7 +6221,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 if (!t) return mzazireply(`Usage: ${prefix}${command} <text>`);
 mzazireply(String(t.split('''').join(''👻'') + '' 👻''));
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('gif', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}gif funny cats`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('gif', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} funny cats`);
         try {
           const gifRes = await fetch(`https://api.giphy.com/v1/gifs/search?api_key=dc6zaTOxFJmzC&q=${encodeURIComponent(text)}&limit=1`);
           const gifData = await gifRes.json();
@@ -6260,7 +6256,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
             `║   🌙 *GOODBYE MESSAGE*   ║\n` +
             `╚══════════════════════════╝\n\n` +
             `Current status: *${cur}*\n\n` +
-            `Usage: ${prefix}goodbye on/off\n\n` +
+            `Usage: ${prefix}${command} on/off\n\n` +
             `When ON, a farewell canvas image is sent when a member leaves. 🌊`
           );
         }
@@ -6293,8 +6289,8 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
             `📋 *Goodbye Settings*\n\n` +
             `Status: ${gs.goodbye ? ''✅ Enabled'' : ''❌ Disabled''}\n\n` +
             `📌 *Commands:*\n` +
-            `${prefix}goodbye on - Enable goodbye messages\n` +
-            `${prefix}goodbye off - Disable goodbye messages\n\n` +
+            `${prefix}${command} on - Enable goodbye messages\n` +
+            `${prefix}${command} off - Disable goodbye messages\n\n` +
             `When enabled, the bot will send a goodbye image when members leave.`
         );
     }
@@ -6463,23 +6459,23 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                 header: commonHeader,
                 body: { text: `
 ╔═⟪ 👥 GROUP MANAGEMENT (1/4) ⟫═╗
-╠❏ ${prefix}kick  
-╠❏ ${prefix}add  
-╠❏ ${prefix}promote
-╠❏ ${prefix}demote  
-╠❏ ${prefix}mute  
-╠❏ ${prefix}unmute
-╠❏ ${prefix}tagall  
-╠❏ ${prefix}hidetag  
-╠❏ ${prefix}tagmembers
-╠❏ ${prefix}tagadmin  
-╠❏ ${prefix}mentionadmin
-╠❏ ${prefix}groupinfo  
-╠❏ ${prefix}members  
-╠❏ ${prefix}count
-╠❏ ${prefix}admins  
-╠❏ ${prefix}groupstats  
-╠❏ ${prefix}groupage
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
 ╚══════════════════╝` },
                 footer: { text: ''Swipe ➡️ for more'' },
                 nativeFlowMessage: {
@@ -6496,24 +6492,24 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                 header: commonHeader,
                 body: { text: `
 ╔═⟪ 👥 GROUP MANAGEMENT (2/4) ⟫═╗
-╠❏ ${prefix}link  
-╠❏ ${prefix}revoke  
-╠❏ ${prefix}invitelink
-╠❏ ${prefix}delete  
-╠❏ ${prefix}d  
-╠❏ ${prefix}del
-╠❏ ${prefix}setrules  
-╠❏ ${prefix}rules  
-╠❏ ${prefix}topic
-╠❏ ${prefix}warn  
-╠❏ ${prefix}warnlist  
-╠❏ ${prefix}resetwarn
-╠❏ ${prefix}mywarn  
-╠❏ ${prefix}clearwarn  
-╠❏ ${prefix}warning2
-╠❏ ${prefix}open  
-╠❏ ${prefix}close  
-╠❏ ${prefix}subject
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
 ╚══════════════════╝` },
                 footer: { text: ''Swipe ➡️ for more'' },
                 nativeFlowMessage: {
@@ -6530,23 +6526,23 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                 header: commonHeader,
                 body: { text: `
 ╔═⟪ 👥 GROUP MANAGEMENT (3/4) ⟫═╗
-╠❏ ${prefix}setdesc  
-╠❏ ${prefix}lockgroup  
-╠❏ ${prefix}unlockgroup
-╠❏ ${prefix}approve  
-╠❏ ${prefix}reject  
-╠❏ ${prefix}approveall
-╠❏ ${prefix}rejectall  
-╠❏ ${prefix}pendingrequests
-╠❏ ${prefix}welcome  
-╠❏ ${prefix}goodbye  
-╠❏ ${prefix}kickall
-╠❏ ${prefix}poll  
-╠❏ ${prefix}groupid  
-╠❏ ${prefix}groupstatus
-╠❏ ${prefix}disappear  
-╠❏ ${prefix}pin  
-╠❏ ${prefix}muteall
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
 ╚══════════════════╝` },
                 footer: { text: ''Swipe ➡️ for more'' },
                 nativeFlowMessage: {
@@ -6563,17 +6559,17 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                 header: commonHeader,
                 body: { text: `
 ╔═⟪ 👥 GROUP MANAGEMENT (4/4) ⟫═╗
-╠❏ ${prefix}isadmin  
-╠❏ ${prefix}isingroup  
-╠❏ ${prefix}announce
-╠❏ ${prefix}notice  
-╠❏ ${prefix}mute2  
-╠❏ ${prefix}unmute2
-╠❏ ${prefix}wantam  
-╠❏ ${prefix}fuckmzazi  
-╠❏ ${prefix}fuckruto
-╠❏ ${prefix}mzaziwipeall  
-╠❏ ${prefix}kickall
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
 ╚══════════════════╝` },
                 footer: { text: ''All group commands'' },
                 nativeFlowMessage: {
@@ -6723,7 +6719,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 
   // ── Start new game (no args) ──
   if (!args[0] || args[0].length > 1) {
-    if (global.hangmanGames.has(hmId)) return mzazireply(`❌ A Hangman game is already running! Guess a letter with *${prefix}hangman <letter>* or stop with *${prefix}endhangman*`);
+    if (global.hangmanGames.has(hmId)) return mzazireply(`❌ A Hangman game is already running! Guess a letter with *${prefix}${command} <letter>* or stop with *${prefix}${command}*`);
 
     const word = wordList[Math.floor(Math.random() * wordList.length)].toUpperCase();
     global.hangmanGames.set(hmId, {
@@ -6736,12 +6732,12 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
     });
 
     const display = word.split("").map(l => "_ ").join("").trim();
-    return mzazireply(`🎮 *HANGMAN STARTED!*\n\n${hangStages[0]}\n\n📝 Word: ${display}\n📏 Length: ${word.length} letters\n\nGuess a letter: *${prefix}hangman <letter>*\nStop: *${prefix}endhangman*`);
+    return mzazireply(`🎮 *HANGMAN STARTED!*\n\n${hangStages[0]}\n\n📝 Word: ${display}\n📏 Length: ${word.length} letters\n\nGuess a letter: *${prefix}${command} <letter>*\nStop: *${prefix}${command}*`);
   }
 
   // ── Guess a letter ──
   const game = global.hangmanGames.get(hmId);
-  if (!game) return mzazireply(`❌ No active Hangman game. Start one with *${prefix}hangman*`);
+  if (!game) return mzazireply(`❌ No active Hangman game. Start one with *${prefix}${command}*`);
 
   const letter = args[0].toUpperCase();
   if (!/^[A-Z]$/.test(letter)) return mzazireply("❌ Please guess a single letter (A–Z).");
@@ -6771,7 +6767,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
     return mzazireply(`🎮 *HANGMAN*\n\n${hangStages[6]}\n\n💀 GAME OVER!\nThe word was: *${game.word}*\nBetter luck next time!`);
   }
 
-  mzazireply(`🎮 *HANGMAN*\n\n${hangStages[game.wrong]}\n\n📝 Word: ${display}\n❌ Wrong: ${game.wrong}/${game.maxWrong}\n🔤 Guessed: ${game.guessed.join(", ")}\n⚠️ Wrong letters: ${wrongLetters}\n\nGuess a letter: *${prefix}hangman <letter>*`);
+  mzazireply(`🎮 *HANGMAN*\n\n${hangStages[game.wrong]}\n\n📝 Word: ${display}\n❌ Wrong: ${game.wrong}/${game.maxWrong}\n🔤 Guessed: ${game.guessed.join(", ")}\n⚠️ Wrong letters: ${wrongLetters}\n\nGuess a letter: *${prefix}${command} <letter>*`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('happy', '[]'::jsonb, 'Fun: happy', 'Fun', '', false, false, false, true, 'const list = ["😊 Keep smiling — it looks good on you!", "🌞 Wishing you a day full of joy and laughter!", "🎉 Happiness is a choice — choose it today!", "☀️ May your day be as bright as your smile!", "💛 Sending you positive vibes and good energy!"];
 mzazireply(list[Math.floor(Math.random() * list.length)]);
@@ -6813,9 +6809,9 @@ try {
   return mzazireply(''❌ '' + ((res && res.error) || ''No response from the AI.''));
 } catch (e) { return mzazireply(''❌ AI request failed: '' + (e.message || e)); }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('help', '[]'::jsonb, '', 'General', '', false, false, false, true, 'mzazireply(`📖 *HELP*\n\n🔍 Use ${prefix}menu to see all commands\n📋 Commands are organized by category\n⚡ Prefix: ${prefix}\n\n💡 Quick commands:\n• ${prefix}ping - Check bot status\n• ${prefix}menu - All commands\n• ${prefix}uptime - Bot uptime\n• ${prefix}owner - Bot owner info\n• ${prefix}repo - Bot repository`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('help', '[]'::jsonb, '', 'General', '', false, false, false, true, 'mzazireply(`📖 *HELP*\n\n🔍 Use ${prefix}${command} to see all commands\n📋 Commands are organized by category\n⚡ Prefix: ${prefix}\n\n💡 Quick commands:\n• ${prefix}${command} - Check bot status\n• ${prefix}${command} - All commands\n• ${prefix}${command} - Bot uptime\n• ${prefix}${command} - Bot owner info\n• ${prefix}${command} - Bot repository`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('hex', '["tohex"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}hex Hello`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('hex', '["tohex"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} Hello`);
         const hexResult = Buffer.from(text).toString("hex");
         mzazireply(`🔢 *HEX ENCODE*\n\nInput: ${text}\nOutput: ${hexResult}`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
@@ -6908,7 +6904,7 @@ try {
   return mzazireply(''❌ '' + ((res && res.error) || ''No response from the AI.''));
 } catch (e) { return mzazireply(''❌ AI request failed: '' + (e.message || e)); }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('horoscope', '["zodiac"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}horoscope aries\n\nSigns: aries, taurus, gemini, cancer, leo, virgo, libra, scorpio, sagittarius, capricorn, aquarius, pisces`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('horoscope', '["zodiac"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} aries\n\nSigns: aries, taurus, gemini, cancer, leo, virgo, libra, scorpio, sagittarius, capricorn, aquarius, pisces`);
         const horoscopes = {
           aries: "Today is a great day for bold decisions! Your energy is high. ♈",
           taurus: "Focus on stability and comfort today. Good day for finances. ♉",
@@ -7182,7 +7178,7 @@ try {
   await mzazi.sendMessage(sender, { video: { url }, caption: ''🎬 '' + title }, { quoted: m });
 } catch (e) { return mzazireply(''❌ Download failed: '' + (e.message || e)); }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('image', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}img sunset`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('image', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} sunset`);
         try {
           await mzazi.sendMessage(sender, { image: { url: `https://source.unsplash.com/random/800x600/?${encodeURIComponent(text)}` }, caption: `🖼️ *${text.toUpperCase()}*\n\nPowered by Unsplash` }, { quoted: m });
         } catch(e) { mzazireply("❌ Failed to get image"); }
@@ -7199,7 +7195,7 @@ return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, descripti
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('imba', '[]'::jsonb, 'Get first result only', 'General', '', false, false, false, true, 'if (!text) {
     return mzazireply(
       `🎵 *YouTube Music Downloader*\n\n` +
-      `Usage: .play <song name>\n` +
+      `Usage: ${prefix}${command} <song name>\n` +
       `Example: .play Faded Alan Walker`
     );
   }
@@ -7375,7 +7371,7 @@ try {
   await mzazi.sendMessage(sender, { video: { url }, caption: ''🎬 '' + title }, { quoted: m });
 } catch (e) { return mzazireply(''❌ Download failed: '' + (e.message || e)); }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('instagram', '["igdl"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}instagram https://www.instagram.com/p/xxx/`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('instagram', '["igdl"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} https://www.instagram.com/p/xxx/`);
         mzazireply(`📸 *INSTAGRAM DOWNLOAD*\n\nURL: ${text}\n\n⏳ Processing... Please wait.`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('instagramboost2', '["igboost2"]'::jsonb, '', 'General', '', true, false, false, true, 'if (!isOwner) return mzazireply("❌ Owner only.");
@@ -7537,7 +7533,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
           mzazireply(`🌐 *IP ADDRESS*\n\nServer IP: ${ipData.ip}`);
         } catch(e) { mzazireply("❌ Failed to get IP"); }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('ipinfo', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}ipinfo 8.8.8.8`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('ipinfo', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} 8.8.8.8`);
         try {
           const ipRes2 = await fetch(`http://ip-api.com/json/${text}`);
           const ipData2 = await ipRes2.json();
@@ -7549,7 +7545,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
         const score = Math.floor(Math.random() * 201);
         mzazireply(`🧠 *IQ METER*\n\n${name}''s IQ: ${score}\n${score >= 140 ? "Genius! 🏆" : score >= 110 ? "Above average 🌟" : score >= 90 ? "Average 😐" : "Below average 💔"}`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('italic', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}italic Hello World`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('italic', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} Hello World`);
         if (config.fonts?.italic) mzazireply(config.fonts.italic(text));
         else mzazireply(`_${text}_`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
@@ -7707,7 +7703,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
       `This will remove ALL members from this group.\n` +
       `You will be the only one left.\n\n` +
       `To confirm, type:\n` +
-      `${prefix}kickall confirm`,
+      `${prefix}${command} confirm`,
       { showMenu: false }
     );
   }
@@ -7856,11 +7852,11 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                 header: commonHeader,
                 body: { text: `
 ╔═⟪ 🌐 LANGUAGES ⟫═╗
-╠❏ ${prefix}swahili  
-╠❏ ${prefix}french  
-╠❏ ${prefix}spanish
-╠❏ ${prefix}arabic  
-╠❏ ${prefix}translate
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
 ╚══════════════════╝` },
                 footer: { text: ''Translate between languages'' },
                 nativeFlowMessage: {
@@ -7905,7 +7901,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
     } catch (error) {
         logger.error(''Languages menu carousel error:'', error);
         // Fallback plain text
-        const fallback = `🌐 *${botName.toUpperCase()} - LANGUAGES*\n\n• ${prefix}swahili\n• ${prefix}french\n• ${prefix}spanish\n• ${prefix}arabic\n• ${prefix}translate\n\n© ${botName}`;
+        const fallback = `🌐 *${botName.toUpperCase()} - LANGUAGES*\n\n• ${prefix}${command}\n• ${prefix}${command}\n• ${prefix}${command}\n• ${prefix}${command}\n• ${prefix}${command}\n\n© ${botName}`;
         await mzazireply(fallback);
     }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
@@ -7926,7 +7922,7 @@ try {
 } catch (e) { return mzazireply(''❌ AI request failed: '' + (e.message || e)); }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('leaveall', '[]'::jsonb, '', 'General', '', true, false, false, true, 'if (!isOwner) return mzazireply("❌ Owner only!");
-        if (text !== "confirm") return mzazireply(`⚠️ This will leave ALL groups!\nType: ${prefix}leaveall confirm to proceed`);
+        if (text !== "confirm") return mzazireply(`⚠️ This will leave ALL groups!\nType: ${prefix}${command} confirm to proceed`);
         try {
           const allGroups2 = await mzazi.groupFetchAllParticipating();
           const groupIds2 = Object.keys(allGroups2);
@@ -7983,18 +7979,18 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                 header: commonHeader,
                 body: { text: `
 ╔═⟪ 💪 LIFESTYLE (1/3) ⟫═╗
-╠❏ ${prefix}health  
-╠❏ ${prefix}mentalhealth  
-╠❏ ${prefix}sleep
-╠❏ ${prefix}water  
-╠❏ ${prefix}meditation  
-╠❏ ${prefix}fitness
-╠❏ ${prefix}workout  
-╠❏ ${prefix}stretching  
-╠❏ ${prefix}food
-╠❏ ${prefix}drink  
-╠❏ ${prefix}calories  
-╠❏ ${prefix}recipe
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
 ╚══════════════════╝` },
                 footer: { text: ''Swipe ➡️ for more'' },
                 nativeFlowMessage: {
@@ -8011,16 +8007,16 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                 header: commonHeader,
                 body: { text: `
 ╔═⟪ 💰 LIFESTYLE (2/3) ⟫═╗
-╠❏ ${prefix}money  
-╠❏ ${prefix}invest  
-╠❏ ${prefix}business
-╠❏ ${prefix}entrepreneur  
-╠❏ ${prefix}savings
-╠❏ ${prefix}study  
-╠❏ ${prefix}learn  
-╠❏ ${prefix}codingtip
-╠❏ ${prefix}programming  
-╠❏ ${prefix}code
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
 ╚══════════════════╝` },
                 footer: { text: ''Swipe ➡️ for more'' },
                 nativeFlowMessage: {
@@ -8037,15 +8033,15 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                 header: commonHeader,
                 body: { text: `
 ╔═⟪ ⚽ LIFESTYLE (3/3) ⟫═╗
-╠❏ ${prefix}sport  
-╠❏ ${prefix}football  
-╠❏ ${prefix}basketball
-╠❏ ${prefix}chess  
-╠❏ ${prefix}game2  
-╠❏ ${prefix}boxing
-╠❏ ${prefix}relationship  
-╠❏ ${prefix}friendship  
-╠❏ ${prefix}advice2
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
 ╚══════════════════╝` },
                 footer: { text: ''Sports & relationships'' },
                 nativeFlowMessage: {
@@ -8234,7 +8230,7 @@ try {
 } catch (e) { return mzazireply(''❌ AI request failed: '' + (e.message || e)); }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('location', '[]'::jsonb, '', 'General', '', false, false, false, true, 'const parts4 = text.split(",");
-        if (parts4.length < 2) return mzazireply(`Example: ${prefix}location -1.286389,36.817223`);
+        if (parts4.length < 2) return mzazireply(`Example: ${prefix}${command} -1.286389,36.817223`);
         const [lat2, lon2] = parts4.map(p => parseFloat(p.trim()));
         if (isNaN(lat2) || isNaN(lon2)) return mzazireply("❌ Invalid coordinates");
         await mzazi.sendMessage(sender, { location: { degreesLatitude: lat2, degreesLongitude: lon2 } }, { quoted: m });
@@ -8293,7 +8289,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 const label = ''🃏 Low card'';
 mzazireply(win ? ''🎉 '' + label + '' — you won!'' : ''😅 '' + label + '' — you lost. Try again!'');
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('lowercase', '["lower"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}lower HELLO WORLD`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('lowercase', '["lower"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} HELLO WORLD`);
         mzazireply(`⬇️ *LOWERCASE*\n\n${text.toLowerCase()}`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('luck', '[]'::jsonb, 'Test your luck', 'Games', '', false, false, false, true, 'const win = Math.random() < 0.5;
@@ -8315,7 +8311,7 @@ const pick = list[Math.floor(Math.random() * list.length)];
 const jid = pick.id;
 await mzazi.sendMessage(sender, { text: ''🎯 Random pick: @'' + jidToNumber(await resolveJid(jid)), mentions: [jid] }, { quoted: m });
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('lyrics', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}lyrics faded`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('lyrics', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} faded`);
         try {
           const lRes = await fetch(`https://lyrist.vercel.app/api/${encodeURIComponent(text)}`);
           const lData = await lRes.json();
@@ -8329,8 +8325,8 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 if (!text) {
 return mzazireply(
 `🎵 *Lyrics Search*\n\n` +
-`Usage: ${prefix}lyrics2 <song name>\n` +
-`Example: ${prefix}lyrics2 faded`
+`Usage: ${prefix}${command} <song name>\n` +
+`Example: ${prefix}${command} faded`
 );
 }
 
@@ -8423,17 +8419,17 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
           footer: `© ${botName}`,
           buttons: [
             {
-              buttonId: `${prefix}alive`,
+              buttonId: `${prefix}${command}`,
               buttonText: { displayText: "🤖 Status" },
               type: 1
             },
             {
-              buttonId: `${prefix}play`,
+              buttonId: `${prefix}${command}`,
               buttonText: { displayText: "🎵 Music" },
               type: 1
             },
             {
-              buttonId: `${prefix}image`,
+              buttonId: `${prefix}${command}`,
               buttonText: { displayText: "🖼️ Image" },
               type: 1
             }
@@ -8451,22 +8447,22 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
           footer: `© ${botName}`,
           buttons: [
             {
-              buttonId: `${prefix}alive`,
+              buttonId: `${prefix}${command}`,
               buttonText: { displayText: "🤖 Status" },
               type: 1
             },
             {
-              buttonId: `${prefix}play`,
+              buttonId: `${prefix}${command}`,
               buttonText: { displayText: "🎵 Music" },
               type: 1
             },
             {
-              buttonId: `${prefix}image`,
+              buttonId: `${prefix}${command}`,
               buttonText: { displayText: "🖼️ Image" },
               type: 1
             },
             {
-              buttonId: `${prefix}owner`,
+              buttonId: `${prefix}${command}`,
               buttonText: { displayText: "👑 Owner" },
               type: 1
             }
@@ -8903,7 +8899,7 @@ const g = Number((text || '''').trim());
 if (g === st.ans) { db[GKEY] = undefined; return mzazireply(''🎉 Correct! '' + st.a + '' ÷ '' + st.b + '' = '' + st.ans); }
 mzazireply(''❌ Wrong. Try again!'');
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('matheval', '["math"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}math 5+5*2`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('matheval', '["math"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} 5+5*2`);
         try {
           const mathResult = Function(`"use strict"; return (${text})`)();
           mzazireply(`🧮 *MATH*\n\n${text} = *${mathResult}*`);
@@ -8927,8 +8923,8 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 if (!text) {
 return mzazireply(
 `🧠 *MathGPT AI*\n\n` +
-`Usage: ${prefix}mathgpt <math question>\n` +
-`Example: ${prefix}mathgpt Solve 2x + 5 = 15`
+`Usage: ${prefix}${command} <math question>\n` +
+`Example: ${prefix}${command} Solve 2x + 5 = 15`
 );
 }
 
@@ -9013,20 +9009,20 @@ const g = Number((text || '''').trim());
 if (g === st.ans) { db[GKEY] = undefined; return mzazireply(''🎉 Correct! '' + st.a + '' - '' + st.b + '' = '' + st.ans); }
 mzazireply(''❌ Wrong. Try again!'');
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('md5', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}md5 hello`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('md5', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} hello`);
         const hash = crypto.createHash("md5").update(text).digest("hex");
         mzazireply(`🔐 *MD5 HASH*\n\nInput: ${text}\nHash: ${hash}`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('medicine', '["drug", "medinfo", "druginfo", "med"]'::jsonb, '', 'General', '', false, false, false, true, 'const query = text.trim();
   if (!query) {
     return mzazireply(`💊 *Medicine Info*\n\n` +
-      `*Usage:* \`${prefix}medicine <name>\`\n\n` +
+      `*Usage:* \`${prefix}${command} <name>\`\n\n` +
       `*Examples:*\n` +
-      `• \`${prefix}medicine aspirin\`\n` +
-      `• \`${prefix}medicine paracetamol\`\n` +
-      `• \`${prefix}medicine amoxicillin\`\n` +
-      `• \`${prefix}medicine ibuprofen\`\n` +
-      `• \`${prefix}medicine metformin\`\n\n` +
+      `• \`${prefix}${command} aspirin\`\n` +
+      `• \`${prefix}${command} paracetamol\`\n` +
+      `• \`${prefix}${command} amoxicillin\`\n` +
+      `• \`${prefix}${command} ibuprofen\`\n` +
+      `• \`${prefix}${command} metformin\`\n\n` +
       `⚠️ _Information is from FDA database. Always consult a doctor._`);
   }
 
@@ -9751,12 +9747,12 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                         { 
                           header: ''🎵 Play Music'',
                           title: ''Download any song'',
-                          id: `${prefix}play`
+                          id: `${prefix}${command}`
                         },
                         { 
                           header: ''📝 Get Lyrics'',
                           title: ''Find song lyrics'',
-                          id: `${prefix}lyrics`
+                          id: `${prefix}${command}`
                         }
                       ]
                     },
@@ -9766,12 +9762,12 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                         { 
                           header: ''🎨 Generate Image'',
                           title: ''Create AI images'',
-                          id: `${prefix}image`
+                          id: `${prefix}${command}`
                         },
                         { 
                           header: ''🖼️ Get Wallpaper'',
                           title: ''Download wallpapers'',
-                          id: `${prefix}wallpaper`
+                          id: `${prefix}${command}`
                         }
                       ]
                     },
@@ -9781,12 +9777,12 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                         { 
                           header: ''🎨 Make Sticker'',
                           title: ''From image to sticker'',
-                          id: `${prefix}sticker`
+                          id: `${prefix}${command}`
                         },
                         { 
                           header: ''🎬 GIF Sticker'',
                           title: ''Animated stickers'',
-                          id: `${prefix}stickergif`
+                          id: `${prefix}${command}`
                         }
                       ]
                     },
@@ -9796,12 +9792,12 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                         { 
                           header: ''🏓 Ping'',
                           title: ''Check bot latency'',
-                          id: `${prefix}ping`
+                          id: `${prefix}${command}`
                         },
                         { 
                           header: ''🤖 Status'',
                           title: ''Check bot status'',
-                          id: `${prefix}alive`
+                          id: `${prefix}${command}`
                         }
                       ]
                     },
@@ -9811,12 +9807,12 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                         { 
                           header: ''👑 Contact Owner'',
                           title: ''Get owner info'',
-                          id: `${prefix}owner`
+                          id: `${prefix}${command}`
                         },
                         { 
                           header: ''📦 Repository'',
                           title: ''View bot repo'',
-                          id: `${prefix}repo`
+                          id: `${prefix}${command}`
                         }
                       ]
                     }
@@ -9912,12 +9908,12 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                         { 
                           header: ''🎵 Play Music'',
                           title: ''Download any song'',
-                          id: `${prefix}play`
+                          id: `${prefix}${command}`
                         },
                         { 
                           header: ''📝 Get Lyrics'',
                           title: ''Find song lyrics'',
-                          id: `${prefix}lyrics`
+                          id: `${prefix}${command}`
                         }
                       ]
                     },
@@ -9927,12 +9923,12 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                         { 
                           header: ''🎨 Generate Image'',
                           title: ''Create AI images'',
-                          id: `${prefix}image`
+                          id: `${prefix}${command}`
                         },
                         { 
                           header: ''🖼️ Get Wallpaper'',
                           title: ''Download wallpapers'',
-                          id: `${prefix}wallpaper`
+                          id: `${prefix}${command}`
                         }
                       ]
                     },
@@ -9942,12 +9938,12 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                         { 
                           header: ''🎨 Make Sticker'',
                           title: ''From image to sticker'',
-                          id: `${prefix}sticker`
+                          id: `${prefix}${command}`
                         },
                         { 
                           header: ''🎬 GIF Sticker'',
                           title: ''Animated stickers'',
-                          id: `${prefix}stickergif`
+                          id: `${prefix}${command}`
                         }
                       ]
                     },
@@ -9957,17 +9953,17 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                         { 
                           header: ''🏓 Ping'',
                           title: ''Check bot latency'',
-                          id: `${prefix}ping`
+                          id: `${prefix}${command}`
                         },
                         { 
                           header: ''🤖 Status'',
                           title: ''Check bot status'',
-                          id: `${prefix}alive`
+                          id: `${prefix}${command}`
                         },
                         { 
                           header: ''📊 Stats'',
                           title: ''View bot statistics'',
-                          id: `${prefix}stats`
+                          id: `${prefix}${command}`
                         }
                       ]
                     },
@@ -9977,12 +9973,12 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                         { 
                           header: ''👑 Contact Owner'',
                           title: ''Get owner info'',
-                          id: `${prefix}owner`
+                          id: `${prefix}${command}`
                         },
                         { 
                           header: ''📦 Repository'',
                           title: ''View bot repo'',
-                          id: `${prefix}repo`
+                          id: `${prefix}${command}`
                         }
                       ]
                     }
@@ -10014,22 +10010,22 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
             footer: `© MZAZI TECH QUARTZ BOT | MAGGIE X KERUBO`,
             buttons: [
               {
-                buttonId: `${prefix}play`,
+                buttonId: `${prefix}${command}`,
                 buttonText: { displayText: "🎵 Music" },
                 type: 1
               },
               {
-                buttonId: `${prefix}image`,
+                buttonId: `${prefix}${command}`,
                 buttonText: { displayText: "🖼️ Image" },
                 type: 1
               },
               {
-                buttonId: `${prefix}sticker`,
+                buttonId: `${prefix}${command}`,
                 buttonText: { displayText: "🎨 Sticker" },
                 type: 1
               },
               {
-                buttonId: `${prefix}owner`,
+                buttonId: `${prefix}${command}`,
                 buttonText: { displayText: "👑 Owner" },
                 type: 1
               }
@@ -10064,7 +10060,7 @@ return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, descripti
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('menuv', '[]'::jsonb, '', 'General', '', true, false, false, true, 'if (!isOwner) return;
   await mzazireply(
     `⚙️ *Owner Menu*\n\n` +
-    `📋 Commands: ${prefix}allcmd\n` +
+    `📋 Commands: ${prefix}${command}\n` +
     `📢 Channel: https://t.me/mzazidev`
   );
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
@@ -10098,69 +10094,69 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                 title: "𝗚𝗥𝗢𝗨𝗣",
                 desc: `
 ╔═⟪ GROUP MANAGEMENT⟫═╗
-╠❏ ${prefix}kick  
-╠❏ ${prefix}add  
-╠❏ ${prefix}promote
-╠❏ ${prefix}demote  
-╠❏ ${prefix}mute  
-╠❏ ${prefix}unmute
-╠❏ ${prefix}tagall  
-╠❏ ${prefix}hidetag  
-╠❏ ${prefix}tagmembers
-╠❏ ${prefix}tagadmin  
-╠❏ ${prefix}mentionadmin
-╠❏ ${prefix}groupinfo  
-╠❏ ${prefix}members  
-╠❏ ${prefix}count
-╠❏ ${prefix}admins  
-╠❏ ${prefix}groupstats  
-╠❏ ${prefix}groupage
-╠❏ ${prefix}link  
-╠❏ ${prefix}revoke  
-╠❏ ${prefix}invitelink
-╠❏ ${prefix}delete  
-╠❏ ${prefix}d  
-╠❏ ${prefix}del
-╠❏ ${prefix}setrules  
-╠❏ ${prefix}rules  
-╠❏ ${prefix}topic
-╠❏ ${prefix}warn  
-╠❏ ${prefix}warnlist  
-╠❏ ${prefix}resetwarn
-╠❏ ${prefix}mywarn  
-╠❏ ${prefix}clearwarn  
-╠❏ ${prefix}warning2
-╠❏ ${prefix}open  
-╠❏ ${prefix}close  
-╠❏ ${prefix}subject
-╠❏ ${prefix}setdesc  
-╠❏ ${prefix}lockgroup  
-╠❏ ${prefix}unlockgroup
-╠❏ ${prefix}approve  
-╠❏ ${prefix}reject  
-╠❏ ${prefix}approveall
-╠❏ ${prefix}rejectall  
-╠❏ ${prefix}pendingrequests
-╠❏ ${prefix}welcome  
-╠❏ ${prefix}goodbye  
-╠❏ ${prefix}kickall
-╠❏ ${prefix}poll  
-╠❏ ${prefix}groupid  
-╠❏ ${prefix}groupstatus
-╠❏ ${prefix}disappear  
-╠❏ ${prefix}pin  
-╠❏ ${prefix}muteall
-╠❏ ${prefix}isadmin  
-╠❏ ${prefix}isingroup  
-╠❏ ${prefix}announce
-╠❏ ${prefix}notice  
-╠❏ ${prefix}mute2  
-╠❏ ${prefix}unmute2
-╠❏ ${prefix}wantam  
-╠❏ ${prefix}fuckmzazi  
-╠❏ ${prefix}fuckruto
-╠❏ ${prefix}mzaziwipeall  
-╠❏ ${prefix}kickall
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
 ╚══════════════════╝`,
                 button: { text: "PAIR BOT", url: "https://t.me/namelessmzaziv3Bot" }
             },
@@ -10168,59 +10164,59 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                 title: "OWNER",
                 desc: `
   ╔═⟪ 👑 OWNER COMMANDS ⟫═╗
-╠❏ ${prefix}leave  
-╠❏ ${prefix}public  
-╠❏ ${prefix}self
-╠❏ ${prefix}setprefix  
-╠❏ ${prefix}changebotname
-╠❏ ${prefix}addpaid  
-╠❏ ${prefix}delpaid  
-╠❏ ${prefix}listpaid
-╠❏ ${prefix}addprem  
-╠❏ ${prefix}delprem  
-╠❏ ${prefix}addowner
-╠❏ ${prefix}delowner  
-╠❏ ${prefix}owners  
-╠❏ ${prefix}listowners
-╠❏ ${prefix}setbotpic  
-╠❏ ${prefix}changebotpic
-╠❏ ${prefix}setbio  
-╠❏ ${prefix}setbotname  
-╠❏ ${prefix}setbotbio
-╠❏ ${prefix}broadcast  
-╠❏ ${prefix}broadcastdm
-╠❏ ${prefix}block  
-╠❏ ${prefix}unblock  
-╠❏ ${prefix}sendmsg
-╠❏ ${prefix}listgroups  
-╠❏ ${prefix}leaveall  
-╠❏ ${prefix}joingroup
-╠❏ ${prefix}botstatus  
-╠❏ ${prefix}restart  
-╠❏ ${prefix}shutdown
-╠❏ ${prefix}setmode  
-╠❏ ${prefix}resetbot  
-╠❏ ${prefix}botmode
-╠❏ ${prefix}downloadfile  
-╠❏ ${prefix}addcase  
-╠❏ ${prefix}delcase
-╠❏ ${prefix}listcase  
-╠❏ ${prefix}getcase  
-╠❏ ${prefix}allcmds
-╠❏ ${prefix}eval  
-╠❏ ${prefix}exec  
-╠❏ ${prefix}readfile
-╠❏ ${prefix}writefile  
-╠❏ ${prefix}deletefile  
-╠❏ ${prefix}listfiles
-╠❏ ${prefix}memory  
-╠❏ ${prefix}sendstatus  
-╠❏ ${prefix}sendall
-╠❏ ${prefix}connect  
-╠❏ ${prefix}idch  
-╠❏ ${prefix}repo
-╠❏ ${prefix}listgroup  
-╠❏ ${prefix}groupnames
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
 ╚══════════════════╝`,
                 button: { text: "𝗚𝗥𝗢𝗨𝗣", url: "https://chat.whatsapp.com/JGt9kwmvsaEL177FvYZO4N"}
             },
@@ -10228,38 +10224,38 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                 title: "GENERAL",
                 desc: `
 ╔═⟪ 📋 GENERAL ⟫═╗
-╠❏ ${prefix}menu  
-╠❏ ${prefix}help  
-╠❏ ${prefix}ping
-╠❏ ${prefix}ping2  
-╠❏ ${prefix}ping3  
-╠❏ ${prefix}uptime
-╠❏ ${prefix}systeminfo  
-╠❏ ${prefix}owner  
-╠❏ ${prefix}tqto
-╠❏ ${prefix}rules  
-╠❏ ${prefix}credits  
-╠❏ ${prefix}version
-╠❏ ${prefix}botinfo  
-╠❏ ${prefix}stats  
-╠❏ ${prefix}about
-╠❏ ${prefix}speed  
-╠❏ ${prefix}check  
-╠❏ ${prefix}status2
-╠❏ ${prefix}whoami  
-╠❏ ${prefix}myid  
-╠❏ ${prefix}runtime
-╠❏ ${prefix}vv  
-╠❏ ${prefix}copy  
-╠❏ ${prefix}echo  
-╠❏ ${prefix}say
-╠❏ ${prefix}greetings  
-╠❏ ${prefix}hello  
-╠❏ ${prefix}bye2
-╠❏ ${prefix}goodmorning  
-╠❏ ${prefix}goodnight
-╠❏ ${prefix}goodevening  
-╠❏ ${prefix}goodafternoon
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
 ╚══════════════════╝`,
                 button: { text: "Owner Whatsapp", url: "https://wa.me/254108595201" }
             },
@@ -10268,66 +10264,66 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                 desc: `
 ╔═⟪ 🎮 FUN & GAMES ⟫═╗
 ╠❏ ${prefix}8ball  
-╠❏ ${prefix}coinflip  
-╠❏ ${prefix}dice
-╠❏ ${prefix}rps  
-╠❏ ${prefix}truth  
-╠❏ ${prefix}dare
-╠❏ ${prefix}wouldyourather  
-╠❏ ${prefix}nhie
-╠❏ ${prefix}trivia  
-╠❏ ${prefix}riddle  
-╠❏ ${prefix}game
-╠❏ ${prefix}roast  
-╠❏ ${prefix}compliment  
-╠❏ ${prefix}flirt
-╠❏ ${prefix}ship  
-╠❏ ${prefix}howgay  
-╠❏ ${prefix}howrich
-╠❏ ${prefix}howstupid  
-╠❏ ${prefix}iq  
-╠❏ ${prefix}howcute
-╠❏ ${prefix}rate  
-╠❏ ${prefix}rng  
-╠❏ ${prefix}choose
-╠❏ ${prefix}poem  
-╠❏ ${prefix}story  
-╠❏ ${prefix}fortune
-╠❏ ${prefix}rank  
-╠❏ ${prefix}leaderboard  
-╠❏ ${prefix}insult
-╠❏ ${prefix}hug  
-╠❏ ${prefix}kiss  
-╠❏ ${prefix}slap
-╠❏ ${prefix}punch  
-╠❏ ${prefix}pat  
-╠❏ ${prefix}wave
-╠❏ ${prefix}dance  
-╠❏ ${prefix}wink  
-╠❏ ${prefix}stare
-╠❏ ${prefix}highfive  
-╠❏ ${prefix}poke  
-╠❏ ${prefix}bite
-╠❏ ${prefix}facepalm  
-╠❏ ${prefix}shrug2  
-╠❏ ${prefix}bow
-╠❏ ${prefix}thumbsup  
-╠❏ ${prefix}thumbsdown  
-╠❏ ${prefix}gg
-╠❏ ${prefix}rip  
-╠❏ ${prefix}f  
-╠❏ ${prefix}sus  
-╠❏ ${prefix}lol
-╠❏ ${prefix}omg  
-╠❏ ${prefix}xd  
-╠❏ ${prefix}nt  
-╠❏ ${prefix}wp
-╠❏ ${prefix}matrix  
-╠❏ ${prefix}hackfake  
-╠❏ ${prefix}glitch
-╠❏ ${prefix}icebreaker  
-╠❏ ${prefix}confess  
-╠❏ ${prefix}ngl
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
 ╚══════════════════╝`,
                 button: { text: "𝗗𝗘𝗩 𝗚𝗖", url: "https://chat.whatsapp.com/JGt9kwmvsaEL177FvYZO4N" }
             },
@@ -10335,37 +10331,37 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                 title: "DOWNLOAD",
                 desc: `
 ╔═⟪ MEDIA & DOWNLOAD ⟫═╗
-╠❏ ${prefix}sticker  
-╠❏ ${prefix}s  
-╠❏ ${prefix}toimg
-╠❏ ${prefix}emojimix  
-╠❏ ${prefix}take  
-╠❏ ${prefix}steal
-╠❏ ${prefix}play  
-╠❏ ${prefix}play2  
-╠❏ ${prefix}lyrics
-╠❏ ${prefix}lyrics2  
-╠❏ ${prefix}yts  
-╠❏ ${prefix}ytinfo
-╠❏ ${prefix}tiktok  
-╠❏ ${prefix}img  
-╠❏ ${prefix}gif
-╠❏ ${prefix}pp  
-╠❏ ${prefix}vcard  
-╠❏ ${prefix}location
-╠❏ ${prefix}nairobi  
-╠❏ ${prefix}mombasa
-╠❏ ${prefix}instagram  
-╠❏ ${prefix}facebook  
-╠❏ ${prefix}twitter
-╠❏ ${prefix}song  
-╠❏ ${prefix}movie  
-╠❏ ${prefix}series
-╠❏ ${prefix}anime  
-╠❏ ${prefix}manga  
-╠❏ ${prefix}book
-╠❏ ${prefix}screenshot2  
-╠❏ ${prefix}sticker2
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
 ╚══════════════════╝`,
                 button: { text: "ENTERTAINMENT WEB", url: "https://mzazi.shop" }
             },
@@ -10373,55 +10369,55 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                 title: "LIFESTYLE AND FAITH",
                 desc: `
 ╔═⟪ 💪 LIFESTYLE ⟫═╗
-╠❏ ${prefix}health  
-╠❏ ${prefix}mentalhealth  
-╠❏ ${prefix}sleep
-╠❏ ${prefix}water  
-╠❏ ${prefix}meditation  
-╠❏ ${prefix}fitness
-╠❏ ${prefix}workout  
-╠❏ ${prefix}stretching  
-╠❏ ${prefix}food
-╠❏ ${prefix}drink  
-╠❏ ${prefix}calories  
-╠❏ ${prefix}recipe
-╠❏ ${prefix}money  
-╠❏ ${prefix}invest  
-╠❏ ${prefix}business
-╠❏ ${prefix}entrepreneur  
-╠❏ ${prefix}savings
-╠❏ ${prefix}study  
-╠❏ ${prefix}learn  
-╠❏ ${prefix}codingtip
-╠❏ ${prefix}programming  
-╠❏ ${prefix}code
-╠❏ ${prefix}sport  
-╠❏ ${prefix}football  
-╠❏ ${prefix}basketball
-╠❏ ${prefix}chess  
-╠❏ ${prefix}game2  
-╠❏ ${prefix}boxing
-╠❏ ${prefix}relationship  
-╠❏ ${prefix}friendship  
-╠❏ ${prefix}advice2
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
 ╚══════════════════╝
 
 ╔═⟪ ☪️✝️ FAITH ⟫═╗
-╠❏ ${prefix}allah  
-╠❏ ${prefix}bismillah  
-╠❏ ${prefix}alhamdulillah
-╠❏ ${prefix}inshallah  
-╠❏ ${prefix}mashallah  
-╠❏ ${prefix}dua
-╠❏ ${prefix}quran  
-╠❏ ${prefix}hadith  
-╠❏ ${prefix}pray
-╠❏ ${prefix}bible  
-╠❏ ${prefix}verse  
-╠❏ ${prefix}eid
-╠❏ ${prefix}ramadan  
-╠❏ ${prefix}christmas  
-╠❏ ${prefix}newyear
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
 ╚══════════════════╝`,
                 button: { text: "DEV TELEGRAM", url: "http://t.me/mzazidev" }
             },
@@ -10429,54 +10425,54 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                 title: "UTILITY TOOLS",
                 desc: `
   ╔═⟪ 🔧 UTILITY TOOLS ⟫═╗
-╠❏ ${prefix}calc  
-╠❏ ${prefix}math  
-╠❏ ${prefix}qr
-╠❏ ${prefix}base64encode  
-╠❏ ${prefix}base64decode
-╠❏ ${prefix}hex  
-╠❏ ${prefix}unhex  
-╠❏ ${prefix}binary
-╠❏ ${prefix}md5  
-╠❏ ${prefix}sha1  
-╠❏ ${prefix}sha256
-╠❏ ${prefix}password  
-╠❏ ${prefix}uuid  
-╠❏ ${prefix}gpass
-╠❏ ${prefix}charcount  
-╠❏ ${prefix}reverse  
-╠❏ ${prefix}uppercase
-╠❏ ${prefix}lowercase  
-╠❏ ${prefix}repeat  
-╠❏ ${prefix}mocktext
-╠❏ ${prefix}morse  
-╠❏ ${prefix}unmorse  
-╠❏ ${prefix}clap
-╠❏ ${prefix}vaporwave  
-╠❏ ${prefix}zalgo  
-╠❏ ${prefix}bold
-╠❏ ${prefix}italic  
-╠❏ ${prefix}strike  
-╠❏ ${prefix}mono
-╠❏ ${prefix}shorturl  
-╠❏ ${prefix}ip  
-╠❏ ${prefix}ipinfo
-╠❏ ${prefix}time  
-╠❏ ${prefix}date  
-╠❏ ${prefix}countdown
-╠❏ ${prefix}timestamp  
-╠❏ ${prefix}weekday  
-╠❏ ${prefix}year
-╠❏ ${prefix}age  
-╠❏ ${prefix}todo  
-╠❏ ${prefix}note
-╠❏ ${prefix}reminder  
-╠❏ ${prefix}flashcard
-╠❏ ${prefix}generate  
-╠❏ ${prefix}color  
-╠❏ ${prefix}ascii
-╠❏ ${prefix}extractemails  
-╠❏ ${prefix}extractnumbers
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
 ╚══════════════════╝`,
                 button: { text: "𝗕𝗨𝗬 𝗣𝗔𝗡𝗘𝗟", url: "https://wa.me/254108595201" }
             },
@@ -10484,53 +10480,53 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                 title: "SEARCH",
                 desc: `
 ╔═⟪ 🌍 SEARCH & INFO ⟫═╗
-╠❏ ${prefix}wiki  
-╠❏ ${prefix}dict  
-╠❏ ${prefix}synonym
-╠❏ ${prefix}define  
-╠❏ ${prefix}translate  
-╠❏ ${prefix}weather
-╠❏ ${prefix}country  
-╠❏ ${prefix}timezone  
-╠❏ ${prefix}currency
-╠❏ ${prefix}crypto  
-╠❏ ${prefix}horoscope  
-╠❏ ${prefix}flag
-╠❏ ${prefix}capital  
-╠❏ ${prefix}phonecode  
-╠❏ ${prefix}continent
-╠❏ ${prefix}numberfact  
-╠❏ ${prefix}dayfact  
-╠❏ ${prefix}fact
-╠❏ ${prefix}scifact  
-╠❏ ${prefix}catfact  
-╠❏ ${prefix}dogfact
-╠❏ ${prefix}chucknorris  
-╠❏ ${prefix}joke  
-╠❏ ${prefix}advice
-╠❏ ${prefix}quote  
-╠❏ ${prefix}motivation  
-╠❏ ${prefix}github
-╠❏ ${prefix}bible  
-╠❏ ${prefix}quran  
-╠❏ ${prefix}hadith
-╠❏ ${prefix}dua  
-╠❏ ${prefix}proverb  
-╠❏ ${prefix}history
-╠❏ ${prefix}geography  
-╠❏ ${prefix}internet  
-╠❏ ${prefix}tech
-╠❏ ${prefix}space  
-╠❏ ${prefix}ocean  
-╠❏ ${prefix}africa
-╠❏ ${prefix}kenya  
-╠❏ ${prefix}travel  
-╠❏ ${prefix}nature
-╠❏ ${prefix}word  
-╠❏ ${prefix}poem  
-╠❏ ${prefix}ai
-╠❏ ${prefix}blockchain  
-╠❏ ${prefix}cybersecurity
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
 ╚══════════════════╝`,
                 button: { text: "𝗢𝗪𝗡𝗘𝗥", url: "https://wa.me/254108595201" }
             }
@@ -10598,7 +10594,7 @@ if (Number(pick) === mine) return mzazireply(''💥 BOOM! That was the mine. You
 mzazireply(''✅ Safe! The mine was at '' + mine + ''. You survived!'');
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('minigame', '["game"]'::jsonb, '', 'General', '', false, false, false, true, 'const num3 = Math.floor(Math.random() * 10) + 1;
-        mzazireply(`🎮 *GUESSING GAME*\n\nI''m thinking of a number between 1-10!\nYou have 3 tries!\n\nReply with:\n${prefix}guess <number>\n\n🍀 Good luck!`);
+        mzazireply(`🎮 *GUESSING GAME*\n\nI''m thinking of a number between 1-10!\nYou have 3 tries!\n\nReply with:\n${prefix}${command} <number>\n\n🍀 Good luck!`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('minutes', '[]'::jsonb, 'AI: Convert the following notes into meeting minutes', 'AI', '', false, false, false, true, 'const q = (text || '''').trim();
 if (!q) return mzazireply(`Usage: ${prefix}${command} <text>`);
@@ -10696,7 +10692,7 @@ return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, descripti
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('monday2', '[]'::jsonb, 'Fun: monday2', 'Fun', '', false, false, false, true, 'const list = ["💪 Monday motivation: you''ve got this!", "🌞 Fresh week, fresh start!", "☕ Monday runs on coffee and willpower.", "📅 Make Monday count!", "⚡ New week, new wins!"];
 mzazireply(list[Math.floor(Math.random() * list.length)]);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('mono', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}mono Hello World`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('mono', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} Hello World`);
         mzazireply(`\`\`\`${text}\`\`\``);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('monospace', '[]'::jsonb, 'Fake monospace text', 'Fun', '', false, false, false, true, 'const t = (text || '''').trim();
@@ -10712,7 +10708,7 @@ return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, descripti
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('moon', '[]'::jsonb, 'Fun: moon', 'Fun', '', false, false, false, true, 'const list = ["🌙 Moon wishes: calm and peaceful.", "🌕 Full moon energy!", "🌙 Sleep well under the moonlight.", "🌑 New moon, new beginnings.", "🌙 Moonlit blessings!"];
 mzazireply(list[Math.floor(Math.random() * list.length)]);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('morse', '["morseencode"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}morse SOS`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('morse', '["morseencode"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} SOS`);
         const morseMap = {a:".-",b:"-...",c:"-.-.",d:"-..",e:".",f:"..-.",g:"--.",h:"....",i:"..",j:".---",k:"-.-",l:".-..",m:"--",n:"-.",o:"---",p:".--.",q:"--.-",r:".-.",s:"...",t:"-",u:"..-",v:"...-",w:".--",x:"-..-",y:"-.--",z:"--.."," ":"/"};
         const encoded = text.toLowerCase().split("").map(c => morseMap[c] || c).join(" ");
         mzazireply(`📡 *MORSE CODE*\n\nInput: ${text}\nOutput: ${encoded}`);
@@ -10875,7 +10871,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 ╰━━━━━━━━━━━━━━━━━━━╯
 
 📌 *How to use*
-• Type *${prefix}help* to see this menu
+• Type *${prefix}${command}* to see this menu
 • Click buttons below for quick actions
 
 > _Powered by Mzazi Tech_`;
@@ -10886,7 +10882,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
       name: ''quick_reply'',
       buttonParamsJson: JSON.stringify({
         display_text: ''📋 All Commands'',
-        id: `${prefix}allcmd`
+        id: `${prefix}${command}`
       })
     },
     {
@@ -10917,7 +10913,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
       name: ''quick_reply'',
       buttonParamsJson: JSON.stringify({
         display_text: ''🤖 AI Chat'',
-        id: `${prefix}ai Hello`
+        id: `${prefix}${command} Hello`
       })
     }
   ];
@@ -11103,7 +11099,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
         const fallbackText = `🤖 *${botName.toUpperCase()}* 🤖
 
 Use these command:
-• ${prefix}allmenu
+• ${prefix}${command}
 
 © ${botName}`;
         await mzazireply(fallbackText);
@@ -11206,7 +11202,7 @@ mzazireply("❌ News imefail");
 }') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('newyear', '["ny"]'::jsonb, '', 'General', '', false, false, false, true, 'mzazireply(`🎆 *HAPPY NEW YEAR!*\n\n🥂 Cheers to a brand new year!\n🌟 May it bring you happiness and success!\n💫 Out with the old, in with the new!\n\n🎊 From ${botName}! 🎉`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('ngl', '["anonymous"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}ngl @user message`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('ngl', '["anonymous"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} @user message`);
         const mentioned7 = m.message?.extendedTextMessage?.contextInfo?.mentionedJid;
         const targetNgl = mentioned7?.[0];
         if (!targetNgl) return mzazireply("Mention a user!");
@@ -11304,15 +11300,15 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 
   if (!args[0]) {
     // Start new game
-    if (global.guessGames.has(ngId)) return mzazireply(`❌ A Number Guess game is running! Use *${prefix}numguess <number>* or *${prefix}endguess* to stop.`);
+    if (global.guessGames.has(ngId)) return mzazireply(`❌ A Number Guess game is running! Use *${prefix}${command} <number>* or *${prefix}${command}* to stop.`);
     const secret = Math.floor(Math.random() * 100) + 1;
     const maxTries = 7;
     global.guessGames.set(ngId, { secret, tries: 0, maxTries, startedBy: msgSender, guessers: {} });
-    return mzazireply(`🎮 *NUMBER GUESS GAME!*\n\nI''m thinking of a number between *1 and 100*.\nYou have *${maxTries} tries* to guess it!\n\nType: *${prefix}numguess <number>*\nStop: *${prefix}endguess*`);
+    return mzazireply(`🎮 *NUMBER GUESS GAME!*\n\nI''m thinking of a number between *1 and 100*.\nYou have *${maxTries} tries* to guess it!\n\nType: *${prefix}${command} <number>*\nStop: *${prefix}${command}*`);
   }
 
   const game = global.guessGames.get(ngId);
-  if (!game) return mzazireply(`❌ No active Number Guess game. Start one with *${prefix}numguess*`);
+  if (!game) return mzazireply(`❌ No active Number Guess game. Start one with *${prefix}${command}*`);
 
   const guess = parseInt(args[0]);
   if (isNaN(guess) || guess < 1 || guess > 100) return mzazireply("❌ Please guess a number between *1* and *100*.");
@@ -11335,7 +11331,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 
   const hint = guess < game.secret ? "📈 Too LOW! Go higher." : "📉 Too HIGH! Go lower.";
   const triesLeft = game.maxTries - game.tries;
-  mzazireply(`🎮 *NUMBER GUESS*\n\n${hint}\nYour guess: *${guess}*\nTries left: *${triesLeft}/${game.maxTries}*\n\nType: *${prefix}numguess <number>*`);
+  mzazireply(`🎮 *NUMBER GUESS*\n\n${hint}\nYour guess: *${guess}*\nTries left: *${triesLeft}/${game.maxTries}*\n\nType: *${prefix}${command} <number>*`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('oddoreven', '[]'::jsonb, 'Guess odd or even', 'Games', '', false, false, false, true, 'const GKEY = ''oddeven_'' + sender;
 if ((text || '''').trim().toLowerCase() === ''stop'') { db[GKEY] = undefined; return mzazireply(''👋 Game ended.''); }
@@ -11385,9 +11381,9 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
         return mzazireply(
 `❌ Example Usage:
 
-${prefix}opentime 10s
-${prefix}opentime 5m
-${prefix}opentime 2h`
+${prefix}${command} 10s
+${prefix}${command} 5m
+${prefix}${command} 2h`
         );
     }
 
@@ -11463,7 +11459,7 @@ try {
 } catch (e) { return mzazireply(''❌ '' + (e.message || ''Failed'')); }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('ownerhelp', '[]'::jsonb, 'Owner command help', 'Owner', '', true, false, false, true, 'if (!isOwner) return mzazireply(''❌ Owner only.'');
-mzazireply(`👑 *Owner commands*\n\n${prefix}block / unblock\n${prefix}join <link>\n${prefix}leave\n${prefix}broadcast <msg>\n${prefix}sendto <jid> <msg>\n${prefix}addowner <num>\n${prefix}delowner <num>\n${prefix}ownerlist\n${prefix}ownergroups\n${prefix}botuptime\n${prefix}setbotname <name>\n${prefix}getid\n${prefix}restart / update`);
+mzazireply(`👑 *Owner commands*\n\n${prefix}${command} / unblock\n${prefix}${command} <link>\n${prefix}${command}\n${prefix}${command} <msg>\n${prefix}${command} <jid> <msg>\n${prefix}${command} <num>\n${prefix}${command} <num>\n${prefix}${command}\n${prefix}${command}\n${prefix}${command}\n${prefix}${command} <name>\n${prefix}${command}\n${prefix}${command} / update`);
 
 try { await sendInteractiveMessage(mzazi, sender, { title: ''QUARTZ XD'', text: ''⬆️ More above — tap a button below:'', footer: ''MZAZI TECH INC'', interactiveButtons: [ { name: ''quick_reply'', buttonParamsJson: JSON.stringify({ display_text: ''📜 Main Menu'', id: ''menu6'' }) }, { name: ''cta_url'', buttonParamsJson: JSON.stringify({ display_text: ''🌐 mzazi.shop'', url: ''https://mzazi.shop'' }) } ] }); } catch (e) {}
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
@@ -11508,20 +11504,20 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                 header: commonHeader,
                 body: { text: `
 ╔═⟪ 👑 OWNER COMMANDS (1/4) ⟫═╗
-╠❏ ${prefix}leave  
-╠❏ ${prefix}public  
-╠❏ ${prefix}self
-╠❏ ${prefix}setprefix  
-╠❏ ${prefix}changebotname
-╠❏ ${prefix}addpaid  
-╠❏ ${prefix}delpaid  
-╠❏ ${prefix}listpaid
-╠❏ ${prefix}addprem  
-╠❏ ${prefix}delprem  
-╠❏ ${prefix}addowner
-╠❏ ${prefix}delowner  
-╠❏ ${prefix}owners  
-╠❏ ${prefix}listowners
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
 ╚══════════════════╝` },
                 footer: { text: ''Swipe ➡️ for more'' },
                 nativeFlowMessage: {
@@ -11538,19 +11534,19 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                 header: commonHeader,
                 body: { text: `
 ╔═⟪ 👑 OWNER COMMANDS (2/4) ⟫═╗
-╠❏ ${prefix}setbotpic  
-╠❏ ${prefix}changebotpic
-╠❏ ${prefix}setbio  
-╠❏ ${prefix}setbotname  
-╠❏ ${prefix}setbotbio
-╠❏ ${prefix}broadcast  
-╠❏ ${prefix}broadcastdm
-╠❏ ${prefix}block  
-╠❏ ${prefix}unblock  
-╠❏ ${prefix}sendmsg
-╠❏ ${prefix}listgroups  
-╠❏ ${prefix}leaveall  
-╠❏ ${prefix}joingroup
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
 ╚══════════════════╝` },
                 footer: { text: ''Swipe ➡️ for more'' },
                 nativeFlowMessage: {
@@ -11567,18 +11563,18 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                 header: commonHeader,
                 body: { text: `
 ╔═⟪ 👑 OWNER COMMANDS (3/4) ⟫═╗
-╠❏ ${prefix}botstatus  
-╠❏ ${prefix}restart  
-╠❏ ${prefix}shutdown
-╠❏ ${prefix}setmode  
-╠❏ ${prefix}resetbot  
-╠❏ ${prefix}botmode
-╠❏ ${prefix}downloadfile  
-╠❏ ${prefix}addcase  
-╠❏ ${prefix}delcase
-╠❏ ${prefix}listcase  
-╠❏ ${prefix}getcase  
-╠❏ ${prefix}allcmds
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
 ╚══════════════════╝` },
                 footer: { text: ''Swipe ➡️ for more'' },
                 nativeFlowMessage: {
@@ -11595,20 +11591,20 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                 header: commonHeader,
                 body: { text: `
 ╔═⟪ 👑 OWNER COMMANDS (4/4) ⟫═╗
-╠❏ ${prefix}eval  
-╠❏ ${prefix}exec  
-╠❏ ${prefix}readfile
-╠❏ ${prefix}writefile  
-╠❏ ${prefix}deletefile  
-╠❏ ${prefix}listfiles
-╠❏ ${prefix}memory  
-╠❏ ${prefix}sendstatus  
-╠❏ ${prefix}sendall
-╠❏ ${prefix}connect  
-╠❏ ${prefix}idch  
-╠❏ ${prefix}repo
-╠❏ ${prefix}listgroup  
-╠❏ ${prefix}groupnames
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
 ╚══════════════════╝` },
                 footer: { text: ''Owner only commands'' },
                 nativeFlowMessage: {
@@ -11664,7 +11660,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 mzazireply(''👑 Owner: +'' + jidToNumber(await resolveJid(ownerNumbers[0] || '''')));
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('ownersay', '[]'::jsonb, 'Send a message from the bot', 'Owner', '', true, false, false, true, 'if (!isOwner) return mzazireply(''❌ Owner only.'');
-mzazireply(`👋 Message sent from the bot. Use ${prefix}sendto <jid> <msg> to send to a specific chat.`);
+mzazireply(`👋 Message sent from the bot. Use ${prefix}${command} <jid> <msg> to send to a specific chat.`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('owngroup', '[]'::jsonb, 'Show the group owner', 'Group', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
 try {
@@ -12001,7 +11997,7 @@ const act = (text || '''').trim().toLowerCase();
 if (act === ''feed'') p.fed = Math.min(10, p.fed + 2);
 if (act === ''sleep'') p.energy = Math.min(10, p.energy + 3);
 const mood = (p.fed + p.energy) > 14 ? ''😻 Happy'' : (p.fed + p.energy) > 8 ? ''😺 Content'' : ''😿 Hungry/Tired'';
-mzazireply(''🐾 *Virtual Pet*\n\nFood: '' + ''🍖''.repeat(Math.max(1, Math.round(p.fed / 2))) + '' ('' + p.fed + ''/10)\nEnergy: '' + ''⚡''.repeat(Math.max(1, Math.round(p.energy / 2))) + '' ('' + p.energy + ''/10)\nMood: '' + mood + `\n\nFeed it: ${prefix}pet feed\nRest it: ${prefix}pet sleep`);
+mzazireply(''🐾 *Virtual Pet*\n\nFood: '' + ''🍖''.repeat(Math.max(1, Math.round(p.fed / 2))) + '' ('' + p.fed + ''/10)\nEnergy: '' + ''⚡''.repeat(Math.max(1, Math.round(p.energy / 2))) + '' ('' + p.energy + ''/10)\nMood: '' + mood + `\n\nFeed it: ${prefix}${command} feed\nRest it: ${prefix}${command} sleep`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('philosophy', '[]'::jsonb, 'AI: Explain the following philosophical idea simply', 'AI', '', false, false, false, true, 'const q = (text || '''').trim();
 if (!q) return mzazireply(`Usage: ${prefix}${command} <text>`);
@@ -12039,7 +12035,7 @@ try {
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('pin', '[]'::jsonb, '', 'General', '', false, true, false, true, 'if (!isAdmin && !isOwner) return mzazireply("❌ Admins only!");
         const quoted2 = m.message?.extendedTextMessage?.contextInfo;
-        if (!quoted2) return mzazireply(`Reply to a message with ${prefix}pin`);
+        if (!quoted2) return mzazireply(`Reply to a message with ${prefix}${command}`);
         try {
           await mzazi.sendMessage(sender, { pin: { type: 1, time: 86400 }, key: { remoteJid: sender, id: quoted2.stanzaId, participant: quoted2.participant } });
           mzazireply("📌 Message pinned!");
@@ -12696,7 +12692,7 @@ return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, descripti
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('play', '[]'::jsonb, '── Get first result ──', 'General', '', false, false, false, true, 'if (!text) {
     return mzazireply(
       `🎵 *YouTube Music Downloader*\n\n` +
-      `Usage: .play <song name>\n` +
+      `Usage: ${prefix}${command} <song name>\n` +
       `Example: .play Faded Alan Walker\n\n` +
       `🎶 *Features:*\n` +
       `• Audio Download\n` +
@@ -12773,27 +12769,27 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
         footer: `© ${botName} | MAGGIE X KERUBO`,
         buttons: [
           {
-            buttonId: `${prefix}playdl ${sessionId} audio`,
+            buttonId: `${prefix}${command} ${sessionId} audio`,
             buttonText: { displayText: "🎵 Audio" },
             type: 1
           },
           {
-            buttonId: `${prefix}playdl ${sessionId} file`,
+            buttonId: `${prefix}${command} ${sessionId} file`,
             buttonText: { displayText: "📄 File" },
             type: 1
           },
           {
-            buttonId: `${prefix}playdl ${sessionId} video`,
+            buttonId: `${prefix}${command} ${sessionId} video`,
             buttonText: { displayText: "🎬 Video" },
             type: 1
           },
           {
-            buttonId: `${prefix}playdl ${sessionId} both`,
+            buttonId: `${prefix}${command} ${sessionId} both`,
             buttonText: { displayText: "🎵+📄 Both" },
             type: 1
           },
           {
-            buttonId: `${prefix}playclear ${sessionId}`,
+            buttonId: `${prefix}${command} ${sessionId}`,
             buttonText: { displayText: "❌ Cancel" },
             type: 1
           }
@@ -12819,7 +12815,7 @@ return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, descripti
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('play10', '[]'::jsonb, '── 1. Search YouTube ────────────────────────────────────', 'General', '', false, false, false, true, 'if (!text) {
     return mzazireply(
       `🎵 *Play10 – YouTube Downloader*\n\n` +
-      `Usage: .play10 <song name>\n` +
+      `Usage: ${prefix}${command} <song name>\n` +
       `Example: .play10 Faded Alan Walker`
     );
   }
@@ -13003,7 +12999,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('play3', '["ytplay"]'::jsonb, 'Try multiple APIs in order', 'General', '', false, false, false, true, 'if (!text) {
     return mzazireply(
       `🎵 *YouTube Play3*\n\n` +
-      `Usage: .play3 <song name>\n` +
+      `Usage: ${prefix}${command} <song name>\n` +
       `Example: .play3 Faded Alan Walker`
     );
   }
@@ -13121,14 +13117,14 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
   const format = parts[1] || '''';
 
   if (!sessionId || !format) {
-    return mzazireply(`❌ Invalid request. Use the buttons from ${prefix}play.`);
+    return mzazireply(`❌ Invalid request. Use the buttons from ${prefix}${command}.`);
   }
 
   if (!global.playSessions) global.playSessions = new Map();
   const data = global.playSessions.get(sessionId);
 
   if (!data) {
-    return mzazireply(`❌ Session expired. Search again with ''${prefix}play <song>''.`);
+    return mzazireply(`❌ Session expired. Search again with ''${prefix}${command} <song>''.`);
   }
 
   const { title, download_url, video_url } = data;
@@ -13353,7 +13349,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
         mzazireply(`📜 *POEM*\n\n${poems[Math.floor(Math.random() * poems.length)]}`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('poll', '[]'::jsonb, '', 'General', '', false, false, true, true, 'if (!isGroup) return mzazireply("❌ Group only!");
-        if (!text) return mzazireply(`Example: ${prefix}poll Question | Option1 | Option2 | Option3`);
+        if (!text) return mzazireply(`Example: ${prefix}${command} Question | Option1 | Option2 | Option3`);
         const pollParts = text.split("|").map(p => p.trim());
         if (pollParts.length < 3) return mzazireply("Need at least a question and 2 options!\nExample: .poll Favorite fruit? | Mango | Apple | Banana");
         const [pollQuestion, ...pollOptions] = pollParts;
@@ -13532,7 +13528,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
   if (!target) {
     return mzazireply(
       `👑 *Promote Command*\n\n` +
-      `Usage: .promote <@mention or phone number>\n` +
+      `Usage: ${prefix}${command} <@mention or phone number>\n` +
       `Example: .promote 254712345678\n` +
       `Or: .promote @username\n\n` +
       `⚠️ *Note:* This only works if the bot is already an admin!`
@@ -13670,7 +13666,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
     }
 
     if (!target) {
-        return mzazireply(`📌 Usage:\n${prefix}promote @user\nOR reply to the user''s message with:\n${prefix}promote`);
+        return mzazireply(`📌 Usage:\n${prefix}${command} @user\nOR reply to the user''s message with:\n${prefix}${command}`);
     }
 
     target = await resolveJid(target);
@@ -13790,12 +13786,12 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                 header: commonHeader,
                 body: { text: `
 ╔═⟪ 🛡️ GROUP PROTECTION (1/3) ⟫═╗
-╠❏ ${prefix}antilink delete|warn|kick|off
-╠❏ ${prefix}antisticker delete|warn|kick|off
-╠❏ ${prefix}antiimage delete|warn|kick|off
-╠❏ ${prefix}antitag on/off  
-╠❏ ${prefix}antibot on/off
-╠❏ ${prefix}antiviewonce on/off  
+╠❏ ${prefix}${command} delete|warn|kick|off
+╠❏ ${prefix}${command} delete|warn|kick|off
+╠❏ ${prefix}${command} delete|warn|kick|off
+╠❏ ${prefix}${command} on/off  
+╠❏ ${prefix}${command} on/off
+╠❏ ${prefix}${command} on/off  
 ╚══════════════════╝
 ⚠️ Modes: delete/warn/kick/off
 • warn = 3 warnings → auto-kick` },
@@ -13814,13 +13810,13 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                 header: commonHeader,
                 body: { text: `
 ╔═⟪ 🛡️ GROUP PROTECTION (2/3) ⟫═╗
-╠❏ ${prefix}antidelete on/off
-╠❏ ${prefix}antitagadmin on/off
-╠❏ ${prefix}antimentiongroup on/off
-╠❏ ${prefix}antipromote on/off
-╠❏ ${prefix}antidemote on/off
-╠❏ ${prefix}antiflood on/off  
-╠❏ ${prefix}antibadword on/off  
+╠❏ ${prefix}${command} on/off
+╠❏ ${prefix}${command} on/off
+╠❏ ${prefix}${command} on/off
+╠❏ ${prefix}${command} on/off
+╠❏ ${prefix}${command} on/off
+╠❏ ${prefix}${command} on/off  
+╠❏ ${prefix}${command} on/off  
 ╚══════════════════╝` },
                 footer: { text: ''Swipe ➡️ for more'' },
                 nativeFlowMessage: {
@@ -13837,14 +13833,14 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                 header: commonHeader,
                 body: { text: `
 ╔═⟪ 🛡️ GROUP PROTECTION (3/3) ⟫═╗
-╠❏ ${prefix}antigif on/off  
-╠❏ ${prefix}antivideo on/off  
-╠❏ ${prefix}antiaudio on/off
-╠❏ ${prefix}antinsfw on/off  
-╠❏ ${prefix}anticall on/off
-╠❏ ${prefix}warn @user reason
-╠❏ ${prefix}resetwarn @user
-╠❏ ${prefix}mywarn
+╠❏ ${prefix}${command} on/off  
+╠❏ ${prefix}${command} on/off  
+╠❏ ${prefix}${command} on/off
+╠❏ ${prefix}${command} on/off  
+╠❏ ${prefix}${command} on/off
+╠❏ ${prefix}${command} @user reason
+╠❏ ${prefix}${command} @user
+╠❏ ${prefix}${command}
 ╚══════════════════╝` },
                 footer: { text: ''Enable/disable with: command on/off'' },
                 nativeFlowMessage: {
@@ -13882,13 +13878,13 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
         // Fallback plain text list
         let fallback = `🛡️ *${botName.toUpperCase()} - GROUP PROTECTION*\n\n`;
         fallback += `🔗 *Advanced Anti-Link* (delete|warn|kick|off)\n`;
-        fallback += `• ${prefix}antilink delete/warn/kick/off\n\n`;
+        fallback += `• ${prefix}${command} delete/warn/kick/off\n\n`;
         fallback += `🩹 *Anti-Sticker* (delete|warn|kick|off)\n`;
-        fallback += `• ${prefix}antisticker delete/warn/kick/off\n\n`;
+        fallback += `• ${prefix}${command} delete/warn/kick/off\n\n`;
         fallback += `🖼️ *Anti-Image* (delete|warn|kick|off)\n`;
-        fallback += `• ${prefix}antiimage delete/warn/kick/off\n\n`;
+        fallback += `• ${prefix}${command} delete/warn/kick/off\n\n`;
         fallback += `🗑️ *Anti-Delete*\n`;
-        fallback += `• ${prefix}antidelete on/off\n\n`;
+        fallback += `• ${prefix}${command} on/off\n\n`;
         fallback += `Other toggles (on/off):\n`;
         const otherCmds = ["antitag", "antibot", "antiviewonce", "antitagadmin", "antimentiongroup", "antipromote", "antidemote", "antiflood", "antibadword", "antigif", "antivideo", "antiaudio", "antinsfw", "anticall"];
         otherCmds.forEach(cmd => { fallback += `• ${prefix}${cmd}\n`; });
@@ -13994,7 +13990,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 
   // ── Start new quiz ──
   if (!args[0] || args[0].length > 1) {
-    if (global.quizGames.has(qzId)) return mzazireply(`❌ A quiz is running! Answer with *${prefix}quiz A/B/C/D* or stop with *${prefix}endquiz*`);
+    if (global.quizGames.has(qzId)) return mzazireply(`❌ A quiz is running! Answer with *${prefix}${command} A/B/C/D* or stop with *${prefix}${command}*`);
 
     const q = questions[Math.floor(Math.random() * questions.length)];
     global.quizGames.set(qzId, { ...q, startedAt: Date.now(), startedBy: msgSender, answered: false });
@@ -14008,12 +14004,12 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
       }
     }, 30000);
 
-    return mzazireply(`🎮 *GROUP QUIZ!*\n\n❓ ${q.q}\n\n${q.opts.join("\n")}\n\nAnswer: *${prefix}quiz A/B/C/D*\n⏰ 30 seconds!`);
+    return mzazireply(`🎮 *GROUP QUIZ!*\n\n❓ ${q.q}\n\n${q.opts.join("\n")}\n\nAnswer: *${prefix}${command} A/B/C/D*\n⏰ 30 seconds!`);
   }
 
   // ── Submit answer ──
   const game = global.quizGames.get(qzId);
-  if (!game) return mzazireply(`❌ No active quiz. Start one with *${prefix}quiz*`);
+  if (!game) return mzazireply(`❌ No active quiz. Start one with *${prefix}${command}*`);
   if (game.answered) return;
 
   const answer = args[0].toUpperCase().trim();
@@ -14109,7 +14105,7 @@ try {
   await mzazi.sendMessage(sender, { video: { url }, caption: ''🎬 '' + title }, { quoted: m });
 } catch (e) { return mzazireply(''❌ Download failed: '' + (e.message || e)); }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('react2', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}react2 ❤️`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('react2', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} ❤️`);
         const quotedReact = m.message?.extendedTextMessage?.contextInfo;
         if (!quotedReact) return mzazireply("Reply to a message to react!");
         try {
@@ -14222,7 +14218,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
         } catch(e) { mzazireply("❌ Failed to reject requests"); }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('rejectreq', '[]'::jsonb, 'Reject join request help', 'Owner', '', true, false, false, true, 'if (!isOwner) return mzazireply(''❌ Owner only.'');
-mzazireply(`Use ${prefix}reject <jid> to reject a join request (see ${prefix}pendingrequests).`);
+mzazireply(`Use ${prefix}${command} <jid> to reject a join request (see ${prefix}${command}).`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('relax', '[]'::jsonb, 'Download relaxing music audio', 'Downloads', '', false, false, false, true, 'const q = (text || '''').trim();
 if (!q) return mzazireply(`Usage: ${prefix}${command} <song name / link>`);
@@ -14260,7 +14256,7 @@ try {
 } catch (e) { return mzazireply(''❌ '' + (e.message || ''Action failed'')); }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('removebg', '["rmbg"]'::jsonb, '', 'General', '', false, false, false, true, 'const quotedRBG = m.message?.extendedTextMessage?.contextInfo?.quotedMessage;
-        if (!quotedRBG?.imageMessage) return mzazireply(`Reply to an image with ${prefix}removebg`);
+        if (!quotedRBG?.imageMessage) return mzazireply(`Reply to an image with ${prefix}${command}`);
         mzazireply("🎨 Removing background...\n\n_This feature requires a background removal API_");
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('removemsg', '[]'::jsonb, 'Delete a message (reply)', 'Group', '', false, true, true, true, 'if (!isGroup) return mzazireply(''❌ Group only.'');
@@ -14309,7 +14305,7 @@ try {
   mzazireply(''✅ Group __LABEL__ updated: '' + v);
 } catch (e) { return mzazireply(''❌ '' + (e.message || ''Action failed'')); }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('repeat', '["mocktext", "spongebob"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}mocktext hello world`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('repeat', '["mocktext", "spongebob"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} hello world`);
         const mocked = text.split("").map((c,i) => i%2===0 ? c.toUpperCase() : c.toLowerCase()).join("");
         mzazireply(`🧽 *MOCKING SPONGEBOB*\n\n${mocked}`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
@@ -14360,7 +14356,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                 name: ''quick_reply'',
                 buttonParamsJson: JSON.stringify({
                   display_text: ''👑 Owner'',
-                  id: `${prefix}owner`
+                  id: `${prefix}${command}`
                 })
               }
             ]
@@ -14384,7 +14380,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
           type: 1
         },
         {
-          buttonId: `${prefix}owner`,
+          buttonId: `${prefix}${command}`,
           buttonText: { displayText: "👑 Owner" },
           type: 1
         }
@@ -14560,7 +14556,7 @@ try {
 } catch (e) { return mzazireply(''❌ AI request failed: '' + (e.message || e)); }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('resetbot', '[]'::jsonb, '', 'General', '', true, false, false, true, 'if (!isOwner) return mzazireply("❌ Owner only!");
-        if (text !== "confirm") return mzazireply(`⚠️ This resets ALL bot settings!\nType: ${prefix}resetbot confirm`);
+        if (text !== "confirm") return mzazireply(`⚠️ This resets ALL bot settings!\nType: ${prefix}${command} confirm`);
         const defaultSettings = { publicMode: true, selfMode: false };
         saveJSON(`./database/sessions/${botPhoneNum}/settings.json`, defaultSettings);
         mzazireply("✅ Bot settings reset to defaults!");
@@ -14586,7 +14582,7 @@ return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, descripti
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('resetwarn', '[]'::jsonb, '', 'General', '', true, false, true, true, 'if (!isGroup) return mzazireply("❌ Group only!");
         if (!isOwner && !isAdmin) return mzazireply("❌ Admins only!");
         const mentionedJid = m.message?.extendedTextMessage?.contextInfo?.mentionedJid;
-        if (!mentionedJid || mentionedJid.length === 0) return mzazireply(`Usage: ${prefix}resetwarn @user`);
+        if (!mentionedJid || mentionedJid.length === 0) return mzazireply(`Usage: ${prefix}${command} @user`);
         const target = mentionedJid[0];
         resetWarn(sender, await resolveJid(target));
         mzazireply(`✅ Warnings reset for @${target.split(''@'')[0]}!`);') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
@@ -14623,7 +14619,7 @@ try {
   return mzazireply(''❌ '' + ((res && res.error) || ''No response from the AI.''));
 } catch (e) { return mzazireply(''❌ AI request failed: '' + (e.message || e)); }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('reverse', '["rev"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}reverse Hello World`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('reverse', '["rev"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} Hello World`);
         mzazireply(`🔄 *REVERSE TEXT*\n\nInput: ${text}\nOutput: ${text.split("").reverse().join("")}`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('review', '[]'::jsonb, 'AI: Review the following code and suggest improvements', 'AI', '', false, false, false, true, 'const q = (text || '''').trim();
@@ -14716,7 +14712,7 @@ return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, descripti
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('rng', '["random"]'::jsonb, '', 'General', '', false, false, false, true, 'const parts = text.split("-").map(Number);
         const min = parts[0] || 1;
         const max = parts[1] || 100;
-        if (isNaN(min) || isNaN(max)) return mzazireply(`Example: ${prefix}rng 1-100`);
+        if (isNaN(min) || isNaN(max)) return mzazireply(`Example: ${prefix}${command} 1-100`);
         const num = Math.floor(Math.random() * (max - min + 1)) + min;
         mzazireply(`🎰 *RANDOM NUMBER*\n\nRange: ${min} - ${max}\nResult: *${num}*`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
@@ -14746,7 +14742,7 @@ const colors = [''red'', ''black''];
 const spin = colors[Math.floor(Math.random() * 2)];
 mzazireply(''🎡 Spinning... '' + (spin === ''red'' ? ''🔴 Red!'' : ''⚫ Black!'') + ''\n\n'' + (spin === bet ? ''🎉 You win!'' : ''😅 You lose!''));
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('rps', '["rockpaperscissors"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`✊✋✌️ Choose: rock, paper, or scissors\nExample: ${prefix}rps rock`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('rps', '["rockpaperscissors"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`✊✋✌️ Choose: rock, paper, or scissors\nExample: ${prefix}${command} rock`);
         const choices = ["rock","paper","scissors"];
         const botChoice = choices[Math.floor(Math.random() * 3)];
         const userChoice = text.toLowerCase().trim();
@@ -14778,13 +14774,13 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
     });
 
     return mzazi.sendMessage(sender, {
-      text: `🎮 *ROCK PAPER SCISSORS — 1v1!*\n\n@${jidToNumber(await resolveJid(msgSender))} vs @${jidToNumber(await resolveJid(opp))}\n\nBoth players type:\n*${prefix}rps rock* | *${prefix}rps paper* | *${prefix}rps scissors*\n\n(Your choice is visible only after both pick!)`,
+      text: `🎮 *ROCK PAPER SCISSORS — 1v1!*\n\n@${jidToNumber(await resolveJid(msgSender))} vs @${jidToNumber(await resolveJid(opp))}\n\nBoth players type:\n*${prefix}${command} rock* | *${prefix}${command} paper* | *${prefix}${command} scissors*\n\n(Your choice is visible only after both pick!)`,
       mentions: [msgSender, opp]
     }, { quoted: m });
   }
 
   const game = global.rpsGames.get(rpsId);
-  if (!game) return mzazireply(`❌ No RPS game. Challenge someone: *${prefix}rps1v1 @user*`);
+  if (!game) return mzazireply(`❌ No RPS game. Challenge someone: *${prefix}${command} @user*`);
 
   const choice = args[0]?.toLowerCase();
   if (!["rock", "paper", "scissors"].includes(choice)) return mzazireply("❌ Choose *rock*, *paper*, or *scissors*.");
@@ -14817,11 +14813,11 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('rules', '[]'::jsonb, '', 'General', '', false, false, true, true, 'if (!isGroup) return mzazireply("❌ Group only!");
         const gs = getGroupSettings(sender);
-        if (!gs.rules) return mzazireply(`📋 No rules set.\nUse ${prefix}setrules to set rules.`);
+        if (!gs.rules) return mzazireply(`📋 No rules set.\nUse ${prefix}${command} to set rules.`);
         mzazireply(`📋 *${groupName} Rules*\n\n${gs.rules}`);') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('rules2', '[]'::jsonb, '', 'General', '', false, false, true, true, 'if (!isGroup) return mzazireply("❌ Group only!");
         const gs8 = getGroupSettings(sender);
-        if (!gs8.rules) return mzazireply(`📋 No rules set for ${groupName}.\nAdmins: ${prefix}setrules <rules text>`);
+        if (!gs8.rules) return mzazireply(`📋 No rules set for ${groupName}.\nAdmins: ${prefix}${command} <rules text>`);
         mzazireply(`📋 *${groupName} GROUP RULES*\n\n${gs8.rules}\n\n_Follow the rules to stay in this group!_`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('runtime', '["uptime2"]'::jsonb, '', 'General', '', false, false, false, true, 'mzazireply(`⏱️ *RUNTIME*\n\n${runtime(process.uptime())}\n\n✅ Bot is running smoothly!`);
@@ -14955,7 +14951,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 
   // ── Start new game ──
   if (!args[0]) {
-    if (global.scrambleGames.has(scId)) return mzazireply(`❌ A Scramble game is already running! Answer with *${prefix}scramble <word>* or stop with *${prefix}endscramble*`);
+    if (global.scrambleGames.has(scId)) return mzazireply(`❌ A Scramble game is already running! Answer with *${prefix}${command} <word>* or stop with *${prefix}${command}*`);
 
     const pick = scrambleWords[Math.floor(Math.random() * scrambleWords.length)];
     let scrambled = shuffle(pick.word);
@@ -14969,12 +14965,12 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
       startedBy: msgSender
     });
 
-    return mzazireply(`🎮 *WORD SCRAMBLE!*\n\nUnscramble this word:\n\n🔀 *${scrambled}*\n\n💡 Hint: ${pick.hint}\n📏 Letters: ${pick.word.length}\n\nAnswer: *${prefix}scramble <your answer>*\nStop: *${prefix}endscramble*`);
+    return mzazireply(`🎮 *WORD SCRAMBLE!*\n\nUnscramble this word:\n\n🔀 *${scrambled}*\n\n💡 Hint: ${pick.hint}\n📏 Letters: ${pick.word.length}\n\nAnswer: *${prefix}${command} <your answer>*\nStop: *${prefix}${command}*`);
   }
 
   // ── Submit answer ──
   const game = global.scrambleGames.get(scId);
-  if (!game) return mzazireply(`❌ No active Scramble game. Start one with *${prefix}scramble*`);
+  if (!game) return mzazireply(`❌ No active Scramble game. Start one with *${prefix}${command}*`);
 
   const answer = args.join(" ").toUpperCase().trim();
   if (answer === game.word) {
@@ -14986,11 +14982,11 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
   }
 
   mzazi.sendMessage(sender, {
-    text: `🎮 *WORD SCRAMBLE*\n\n❌ @${jidToNumber(await resolveJid(msgSender))} Wrong! Try again.\n\n🔀 Scrambled: *${game.scrambled}*\n💡 Hint: ${game.hint}\n\nAnswer: *${prefix}scramble <your answer>*`,
+    text: `🎮 *WORD SCRAMBLE*\n\n❌ @${jidToNumber(await resolveJid(msgSender))} Wrong! Try again.\n\n🔀 Scrambled: *${game.scrambled}*\n💡 Hint: ${game.hint}\n\nAnswer: *${prefix}${command} <your answer>*`,
     mentions: [msgSender]
   }, { quoted: m });
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('screenshot2', '["ss"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}ss https://google.com`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('screenshot2', '["ss"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} https://google.com`);
         try {
           const ssUrl = `https://api.apiflash.com/v1/urltoimage?access_key=demo&url=${encodeURIComponent(text)}&format=png`;
           await mzazi.sendMessage(sender, { image: { url: ssUrl }, caption: `📸 Screenshot of ${text}` }, { quoted: m });
@@ -15037,25 +15033,25 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                 header: commonHeader,
                 body: { text: `
 ╔═⟪ 🌍 SEARCH & INFO (1/3) ⟫═╗
-╠❏ ${prefix}wiki  
-╠❏ ${prefix}dict  
-╠❏ ${prefix}synonym
-╠❏ ${prefix}define  
-╠❏ ${prefix}translate  
-╠❏ ${prefix}weather
-╠❏ ${prefix}country  
-╠❏ ${prefix}timezone  
-╠❏ ${prefix}currency
-╠❏ ${prefix}crypto  
-╠❏ ${prefix}horoscope  
-╠❏ ${prefix}flag
-╠❏ ${prefix}capital  
-╠❏ ${prefix}phonecode  
-╠❏ ${prefix}continent
-╠❏ ${prefix}numberfact  
-╠❏ ${prefix}dayfact  
-╠❏ ${prefix}fact
-╠❏ ${prefix}scifact  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
 ╚══════════════════╝` },
                 footer: { text: ''Swipe ➡️ for more'' },
                 nativeFlowMessage: {
@@ -15072,26 +15068,26 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                 header: commonHeader,
                 body: { text: `
 ╔═⟪ 🌍 SEARCH & INFO (2/3) ⟫═╗
-╠❏ ${prefix}catfact  
-╠❏ ${prefix}dogfact
-╠❏ ${prefix}chucknorris  
-╠❏ ${prefix}joke  
-╠❏ ${prefix}advice
-╠❏ ${prefix}quote  
-╠❏ ${prefix}motivation  
-╠❏ ${prefix}github
-╠❏ ${prefix}bible  
-╠❏ ${prefix}quran  
-╠❏ ${prefix}hadith
-╠❏ ${prefix}dua  
-╠❏ ${prefix}proverb  
-╠❏ ${prefix}history
-╠❏ ${prefix}geography  
-╠❏ ${prefix}internet  
-╠❏ ${prefix}tech
-╠❏ ${prefix}space  
-╠❏ ${prefix}ocean  
-╠❏ ${prefix}africa
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
 ╚══════════════════╝` },
                 footer: { text: ''Swipe ➡️ for more'' },
                 nativeFlowMessage: {
@@ -15108,18 +15104,18 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                 header: commonHeader,
                 body: { text: `
 ╔═⟪ 🌍 SEARCH & INFO (3/3) ⟫═╗
-╠❏ ${prefix}kenya  
-╠❏ ${prefix}travel  
-╠❏ ${prefix}nature
-╠❏ ${prefix}word  
-╠❏ ${prefix}poem  
-╠❏ ${prefix}ai
-╠❏ ${prefix}blockchain  
-╠❏ ${prefix}cybersecurity
-╠❏ ${prefix}wiki  
-╠❏ ${prefix}weather
-╠❏ ${prefix}country
-╠❏ ${prefix}translate
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}
 ╚══════════════════╝` },
                 footer: { text: ''Explore the world with these commands'' },
                 nativeFlowMessage: {
@@ -15191,7 +15187,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('sendmsg', '["sendmessage"]'::jsonb, '', 'General', '', true, false, false, true, 'if (!isOwner) return mzazireply("❌ Owner only!");
         const parts3 = text.split("|");
-        if (parts3.length < 2) return mzazireply(`Usage: ${prefix}sendmsg 254XXXXXXXXX | message`);
+        if (parts3.length < 2) return mzazireply(`Usage: ${prefix}${command} 254XXXXXXXXX | message`);
         const [targetNum2, ...msgParts] = parts3;
         const targetJid2 = `${targetNum2.trim().replace(/\D/g,"")}@s.whatsapp.net`;
         await mzazi.sendMessage(targetJid2, { text: msgParts.join("|").trim() });
@@ -15213,14 +15209,14 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 mzazireply(''📱 *Session*\n\nBot: '' + botName + ''\nJID: '' + botPhoneNum);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('setbotbio', '["setbio"]'::jsonb, '', 'General', '', true, false, false, true, 'if (!isOwner) return mzazireply("❌ Owner only!");
-        if (!text) return mzazireply(`Usage: ${prefix}setbio <new bio>`);
+        if (!text) return mzazireply(`Usage: ${prefix}${command} <new bio>`);
         try {
           await mzazi.updateProfileStatus(text);
           mzazireply(`✅ Bot bio updated: ${text}`);
         } catch(e) { mzazireply("❌ Failed to update bio"); }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('setbotname', '[]'::jsonb, '', 'General', '', true, false, false, true, 'if (!isOwner) return mzazireply("❌ Owner only!");
-        if (!text) return mzazireply(`Usage: ${prefix}setbotname <name>`);
+        if (!text) return mzazireply(`Usage: ${prefix}${command} <name>`);
         try {
           await mzazi.updateProfileName(text);
           mzazireply(`✅ Bot profile name updated: ${text}`);
@@ -15237,7 +15233,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 
     if (!isImage) {
         return mzazireply(
-            `📸 Reply to an image or send image with caption:\n${prefix}setbotpic`
+            `📸 Reply to an image or send image with caption:\n${prefix}${command}`
         );
     }
 
@@ -15292,7 +15288,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('setdescription', '[]'::jsonb, '', 'General', '', false, true, true, true, 'if (!isGroup) return mzazireply("❌ Group only!");
         if (!isAdmin && !isOwner) return mzazireply("❌ Admins only!");
 
-        if (!text) return mzazireply(`Usage: ${prefix}setdesc New group description`);
+        if (!text) return mzazireply(`Usage: ${prefix}${command} New group description`);
         try {
           await mzazi.groupUpdateDescription(sender, text);
           mzazireply(`✅ Group description updated!`);
@@ -15345,7 +15341,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
     const quotedMsg = m.message?.extendedTextMessage?.contextInfo?.quotedMessage;
     const imageMsg = quotedMsg?.imageMessage || quotedMsg?.stickerMessage;
     if (!imageMsg) {
-        await reply(''❌ *Please reply to an image or sticker*\n\nUsage: Reply to an image with `.setgpp`'');
+        await reply(`❌ *Please reply to an image or sticker*\n\nUsage: Reply to an image with ${prefix}${command}`);
       return;
     }
 
@@ -15400,7 +15396,7 @@ try {
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('setmode', '[]'::jsonb, '', 'General', '', true, false, false, true, 'if (!isOwner) return mzazireply("❌ Owner only!");
         const modes = ["public","private","group"];
-        if (!text || !modes.includes(text)) return mzazireply(`Usage: ${prefix}setmode <mode>\nModes: ${modes.join(", ")}`);
+        if (!text || !modes.includes(text)) return mzazireply(`Usage: ${prefix}${command} <mode>\nModes: ${modes.join(", ")}`);
         const modeSettings = loadJSON(`./database/sessions/${botPhoneNum}/settings.json`, {});
         modeSettings.mode = text;
         modeSettings.publicMode = text === "public";
@@ -15433,9 +15429,9 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
     if (!newPrefix) {
         return mzazireply(
             `📌 *Current prefix:* \`${prefix || "none"}\`\n\n` +
-            `Usage: ${prefix}setprefix <new prefix>\n` +
-            `Example: ${prefix}setprefix !\n` +
-            `To remove prefix: ${prefix}setprefix none`
+            `Usage: ${prefix}${command} <new prefix>\n` +
+            `Example: ${prefix}${command} !\n` +
+            `To remove prefix: ${prefix}${command} none`
         );
     }
 
@@ -15486,7 +15482,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('setpresence', '[]'::jsonb, '', 'General', '', true, false, false, true, 'if (!isOwner) return mzazireply("❌ Owner only!");
         const presences = ["available","unavailable","composing","recording","paused"];
-        if (!text || !presences.includes(text)) return mzazireply(`Usage: ${prefix}setpresence <type>\nTypes: ${presences.join(", ")}`);
+        if (!text || !presences.includes(text)) return mzazireply(`Usage: ${prefix}${command} <type>\nTypes: ${presences.join(", ")}`);
         try {
           await mzazi.sendPresenceUpdate(text, sender);
           mzazireply(`✅ Presence set to: ${text}`);
@@ -15494,12 +15490,12 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('setrules', '[]'::jsonb, '', 'General', '', true, false, true, true, 'if (!isGroup) return mzazireply("❌ Group only!");
         if (!isOwner && !isAdmin) return mzazireply("❌ Admins only!");
-        if (!text) return mzazireply(`Usage: ${prefix}setrules <rules text>`);
+        if (!text) return mzazireply(`Usage: ${prefix}${command} <rules text>`);
         setGroupSetting(sender, ''rules'', text);
         mzazireply(`✅ Group rules updated!`);') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('setrules2', '[]'::jsonb, '', 'General', '', false, true, true, true, 'if (!isGroup) return mzazireply("❌ Group only!");
         if (!isAdmin && !isOwner) return mzazireply("❌ Admins only!");
-        if (!text) return mzazireply(`Usage: ${prefix}setrules2 <rules>`);
+        if (!text) return mzazireply(`Usage: ${prefix}${command} <rules>`);
         setGroupSetting(sender, "rules", text);
         mzazireply("✅ Group rules updated!");
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
@@ -15535,18 +15531,18 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                 header: commonHeader,
                 body: { text: `
 ╔═⟪ ⚙️ BOT SETTINGS (1/2) ⟫═╗
-╠❏ ${prefix}botmode  
-╠❏ ${prefix}setmode  
-╠❏ ${prefix}setprefix
-╠❏ ${prefix}version  
-╠❏ ${prefix}changelog  
-╠❏ ${prefix}update
-╠❏ ${prefix}server  
-╠❏ ${prefix}node  
-╠❏ ${prefix}cpu
-╠❏ ${prefix}hostname  
-╠❏ ${prefix}platform  
-╠❏ ${prefix}uptime3
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
 ╚══════════════════╝` },
                 footer: { text: ''Swipe ➡️ for more'' },
                 nativeFlowMessage: {
@@ -15563,14 +15559,14 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                 header: commonHeader,
                 body: { text: `
 ╔═⟪ ⚙️ BOT SETTINGS (2/2) ⟫═╗
-╠❏ ${prefix}creator  
-╠❏ ${prefix}contact 
-╠❏ ${prefix}support
-╠❏ ${prefix}faq  
-╠❏ ${prefix}plan  
-╠❏ ${prefix}donate
-╠❏ ${prefix}social  
-╠❏ ${prefix}source
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command} 
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
 ╚══════════════════╝` },
                 footer: { text: ''Info & support'' },
                 nativeFlowMessage: {
@@ -15630,11 +15626,11 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 const label = ''7️⃣ Lucky 7'';
 mzazireply(win ? ''🎉 '' + label + '' — you won!'' : ''😅 '' + label + '' — you lost. Try again!'');
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('sha1', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}sha1 hello`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('sha1', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} hello`);
         const sha1hash = crypto.createHash("sha1").update(text).digest("hex");
         mzazireply(`🔐 *SHA1 HASH*\n\nInput: ${text}\nHash: ${sha1hash}`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('sha256', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}sha256 hello`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('sha256', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} hello`);
         const sha256hash = crypto.createHash("sha256").update(text).digest("hex");
         mzazireply(`🔐 *SHA256 HASH*\n\nInput: ${text}\nHash: ${sha256hash}`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
@@ -15642,14 +15638,14 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 mzazireply(list[Math.floor(Math.random() * list.length)]);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('ship', '["lovemeter", "lovestats"]'::jsonb, '', 'General', '', false, false, false, true, 'const mentioned = m.message?.extendedTextMessage?.contextInfo?.mentionedJid || [];
-        if (mentioned.length < 2) return mzazireply(`💕 Mention 2 users!\nExample: ${prefix}ship @user1 @user2`);
+        if (mentioned.length < 2) return mzazireply(`💕 Mention 2 users!\nExample: ${prefix}${command} @user1 @user2`);
         const p1 = jidToNumber(await resolveJid(mentioned[0]));
         const p2 = jidToNumber(await resolveJid(mentioned[1]));
         const score = Math.floor(Math.random() * 101);
         let heart = score >= 80 ? "❤️❤️❤️" : score >= 50 ? "💛💛" : "💔";
         mzazireply(`💕 *LOVE METER*\n\n@${p1} + @${p2}\n\n💘 Compatibility: ${score}%\n${"█".repeat(Math.floor(score/10))}${"░".repeat(10 - Math.floor(score/10))} ${score}%\n\n${heart}`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('shorten', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}shorturl https://example.com`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('shorten', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} https://example.com`);
         try {
           const res = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(text)}`);
           const short = await res.text();
@@ -15678,7 +15674,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 mzazireply(list[Math.floor(Math.random() * list.length)]);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('shutdown', '[]'::jsonb, '', 'General', '', true, false, false, true, 'if (!isOwner) return mzazireply("❌ Owner only!");
-        if (text !== "confirm") return mzazireply(`⚠️ This will stop the bot!\nType: ${prefix}shutdown confirm`);
+        if (text !== "confirm") return mzazireply(`⚠️ This will stop the bot!\nType: ${prefix}${command} confirm`);
         await mzazireply("💤 Bot shutting down...");
         setTimeout(() => process.exit(1), 1000);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
@@ -15794,13 +15790,13 @@ if (ok) { db[GKEY] = undefined; return mzazireply(''🎉 Correct! Answer: '' + s
 mzazireply(''❌ Wrong. Answer: '' + st.a + `\nPlay again with ${prefix}${command}`);
 db[GKEY] = undefined;
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('spotify', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}spotify faded alan walker`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('spotify', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} faded alan walker`);
         try {
           const spRes = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(text)}&type=track&limit=5`, {
             headers: { "Authorization": "Bearer dummy" }
           });
-          mzazireply(`🎵 *SPOTIFY SEARCH*\n\nSearch: ${text}\n\n_Note: Use ${prefix}play2 to play music_`);
-        } catch(e) { mzazireply(`🎵 *SPOTIFY*\n\nSearch: ${text}\nUse ${prefix}play2 to download and play music!`); }
+          mzazireply(`🎵 *SPOTIFY SEARCH*\n\nSearch: ${text}\n\n_Note: Use ${prefix}${command} to play music_`);
+        } catch(e) { mzazireply(`🎵 *SPOTIFY*\n\nSearch: ${text}\nUse ${prefix}${command} to download and play music!`); }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('sql', '[]'::jsonb, 'AI: Write an SQL query for the following task', 'AI', '', false, false, false, true, 'const q = (text || '''').trim();
 if (!q) return mzazireply(`Usage: ${prefix}${command} <text>`);
@@ -15837,7 +15833,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
         const ssPath2 = sessionFile("statusSettings.json");
         const ss2 = loadJSON(ssPath2, { emoji: "❤️" });
         if (!text) {
-          return mzazireply(`❤️ *STATUS LIKE EMOJI*\n\nCurrent emoji: ${ss2.emoji}\n\nUsage: ${prefix}statuslikeemoji <emoji>\nExample: ${prefix}statuslikeemoji 🔥`);
+          return mzazireply(`❤️ *STATUS LIKE EMOJI*\n\nCurrent emoji: ${ss2.emoji}\n\nUsage: ${prefix}${command} <emoji>\nExample: ${prefix}${command} 🔥`);
         }
         const newEmoji = text.trim().split(/\s+/)[0];
         ss2.emoji = newEmoji;
@@ -15854,7 +15850,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
           `👁️ Auto View Status: ${cfg5b.enabled ? "✅ ON" : "❌ OFF"}\n` +
           `❤️ Auto Like Status: ${cfg6b.enabled ? "✅ ON" : "❌ OFF"}\n` +
           `🎭 Like Emoji: ${ssB.emoji}\n\n` +
-          `Commands:\n• ${prefix}autostatus on/off\n• ${prefix}autolike on/off\n• ${prefix}statuslikeemoji <emoji>`
+          `Commands:\n• ${prefix}${command} on/off\n• ${prefix}${command} on/off\n• ${prefix}${command} <emoji>`
         );
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('sticker', '[]'::jsonb, 'Get the message we are replying to', 'General', '', false, false, false, true, '// Get the message we are replying to
@@ -15915,7 +15911,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
     }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('sticker2', '["s2"]'::jsonb, '', 'General', '', false, false, false, true, 'const quoted5 = m.message?.extendedTextMessage?.contextInfo?.quotedMessage;
-        if (!quoted5) return mzazireply(`Reply to an image/video with ${prefix}s2`);
+        if (!quoted5) return mzazireply(`Reply to an image/video with ${prefix}${command}`);
         const q5Type = Object.keys(quoted5)[0];
         const mediaMsg5 = quoted5.imageMessage || quoted5.videoMessage;
         if (!mediaMsg5) return mzazireply("Only images or short videos!");
@@ -15925,7 +15921,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
         } catch(e) { mzazireply("❌ Failed to create sticker"); }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('stickertoimg', '[]'::jsonb, '', 'General', '', false, false, false, true, 'const quoted3 = m.message?.extendedTextMessage?.contextInfo?.quotedMessage;
-        if (!quoted3?.stickerMessage) return mzazireply(`Reply to a sticker with ${prefix}toimg`);
+        if (!quoted3?.stickerMessage) return mzazireply(`Reply to a sticker with ${prefix}${command}`);
         try {
           const buf2 = await downloadMediaMessage({ key: m.key, message: quoted3 }, "buffer", {}, { logger: pino({ level:"silent" }), reuploadRequest: mzazi.updateMediaMessage });
           await mzazi.sendMessage(sender, { image: buf2, caption: "✅ Converted to image!" }, { quoted: m });
@@ -15953,7 +15949,7 @@ if (g === st.n) {
 db[GKEY] = undefined;
 return mzazireply(''❌ You broke the streak (expected '' + st.n + `). Play again with ${prefix}${command}`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('strike', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}strike Hello World`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('strike', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} Hello World`);
         mzazireply(`~${text}~`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('study', '[]'::jsonb, 'AI: Create a study summary for the following', 'AI', '', false, false, false, true, 'const q = (text || '''').trim();
@@ -16098,7 +16094,7 @@ return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, descripti
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('subject', '[]'::jsonb, '', 'General', '', false, true, true, true, 'try {
 if (!isGroup) return mzazireply("❌ Group only");
 if (!isAdmin && !isOwner) return mzazireply("❌ Admins only");
-if (!text) return mzazireply(`Example: ${prefix}setgcname Mzazi Tech`);
+if (!text) return mzazireply(`Example: ${prefix}${command} Mzazi Tech`);
 
 await mzazi.groupUpdateSubject(sender, text);
 
@@ -16198,7 +16194,7 @@ return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, descripti
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('sunday', '[]'::jsonb, 'Fun: sunday', 'Fun', '', false, false, false, true, 'const list = ["☀️ Sunday: rest, reflect, recharge.", "🌤️ Happy Sunday — take it slow today.", "😌 Sundays are for resetting.", "⛪ Peaceful Sunday vibes.", "🌸 Enjoy the calm of Sunday."];
 mzazireply(list[Math.floor(Math.random() * list.length)]);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('support', '[]'::jsonb, '', 'General', '', false, false, false, true, 'mzazireply(`🆘 *SUPPORT*\n\n❓ Having issues?\n\n• Check ${prefix}help for commands\n• Contact developer: @mzazidev\n• Telegram: https://t.me/mzazidev\n\n_${botName} Support Team_`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('support', '[]'::jsonb, '', 'General', '', false, false, false, true, 'mzazireply(`🆘 *SUPPORT*\n\n❓ Having issues?\n\n• Check ${prefix}${command} for commands\n• Contact developer: @mzazidev\n• Telegram: https://t.me/mzazidev\n\n_${botName} Support Team_`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('swahili', '[]'::jsonb, 'Fun: swahili', 'Fun', '', false, false, false, true, 'const list = ["Habari? — How are you?", "Nzuri, asante — I''m fine, thank you", "Karibu — Welcome", "Asante sana — Thank you very much", "Tafadhali — Please", "Samahani — Excuse me/Sorry", "Ndiyo — Yes", "Hapana — No", "Kwaheri — Goodbye", "Usiku mwema — Good night", "Nakupenda — I love you", "Hakuna matata — No worries"];
 mzazireply(list[Math.floor(Math.random() * list.length)]);
@@ -16206,7 +16202,7 @@ return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, descripti
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('sxget', '["sxdownload"]'::jsonb, '── Download the video (with the same robust logic as before) ──', 'General', '', false, false, false, true, 'if (!text) {
     return mzazireply(
       `📥 *Download SX Video*\n\n` +
-      `Usage: .sxget <video_id>\n` +
+      `Usage: ${prefix}${command} <video_id>\n` +
       `Example: .sxget sx_1234567890_0\n\n` +
       `_You can also click the Download button on the video card._`
     );
@@ -16366,7 +16362,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
   }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('sxinfo', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) {
-    return mzazireply(''📋 Usage: .sxinfo <video_id>'');
+    return mzazireply(`📋 Usage: ${prefix}${command} <video_id>`);
   }
   const videoId = text.trim();
   if (!global.sxVideoData) global.sxVideoData = new Map();
@@ -16384,7 +16380,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('sxvideos', '["sxvideo", "sx"]'::jsonb, '── Extract video list ──', 'General', '', false, false, false, true, 'if (!text) {
     return mzazireply(
       `🎬 *SX Videos Downloader*\n\n` +
-      `Usage: .sxvideos <search query>\n` +
+      `Usage: ${prefix}${command} <search query>\n` +
       `Example: .sxvideos aunty\n\n` +
       `_Searches for videos and shows them as interactive cards._`
     );
@@ -16538,7 +16534,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
     mzazireply(`❌ ${err.message || ''Failed to fetch videos''}`);
   }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('synonym', '["thesaurus"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}synonym happy`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('synonym', '["thesaurus"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} happy`);
         try {
           const synRes = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(text)}`);
           const synData = await synRes.json();
@@ -16664,7 +16660,7 @@ await mzazi.sendMessage(sender, { text: ''🎯 Random pick: @'' + jidToNumber(aw
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('take', '["steal"]'::jsonb, '', 'General', '', true, false, false, true, 'if (!isOwner && !isAdmin) return mzazireply("❌ Admins only!");
         const quoted4 = m.message?.extendedTextMessage?.contextInfo?.quotedMessage;
-        if (!quoted4?.stickerMessage) return mzazireply(`Reply to a sticker with ${prefix}take`);
+        if (!quoted4?.stickerMessage) return mzazireply(`Reply to a sticker with ${prefix}${command}`);
         try {
           const buf3 = await downloadMediaMessage({ key: m.key, message: quoted4 }, "buffer", {}, { logger: pino({ level:"silent" }), reuploadRequest: mzazi.updateMediaMessage });
           await mzazi.sendMessage(sender, { sticker: buf3 }, { quoted: m });
@@ -17071,7 +17067,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('timetable', '["schedule"]'::jsonb, '', 'General', '', false, false, false, true, 'mzazireply(`📅 *SCHEDULE*\n\nNo schedule set.\nContact owner to set up schedules.\n\n_${botName} - Your Smart Assistant_`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('timezone', '["tz"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}timezone Africa/Nairobi`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('timezone', '["tz"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} Africa/Nairobi`);
         try {
           const tzDate = new Date();
           const tzFormatted = tzDate.toLocaleString("en-US", { timeZone: text, timeZoneName:"long" });
@@ -17479,7 +17475,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
     const stickerMsg = quotedMsg?.stickerMessage;
 
     if (!stickerMsg) {
-        await reply(''❌ *Please reply to a sticker.*\n\nUsage: Reply to a sticker with `.toimg`'');
+        await reply(`❌ *Please reply to a sticker.*\n\nUsage: Reply to a sticker with ${prefix}${command}`);
         return;
     }
 
@@ -17527,7 +17523,7 @@ return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, descripti
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('topic', '[]'::jsonb, '', 'General', '', false, true, true, true, 'if (!isGroup) return mzazireply("❌ Group only!");
         if (!isAdmin && !isOwner) return mzazireply("❌ Admins only!");
         
-        if (!text) return mzazireply(`Usage: ${prefix}topic <new topic>`);
+        if (!text) return mzazireply(`Usage: ${prefix}${command} <new topic>`);
         try {
           await mzazi.groupUpdateDescription(sender, text);
           mzazireply(`✅ Group topic set: ${text}`);
@@ -17678,7 +17674,7 @@ return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, descripti
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('trt', '["translate"]'::jsonb, '', 'General', '', false, false, false, true, 'try {
 
 if (!text) {
-return mzazireply(`Example: ${prefix}trt hello`);
+return mzazireply(`Example: ${prefix}${command} hello`);
 }
 
 const translatte = require("translatte");
@@ -17713,8 +17709,8 @@ return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, descripti
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('ttp', '["texttoimage", "textimage"]'::jsonb, '── Try DrexApp TTP API ──', 'General', '', false, false, false, true, 'if (!text) {
         return mzazireply(
             `🖼️ *Text to Image*\n\n` +
-            `Usage: ${prefix}ttp <text>\n` +
-            `Example: ${prefix}ttp Hello World\n\n` +
+            `Usage: ${prefix}${command} <text>\n` +
+            `Example: ${prefix}${command} Hello World\n\n` +
             `Converts your text into a stylish image.`
         );
     }
@@ -17879,7 +17875,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
   const mentioned = m.message?.extendedTextMessage?.contextInfo?.mentionedJid || [];
   if (mentioned.length > 0 || args[0]?.includes("@")) {
     const opponent = mentioned[0];
-    if (!opponent) return mzazireply(`❌ Mention a player!\nExample: ${prefix}ttt @player`);
+    if (!opponent) return mzazireply(`❌ Mention a player!\nExample: ${prefix}${command} @player`);
     if (opponent === msgSender) return mzazireply("❌ You can''t challenge yourself!");
 
     if (global.tttGames.has(tttId)) return mzazireply("❌ A game is already running in this group! Use *endttt* to stop it.");
@@ -17900,14 +17896,14 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
       `┌───┬───┬───┐\n│ ${b[0]} │ ${b[1]} │ ${b[2]} │\n├───┼───┼───┤\n│ ${b[3]} │ ${b[4]} │ ${b[5]} │\n├───┼───┼───┤\n│ ${b[6]} │ ${b[7]} │ ${b[8]} │\n└───┴───┴───┘`;
 
     return mzazi.sendMessage(sender, {
-      text: `🎮 *TIC-TAC-TOE STARTED!*\n\n${p1} ❌  vs  ⭕ ${p2}\n\nPositions:\n1️⃣2️⃣3️⃣\n4️⃣5️⃣6️⃣\n7️⃣8️⃣9️⃣\n\n${drawBoard(["1","2","3","4","5","6","7","8","9"])}\n\n${p1}''s turn! Type *${prefix}ttt <1-9>* to play.`,
+      text: `🎮 *TIC-TAC-TOE STARTED!*\n\n${p1} ❌  vs  ⭕ ${p2}\n\nPositions:\n1️⃣2️⃣3️⃣\n4️⃣5️⃣6️⃣\n7️⃣8️⃣9️⃣\n\n${drawBoard(["1","2","3","4","5","6","7","8","9"])}\n\n${p1}''s turn! Type *${prefix}${command} <1-9>* to play.`,
       mentions: [msgSender, opponent]
     }, { quoted: m });
   }
 
   // ── Make a move ──
   const game = global.tttGames.get(tttId);
-  if (!game) return mzazireply(`❌ No active Tic-Tac-Toe game. Start one with *${prefix}ttt @player*`);
+  if (!game) return mzazireply(`❌ No active Tic-Tac-Toe game. Start one with *${prefix}${command} @player*`);
 
   const pos = parseInt(args[0]);
   if (isNaN(pos) || pos < 1 || pos > 9) return mzazireply("❌ Choose a position from 1 to 9.");
@@ -17947,7 +17943,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
   const nextPlayer = game.players[game.turn % 2];
   const nextSym = game.symbols[game.turn % 2];
   return mzazi.sendMessage(sender, {
-    text: `🎮 *TIC-TAC-TOE*\n\n${boardStr}\n\n${nextSym} @${jidToNumber(await resolveJid(nextPlayer))}''s turn! Type *${prefix}ttt <1-9>*`,
+    text: `🎮 *TIC-TAC-TOE*\n\n${boardStr}\n\n${nextSym} @${jidToNumber(await resolveJid(nextPlayer))}''s turn! Type *${prefix}${command} <1-9>*`,
     mentions: [nextPlayer]
   }, { quoted: m });
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
@@ -18031,7 +18027,7 @@ try {
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('unblock', '[]'::jsonb, '', 'General', '', true, false, false, true, 'if (!isOwner) return mzazireply("❌ Owner only!");
         const mentioned4 = m.message?.extendedTextMessage?.contextInfo?.mentionedJid;
-        if (!mentioned4?.length && !text) return mzazireply(`Usage: ${prefix}unblock @user`);
+        if (!mentioned4?.length && !text) return mzazireply(`Usage: ${prefix}${command} @user`);
         const targetUnblock = mentioned4?.[0] || `${text.replace(/\D/g,"")}@s.whatsapp.net`;
         try {
           await mzazi.updateBlockStatus(targetUnblock, "unblock");
@@ -18049,7 +18045,7 @@ try {
   mzazireply(''✅ Done: '' + jidToNumber(await resolveJid(target)));
 } catch (e) { return mzazireply(''❌ '' + (e.message || ''Failed'')); }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('unhex', '["fromhex"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}unhex 48656c6c6f`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('unhex', '["fromhex"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} 48656c6c6f`);
         try {
           const result2 = Buffer.from(text.replace(/\s/g,""), "hex").toString("utf8");
           mzazireply(`🔡 *HEX DECODE*\n\nInput: ${text}\nOutput: ${result2}`);
@@ -18072,7 +18068,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
           mzazireply(`🔓 Group has been unlocked! All members can edit group info.`);
         } catch(e) { mzazireply("❌ Failed to unlock group"); }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('unmorse', '["morsedecode"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}unmorse ... --- ...`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('unmorse', '["morsedecode"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} ... --- ...`);
         const morseToLetter = {".-..-":"\"",".-..-.":"\"",".-": "a","-...":"b","-.-.":"c","-..":"d",".":"e","..-.":"f","--.":"g","....":"h","..":"i",".---":"j","-.-":"k",".-..":"l","--":"m","-.":"n","---":"o",".--.":"p","--.-":"q",".-.":"r","...":"s","-":"t","..-":"u","...-":"v",".--":"w","-..-":"x","-.--":"y","--..":"z","/": " "};
         const decoded2 = text.split(" ").map(c => morseToLetter[c] || c).join("");
         mzazireply(`📡 *MORSE DECODE*\n\nInput: ${text}\nOutput: ${decoded2.toUpperCase()}`);
@@ -18084,7 +18080,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
         mzazireply(`🔊 Group unmuted! Everyone can send messages.`);') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('unmute2', '[]'::jsonb, '', 'General', '', false, false, true, true, 'if (!isGroup) return mzazireply("❌ Group only!"); 
         const unmTarget = m.message?.extendedTextMessage?.contextInfo?.mentionedJid?.[0]; 
-        if (!unmTarget) return mzazireply(`Usage: ${prefix}unmute2 @user`); 
+        if (!unmTarget) return mzazireply(`Usage: ${prefix}${command} @user`); 
         setGroupSetting(`${sender}_muted_${unmTarget}`, "muted", false); 
         mzazireply(`🔊 @${jidToNumber(await resolveJid(unmTarget))} has been unmuted!`); 
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
@@ -18107,7 +18103,7 @@ mzazireply(''✅ Warnings cleared for @'' + jidToNumber(await resolveJid(target)
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('update', '[]'::jsonb, '', 'General', '', false, false, false, true, 'mzazireply(`🔄 *BOT UPDATE*\n\nCurrent Version: 2.0.0\nLast Updated: 2026\nStatus: ✅ Up to date\n\n📢 Follow @mzazidev for updates\n\n_New features added regularly!_`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('uppercase', '["upper", "caps"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}upper hello world`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('uppercase', '["upper", "caps"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} hello world`);
         mzazireply(`⬆️ *UPPERCASE*\n\n${text.toUpperCase()}`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('uptime', '[]'::jsonb, '', 'General', '', false, false, false, true, 'mzazireply(`⏰ *Uptime*\n\n${runtime(process.uptime())}`);') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
@@ -18246,24 +18242,24 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                 header: commonHeader,
                 body: { text: `
 ╔═⟪ 🔧 UTILITY TOOLS (1/3) ⟫═╗
-╠❏ ${prefix}calc  
-╠❏ ${prefix}math  
-╠❏ ${prefix}qr
-╠❏ ${prefix}base64encode  
-╠❏ ${prefix}base64decode
-╠❏ ${prefix}hex  
-╠❏ ${prefix}unhex  
-╠❏ ${prefix}binary
-╠❏ ${prefix}md5  
-╠❏ ${prefix}sha1  
-╠❏ ${prefix}sha256
-╠❏ ${prefix}password  
-╠❏ ${prefix}uuid  
-╠❏ ${prefix}gpass
-╠❏ ${prefix}charcount  
-╠❏ ${prefix}reverse  
-╠❏ ${prefix}uppercase
-╠❏ ${prefix}lowercase  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
 ╚══════════════════╝` },
                 footer: { text: ''Swipe ➡️ for more'' },
                 nativeFlowMessage: {
@@ -18280,26 +18276,26 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                 header: commonHeader,
                 body: { text: `
 ╔═⟪ 🔧 UTILITY TOOLS (2/3) ⟫═╗
-╠❏ ${prefix}repeat  
-╠❏ ${prefix}mocktext
-╠❏ ${prefix}morse  
-╠❏ ${prefix}unmorse  
-╠❏ ${prefix}clap
-╠❏ ${prefix}vaporwave  
-╠❏ ${prefix}zalgo  
-╠❏ ${prefix}bold
-╠❏ ${prefix}italic  
-╠❏ ${prefix}strike  
-╠❏ ${prefix}mono
-╠❏ ${prefix}shorturl  
-╠❏ ${prefix}ip  
-╠❏ ${prefix}ipinfo
-╠❏ ${prefix}time  
-╠❏ ${prefix}date  
-╠❏ ${prefix}countdown
-╠❏ ${prefix}timestamp  
-╠❏ ${prefix}weekday  
-╠❏ ${prefix}year
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
 ╚══════════════════╝` },
                 footer: { text: ''Swipe ➡️ for more'' },
                 nativeFlowMessage: {
@@ -18316,20 +18312,20 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
                 header: commonHeader,
                 body: { text: `
 ╔═⟪ 🔧 UTILITY TOOLS (3/3) ⟫═╗
-╠❏ ${prefix}age  
-╠❏ ${prefix}todo  
-╠❏ ${prefix}note
-╠❏ ${prefix}reminder  
-╠❏ ${prefix}flashcard
-╠❏ ${prefix}generate  
-╠❏ ${prefix}color  
-╠❏ ${prefix}ascii
-╠❏ ${prefix}extractemails  
-╠❏ ${prefix}extractnumbers
-╠❏ ${prefix}math  
-╠❏ ${prefix}calc
-╠❏ ${prefix}qr
-╠❏ ${prefix}shorturl
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}  
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}
+╠❏ ${prefix}${command}
 ╚══════════════════╝` },
                 footer: { text: ''All tools are free'' },
                 nativeFlowMessage: {
@@ -18390,7 +18386,7 @@ return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, descripti
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('valentine', '[]'::jsonb, 'Fun: valentine', 'Fun', '', false, false, false, true, 'const list = ["💝 Happy Valentine''s Day! Love is in the air!", "❤️ Sending you all my love today and always!", "🌹 You deserve all the love in the world!", "💌 Happy Valentine''s Day to someone truly special!", "💕 Love is the best thing we do — celebrate it!"];
 mzazireply(list[Math.floor(Math.random() * list.length)]);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('vaporwave', '["aesthetic"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}vaporwave hello`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('vaporwave', '["aesthetic"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} hello`);
         const vaporResult = text.split("").map(c => {
           const code = c.charCodeAt(0);
           if (code >= 33 && code <= 126) return String.fromCharCode(code + 65248);
@@ -18398,7 +18394,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
         }).join("");
         mzazireply(`💠 *AESTHETIC TEXT*\n\n${vaporResult}`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('vcard', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}vcard John Doe | 254712345678`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('vcard', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} John Doe | 254712345678`);
         const [vcName, vcNum] = text.split("|").map(s=>s.trim());
         if (!vcName || !vcNum) return mzazireply("Format: Name | Number");
         const vcard2 = `BEGIN:VCARD\nVERSION:3.0\nN:${vcName}\nFN:${vcName}\nTEL;type=CELL;type=VOICE;waid=${vcNum.replace(/\D/g,"")}:+${vcNum.replace(/\D/g,"")}\nEND:VCARD`;
@@ -18876,7 +18872,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
     }
 
     if (!target) {
-        return mzazireply(`📌 Usage:\n${prefix}warn @user\nOR reply to the user''s message with:\n${prefix}warn`);
+        return mzazireply(`📌 Usage:\n${prefix}${command} @user\nOR reply to the user''s message with:\n${prefix}${command}`);
     }
 
     target = await resolveJid(target);
@@ -18958,7 +18954,7 @@ return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, descripti
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('weather', '[]'::jsonb, '', 'General', '', false, false, false, true, 'try {
 
 if (!text) {
-return mzazireply(`Example: ${prefix}weather Mombasa`);
+return mzazireply(`Example: ${prefix}${command} Mombasa`);
 }
 
 const response = await fetch(`https://wttr.in/${encodeURIComponent(text)}?format=j1`);
@@ -19003,7 +18999,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
             `║   👋 *WELCOME MESSAGE*   ║\n` +
             `╚══════════════════════════╝\n\n` +
             `Current status: *${cur}*\n\n` +
-            `Usage: ${prefix}welcome on/off\n\n` +
+            `Usage: ${prefix}${command} on/off\n\n` +
             `When ON, a cute canvas image is sent every time a new member joins. 🎉`
           );
         }
@@ -19036,8 +19032,8 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
             `📋 *Welcome Settings*\n\n` +
             `Status: ${gs.welcome ? ''✅ Enabled'' : ''❌ Disabled''}\n\n` +
             `📌 *Commands:*\n` +
-            `${prefix}welcome on - Enable welcome messages\n` +
-            `${prefix}welcome off - Disable welcome messages\n\n` +
+            `${prefix}${command} on - Enable welcome messages\n` +
+            `${prefix}${command} off - Disable welcome messages\n\n` +
             `When enabled, the bot will send a welcome image when new members join.`
         );
     }
@@ -19082,7 +19078,7 @@ return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, descripti
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('whoowner', '[]'::jsonb, 'Show the owner number', 'Owner', '', true, false, false, true, 'if (!isOwner) return mzazireply(''❌ Owner only.'');
 mzazireply(''👑 Owner: +'' + jidToNumber(await resolveJid(ownerNumbers[0] || '''')));
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('wiki', '["wikipedia"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}wiki Albert Einstein`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('wiki', '["wikipedia"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} Albert Einstein`);
         try {
           const wikiRes = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(text)}`);
           const wikiData = await wikiRes.json();
@@ -19119,9 +19115,9 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
   if (!word) {
     if (global.wordchainGames.has(wcId)) {
       const wg = global.wordchainGames.get(wcId);
-      return mzazireply(`🔗 *WORD CHAIN is active!*\n\nLast word: *${wg.lastWord}*\nWords played: *${wg.chain.length}*\nNext must start with: *${wg.lastWord.slice(-1).toUpperCase()}*\n\nType: *${prefix}wc <word starting with ${wg.lastWord.slice(-1).toUpperCase()}>*`);
+      return mzazireply(`🔗 *WORD CHAIN is active!*\n\nLast word: *${wg.lastWord}*\nWords played: *${wg.chain.length}*\nNext must start with: *${wg.lastWord.slice(-1).toUpperCase()}*\n\nType: *${prefix}${command} <word starting with ${wg.lastWord.slice(-1).toUpperCase()}>*`);
     }
-    return mzazireply(`🔗 *WORD CHAIN*\n\nStart a word chain!\nType: *${prefix}wc <any word>*\nEach word must start with the last letter of the previous word.\n\nExample:\n• Apple → Elephant → Tomato → …\n\nStop: *${prefix}endwordchain*`);
+    return mzazireply(`🔗 *WORD CHAIN*\n\nStart a word chain!\nType: *${prefix}${command} <any word>*\nEach word must start with the last letter of the previous word.\n\nExample:\n• Apple → Elephant → Tomato → …\n\nStop: *${prefix}${command}*`);
   }
 
   if (!global.wordchainGames.has(wcId)) {
@@ -19134,7 +19130,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
       startedAt: Date.now()
     });
     const nextLetter = word.slice(-1).toUpperCase();
-    return mzazireply(`🔗 *WORD CHAIN STARTED!*\n\nFirst word: *${word.toUpperCase()}*\nNext word must start with: *${nextLetter}*\n\nType: *${prefix}wc <word starting with ${nextLetter}>*\nStop: *${prefix}endwordchain*`);
+    return mzazireply(`🔗 *WORD CHAIN STARTED!*\n\nFirst word: *${word.toUpperCase()}*\nNext word must start with: *${nextLetter}*\n\nType: *${prefix}${command} <word starting with ${nextLetter}>*\nStop: *${prefix}${command}*`);
   }
 
   const game = global.wordchainGames.get(wcId);
@@ -19414,7 +19410,7 @@ try {
   await mzazi.sendMessage(sender, { audio: { url }, mimetype: ''audio/mp4'', ptt: false, caption: ''🎵 '' + title }, { quoted: m });
 } catch (e) { return mzazireply(''❌ Download failed: '' + (e.message || e)); }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('ytinfo', '["youtubeinfo"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}ytinfo https://youtube.com/watch?v=xxx`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('ytinfo', '["youtubeinfo"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} https://youtube.com/watch?v=xxx`);
         try {
           const yts2 = require("yt-search");
           const info = await yts2(text);
@@ -19465,7 +19461,7 @@ try {
   await mzazi.sendMessage(sender, { audio: { url }, mimetype: ''audio/mp4'', ptt: false, caption: ''🎵 '' + title }, { quoted: m });
 } catch (e) { return mzazireply(''❌ Download failed: '' + (e.message || e)); }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('ytsearch', '["yts"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}yts faded alan walker`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('ytsearch', '["yts"]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} faded alan walker`);
         try {
           const yts3 = require("yt-search");
           const info2 = await yts3(text);
@@ -19520,7 +19516,7 @@ try {
   await mzazi.sendMessage(sender, { video: { url }, caption: ''🎬 '' + title }, { quoted: m });
 } catch (e) { return mzazireply(''❌ Download failed: '' + (e.message || e)); }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('zalgo', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}zalgo hello`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('zalgo', '[]'::jsonb, '', 'General', '', false, false, false, true, 'if (!text) return mzazireply(`Example: ${prefix}${command} hello`);
         const zalgoChars = ["̴","̵","̶","̷","̸","̡","̢","̧","̨"];
         const result4 = text.split("").map(c => c + zalgoChars.slice(0,Math.floor(Math.random()*3)).join("")).join("");
         mzazireply(`👾 *ZALGO TEXT*\n\n${result4}`);
