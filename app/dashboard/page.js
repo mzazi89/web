@@ -14,6 +14,7 @@ export default function DashboardPage() {
   const [referral, setReferral]   = useState(null); // { code, link, counts }
   const [copied, setCopied]       = useState(false);
   const [credModal, setCredModal] = useState(null); // { panel } | null
+  const [addModal, setAddModal]   = useState(false); // Add Server flow
   // Linked WhatsApp devices (managed on the whatsapp-bot page)
   const [devices, setDevices]     = useState(null); // { plan, maxDevices, devices }
   const [unlinking, setUnlinking] = useState(null);
@@ -207,9 +208,18 @@ export default function DashboardPage() {
                   <h2 className="display text-base font-bold" style={{ color: '#E9E7E2' }}>My panels</h2>
                   <p className="mono text-[10px] uppercase tracking-[0.14em] mt-0.5" style={{ color: '#4C535B' }}>{panels.length} total · {activePanels} active</p>
                 </div>
-                <Link href="/products" className="mono text-[11px] uppercase tracking-[0.12em]" style={{ color: '#F2A93B', textDecoration: 'none' }}>
-                  Deploy new →
-                </Link>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setAddModal(true)}
+                    className="mono text-[11px] uppercase tracking-[0.12em]"
+                    style={{ color: '#F2A93B', background: 'none', border: '1px solid rgba(242,169,59,0.4)', padding: '5px 10px', borderRadius: 4, cursor: 'pointer' }}
+                  >
+                    ➕ Add Server
+                  </button>
+                  <Link href="/products" className="mono text-[11px] uppercase tracking-[0.12em]" style={{ color: '#F2A93B', textDecoration: 'none' }}>
+                    Deploy new →
+                  </Link>
+                </div>
               </header>
 
               {panels.length === 0 ? (
@@ -506,6 +516,168 @@ export default function DashboardPage() {
           onClose={() => setCredModal(null)}
         />
       )}
+      {addModal && (
+        <AddServerModal
+          onClose={() => setAddModal(false)}
+          onDone={() => { fetchPanels(); }}
+        />
+      )}
+    </div>
+  );
+}
+
+// ─── ➕ Add Server modal (existing panel owners) ──────────────────────────────
+// Username → Similar (30% of first server price) or Different (full price,
+// pick a package) → wallet deduction via /api/panel/add.
+function AddServerModal({ onClose, onDone }) {
+  const [step, setStep]     = useState('username'); // username | choice | packages | confirm
+  const [username, setUsername] = useState('');
+  const [mode, setMode]     = useState(null); // similar | different
+  const [pkgs, setPkgs]     = useState([]);
+  const [pkgId, setPkgId]   = useState('');
+  const [busy, setBusy]     = useState(false);
+  const [msg, setMsg]       = useState('');
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    setTimeout(() => inputRef.current?.focus(), 100);
+  }, []);
+
+  const pickPackages = async () => {
+    if (pkgs.length) return;
+    try {
+      const res = await fetch('/api/packages');
+      const d = await res.json();
+      setPkgs(d.packages || []);
+    } catch {}
+  };
+
+  const submit = async (e) => {
+    e.preventDefault();
+    setBusy(true);
+    setMsg('');
+    try {
+      const res = await fetch('/api/panel/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username,
+          mode,
+          package_id: mode === 'different' ? parseInt(pkgId, 10) : undefined,
+        }),
+      });
+      const d = await res.json();
+      if (res.ok) {
+        setMsg(`✅ Server added! (KES ${Number(d.amount).toLocaleString()}) — #${d.server_id}`);
+        setTimeout(() => { onDone(); onClose(); }, 1800);
+      } else {
+        setMsg(`❌ ${d.error || 'Failed to add server'}`);
+      }
+    } catch {
+      setMsg('❌ Network error. Please try again.');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const back = () => {
+    setMsg('');
+    if (step === 'choice') setStep('username');
+    else if (step === 'packages' || step === 'confirm') setStep('choice');
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ backgroundColor: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(6px)' }}
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <div className="w-full max-w-md overflow-hidden" style={{ backgroundColor: '#14181D', border: '1px solid #262C33', borderRadius: 4 }}>
+        <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid #262C33' }}>
+          <h3 className="text-sm font-bold" style={{ color: '#E9E7E2' }}>➕ Add Server</h3>
+          <button onClick={onClose} className="mono text-xs" style={{ color: '#79818A', background: 'none', border: 'none', cursor: 'pointer' }}>✕</button>
+        </div>
+        <div className="p-5">
+          {msg && (
+            <p className="text-sm mb-4" style={{ color: msg.startsWith('✅') ? '#3ECF8E' : '#E5484D' }}>{msg}</p>
+          )}
+
+          {step === 'username' && (
+            <form onSubmit={(e) => { e.preventDefault(); if (username.trim()) setStep('choice'); }}>
+              <label className="block text-xs mb-2" style={{ color: '#79818A' }}>
+                Panel username <span style={{ color: '#4C535B' }}>(the username of your existing server)</span>
+              </label>
+              <input
+                ref={inputRef}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="e.g. johndoe"
+                className="input w-full"
+                style={{ marginBottom: 12 }}
+              />
+              <button className="btn btn-primary w-full" disabled={!username.trim()}>Continue</button>
+            </form>
+          )}
+
+          {step === 'choice' && (
+            <div>
+              <p className="text-xs mb-3" style={{ color: '#79818A' }}>
+                Username: <b style={{ color: '#E9E7E2' }}>{username}</b>
+              </p>
+              <div className="space-y-2">
+                <button
+                  className="btn w-full"
+                  style={{ justifyContent: 'flex-start' }}
+                  onClick={() => { setMode('similar'); setStep('confirm'); }}
+                >
+                  🔄 Similar server — 30% of your first server&apos;s price
+                </button>
+                <button
+                  className="btn w-full"
+                  style={{ justifyContent: 'flex-start' }}
+                  onClick={() => { setMode('different'); setStep('packages'); pickPackages(); }}
+                >
+                  📦 Different server — full price
+                </button>
+              </div>
+              <button className="mono text-xs mt-4" style={{ color: '#79818A', background: 'none', border: 'none', cursor: 'pointer' }} onClick={back}>← Back</button>
+            </div>
+          )}
+
+          {step === 'packages' && (
+            <div>
+              <p className="text-xs mb-3" style={{ color: '#79818A' }}>Choose a package (full price):</p>
+              <div className="space-y-2 max-h-56 overflow-auto">
+                {pkgs.length === 0 && <p className="text-xs" style={{ color: '#4C535B' }}>Loading packages…</p>}
+                {pkgs.map((p) => (
+                  <label key={p.id} className="flex items-center gap-3 text-sm" style={{ color: '#E9E7E2', cursor: 'pointer' }}>
+                    <input
+                      type="radio"
+                      name="addpkg"
+                      checked={String(pkgId) === String(p.id)}
+                      onChange={() => setPkgId(p.id)}
+                      style={{ accentColor: '#F2A93B' }}
+                    />
+                    {p.name} — KES {Number(p.price).toLocaleString()}
+                  </label>
+                ))}
+              </div>
+              <button className="btn btn-primary w-full mt-4" disabled={!pkgId} onClick={() => setStep('confirm')}>Continue</button>
+              <button className="mono text-xs mt-3" style={{ color: '#79818A', background: 'none', border: 'none', cursor: 'pointer' }} onClick={back}>← Back</button>
+            </div>
+          )}
+
+          {step === 'confirm' && (
+            <form onSubmit={submit}>
+              <p className="text-sm mb-4" style={{ color: '#E9E7E2' }}>
+                Add a <b>{mode === 'similar' ? 'similar server (same specs, 30% of your first server&apos;s price)' : 'different server (full package price)'}</b> to username{' '}
+                <b style={{ color: '#F2A93B' }}>{username}</b>? The amount is deducted from your wallet.
+              </p>
+              <button className="btn btn-primary w-full" disabled={busy}>{busy ? 'Working…' : '✅ Confirm & Pay'}</button>
+            </form>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
