@@ -29,6 +29,24 @@ async function pteroPost(path, body) {
   return { status: res.status, data: await res.json() };
 }
 
+// Pick a concrete free allocation for the new server. Automatic deployment
+// (deploy.locations) fails with "No nodes satisfying the requirements
+// specified for automatic deployment could be found." when no node in the
+// location is auto-deploy ready or has capacity/free ports. Using an
+// unassigned allocation directly works on any panel layout.
+async function pickFreeAllocation() {
+  try {
+    const res = await fetch(`${PTERO_URL}/api/application/nodes?include=allocations&per_page=100`, { headers: pteroHeaders });
+    const data = await res.json();
+    for (const n of data?.data || []) {
+      const allocs = n.attributes?.relationships?.allocations?.data || [];
+      const free = allocs.find((a) => a.attributes && !a.attributes.assigned);
+      if (free) return { allocation: { default: free.attributes.id } };
+    }
+  } catch {}
+  return { deploy: { locations: [1], dedicated_ip: false, port_range: [] } };
+}
+
 export async function POST(request) {
   try {
     // ── Run schema migrations first ──────────────────────────────────────────
@@ -146,7 +164,10 @@ export async function POST(request) {
     }
 
     // ── Create Pterodactyl server on the resolved user account ───────────────
+    // Prefer a concrete free allocation (see pickFreeAllocation); automatic
+    // deployment is only the fallback.
     const serverName = `${ptero_username}-${pkg.name.toLowerCase().replace(/\s+/g, '-')}`;
+    const alloc = await pickFreeAllocation();
     const serverRes = await pteroPost('/servers', {
       name: serverName,
       user: pteroUserId,
@@ -162,7 +183,7 @@ export async function POST(request) {
         cpu: parseInt(pkg.cpu),
       },
       feature_limits: { databases: 1, backups: 1, allocations: 1 },
-      deploy: { locations: [1], dedicated_ip: false, port_range: [] },
+      ...alloc,
       start_on_completion: true,
       skip_scripts: false,
       oom_disabled: false,
