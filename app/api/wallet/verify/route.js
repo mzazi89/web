@@ -1,99 +1,70 @@
 import { NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
-import https from 'https';
+import { processSuccessfulWalletPayment } from '@/lib/walletPayments';
 
 export const dynamic = 'force-dynamic';
-const sql = neon(process.env.DATABASE_URL);
-const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
 
-async function verifyPaystack(reference) {
-  return new Promise((resolve, reject) => {
-    const options = {
-      hostname: 'api.paystack.co',
-      port: 443,
-      path: `/transaction/verify/${encodeURIComponent(reference)}`,
-      method: 'GET',
-      headers: { Authorization: `Bearer ${PAYSTACK_SECRET_KEY}` },
-    };
-    const req = https.request(options, (res) => {
-      let data = '';
-      res.on('data', (chunk) => (data += chunk));
-      res.on('end', () => resolve(JSON.parse(data)));
-    });
-    req.on('error', reject);
-    req.end();
-  });
+const sql = neon(process.env.DATABASE_URL);
+const BASE = process.env.NEXT_PUBLIC_BASE_URL || '';
+
+/**
+ * Card-flow callback + manual verification endpoint.
+ *
+ * After the customer completes Paystack's hosted checkout, the browser is
+ * redirected here with ?reference=... We run the SAME idempotent, atomic
+ * processor used by the webhook — so double processing is impossible.
+ *
+ * GET  → verify, credit, redirect to /wallet?success=credited
+ * POST → verify, credit, return JSON (used for manual "I've paid" checks)
+ */
+async function verifyAndCredit(reference) {
+  if (!reference) return { result: null, error: 'no_reference' };
+  const result = await processSuccessfulWalletPayment(reference);
+  return { result, error: null };
 }
 
 export async function GET(request) {
   try {
-    const url = new URL(request.url);
-    const reference = url.searchParams.get('reference') || url.searchParams.get('trxref');
+    const reference = new URL(request.url).searchParams.get('reference') || new URL(request.url).searchParams.get('trxref');
 
     if (!reference) {
-      return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/wallet?error=no_reference`);
+      return NextResponse.redirect(`${BASE}/wallet?error=no_reference`);
     }
 
-    const result = await verifyPaystack(reference);
-    if (!result.status || result.data.status !== 'success') {
-      return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/wallet?error=payment_failed`);
+    const { result } = await verifyAndCredit(reference);
+    if (!result) {
+      return NextResponse.redirect(`${BASE}/wallet?error=payment_failed`);
     }
-
-    const meta = result.data.metadata || {};
-    const userId = meta.user_id;
-    const amountKsh = meta.amount_ksh || result.data.amount / 100;
-
-    // Check if already processed
-    const existing = await sql`
-      SELECT id, status FROM wallet_transactions WHERE reference = ${reference}
-    `;
-    if (existing.length > 0 && existing[0].status === 'success') {
-      return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/wallet?success=already_credited`);
+    if (result.credited) {
+      const tx = await sql`SELECT amount FROM wallet_transactions WHERE reference = ${reference}`;
+      const amount = tx.length > 0 ? Number(tx[0].amount) : 0;
+      return NextResponse.redirect(`${BASE}/wallet?success=credited&amount=${amount}`);
     }
-
-    // Credit wallet
-    await sql`
-      INSERT INTO wallet (user_id, balance) VALUES (${userId}, ${amountKsh})
-      ON CONFLICT (user_id) DO UPDATE SET balance = wallet.balance + ${amountKsh}, updated_at = NOW()
-    `;
-
-    await sql`
-      UPDATE wallet_transactions SET status = 'success' WHERE reference = ${reference}
-    `;
-
-    return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/wallet?success=credited&amount=${amountKsh}`);
+    if (result.already) {
+      return NextResponse.redirect(`${BASE}/wallet?success=already_credited`);
+    }
+    // failed / abandoned / not found / mismatch
+    return NextResponse.redirect(`${BASE}/wallet?error=payment_failed`);
   } catch (error) {
     console.error('Wallet verify error:', error);
-    return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/wallet?error=server_error`);
+    return NextResponse.redirect(`${BASE}/wallet?error=server_error`);
   }
 }
 
-// For manual verification from frontend
 export async function POST(request) {
   try {
     const { reference } = await request.json();
-    const result = await verifyPaystack(reference);
-
-    if (!result.status || result.data.status !== 'success') {
+    const { result, error } = await verifyAndCredit(reference);
+    if (error === 'no_reference' || !result) {
       return NextResponse.json({ error: 'Payment not successful' }, { status: 400 });
     }
-
-    const meta = result.data.metadata || {};
-    const userId = meta.user_id;
-    const amountKsh = meta.amount_ksh || result.data.amount / 100;
-
-    const existing = await sql`SELECT status FROM wallet_transactions WHERE reference = ${reference}`;
-    if (existing.length > 0 && existing[0].status === 'success') {
+    if (result.credited) {
+      return NextResponse.json({ message: 'Wallet credited', amount: result.tx?.amount });
+    }
+    if (result.already) {
       return NextResponse.json({ message: 'Already credited', already: true });
     }
-
-    await sql`
-      INSERT INTO wallet (user_id, balance) VALUES (${userId}, ${amountKsh})
-      ON CONFLICT (user_id) DO UPDATE SET balance = wallet.balance + ${amountKsh}, updated_at = NOW()
-    `;
-    await sql`UPDATE wallet_transactions SET status = 'success' WHERE reference = ${reference}`;
-
-    return NextResponse.json({ message: 'Wallet credited', amount: amountKsh });
+    return NextResponse.json({ error: 'Payment not successful' }, { status: 400 });
   } catch (error) {
     console.error('Manual verify error:', error);
     return NextResponse.json({ error: 'Verification failed' }, { status: 500 });
