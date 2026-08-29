@@ -1,99 +1,85 @@
 import { NextResponse } from 'next/server';
-import { neon } from '@neondatabase/serverless';
-import https from 'https';
+import jwt from 'jsonwebtoken';
+import { cookies } from 'next/headers';
+import { ensureWalletSchema, verifyAndCreditWalletDeposit, getTransactionByReference } from '@/lib/wallet';
 
 export const dynamic = 'force-dynamic';
-const sql = neon(process.env.DATABASE_URL);
-const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
+const JWT_SECRET = process.env.JWT_SECRET || 'mzazi-tech-secret-2024';
+const BASE_URL = () => process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 
-async function verifyPaystack(reference) {
-  return new Promise((resolve, reject) => {
-    const options = {
-      hostname: 'api.paystack.co',
-      port: 443,
-      path: `/transaction/verify/${encodeURIComponent(reference)}`,
-      method: 'GET',
-      headers: { Authorization: `Bearer ${PAYSTACK_SECRET_KEY}` },
-    };
-    const req = https.request(options, (res) => {
-      let data = '';
-      res.on('data', (chunk) => (data += chunk));
-      res.on('end', () => resolve(JSON.parse(data)));
-    });
-    req.on('error', reject);
-    req.end();
-  });
+function redirect(path) {
+  return NextResponse.redirect(new URL(path, BASE_URL()));
 }
 
+// ─── GET — redirect callback used by the Paystack card checkout ──────────────
+// Paystack sends the customer back here (?reference / ?trxref) after the card
+// flow. The wallet is credited ONLY via the shared verify+credit pipeline,
+// which requires Paystack's own confirmation — never from this URL alone.
 export async function GET(request) {
   try {
     const url = new URL(request.url);
     const reference = url.searchParams.get('reference') || url.searchParams.get('trxref');
+    if (!reference) return redirect('/wallet?error=no_reference');
 
-    if (!reference) {
-      return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/wallet?error=no_reference`);
+    await ensureWalletSchema();
+
+    // Best-effort session user for ownership checking (card flow is initiated
+    // from a logged-in page, so the cookie is normally present).
+    let expectedUserId = null;
+    try {
+      const cookieStore = await cookies();
+      const token = cookieStore.get('token');
+      if (token) expectedUserId = jwt.verify(token.value, JWT_SECRET).userId;
+    } catch {
+      expectedUserId = null;
     }
 
-    const result = await verifyPaystack(reference);
-    if (!result.status || result.data.status !== 'success') {
-      return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/wallet?error=payment_failed`);
+    const result = await verifyAndCreditWalletDeposit(reference, { expectedUserId });
+
+    if (result.success) {
+      const method = (await getTransactionByReference(reference))?.payment_method || 'card';
+      const qs = `success=credited&amount=${result.amount}&method=${encodeURIComponent(method)}`;
+      return redirect(result.already ? `/wallet?success=already_credited` : `/wallet?${qs}`);
     }
 
-    const meta = result.data.metadata || {};
-    const userId = meta.user_id;
-    const amountKsh = meta.amount_ksh || result.data.amount / 100;
-
-    // Check if already processed
-    const existing = await sql`
-      SELECT id, status FROM wallet_transactions WHERE reference = ${reference}
-    `;
-    if (existing.length > 0 && existing[0].status === 'success') {
-      return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/wallet?success=already_credited`);
-    }
-
-    // Credit wallet
-    await sql`
-      INSERT INTO wallet (user_id, balance) VALUES (${userId}, ${amountKsh})
-      ON CONFLICT (user_id) DO UPDATE SET balance = wallet.balance + ${amountKsh}, updated_at = NOW()
-    `;
-
-    await sql`
-      UPDATE wallet_transactions SET status = 'success' WHERE reference = ${reference}
-    `;
-
-    return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/wallet?success=credited&amount=${amountKsh}`);
+    if (result.code === 'not_found') return redirect('/wallet?error=no_reference');
+    if (result.code === 'user_mismatch') return redirect('/wallet?error=user_mismatch');
+    if (result.code === 'not_success') return redirect('/wallet?error=payment_failed');
+    return redirect('/wallet?error=verification_failed');
   } catch (error) {
     console.error('Wallet verify error:', error);
-    return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/wallet?error=server_error`);
+    return redirect('/wallet?error=server_error');
   }
 }
 
-// For manual verification from frontend
+// ─── POST — manual verification (kept for API compatibility) ─────────────────
 export async function POST(request) {
   try {
-    const { reference } = await request.json();
-    const result = await verifyPaystack(reference);
+    const cookieStore = await cookies();
+    const token = cookieStore.get('token');
+    if (!token) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
 
-    if (!result.status || result.data.status !== 'success') {
+    const decoded = jwt.verify(token.value, JWT_SECRET);
+    const { reference } = await request.json().catch(() => ({}));
+    if (!reference) return NextResponse.json({ error: 'Missing reference' }, { status: 400 });
+
+    await ensureWalletSchema();
+    const result = await verifyAndCreditWalletDeposit(reference, { expectedUserId: decoded.userId });
+
+    if (result.success) {
+      return NextResponse.json({
+        message: result.already ? 'Already credited' : 'Wallet credited',
+        already: !!result.already,
+        amount: result.amount,
+      });
+    }
+    if (result.code === 'not_success') {
       return NextResponse.json({ error: 'Payment not successful' }, { status: 400 });
     }
-
-    const meta = result.data.metadata || {};
-    const userId = meta.user_id;
-    const amountKsh = meta.amount_ksh || result.data.amount / 100;
-
-    const existing = await sql`SELECT status FROM wallet_transactions WHERE reference = ${reference}`;
-    if (existing.length > 0 && existing[0].status === 'success') {
-      return NextResponse.json({ message: 'Already credited', already: true });
+    if (result.code === 'not_found') {
+      return NextResponse.json({ error: 'Transaction not found' }, { status: 404 });
     }
-
-    await sql`
-      INSERT INTO wallet (user_id, balance) VALUES (${userId}, ${amountKsh})
-      ON CONFLICT (user_id) DO UPDATE SET balance = wallet.balance + ${amountKsh}, updated_at = NOW()
-    `;
-    await sql`UPDATE wallet_transactions SET status = 'success' WHERE reference = ${reference}`;
-
-    return NextResponse.json({ message: 'Wallet credited', amount: amountKsh });
+    return NextResponse.json({ error: 'Verification failed' }, { status: 500 });
   } catch (error) {
     console.error('Manual verify error:', error);
     return NextResponse.json({ error: 'Verification failed' }, { status: 500 });
