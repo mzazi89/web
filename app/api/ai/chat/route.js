@@ -93,7 +93,13 @@ async function callPollinations(fullPrompt, question) {
   try {
     const res = await fetch('https://text.pollinations.ai/openai', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        // Pollinations requires a Referer for server-to-server calls —
+        // without it cloud/serverless IPs get 403s.
+        Referer: 'https://www.mzazi.shop/',
+        'User-Agent': 'Mozilla/5.0 (compatible; MzaziBot/1.0)',
+      },
       body: JSON.stringify({
         model: 'openai',
         messages: [
