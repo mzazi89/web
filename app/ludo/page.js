@@ -85,8 +85,13 @@ export default function LudoPage() {
   const [aiFill, setAiFill] = useState(true);
   const [name, setName] = useState('');
   const [joinCode, setJoinCode] = useState('');
+  const [selectedSeat, setSelectedSeat] = useState(null); // color chosen when joining
+  const [roomPreview, setRoomPreview] = useState(null); // live room state for the join picker
 
   const pollRef = useRef(null);
+  const boardRef = useRef(null);
+  const lastCreateRef = useRef({ seats: 4, mode: 'local', aiFill: true, name: '' });
+  const [diceSize, setDiceSize] = useState(56);
 
   // ── Session persistence ──
   const persistSession = (s) => {
@@ -95,6 +100,21 @@ export default function LudoPage() {
     } catch { /* private mode */ }
     setSession(s);
   };
+  // Rematch — instant new local game with the same setup
+  const rematch = async () => {
+    if (session?.mode !== 'local') return;
+    setBusy(true); setError('');
+    try {
+      const data = await post('/api/ludo/create', lastCreateRef.current);
+      persistSession({
+        gameId: data.gameId, seat: data.seat, token: data.playerToken,
+        mode: data.mode, roomCode: data.roomCode, localTokens: data.localTokens || undefined,
+      });
+      setState(data.state);
+      setScreen('game');
+    } catch (e) { setError(e.message); } finally { setBusy(false); }
+  };
+
   const clearSession = () => {
     try { localStorage.removeItem('mzazi_ludo'); } catch { /* ignore */ }
     if (pollRef.current) { clearInterval(pollRef.current); pollRef.current = null; }
@@ -136,6 +156,35 @@ export default function LudoPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session]);
 
+  // ── Live room preview for the join picker (shows which colors are open) ──
+  useEffect(() => {
+    if (joinCode.length < 4) { setRoomPreview(null); return; }
+    let alive = true;
+    const tick = async () => {
+      try {
+        const res = await fetch(`/api/ludo/status?room=${encodeURIComponent(joinCode)}`);
+        if (res.status === 404) { if (alive) setRoomPreview(null); return; }
+        const data = await res.json();
+        if (alive && data.state) setRoomPreview(data.state);
+      } catch { /* ignore */ }
+    };
+    tick();
+    const iv = setInterval(tick, 1600);
+    return () => { alive = false; clearInterval(iv); };
+  }, [joinCode]);
+
+  // ── Dice scales with the board (mobile-friendly) ──
+  useEffect(() => {
+    const el = boardRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver((entries) => {
+      const w = entries[0]?.contentRect?.width;
+      if (w) setDiceSize(Math.max(34, Math.round(w * 0.105)));
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [screen, state?.status]);
+
   // ── Actions ──
   const tokenFor = (seat) => {
     if (!session) return null;
@@ -156,8 +205,9 @@ export default function LudoPage() {
 
   const createGame = async () => {
     setBusy(true); setError('');
+    lastCreateRef.current = { seats, mode, aiFill, name: name || 'Player 1' };
     try {
-      const data = await post('/api/ludo/create', { name: name || 'Player 1', seats, mode, aiFill });
+      const data = await post('/api/ludo/create', lastCreateRef.current);
       persistSession({
         gameId: data.gameId, seat: data.seat, token: data.playerToken,
         mode: data.mode, roomCode: data.roomCode, localTokens: data.localTokens || undefined,
@@ -170,7 +220,11 @@ export default function LudoPage() {
   const joinGame = async () => {
     setBusy(true); setError('');
     try {
-      const data = await post('/api/ludo/join', { roomCode: joinCode, name: name || 'Player' });
+      const data = await post('/api/ludo/join', {
+        roomCode: joinCode,
+        name: name || 'Player',
+        ...(selectedSeat !== null ? { seat: selectedSeat } : {}),
+      });
       persistSession({
         gameId: data.gameId, seat: data.seat, token: data.playerToken,
         mode: 'online', roomCode: data.roomCode,
@@ -288,6 +342,22 @@ export default function LudoPage() {
   const humansInLobby = players.filter((p) => p.type === 'human').length;
   const canStart = session?.seat === 0 && isLobby && humansInLobby >= 2 && !busy;
 
+  // Player label with progress % (on the board) — active player emphasised
+  const playerLabel = (s) => {
+    const p = players.find((x) => x.seat === s);
+    const active = !finished && state?.turn === s;
+    return (
+      <span key={`lb${s}`} style={{
+        color: COLORS[s], fontWeight: active ? 800 : 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '48%',
+        fontSize: 'clamp(10px, 2.6vw, 13px)', fontFamily: "'Space Grotesk', sans-serif",
+        background: active ? `${COLORS[s]}22` : 'transparent', padding: active ? '2px 9px' : '2px 4px', borderRadius: 999,
+        boxShadow: active ? `0 0 0 1px ${COLORS[s]}55` : 'none', transition: 'all .3s',
+      }}>
+        {p ? `${p.name} (${state.board[s].filter((r) => r === HOME).length * 25}%)` : `Open (0%)`}
+      </span>
+    );
+  };
+
   // ── Setup screen ──
   if (screen === 'setup') {
     return (
@@ -376,8 +446,43 @@ export default function LudoPage() {
               </p>
               <label className="label">Room code</label>
               <input className="input mb-4 font-mono tracking-[0.3em] uppercase" value={joinCode} maxLength={6}
-                onChange={(e) => setJoinCode(e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase())}
+                onChange={(e) => { setJoinCode(e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase()); setSelectedSeat(null); }}
                 placeholder="ABC123" />
+
+              {/* Color picker — shows live seat availability */}
+              {joinCode.length >= 4 && (
+                <div className="mb-4">
+                  <label className="label">Pick your color</label>
+                  {roomPreview ? (
+                    <div className="grid grid-cols-4 gap-2">
+                      {[0, 1, 2, 3].map((s) => {
+                        const p = roomPreview.players.find((x) => x.seat === s);
+                        const free = roomPreview.status === 'lobby' && p && !p.joined;
+                        return (
+                          <button key={s} type="button" disabled={!free} onClick={() => setSelectedSeat(s)}
+                            title={free ? `Take ${COLOR_NAMES[s]}` : 'Taken'}
+                            style={{
+                              width: '100%', aspectRatio: '1/1', borderRadius: 10, cursor: free ? 'pointer' : 'not-allowed',
+                              background: selectedSeat === s ? COLORS[s] : free ? `${COLORS[s]}30` : '#0F1215',
+                              border: `2px solid ${selectedSeat === s ? COLORS[s] : free ? `${COLORS[s]}88` : '#262C33'}`,
+                              opacity: free ? 1 : 0.4, transition: 'all .2s', position: 'relative',
+                            }}>
+                            {!free && <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, color: '#4C535B' }}>✕</span>}
+                            {free && (
+                              <span style={{ position: 'absolute', bottom: -14, left: 0, right: 0, textAlign: 'center', fontSize: 8, color: COLORS[s], fontWeight: 700 }}>
+                                {COLOR_NAMES[s]}
+                              </span>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <p className="text-[11px]" style={{ color: '#79818A' }}>Looking for room…</p>
+                  )}
+                </div>
+              )}
+
               <label className="label">Your name</label>
               <input className="input mb-4" value={name} maxLength={20}
                 onChange={(e) => setName(e.target.value)} placeholder="Player" />
@@ -415,18 +520,25 @@ export default function LudoPage() {
 
             <p className="mono text-[10px] uppercase tracking-[0.18em] text-left mb-3" style={{ color: '#4C535B' }}>Players</p>
             <div className="space-y-2 mb-6">
-              {players.map((p) => (
-                <div key={p.seat} className="flex items-center justify-between px-4 py-3 rounded"
-                  style={{ background: '#0F1215', border: `1px solid ${p.type === 'ai' ? '#262C33' : '#262C33'}` }}>
-                  <div className="flex items-center gap-3">
-                    <span style={{ width: 12, height: 12, borderRadius: '50%', background: p.color, display: 'inline-block' }} />
-                    <span className="text-sm font-semibold" style={{ color: '#E9E7E2' }}>{p.name}</span>
-                    {p.seat === session.seat && <span className="tag" style={{ color: '#F2A93B', borderColor: 'rgba(242,169,59,0.4)' }}>you</span>}
-                    {p.type === 'ai' && <span className="tag" style={{ color: '#79818A', borderColor: '#262C33' }}>bot</span>}
+              {players.map((p) => {
+                const open = p.type === 'human' && !p.joined;
+                return (
+                  <div key={p.seat} className="flex items-center justify-between px-4 py-3 rounded"
+                    style={{ background: open ? 'rgba(242,169,59,0.05)' : '#0F1215', border: `1px solid ${open ? 'rgba(242,169,59,0.25)' : '#262C33'}` }}>
+                    <div className="flex items-center gap-3">
+                      <span style={{ width: 12, height: 12, borderRadius: '50%', background: p.color, display: 'inline-block' }} />
+                      {open ? (
+                        <span className="text-sm" style={{ color: '#4C535B' }}>Waiting for player…</span>
+                      ) : (
+                        <span className="text-sm font-semibold" style={{ color: '#E9E7E2' }}>{p.name}</span>
+                      )}
+                      {!open && p.seat === session.seat && <span className="tag" style={{ color: '#F2A93B', borderColor: 'rgba(242,169,59,0.4)' }}>you</span>}
+                      {!open && p.type === 'ai' && <span className="tag" style={{ color: '#79818A', borderColor: '#262C33' }}>bot</span>}
+                    </div>
+                    <span className="mono text-[10px]" style={{ color: open ? '#4C535B' : '#4C535B' }}>{COLOR_NAMES[p.seat]}</span>
                   </div>
-                  <span className="mono text-[10px]" style={{ color: '#4C535B' }}>{COLOR_NAMES[p.seat]}</span>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             {error && <p className="text-xs mb-3" style={{ color: '#E5484D' }}>{error}</p>}
@@ -482,17 +594,10 @@ export default function LudoPage() {
           }}>
             {/* Player labels — top row (red TL, green TR) */}
             <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0 12%', marginBottom: 4 }}>
-              {[0, 1].map((s) => (
-                <span key={`lb${s}`} style={{
-                  color: COLORS[s], fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '48%',
-                  fontSize: 'clamp(10px, 2.6vw, 13px)', fontFamily: "'Space Grotesk', sans-serif",
-                }}>
-                  {players.find((p) => p.seat === s)?.name} ({state.board[s].filter((r) => r === HOME).length * 25}%)
-                </span>
-              ))}
+              {[0, 1].map((s) => playerLabel(s))}
             </div>
 
-            <div style={{ position: 'relative', width: '100%', aspectRatio: '1/1', maxWidth: 560, margin: '0 auto' }}>
+            <div ref={boardRef} style={{ position: 'relative', width: '100%', aspectRatio: '1/1', maxWidth: 560, margin: '0 auto' }}>
               <svg viewBox="0 0 15 15" width="100%" height="100%" style={{ display: 'block' }}>
                 <defs>
                   <pattern id="ludo-wood" width="0.55" height="0.55" patternUnits="userSpaceOnUse">
@@ -558,13 +663,20 @@ export default function LudoPage() {
                       <circle key={t} cx={BASE_POS[i].x + s[0] + 0.5} cy={BASE_POS[i].y + s[1] + 0.5}
                         r={BASE_SLOT_R} fill="#FFFFFF" stroke={`${COLORS[i]}99`} strokeWidth="0.06" />
                     ))}
+                    {/* Active player's base gets a pulsing ring */}
+                    {state?.turn === i && state?.status === 'playing' && (
+                      <circle cx={BASE_CENTERS[i].x} cy={BASE_CENTERS[i].y} r="3.05" fill="none"
+                        stroke={COLORS[i]} strokeWidth="0.1" opacity="0.7">
+                        <animate attributeName="opacity" values="0.9;0.25;0.9" dur="1.3s" repeatCount="indefinite" />
+                      </circle>
+                    )}
                   </g>
                 ))}
               </svg>
 
               {/* Dice — resting on the board centre */}
               <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>
-                <Dice value={state.dice} rolling={rolling} size={56} />
+                <Dice value={state.dice} rolling={rolling} size={diceSize} />
               </div>
 
               {/* Tokens */}
@@ -599,14 +711,7 @@ export default function LudoPage() {
 
             {/* Player labels — bottom row (blue BL, yellow BR) */}
             <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0 12%', marginTop: 4 }}>
-              {[3, 2].map((s) => (
-                <span key={`lb${s}`} style={{
-                  color: COLORS[s], fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '48%',
-                  fontSize: 'clamp(10px, 2.6vw, 13px)', fontFamily: "'Space Grotesk', sans-serif",
-                }}>
-                  {players.find((p) => p.seat === s)?.name} ({state.board[s].filter((r) => r === HOME).length * 25}%)
-                </span>
-              ))}
+              {[3, 2].map((s) => playerLabel(s))}
             </div>
           </div>
 
@@ -683,7 +788,19 @@ export default function LudoPage() {
             position: 'fixed', inset: 0, zIndex: 90, display: 'flex', alignItems: 'center', justifyContent: 'center',
             background: 'rgba(5,6,8,0.82)', backdropFilter: 'blur(4px)', animation: 'mz-fade .3s ease', padding: 16,
           }}>
-            <div className="card p-6 sm:p-8 text-center" style={{ maxWidth: 400, width: '100%', animation: 'mz-pop .45s cubic-bezier(.34,1.56,.64,1)' }}>
+            {/* Confetti */}
+            <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
+              {Array.from({ length: 46 }).map((_, i) => (
+                <span key={i} style={{
+                  position: 'absolute', top: '-6%', left: `${(i * 37) % 100}%`, width: 7, height: 11,
+                  background: COLORS[i % 4], borderRadius: 2, opacity: 0,
+                  animation: `mz-confetti ${2.6 + (i % 5) * 0.55}s ${(i % 7) * 0.28}s linear infinite`,
+                  transform: `rotate(${(i * 53) % 360}deg)`,
+                }} />
+              ))}
+            </div>
+
+            <div className="card p-6 sm:p-8 text-center" style={{ maxWidth: 400, width: '100%', animation: 'mz-pop .45s cubic-bezier(.34,1.56,.64,1)', position: 'relative', zIndex: 1 }}>
               <p className="mono text-[10px] uppercase tracking-[0.2em] mb-3" style={{ color: '#4C535B' }}>Game over — final rankings</p>
               <h2 className="headline text-2xl mb-5" style={{ color: COLORS[state.winner] }}>
                 {players.find((p) => p.seat === state.winner)?.name} wins! 🏆
@@ -702,8 +819,15 @@ export default function LudoPage() {
                   );
                 })}
               </div>
-              <button onClick={clearSession} className="btn btn-primary w-full" style={{ fontSize: 12 }}>Play again</button>
-              <Link href="/" className="btn btn-ghost w-full mt-2.5" style={{ fontSize: 11 }}>Back to home</Link>
+              <div className="flex gap-2.5">
+                {session?.mode === 'local' && (
+                  <button onClick={rematch} disabled={busy} className="btn btn-primary flex-1" style={{ fontSize: 12 }}>
+                    {busy ? 'Starting…' : 'Rematch'}
+                  </button>
+                )}
+                <button onClick={clearSession} className="btn btn-ghost flex-1" style={{ fontSize: 12 }}>New game</button>
+              </div>
+              <Link href="/" className="btn btn-dark w-full mt-2.5" style={{ fontSize: 11 }}>Back to home</Link>
             </div>
           </div>
         )}
@@ -711,6 +835,7 @@ export default function LudoPage() {
         <style>{`
           @keyframes mz-dice { 0% { transform: rotate(0deg) scale(1); } 25% { transform: rotate(90deg) scale(1.08); } 50% { transform: rotate(180deg) scale(1); } 75% { transform: rotate(270deg) scale(1.08); } 100% { transform: rotate(360deg) scale(1); } }
           @keyframes mz-dice-in { from { transform: rotate(-120deg) scale(0.6); opacity: 0; } to { transform: rotate(0) scale(1); opacity: 1; } }
+          @keyframes mz-confetti { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(105vh) rotate(720deg); opacity: 0; } }
           @keyframes mz-glow { 0%,100% { box-shadow: 0 0 0 0 rgba(242,169,59,0.5); } 50% { box-shadow: 0 0 0 6px rgba(242,169,59,0); } }
           @keyframes mz-fade { from { opacity: 0; } to { opacity: 1; } }
           @keyframes mz-pop { from { transform: scale(0.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }

@@ -24,7 +24,15 @@ export async function POST(request) {
     if (state.mode !== 'online') return NextResponse.json({ error: 'This room is not joinable.' }, { status: 400 });
     if (state.status !== 'lobby') return NextResponse.json({ error: 'This game has already started.' }, { status: 409 });
 
-    const slot = state.players.find((p) => p.type === 'human' && !p.token);
+    // Optional seat (color) selection — validated against open slots
+    const wantedSeat = Number.isInteger(body.seat) && body.seat >= 0 && body.seat <= 3 ? body.seat : null;
+    let slot = null;
+    if (wantedSeat !== null) {
+      const p = state.players.find((x) => x.seat === wantedSeat);
+      if (p && p.type === 'human' && !p.token) slot = p;
+      else return NextResponse.json({ error: 'That color is already taken.' }, { status: 409 });
+    }
+    if (!slot) slot = state.players.find((p) => p.type === 'human' && !p.token);
     if (!slot) return NextResponse.json({ error: 'This room is full.' }, { status: 409 });
 
     const token = newToken();
