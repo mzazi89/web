@@ -1,8 +1,15 @@
 // MZAZI API — POST /api/ai/chat
-// The MZAZI AI assistant: reads the question and answers accurately using
-// live site context (packages/prices) + DeepSeek.
-//  1) official DeepSeek API when a `deepseek_api_key` is set in Settings
-//  2) free DrexApp AI endpoints as best-effort fallback
+// The MZAZI AI assistant (site chat widget).
+//
+// Combines ALL of the site's free AI endpoints so they work together:
+//  - DavidCyril model catalog (the same /ai/* endpoints the public API
+//    platform exposes — Claude, Gemini, GPT, Llama, Qwen, Grok, Kimi…)
+//  - Pollinations (OpenAI-compatible, free, keyless)
+//  - DrexApp chat (free, keyless)
+//
+// Every source is fired in parallel with its own timeout; the FIRST
+// successful answer wins and is returned. If a provider throttles or dies,
+// the others keep the assistant alive. DeepSeek has been removed.
 import { NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 import { ipRateLimit, clientIp } from '@/lib/ip-limiter';
@@ -16,20 +23,110 @@ About MZAZI TECH: a technology company offering Pterodactyl panel hosting, Whats
 How to help: answer questions about accounts, signup/login, wallet deposits, refunds (contact admin), WhatsApp bot pairing (use the WhatsApp Bot page; the pairing keyword is MZAZIBOT), API keys (API dashboard), panel servers, and payments. If you don't know, say you'll have the admin look into it and suggest sending the question to the admin.
 Keep answers short (2-5 sentences), friendly, and accurate. Never invent prices or features beyond what is listed.`;
 
-// Reads config from the `settings` table first — that is where the admin
-// panel (admin.mzazi.shop → Settings → AI) writes keys like
-// `deepseek_api_key`. Falls back to `api_settings` (rate-limit config table)
-// for keys that may have been set there in older versions.
-async function getSetting(key) {
+// ── DavidCyril — free AI chat models from the site's API registry ───────────
+// Same request/response contract as the public API platform:
+//   GET {base}/ai/{model}?prompt=… → { response | reply | text | message | answer | content }
+// DeepSeek models are intentionally NOT included.
+const DC_BASE = (process.env.DAVIDCYRIL_API_URL || 'https://apis.davidcyril.name.ng').replace(/\/$/, '');
+const DC_KEY = process.env.DAVIDCYRIL_API_KEY || '';
+
+const DC_MODELS = [
+  'gpt-4o-mini',
+  'gemini-3.1-flash-lite',
+  'gpt-5.1-instant',
+  'claude-haiku-4.5',
+  'gpt-5.3-chat',
+  'gemini-3.1-pro',
+  'llama-4-maverick',
+  'qwen3-max',
+  'grok-4.1-fast',
+  'kimi-k2.6',
+  'claude-sonnet-4.6',
+  'claude-fable-5',
+];
+
+const SOURCE_TIMEOUT_MS = 12000;
+
+function pick(obj, keys) {
+  if (!obj || typeof obj !== 'object') return null;
+  for (const k of keys) {
+    const v = obj[k];
+    if (v !== undefined && v !== null && v !== '') return v;
+  }
+  return null;
+}
+
+async function callDavidCyril(model, fullPrompt) {
   try {
-    const rows = await sql`SELECT value FROM settings WHERE key = ${key} LIMIT 1`;
-    if (rows[0]?.value) return String(rows[0].value).trim();
-  } catch { /* table may be missing on a fresh DB */ }
+    const qs = new URLSearchParams({ prompt: fullPrompt });
+    if (DC_KEY) qs.set('apikey', DC_KEY);
+    const res = await fetch(`${DC_BASE}/ai/${model}?${qs.toString()}`, {
+      signal: AbortSignal.timeout(SOURCE_TIMEOUT_MS),
+      headers: { Accept: 'application/json' },
+      cache: 'no-store',
+    });
+    if (!res.ok) return null;
+    const ct = res.headers.get('content-type') || '';
+    if (!ct.includes('json')) return null;
+    const data = await res.json();
+    if (typeof data === 'string') return data.trim() || null;
+    const answer = pick(data, ['response', 'reply', 'text', 'message', 'answer', 'content']);
+    return answer ? String(answer).trim() : null;
+  } catch {
+    return null;
+  }
+}
+
+async function callPollinations(fullPrompt, question) {
   try {
-    const rows = await sql`SELECT value FROM api_settings WHERE key = ${key} LIMIT 1`;
-    if (rows[0]?.value) return String(rows[0].value).trim();
-  } catch { /* fall through */ }
-  return '';
+    const res = await fetch('https://text.pollinations.ai/openai', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'openai',
+        messages: [
+          { role: 'system', content: fullPrompt },
+          { role: 'user', content: question },
+        ],
+      }),
+      signal: AbortSignal.timeout(SOURCE_TIMEOUT_MS),
+    });
+    if (!res.ok) return null;
+    const json = await res.json();
+    return json?.choices?.[0]?.message?.content || null;
+  } catch {
+    return null;
+  }
+}
+
+async function callDrexApp(fullPrompt) {
+  try {
+    const q = encodeURIComponent(fullPrompt);
+    const res = await fetch(`https://api.drexapp.space/ai/chat?q=${q}`, {
+      signal: AbortSignal.timeout(SOURCE_TIMEOUT_MS),
+    });
+    if (!res.ok) return null;
+    const json = await res.json();
+    const answer = pick(json, ['result', 'response', 'message']);
+    return answer ? String(answer).trim() : null;
+  } catch {
+    return null;
+  }
+}
+
+// ── Parallel race: first successful answer wins ─────────────────────────────
+function raceSources(sources) {
+  return new Promise((resolve) => {
+    let settled = false;
+    let pending = sources.length;
+    const done = (v) => { if (!settled) { settled = true; resolve(v); } };
+    for (const run of sources) {
+      run()
+        .then((r) => { if (r) done(r); })
+        .catch(() => {})
+        .finally(() => { pending -= 1; if (pending === 0 && !settled) done(null); });
+    }
+  });
 }
 
 export async function POST(request) {
@@ -64,94 +161,15 @@ export async function POST(request) {
       }
     } catch { /* packages table may be missing */ }
 
-    const fullPrompt = `${SYSTEM_PROMPT}\n\nCURRENT PACKAGES:\n${packagesTxt}`;
-    let response = '';
+    const fullPrompt = `${SYSTEM_PROMPT}\n\nCURRENT PACKAGES:\n${packagesTxt}\n\nUser question: ${question}`;
 
-    // 1) Official DeepSeek API (reliable) — needs a key in Settings
-    const deepseekKey = await getSetting('deepseek_api_key');
-    // 1) FREE AI — Pollinations (OpenAI-compatible, no key, no credits)
-    let aiError = '';
-    try {
-      const res = await fetch('https://text.pollinations.ai/openai', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'openai',
-          messages: [
-            { role: 'system', content: fullPrompt },
-            { role: 'user', content: question },
-          ],
-        }),
-        signal: AbortSignal.timeout(45000),
-      });
-      if (!res.ok) {
-        aiError = `AI ${res.status}`;
-        console.error('Pollinations error:', res.status);
-      } else {
-        const json = await res.json();
-        response = json?.choices?.[0]?.message?.content || '';
-      }
-    } catch (e) {
-      aiError = `AI: ${e.message}`;
-      console.error('Pollinations error:', e.message);
-    }
+    const answer = await raceSources([
+      ...DC_MODELS.map((m) => () => callDavidCyril(m, fullPrompt)),
+      () => callPollinations(fullPrompt, question),
+      () => callDrexApp(fullPrompt),
+    ]);
 
-    // 2) Official DeepSeek (if a key is configured) — free fallback when
-    //    Pollinations is rate-limited
-    if (!response && deepseekKey) {
-      try {
-        const res = await fetch('https://api.deepseek.com/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${deepseekKey}`,
-          },
-          body: JSON.stringify({
-            model: 'deepseek-chat',
-            messages: [
-              { role: 'system', content: fullPrompt },
-              { role: 'user', content: question },
-            ],
-            max_tokens: 700,
-          }),
-          signal: AbortSignal.timeout(45000),
-        });
-        if (!res.ok) {
-          const ejson = await res.json().catch(() => ({}));
-          aiError = `DeepSeek ${res.status}: ${ejson?.error?.message || 'request failed'}`;
-          console.error('DeepSeek API error:', aiError);
-        } else {
-          const json = await res.json();
-          response = json?.choices?.[0]?.message?.content || '';
-        }
-      } catch (e) {
-        aiError = `DeepSeek: ${e.message}`;
-        console.error('DeepSeek API error:', e.message);
-      }
-    }
-
-    // 3) Free DrexApp fallbacks (best-effort)
-    if (!response) {
-      try {
-        const json = await fetch(
-          `https://api.drexapp.space/ai/deepseek?q=${encodeURIComponent(`${fullPrompt}\n\nUser question: ${question}`)}`,
-          { signal: AbortSignal.timeout(20000) }
-        ).then((r) => r.json());
-        response = json?.message || json?.response || json?.result || '';
-      } catch { /* try next */ }
-    }
-    if (!response) {
-      try {
-        const fb = await fetch(
-          `https://api.drexapp.space/ai/chat?q=${encodeURIComponent(`${fullPrompt}\n\nUser question: ${question}`)}`,
-          { signal: AbortSignal.timeout(15000) }
-        ).then((r) => r.json());
-        response = fb?.result || fb?.response || fb?.message || '';
-      } catch { /* both failed */ }
-    }
-
-    if (!response) {
-      console.error('AI chat unavailable:', aiError || 'no provider response');
+    if (!answer) {
       return NextResponse.json(
         {
           error:
@@ -161,10 +179,7 @@ export async function POST(request) {
       );
     }
 
-    if (response && typeof response !== 'string') {
-      response = JSON.stringify(response);
-    }
-    return NextResponse.json({ response: String(response || '').slice(0, 4000) });
+    return NextResponse.json({ response: String(answer).slice(0, 4000) });
   } catch (e) {
     console.error('AI chat error:', e.message);
     return NextResponse.json(
