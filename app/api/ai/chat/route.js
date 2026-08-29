@@ -61,7 +61,20 @@ const DC_MODELS = [
   'claude-fable-5',
 ];
 
-const SOURCE_TIMEOUT_MS = 12000;
+const SOURCE_TIMEOUT_MS = 8000;
+
+// DavidCyril's /ai/* endpoints fail (HTTP 500 → "Chat request failed with
+// status 400") when the prompt is too long — verified live: OK at 1000 chars,
+// 500 at 1500. So DavidCyril gets a COMPACT prompt (context + question,
+// capped safely below the limit) while full-context providers like
+// Pollinations keep the whole system prompt.
+const DC_PROMPT_MAX = 850;
+function buildDcPrompt(question, packagesTxt) {
+  const questionPart = `\nUser question: ${question}`;
+  const head = `You are MZAZI AI, the assistant for MZAZI TECH (mzazi.shop): Pterodactyl panels, WhatsApp bots, APIs, temp numbers, wallet funded via Paystack in KES. Current packages: ${packagesTxt}. Support: t.me/mzazitech. Keep answers short and accurate.`;
+  const headBudget = Math.max(80, DC_PROMPT_MAX - questionPart.length);
+  return head.slice(0, headBudget) + questionPart;
+}
 
 function pick(obj, keys) {
   if (!obj || typeof obj !== 'object') return null;
@@ -87,9 +100,10 @@ function extractAnswer(payload) {
   return null;
 }
 
-async function callDavidCyril(model, fullPrompt) {
+async function callDavidCyril(model, question, packagesTxt) {
   try {
-    const qs = new URLSearchParams({ prompt: fullPrompt });
+    const prompt = buildDcPrompt(question, packagesTxt);
+    const qs = new URLSearchParams({ prompt });
     const res = await fetch(`${DC_BASE}/ai/${model}?${qs.toString()}`, {
       signal: AbortSignal.timeout(SOURCE_TIMEOUT_MS),
       headers: { Accept: 'application/json', 'User-Agent': DC_UA },
@@ -217,7 +231,7 @@ export async function POST(request) {
     const fullPrompt = `${SYSTEM_PROMPT}\n\nCURRENT PACKAGES:\n${packagesTxt}\n\nUser question: ${question}`;
 
     const answer = await raceSources([
-      ...DC_MODELS.map((m) => () => callDavidCyril(m, fullPrompt)),
+      ...DC_MODELS.map((m) => () => callDavidCyril(m, question, packagesTxt)),
       () => callPollinations(fullPrompt, question),
       () => callDrexApp(fullPrompt),
     ]);
