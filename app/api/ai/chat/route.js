@@ -16,13 +16,20 @@ About MZAZI TECH: a technology company offering Pterodactyl panel hosting, Whats
 How to help: answer questions about accounts, signup/login, wallet deposits, refunds (contact admin), WhatsApp bot pairing (use the WhatsApp Bot page; the pairing keyword is MZAZIBOT), API keys (API dashboard), panel servers, and payments. If you don't know, say you'll have the admin look into it and suggest sending the question to the admin.
 Keep answers short (2-5 sentences), friendly, and accurate. Never invent prices or features beyond what is listed.`;
 
+// Reads config from the `settings` table first — that is where the admin
+// panel (admin.mzazi.shop → Settings → AI) writes keys like
+// `deepseek_api_key`. Falls back to `api_settings` (rate-limit config table)
+// for keys that may have been set there in older versions.
 async function getSetting(key) {
   try {
+    const rows = await sql`SELECT value FROM settings WHERE key = ${key} LIMIT 1`;
+    if (rows[0]?.value) return String(rows[0].value).trim();
+  } catch { /* table may be missing on a fresh DB */ }
+  try {
     const rows = await sql`SELECT value FROM api_settings WHERE key = ${key} LIMIT 1`;
-    return rows[0]?.value ? String(rows[0].value).trim() : '';
-  } catch {
-    return '';
-  }
+    if (rows[0]?.value) return String(rows[0].value).trim();
+  } catch { /* fall through */ }
+  return '';
 }
 
 export async function POST(request) {
