@@ -5,6 +5,7 @@
 //  2) free DrexApp AI endpoints as best-effort fallback
 import { NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
+import { ipRateLimit, clientIp } from '@/lib/ip-limiter';
 
 export const dynamic = 'force-dynamic';
 const sql = neon(process.env.DATABASE_URL);
@@ -17,7 +18,7 @@ Keep answers short (2-5 sentences), friendly, and accurate. Never invent prices 
 
 async function getSetting(key) {
   try {
-    const rows = await sql`SELECT value FROM settings WHERE key = ${key} LIMIT 1`;
+    const rows = await sql`SELECT value FROM api_settings WHERE key = ${key} LIMIT 1`;
     return rows[0]?.value ? String(rows[0].value).trim() : '';
   } catch {
     return '';
@@ -26,6 +27,15 @@ async function getSetting(key) {
 
 export async function POST(request) {
   try {
+    // Throttle anonymous AI traffic (per warm instance).
+    const limit = ipRateLimit(clientIp(request), { max: 20, windowMs: 60_000 });
+    if (!limit.allowed) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please wait a moment and try again.' },
+        { status: 429 }
+      );
+    }
+
     let body;
     try { body = await request.json(); } catch { body = {}; }
     const question = String(body.question || '').trim().slice(0, 2000);
@@ -134,11 +144,11 @@ export async function POST(request) {
     }
 
     if (!response) {
+      console.error('AI chat unavailable:', aiError || 'no provider response');
       return NextResponse.json(
         {
           error:
-            'The AI assistant is temporarily unavailable.' +
-            (aiError ? ` ${aiError}` : ' Please try again in a moment or send your question to the admin.'),
+            'The AI assistant is temporarily unavailable. Please try again in a moment or send your question to the admin.',
         },
         { status: 502 }
       );
@@ -151,7 +161,7 @@ export async function POST(request) {
   } catch (e) {
     console.error('AI chat error:', e.message);
     return NextResponse.json(
-      { error: `AI request failed: ${e.message}` },
+      { error: 'The AI assistant is temporarily unavailable. Please try again.' },
       { status: 500 }
     );
   }

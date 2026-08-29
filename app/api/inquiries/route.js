@@ -5,7 +5,7 @@ import { neon } from '@neondatabase/serverless';
 
 export const dynamic = 'force-dynamic';
 const sql = neon(process.env.DATABASE_URL);
-const JWT_SECRET = process.env.JWT_SECRET || 'mzazi-tech-secret-2024';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 async function ensureTables() {
   await sql`
@@ -89,7 +89,7 @@ export async function POST(request) {
     return NextResponse.json({ message: 'Inquiry sent successfully. We will reply within 2 hours.', id: inquiryId });
   } catch (error) {
     console.error('Inquiry POST error:', error);
-    return NextResponse.json({ error: 'Failed to send inquiry', detail: error.message }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to send inquiry. Please try again.' }, { status: 500 });
   }
 }
 
@@ -127,6 +127,6 @@ export async function GET() {
     return NextResponse.json({ inquiries });
   } catch (error) {
     console.error('Inquiry GET error:', error);
-    return NextResponse.json({ error: 'Failed to fetch inquiries', detail: error.message }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to fetch inquiries' }, { status: 500 });
   }
 }

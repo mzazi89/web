@@ -5,7 +5,7 @@ import { neon } from '@neondatabase/serverless';
 
 export const dynamic = 'force-dynamic';
 const sql = neon(process.env.DATABASE_URL);
-const JWT_SECRET = process.env.JWT_SECRET || 'mzazi-tech-secret-2024';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 export async function POST(request) {
   try {

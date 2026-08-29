@@ -12,7 +12,7 @@ import { normalizeKenyanPhone, isValidTillNumber } from '@/lib/kenya-phone';
 import { sql, ensureWalletSchema, ensureWallet, generateReference, markTransactionFailed } from '@/lib/wallet';
 
 export const dynamic = 'force-dynamic';
-const JWT_SECRET = process.env.JWT_SECRET || 'mzazi-tech-secret-2024';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // Payment methods offered on the deposit page.
 const METHODS = {

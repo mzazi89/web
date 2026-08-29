@@ -55,9 +55,10 @@ npm run dev                  # http://localhost:3000
 | Variable | Description |
 |---|---|
 | `DATABASE_URL` | Neon PostgreSQL connection string (shared with admin + bot) |
-| `JWT_SECRET` | Secret for the user session cookie |
+| `JWT_SECRET` | Secret for the user session cookie — required, no fallback in production |
+| `INIT_DB_KEY` | Guard for `GET /api/init-db` (send `x-init-key`); refuses all requests if unset in production |
 | `NEXT_PUBLIC_BASE_URL` | Public site URL |
-| `PAYSTACK_SECRET_KEY` / `NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY` | Paystack API keys |
+| `PAYSTACK_SECRET_KEY` / `NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY` | Paystack API keys (secret is server-only) |
 | `PTERODACTYL_URL` / `PTERODACTYL_API_KEY` | Panel server provisioning |
 | `DAVIDCYRIL_API_URL` / `DAVIDCYRIL_API_KEY` | API provider |
 | `DREXAPP_API_URL` / `DREXAPP_API_KEY` | API provider |

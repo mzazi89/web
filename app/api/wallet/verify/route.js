@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 import { ensureWalletSchema, verifyAndCreditWalletDeposit, getTransactionByReference } from '@/lib/wallet';
 
 export const dynamic = 'force-dynamic';
-const JWT_SECRET = process.env.JWT_SECRET || 'mzazi-tech-secret-2024';
+const JWT_SECRET = process.env.JWT_SECRET;
 const BASE_URL = () => process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 
 function redirect(path) {

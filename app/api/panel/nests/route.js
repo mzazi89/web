@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 
 export const dynamic = 'force-dynamic';
-const JWT_SECRET = process.env.JWT_SECRET || 'mzazi-tech-secret-2024';
+const JWT_SECRET = process.env.JWT_SECRET;
 const PTERO_URL = process.env.PTERODACTYL_URL || 'https://public.mzazi.shop';
 const PTERO_KEY = process.env.PTERODACTYL_API_KEY;
 

@@ -9,7 +9,7 @@ import {
 } from '@/lib/wallet';
 
 export const dynamic = 'force-dynamic';
-const JWT_SECRET = process.env.JWT_SECRET || 'mzazi-tech-secret-2024';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // Polled by the deposit "processing" screen. Never credits the wallet on its
 // own — success only ever comes from verifyAndCreditWalletDeposit, which

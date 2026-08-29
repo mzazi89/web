@@ -6,13 +6,23 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { neon } from '@neondatabase/serverless';
+import { ipRateLimit, clientIp } from '@/lib/ip-limiter';
 
 export const dynamic = 'force-dynamic';
 const sql = neon(process.env.DATABASE_URL);
-const JWT_SECRET = process.env.JWT_SECRET || 'mzazi-tech-secret-2024';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 export async function POST(request) {
   try {
+    // Brute-force protection: 10 attempts per minute per IP.
+    const limit = ipRateLimit(clientIp(request), { max: 10, windowMs: 60_000 });
+    if (!limit.allowed) {
+      return NextResponse.json(
+        { error: 'Too many login attempts. Please wait a minute and try again.' },
+        { status: 429 }
+      );
+    }
+
     const { email, password } = await request.json();
 
     if (!email || !password) {

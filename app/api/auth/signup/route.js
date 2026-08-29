@@ -127,7 +127,7 @@ export async function POST(request) {
   } catch (error) {
     console.error('Signup error:', error);
     return NextResponse.json(
-      { error: 'Signup failed', detail: error.message },
+      { error: 'Signup failed. Please try again.' },
       { status: 500 }
     );
   }

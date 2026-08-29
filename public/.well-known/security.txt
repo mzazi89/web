@@ -1,0 +1,9 @@
+# MZAZI TECH INC — Security contact
+# https://mzazi.shop/.well-known/security.txt
+
+Contact: mailto:mzazitechinc@gmail.com
+Contact: https://t.me/mzazitech
+Encryption: https://www.mzazi.shop/ (HTTPS only)
+Preferred-Languages: en
+Policy: https://www.mzazi.shop/privacy
+Expires: 2027-08-29T00:00:00.000Z
