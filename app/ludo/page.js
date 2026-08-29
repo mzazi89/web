@@ -232,7 +232,11 @@ export default function LudoPage() {
   })();
 
   // ── Token rendering positions ──
+  // Positions are CELL CENTERS ((x+0.5)/15) so pieces sit exactly on the
+  // board squares. Keys are STABLE (p-t) so React updates the same element
+  // and the CSS transition animates the slide instead of remounting.
   const tokens = [];
+  const cellCount = new Map();
   if (state) {
     for (let p = 0; p < 4; p++) {
       for (let t = 0; t < 4; t++) {
@@ -250,9 +254,21 @@ export default function LudoPage() {
           const c = tokenCell(p, r);
           pos = { x: c[0], y: c[1] };
         }
-        tokens.push({ p, t, r, x: pos.x, y: pos.y, color: COLORS[p], movable: myTurn && state.phase === 'move' && state.movable.includes(t) });
+        const cellKey = `${pos.x.toFixed(2)},${pos.y.toFixed(2)}`;
+        cellCount.set(cellKey, (cellCount.get(cellKey) || 0) + 1);
+        tokens.push({ p, t, r, x: pos.x, y: pos.y, color: COLORS[p], cellKey, movable: myTurn && state.phase === 'move' && state.movable.includes(t) });
       }
     }
+  }
+  // Small per-stack offset so stacked pieces stay visible
+  const stackIdx = new Map();
+  for (const tk of tokens) {
+    const i = stackIdx.get(tk.cellKey) || 0;
+    stackIdx.set(tk.cellKey, i + 1);
+    const total = cellCount.get(tk.cellKey);
+    const off = (i - (total - 1) / 2) * 0.15;
+    tk.offX = off;
+    tk.offY = off;
   }
 
   const humansInLobby = players.filter((p) => p.type === 'human').length;
@@ -486,16 +502,17 @@ export default function LudoPage() {
 
               {/* Tokens */}
               <div style={{ position: 'absolute', inset: 0 }}>
-                {tokens.map((tk, i) => {
-                  const px = (tk.x / 15) * 100;
-                  const py = (tk.y / 15) * 100;
+                {tokens.map((tk) => {
+                  // Cell centers: (x + 0.5) / 15 — plus the stack offset
+                  const px = ((tk.x + 0.5 + (tk.offX || 0)) / 15) * 100;
+                  const py = ((tk.y + 0.5 + (tk.offY || 0)) / 15) * 100;
                   return (
-                    <div key={`${tk.p}-${tk.t}-${tk.r}`}
+                    <div key={`${tk.p}-${tk.t}`}
                       onClick={tk.movable ? () => moveToken(tk.t) : undefined}
                       style={{
                         position: 'absolute', left: `${px}%`, top: `${py}%`, width: '8.2%', height: '8.2%',
                         transform: 'translate(-50%, -50%)',
-                        transition: 'left .45s cubic-bezier(.34,1.3,.64,1), top .45s cubic-bezier(.34,1.3,.64,1)',
+                        transition: 'left .5s cubic-bezier(.34,1.25,.64,1), top .5s cubic-bezier(.34,1.25,.64,1)',
                         cursor: tk.movable ? 'pointer' : 'default', zIndex: tk.r === -1 ? 1 : 5,
                         opacity: finished && tk.p !== state.winner ? 0.55 : 1,
                       }}>
