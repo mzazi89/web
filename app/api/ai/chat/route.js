@@ -56,6 +56,21 @@ function pick(obj, keys) {
   return null;
 }
 
+// Drill into a provider payload to find the text answer. DavidCyril returns
+// { success: true, data: "…" } — the answer lives under `data` (verified
+// live). Other providers vary, so we walk a known-key list and descend into
+// nested objects.
+function extractAnswer(payload) {
+  if (typeof payload === 'string') return payload.trim() || null;
+  if (!payload || typeof payload !== 'object') return null;
+  if (payload.success === false) return null;
+  const hit = pick(payload, ['data', 'response', 'reply', 'text', 'message', 'answer', 'content', 'output']);
+  if (hit === null) return null;
+  if (typeof hit === 'string') return hit.trim() || null;
+  if (typeof hit === 'object') return extractAnswer(hit);
+  return null;
+}
+
 async function callDavidCyril(model, fullPrompt) {
   try {
     const qs = new URLSearchParams({ prompt: fullPrompt });
@@ -68,10 +83,7 @@ async function callDavidCyril(model, fullPrompt) {
     if (!res.ok) return null;
     const ct = res.headers.get('content-type') || '';
     if (!ct.includes('json')) return null;
-    const data = await res.json();
-    if (typeof data === 'string') return data.trim() || null;
-    const answer = pick(data, ['response', 'reply', 'text', 'message', 'answer', 'content']);
-    return answer ? String(answer).trim() : null;
+    return extractAnswer(await res.json());
   } catch {
     return null;
   }
