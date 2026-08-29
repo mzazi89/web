@@ -25,10 +25,16 @@ Keep answers short (2-5 sentences), friendly, and accurate. Never invent prices 
 
 // ── DavidCyril — free AI chat models from the site's API registry ───────────
 // Same request/response contract as the public API platform:
-//   GET {base}/ai/{model}?prompt=… → { response | reply | text | message | answer | content }
+//   GET {base}/ai/{model}?prompt=… → { success, data: "…" }
 // DeepSeek models are intentionally NOT included.
-const DC_BASE = (process.env.DAVIDCYRIL_API_URL || 'https://apis.davidcyril.name.ng').replace(/\/$/, '');
+//
+// NOTE: the base URL is hardcoded exactly like the working /api/temp-number
+// route — do NOT read DAVIDCYRIL_API_URL here. That env var may point to a
+// dead/alternate host in production, and temp-number proves
+// https://apis.davidcyril.name.ng works from Vercel.
+const DC_BASE = 'https://apis.davidcyril.name.ng';
 const DC_KEY = process.env.DAVIDCYRIL_API_KEY || '';
+const DC_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/126.0.0.0 Safari/537.36';
 
 const DC_MODELS = [
   'gpt-4o-mini',
@@ -77,14 +83,23 @@ async function callDavidCyril(model, fullPrompt) {
     if (DC_KEY) qs.set('apikey', DC_KEY);
     const res = await fetch(`${DC_BASE}/ai/${model}?${qs.toString()}`, {
       signal: AbortSignal.timeout(SOURCE_TIMEOUT_MS),
-      headers: { Accept: 'application/json' },
+      headers: { Accept: 'application/json', 'User-Agent': DC_UA },
       cache: 'no-store',
     });
-    if (!res.ok) return null;
+    if (!res.ok) {
+      console.error(`[ai-chat] DC ${model}: HTTP ${res.status}`);
+      return null;
+    }
     const ct = res.headers.get('content-type') || '';
-    if (!ct.includes('json')) return null;
-    return extractAnswer(await res.json());
-  } catch {
+    if (!ct.includes('json')) {
+      console.error(`[ai-chat] DC ${model}: non-JSON response`);
+      return null;
+    }
+    const answer = extractAnswer(await res.json());
+    if (answer) console.error(`[ai-chat] DC ${model}: OK (${answer.length} chars)`);
+    return answer;
+  } catch (e) {
+    console.error(`[ai-chat] DC ${model}: ${e.name === 'TimeoutError' ? 'timeout' : e.message}`);
     return null;
   }
 }
@@ -109,10 +124,16 @@ async function callPollinations(fullPrompt, question) {
       }),
       signal: AbortSignal.timeout(SOURCE_TIMEOUT_MS),
     });
-    if (!res.ok) return null;
+    if (!res.ok) {
+      console.error(`[ai-chat] Pollinations: HTTP ${res.status}`);
+      return null;
+    }
     const json = await res.json();
-    return json?.choices?.[0]?.message?.content || null;
-  } catch {
+    const answer = json?.choices?.[0]?.message?.content || null;
+    if (answer) console.error(`[ai-chat] Pollinations: OK (${answer.length} chars)`);
+    return answer;
+  } catch (e) {
+    console.error(`[ai-chat] Pollinations: ${e.name === 'TimeoutError' ? 'timeout' : e.message}`);
     return null;
   }
 }
@@ -123,11 +144,16 @@ async function callDrexApp(fullPrompt) {
     const res = await fetch(`https://api.drexapp.space/ai/chat?q=${q}`, {
       signal: AbortSignal.timeout(SOURCE_TIMEOUT_MS),
     });
-    if (!res.ok) return null;
+    if (!res.ok) {
+      console.error(`[ai-chat] DrexApp: HTTP ${res.status}`);
+      return null;
+    }
     const json = await res.json();
     const answer = pick(json, ['result', 'response', 'message']);
+    if (answer) console.error(`[ai-chat] DrexApp: OK`);
     return answer ? String(answer).trim() : null;
-  } catch {
+  } catch (e) {
+    console.error(`[ai-chat] DrexApp: ${e.name === 'TimeoutError' ? 'timeout' : e.message}`);
     return null;
   }
 }
