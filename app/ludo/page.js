@@ -11,13 +11,15 @@ import { TRACK, START, HOME_COLS, N, HOME, COLORS, COLOR_NAMES } from '@/lib/lud
 // changes.
 // ─────────────────────────────────────────────────────────────────────────────
 
-const SAFE = new Set([0, 7, 14, 21, 27, 34, 41, 48]);
 const STARS = new Set([7, 21, 34, 48]);
 
 const YARD_SLOTS = [[0.7, 0.7], [3.3, 0.7], [0.7, 3.3], [3.3, 3.3]];
 const HOME_SLOTS = [[2, 2], [3, 2], [2, 3], [3, 3]];
-const BASE_INNER = [{ x: 2, y: 2 }, { x: 11, y: 2 }, { x: 11, y: 11 }, { x: 2, y: 11 }];
 const BASE_POS = [{ x: 0, y: 0 }, { x: 9, y: 0 }, { x: 9, y: 9 }, { x: 0, y: 9 }];
+const BASE_CENTERS = [{ x: 3, y: 3 }, { x: 12, y: 3 }, { x: 12, y: 12 }, { x: 3, y: 12 }];
+// Home-path arrow direction per seat (tokens travel outward from the centre)
+const ARROW_DEG = [180, 270, 0, 90]; // red←, green↑, yellow→, blue↓
+const BASE_SLOT_R = 0.42;
 
 const MEDALS = ['🥇', '🥈', '🥉', '4th'];
 
@@ -28,25 +30,37 @@ const DICE_DOTS = {
   6: [[0, 0], [2, 0], [0, 1], [2, 1], [0, 2], [2, 2]],
 };
 
-function Dice({ value, rolling }) {
+function Dice({ value, rolling, size = 62 }) {
   const dots = value ? DICE_DOTS[value] : [];
+  const dot = Math.max(6, size * 0.17);
   return (
     <div
       style={{
-        width: 62, height: 62, borderRadius: 10, background: '#F5F3EF', display: 'grid',
+        width: size, height: size, borderRadius: size * 0.16, background: '#FFFFFF', display: 'grid',
         gridTemplateColumns: 'repeat(3, 1fr)', gridTemplateRows: 'repeat(3, 1fr)',
-        padding: 10, boxShadow: '0 6px 18px rgba(0,0,0,.5)',
+        padding: size * 0.14, boxShadow: '0 5px 14px rgba(0,0,0,.4), inset 0 0 0 1px rgba(0,0,0,.12)',
         animation: rolling ? 'mz-dice .45s linear infinite' : 'mz-dice-in .3s ease',
       }}
     >
       {Array.from({ length: 9 }, (_, i) => {
         const has = dots.some(([a, b]) => a + b * 3 === i);
         return <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          {has && <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#14161A' }} />}
+          {has && <div style={{ width: dot, height: dot, borderRadius: '50%', background: '#14161A' }} />}
         </div>;
       })}
     </div>
   );
+}
+
+// Small 5-point star for the star cells (classic board style)
+function starPoints(cx, cy, R, r) {
+  const pts = [];
+  for (let i = 0; i < 10; i++) {
+    const rad = i % 2 === 0 ? R : r;
+    const a = (Math.PI / 5) * i - Math.PI / 2;
+    pts.push(`${(cx + rad * Math.cos(a)).toFixed(3)},${(cy + rad * Math.sin(a)).toFixed(3)}`);
+  }
+  return pts.join(' ');
 }
 
 // Token position from relative r (display-only — mirrors the engine)
@@ -460,45 +474,98 @@ export default function LudoPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-[1fr_240px] gap-6 items-start">
-          {/* Board */}
-          <div className="card p-3 sm:p-4">
+          {/* Board — classic wooden Ludo look */}
+          <div style={{
+            padding: '16px 12px 14px', borderRadius: 16,
+            background: 'linear-gradient(155deg,#F9F3E5 0%,#F1E7D3 55%,#E8DBBF 100%)',
+            boxShadow: '0 14px 36px rgba(0,0,0,.45), inset 0 0 0 1px rgba(130,95,40,.25), inset 0 1px 0 rgba(255,255,255,.5)',
+          }}>
+            {/* Player labels — top row (red TL, green TR) */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0 12%', marginBottom: 4 }}>
+              {[0, 1].map((s) => (
+                <span key={`lb${s}`} style={{
+                  color: COLORS[s], fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '48%',
+                  fontSize: 'clamp(10px, 2.6vw, 13px)', fontFamily: "'Space Grotesk', sans-serif",
+                }}>
+                  {players.find((p) => p.seat === s)?.name} ({state.board[s].filter((r) => r === HOME).length * 25}%)
+                </span>
+              ))}
+            </div>
+
             <div style={{ position: 'relative', width: '100%', aspectRatio: '1/1', maxWidth: 560, margin: '0 auto' }}>
               <svg viewBox="0 0 15 15" width="100%" height="100%" style={{ display: 'block' }}>
-                <rect x="0" y="0" width="15" height="15" rx="0.6" fill="#101318" stroke="#262C33" strokeWidth="0.06" />
-                {[0, 1, 2, 3].map((i) => (
-                  <g key={`b${i}`}>
-                    <rect x={BASE_POS[i].x + 0.15} y={BASE_POS[i].y + 0.15} width="5.7" height="5.7" rx="0.5"
-                      fill={`${COLORS[i]}18`} stroke={`${COLORS[i]}66`} strokeWidth="0.06" />
-                    <rect x={BASE_INNER[i].x + 0.35} y={BASE_INNER[i].y + 0.35} width="2.3" height="2.3" rx="0.3"
-                      fill={COLORS[i]} opacity="0.9" />
-                    <text x={BASE_INNER[i].x + 1.5} y={BASE_INNER[i].y + 1.72} textAnchor="middle" fontSize="1.05"
-                      fontWeight="700" fill="#0B0D0F" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                      {COLOR_NAMES[i][0]}
-                    </text>
-                  </g>
-                ))}
+                <defs>
+                  <pattern id="ludo-wood" width="0.55" height="0.55" patternUnits="userSpaceOnUse">
+                    <path d="M0 0.275 Q 0.275 0.12 0.55 0.275" stroke="rgba(120,85,35,0.10)" fill="none" strokeWidth="0.02" />
+                  </pattern>
+                  <pattern id="ludo-hatch" width="0.42" height="0.42" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                    <line x1="0" y1="0" x2="0" y2="0.42" stroke="rgba(70,52,20,0.16)" strokeWidth="0.05" />
+                  </pattern>
+                </defs>
+
+                {/* Board face */}
+                <rect x="0" y="0" width="15" height="15" rx="0.5" fill="url(#ludo-wood)" stroke="rgba(90,65,25,0.35)" strokeWidth="0.07" />
+
+                {/* Centre pinwheel — 4 triangles meeting at the point */}
+                <g stroke="#FFFFFF" strokeWidth="0.09" strokeLinejoin="round">
+                  <polygon points="6,6 9,6 7.5,7.5" fill="#E5484D" />
+                  <polygon points="9,6 9,9 7.5,7.5" fill="#4C7DFC" />
+                  <polygon points="9,9 6,9 7.5,7.5" fill="#F2A93B" />
+                  <polygon points="6,9 6,6 7.5,7.5" fill="#3ECF8E" />
+                </g>
+                <circle cx="7.5" cy="7.5" r="0.14" fill="#FFFFFF" />
+
+                {/* Home paths — solid colour, arrow on the entry square */}
                 {HOME_COLS.map((col, p) => (
                   <g key={`hc${p}`}>
                     {col.map(([x, y], i) => (
-                      <rect key={i} x={x + 0.1} y={y + 0.1} width="0.8" height="0.8" rx="0.16"
-                        fill={`${COLORS[p]}22`} stroke={`${COLORS[p]}88`} strokeWidth="0.045" />
+                      <rect key={i} x={x + 0.09} y={y + 0.09} width="0.82" height="0.82" rx="0.12"
+                        fill={COLORS[p]} stroke="rgba(0,0,0,0.18)" strokeWidth="0.04" />
                     ))}
+                    {(() => {
+                      const [ax, ay] = col[0];
+                      return (
+                        <g transform={`translate(${ax + 0.5} ${ay + 0.5}) rotate(${ARROW_DEG[p]})`}>
+                          <polygon points="-0.15,-0.11 -0.15,0.11 0.16,0" fill="#222222" />
+                        </g>
+                      );
+                    })()}
                   </g>
                 ))}
+
+                {/* Track — white cells with black grid lines */}
                 {TRACK.map(([x, y], i) => {
                   const owner = START.indexOf(i);
                   const isStar = STARS.has(i);
                   return (
                     <g key={`t${i}`}>
-                      <rect x={x + 0.08} y={y + 0.08} width="0.84" height="0.84" rx="0.18"
-                        fill={owner >= 0 ? `${COLORS[owner]}30` : '#15191E'}
-                        stroke={isStar ? '#F2A93B' : owner >= 0 ? `${COLORS[owner]}99` : '#262C33'}
-                        strokeWidth="0.045" />
-                      {isStar && <circle cx={x + 0.5} cy={y + 0.5} r="0.16" fill="none" stroke="#F2A93B88" strokeWidth="0.04" />}
+                      <rect x={x + 0.07} y={y + 0.07} width="0.86" height="0.86" rx="0.1"
+                        fill={owner >= 0 ? `${COLORS[owner]}2e` : '#FFFDF6'}
+                        stroke={owner >= 0 ? COLORS[owner] : 'rgba(45,40,30,0.55)'}
+                        strokeWidth="0.05" />
+                      {isStar && <polygon points={starPoints(x + 0.5, y + 0.5, 0.17, 0.07)} fill="#4a4030" />}
                     </g>
                   );
                 })}
+
+                {/* Circular bases — pastel fill, cross-hatch texture, token slots */}
+                {[0, 1, 2, 3].map((i) => (
+                  <g key={`b${i}`}>
+                    <circle cx={BASE_CENTERS[i].x} cy={BASE_CENTERS[i].y} r="2.78"
+                      fill={`${COLORS[i]}26`} stroke={COLORS[i]} strokeWidth="0.14" />
+                    <circle cx={BASE_CENTERS[i].x} cy={BASE_CENTERS[i].y} r="2.78" fill="url(#ludo-hatch)" />
+                    {YARD_SLOTS.map((s, t) => (
+                      <circle key={t} cx={BASE_POS[i].x + s[0] + 0.5} cy={BASE_POS[i].y + s[1] + 0.5}
+                        r={BASE_SLOT_R} fill="#FFFFFF" stroke={`${COLORS[i]}99`} strokeWidth="0.06" />
+                    ))}
+                  </g>
+                ))}
               </svg>
+
+              {/* Dice — resting on the board centre */}
+              <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>
+                <Dice value={state.dice} rolling={rolling} size={56} />
+              </div>
 
               {/* Tokens */}
               <div style={{ position: 'absolute', inset: 0 }}>
@@ -522,12 +589,24 @@ export default function LudoPage() {
                       <div style={{
                         position: 'absolute', inset: 0, borderRadius: '50%',
                         background: `radial-gradient(circle at 32% 28%, #ffffff55 0%, transparent 45%), ${tk.color}`,
-                        border: '2px solid #0B0D0F', boxShadow: `0 2px 6px rgba(0,0,0,.6), 0 0 0 1.5px ${tk.color}66`,
+                        border: '2px solid #0B0D0F', boxShadow: `0 2px 6px rgba(0,0,0,.65), 0 0 0 1.5px ${tk.color}77`,
                       }} />
                     </div>
                   );
                 })}
               </div>
+            </div>
+
+            {/* Player labels — bottom row (blue BL, yellow BR) */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0 12%', marginTop: 4 }}>
+              {[3, 2].map((s) => (
+                <span key={`lb${s}`} style={{
+                  color: COLORS[s], fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '48%',
+                  fontSize: 'clamp(10px, 2.6vw, 13px)', fontFamily: "'Space Grotesk', sans-serif",
+                }}>
+                  {players.find((p) => p.seat === s)?.name} ({state.board[s].filter((r) => r === HOME).length * 25}%)
+                </span>
+              ))}
             </div>
           </div>
 
@@ -552,10 +631,6 @@ export default function LudoPage() {
                   </span>
                 </div>
               ))}
-            </div>
-
-            <div className="flex items-center justify-center py-4">
-              <Dice value={state.dice} rolling={rolling} />
             </div>
 
             <p className="text-xs text-center mb-4" style={{ color: '#AEB5BD', lineHeight: 1.6, minHeight: 42 }}>
