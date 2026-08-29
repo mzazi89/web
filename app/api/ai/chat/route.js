@@ -15,6 +15,14 @@ import { neon } from '@neondatabase/serverless';
 import { ipRateLimit, clientIp } from '@/lib/ip-limiter';
 
 export const dynamic = 'force-dynamic';
+
+// Run this function in the Singapore region. Live diagnosis (2026-08-30):
+// the free AI providers (DavidCyril /ai/*, Pollinations) reject or hang
+// from Vercel's default (US) egress IPs, while the same calls succeed from
+// Singapore egress — the site's working /api/temp-number path also reaches
+// DavidCyril. Pinning the region restores egress that the providers accept.
+export const preferredRegion = 'sin1';
+
 const sql = neon(process.env.DATABASE_URL);
 
 const SYSTEM_PROMPT = `You are MZAZI AI, the friendly support assistant of MZAZI TECH (Mzazi Tech Inc — mzazi.shop).
@@ -33,7 +41,9 @@ Keep answers short (2-5 sentences), friendly, and accurate. Never invent prices 
 // dead/alternate host in production, and temp-number proves
 // https://apis.davidcyril.name.ng works from Vercel.
 const DC_BASE = 'https://apis.davidcyril.name.ng';
-const DC_KEY = process.env.DAVIDCYRIL_API_KEY || '';
+// NOTE: no apikey is sent on the chat route's calls — DavidCyril's /ai/*
+// endpoints are free and ignore the param entirely (verified 2026-08-30),
+// and an env-configured key only adds a failure mode.
 const DC_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/126.0.0.0 Safari/537.36';
 
 const DC_MODELS = [
@@ -80,7 +90,6 @@ function extractAnswer(payload) {
 async function callDavidCyril(model, fullPrompt) {
   try {
     const qs = new URLSearchParams({ prompt: fullPrompt });
-    if (DC_KEY) qs.set('apikey', DC_KEY);
     const res = await fetch(`${DC_BASE}/ai/${model}?${qs.toString()}`, {
       signal: AbortSignal.timeout(SOURCE_TIMEOUT_MS),
       headers: { Accept: 'application/json', 'User-Agent': DC_UA },
