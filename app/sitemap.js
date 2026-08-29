@@ -3,7 +3,7 @@ export default function sitemap() {
   const base = 'https://www.mzazi.shop';
   const now = new Date().toISOString().split('T')[0];
   const routes = [
-    '', '/products', '/whatsapp-bot', '/temp-number', '/api', '/api/docs',
+    '', '/products', '/whatsapp-bot', '/temp-number', '/ludo', '/api', '/api/docs',
     '/api/explorer', '/api/status', '/testimonials', '/about', '/contact',
     '/signup', '/login', '/terms', '/privacy',
   ];

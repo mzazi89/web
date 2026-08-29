@@ -11,6 +11,7 @@ const NAV_LINKS = [
   { href: '/whatsapp-bot', label: 'WhatsApp' },
   { href: '/api',          label: 'API' },
   { href: '/temp-number',  label: 'Temp Number' },
+  { href: '/ludo',         label: 'Ludo' },
   { href: '/testimonials', label: 'Reviews' },
   { href: '/about',        label: 'About' },
   { href: '/contact',      label: 'Contact' },
