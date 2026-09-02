@@ -315,6 +315,7 @@ function WalletInner() {
   const [failureMsg, setFailureMsg] = useState('');
   const [creditedAmount, setCreditedAmount] = useState(0);
   const [offer, setOffer] = useState(null); // { enabled, multiplier, adText } | null
+  const [adDismissed, setAdDismissed] = useState(false);
 
   useEffect(() => {
     const success = searchParams.get('success');
@@ -417,6 +418,17 @@ function WalletInner() {
     setTill('');
     setFailureMsg('');
     setStep('form');
+  };
+
+  // "Deposit & double" CTA on the offer ad → scrolls to the deposit card and
+  // drops the user straight into the amount step (defaults to card if they
+  // haven't picked a method yet).
+  const startOfferDeposit = () => {
+    setAdDismissed(true);
+    document.getElementById('deposit-card')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (!method || step === 'method') {
+      selectMethod('card');
+    }
   };
 
   const backToMethods = () => {
@@ -560,30 +572,87 @@ function WalletInner() {
           </p>
         </div>
 
-        {/* ── Deposit Offer ad banner (settings-driven) ── */}
-        {offer?.enabled && (
-          <div className="mb-6 px-5 py-4 flex items-center gap-4"
+        {/* ── Deposit Offer — screen ad (settings-driven) ── */}
+        {offer?.enabled && !adDismissed && (
+          <div className="relative mb-7 overflow-hidden"
             style={{
-              background: 'linear-gradient(135deg, rgba(242,169,59,0.14), rgba(242,169,59,0.04))',
-              border: '1px solid rgba(242,169,59,0.45)',
-              borderRadius: 8,
+              animation: 'mz-ad-in 0.55s cubic-bezier(0.16, 1, 0.3, 1) both',
+              background: 'radial-gradient(120% 180% at 0% 0%, rgba(242,169,59,0.30) 0%, rgba(20,18,16,0.55) 42%, rgba(15,14,12,0.85) 100%), linear-gradient(90deg, #1B1712 0%, #2A2115 55%, #1B1712 100%)',
+              border: '1px solid rgba(242,169,59,0.55)',
+              borderRadius: 12,
+              boxShadow: '0 14px 34px rgba(0,0,0,0.38), 0 0 0 1px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.08)',
             }}>
-            <div className="flex-shrink-0 w-11 h-11 flex items-center justify-center text-2xl"
-              style={{ background: 'rgba(242,169,59,0.18)', borderRadius: 10, color: '#F2A93B' }}>
-              🎁
+            {/* shine sweep */}
+            <div style={{
+              position: 'absolute', inset: 0, pointerEvents: 'none',
+              background: 'linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.10) 46%, rgba(255,255,255,0.03) 52%, transparent 68%)',
+              backgroundSize: '220% 100%',
+              backgroundRepeat: 'no-repeat',
+              animation: 'mz-ad-shine 3.2s ease-in-out infinite',
+            }} />
+
+            <div className="flex items-center gap-4 px-5 py-5 sm:px-6">
+              {/* animated 2x badge */}
+              <div className="flex-shrink-0 relative flex items-center justify-center"
+                style={{ width: 84, height: 84, animation: 'mz-ad-bounce 2.2s ease-in-out infinite' }}>
+                <div style={{
+                  position: 'absolute', inset: 0, borderRadius: '50%',
+                  background: 'radial-gradient(circle at 35% 30%, #FFD98A, #F2A93B 55%, #B26E10)',
+                  boxShadow: '0 8px 20px rgba(242,169,59,0.45), inset 0 -2px 6px rgba(0,0,0,0.25)',
+                }} />
+                <span className="mono font-extrabold" style={{ color: '#201507', fontSize: 34, letterSpacing: '-0.04em', textShadow: '0 1px 0 rgba(255,255,255,0.25)' }}>
+                  ×{offerMult}
+                </span>
+                <span style={{
+                  position: 'absolute', top: -6, right: -6, fontSize: 20,
+                  animation: 'mz-ad-wiggle 1.6s ease-in-out infinite',
+                }}>🎁</span>
+              </div>
+
+              {/* copy */}
+              <div className="flex-1 min-w-0">
+                <p className="mono text-[9px] uppercase tracking-[0.22em] mb-1" style={{ color: '#F2A93B' }}>
+                  ⚡ Limited offer · auto-credited
+                </p>
+                <p className="text-base sm:text-lg font-extrabold leading-snug" style={{ color: '#FFEFD6', textShadow: '0 1px 2px rgba(0,0,0,0.4)' }}>
+                  {offer.adText || `Deposit & get ${offer.multiplier}× your money`}
+                </p>
+                <p className="text-xs mt-1.5 hidden xs:block sm:block" style={{ color: '#C9B48F', lineHeight: 1.6 }}>
+                  Any top-up is <strong style={{ color: '#FFD98A' }}>{offer.multiplier}×</strong> — you get{' '}
+                  <strong style={{ color: '#FFD98A' }}>{offer.multiplier - 1}× extra</strong> free in your wallet the moment payment is confirmed.
+                </p>
+              </div>
+
+              {/* CTA */}
+              <button
+                onClick={startOfferDeposit}
+                className="flex-shrink-0 font-bold"
+                style={{
+                  background: 'linear-gradient(180deg, #FFD98A, #F2A93B 60%, #D98F1F)',
+                  color: '#201507',
+                  border: 'none',
+                  borderRadius: 10,
+                  padding: '13px 18px',
+                  fontSize: 13,
+                  boxShadow: '0 6px 16px rgba(242,169,59,0.35), inset 0 1px 0 rgba(255,255,255,0.5)',
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                🚀 Deposit & double
+              </button>
+
+              {/* dismiss */}
+              <button
+                onClick={() => setAdDismissed(true)}
+                aria-label="Dismiss ad"
+                className="flex-shrink-0"
+                style={{ position: 'absolute', top: 6, right: 8, background: 'transparent', border: 'none', color: '#8A7A5C', fontSize: 17, cursor: 'pointer', lineHeight: 1 }}
+                title="Dismiss"
+              >
+                ✕
+              </button>
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-bold tracking-wide" style={{ color: '#F2A93B' }}>
-                {offer.adText || `DOUBLE DEPOSIT OFFER — get ${offer.multiplier}× your money!`}
-              </p>
-              <p className="text-xs mt-1" style={{ color: '#AEB5BD', lineHeight: 1.6 }}>
-                Deposit any amount and receive <strong style={{ color: '#E9E7E2' }}>{offer.multiplier}× ({offer.multiplier - 1}× bonus)</strong> in your wallet — credited automatically once payment is confirmed.
-              </p>
-            </div>
-            <span className="mono hidden sm:inline-flex text-[10px] uppercase tracking-[0.14em] px-2.5 py-1 flex-shrink-0"
-              style={{ background: 'rgba(242,169,59,0.15)', color: '#F2A93B', borderRadius: 4 }}>
-              Limited offer
-            </span>
           </div>
         )}
 
@@ -604,7 +673,7 @@ function WalletInner() {
           </div>
 
           {/* ── Deposit Card (multi-step) ── */}
-          <div className="card p-6">
+          <div id="deposit-card" className="card p-6">
             <p className="mono text-[10px] uppercase tracking-[0.18em] mb-4" style={{ color: '#4C535B' }}>
               {step === 'method' ? 'Deposit funds' : step === 'form' ? `Deposit · ${METHOD_LABELS[method] || ''}` : step === 'processing' ? 'Payment in progress' : step === 'redirecting' ? 'Secure checkout' : step === 'success' ? 'Payment complete' : 'Payment failed'}
             </p>
@@ -961,6 +1030,22 @@ function WalletInner() {
           @keyframes mz-ping {
             0% { transform: scale(0.75); opacity: 0.9; }
             80%, 100% { transform: scale(1.35); opacity: 0; }
+          }
+          @keyframes mz-ad-in {
+            0% { opacity: 0; transform: translateY(-14px) scale(0.985); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+          }
+          @keyframes mz-ad-shine {
+            0% { background-position: -180% 0; }
+            55%, 100% { background-position: 220% 0; }
+          }
+          @keyframes mz-ad-bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-7px); }
+          }
+          @keyframes mz-ad-wiggle {
+            0%, 100% { transform: rotate(-8deg); }
+            50% { transform: rotate(12deg); }
           }
         `}</style>
 
