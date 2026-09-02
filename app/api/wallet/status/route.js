@@ -31,7 +31,12 @@ export async function GET(request) {
       return NextResponse.json({ error: 'This transaction does not belong to your account' }, { status: 403 });
     }
 
-    const base = { amount: Number(tx.amount), paymentMethod: tx.payment_method || 'card' };
+    const base = {
+      amount: Number(tx.amount),
+      bonus: Number(tx.bonus_amount || 0),
+      bonusMultiplier: tx.bonus_multiplier ? Number(tx.bonus_multiplier) : null,
+      paymentMethod: tx.payment_method || 'card',
+    };
 
     // Terminal DB states — no Paystack call needed
     if (tx.status === 'success') return NextResponse.json({ status: 'success', ...base });

@@ -9,7 +9,7 @@ import {
   MAX_DEPOSIT_KES,
 } from '@/lib/paystack';
 import { normalizeKenyanPhone, isValidTillNumber } from '@/lib/kenya-phone';
-import { sql, ensureWalletSchema, ensureWallet, generateReference, markTransactionFailed } from '@/lib/wallet';
+import { sql, ensureWalletSchema, ensureWallet, generateReference, markTransactionFailed, getDepositOffer, computeDepositBonus } from '@/lib/wallet';
 
 export const dynamic = 'force-dynamic';
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -97,13 +97,18 @@ export async function POST(request) {
     const reference = generateReference(userId);
 
     // ── 1. Create the pending transaction BEFORE talking to Paystack ──
+    // If the deposit offer is active, STAMP the multiplier on the row so the
+    // bonus matches what the user saw advertised — toggling the offer later
+    // never changes an already-started deposit.
     await ensureWallet(userId);
+    const offer = await getDepositOffer();
+    const offerBonus = offer.enabled ? computeDepositBonus(amount, offer.multiplier) : { bonus: 0, total: amount };
     await sql`
       INSERT INTO wallet_transactions
-        (user_id, type, amount, reference, description, status, currency, payment_method, phone_number, provider)
+        (user_id, type, amount, reference, description, status, currency, payment_method, phone_number, provider, bonus_multiplier)
       VALUES
         (${userId}, 'deposit', ${amount}, ${reference}, ${`Wallet top-up via ${method.label}`},
-         'pending', 'KES', ${paymentMethod}, ${phone}, 'paystack')
+         'pending', 'KES', ${paymentMethod}, ${phone}, 'paystack', ${offer.enabled ? offer.multiplier : null})
     `;
 
     // ── 2. Card → official Paystack checkout (redirect, PCI-safe) ──
@@ -122,7 +127,12 @@ export async function POST(request) {
       }
 
       await sql`UPDATE wallet_transactions SET status = 'processing', updated_at = NOW() WHERE reference = ${reference}`;
-      return NextResponse.json({ flow: 'redirect', authorization_url: json.data.authorization_url, reference });
+      return NextResponse.json({
+        flow: 'redirect',
+        authorization_url: json.data.authorization_url,
+        reference,
+        offer: offer.enabled ? { multiplier: offer.multiplier, bonusAmount: offerBonus.bonus, totalAmount: offerBonus.total } : null,
+      });
     }
 
     // ── 3. Mobile money → Paystack Charge API (STK/USSD push, no redirect) ──
@@ -156,6 +166,7 @@ export async function POST(request) {
       reference,
       displayPhone: phone,
       displayText: data.display_text || null,
+      offer: offer.enabled ? { multiplier: offer.multiplier, bonusAmount: offerBonus.bonus, totalAmount: offerBonus.total } : null,
     });
   } catch (error) {
     console.error('Deposit error:', error);

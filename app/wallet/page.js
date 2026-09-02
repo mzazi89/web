@@ -314,6 +314,7 @@ function WalletInner() {
   const [depositing, setDepositing] = useState(false);
   const [failureMsg, setFailureMsg] = useState('');
   const [creditedAmount, setCreditedAmount] = useState(0);
+  const [offer, setOffer] = useState(null); // { enabled, multiplier, adText } | null
 
   useEffect(() => {
     const success = searchParams.get('success');
@@ -348,6 +349,13 @@ function WalletInner() {
       setBalance(data.balance || 0);
       setTransactions(data.transactions || []);
     }
+    try {
+      const ores = await fetch('/api/wallet/offer');
+      if (ores.ok) {
+        const odata = await ores.json();
+        setOffer(odata.offer || null);
+      }
+    } catch { /* offer is optional */ }
   };
 
   // ── Poll payment status while the user authorizes on their phone ──
@@ -486,6 +494,13 @@ function WalletInner() {
   const quickAmounts = [100, 200, 500, 1000, 2000];
   const amountLabel = depositAmount ? fmtKes(parseFloat(depositAmount) || 0) : '';
 
+  // Deposit-offer derived values (offer state is fetched from /api/wallet/offer)
+  const offerActive = !!(offer && offer.enabled);
+  const offerMult = Number(offer?.multiplier) > 1 ? Number(offer.multiplier) : 2;
+  const offerAmt = parseFloat(depositAmount) || 0;
+  const offerBonus = offerActive && offerAmt > 0 ? Math.round(offerAmt * (offerMult - 1) * 100) / 100 : 0;
+  const offerTotal = Math.round((offerAmt + offerBonus) * 100) / 100;
+
   if (loading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
@@ -544,6 +559,33 @@ function WalletInner() {
             Contact <a href="https://t.me/mzazitech" target="_blank" rel="noopener noreferrer" className="link" style={{ fontSize: 12 }}>support</a> within this period for a free replacement.
           </p>
         </div>
+
+        {/* ── Deposit Offer ad banner (settings-driven) ── */}
+        {offer?.enabled && (
+          <div className="mb-6 px-5 py-4 flex items-center gap-4"
+            style={{
+              background: 'linear-gradient(135deg, rgba(242,169,59,0.14), rgba(242,169,59,0.04))',
+              border: '1px solid rgba(242,169,59,0.45)',
+              borderRadius: 8,
+            }}>
+            <div className="flex-shrink-0 w-11 h-11 flex items-center justify-center text-2xl"
+              style={{ background: 'rgba(242,169,59,0.18)', borderRadius: 10, color: '#F2A93B' }}>
+              🎁
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-bold tracking-wide" style={{ color: '#F2A93B' }}>
+                {offer.adText || `DOUBLE DEPOSIT OFFER — get ${offer.multiplier}× your money!`}
+              </p>
+              <p className="text-xs mt-1" style={{ color: '#AEB5BD', lineHeight: 1.6 }}>
+                Deposit any amount and receive <strong style={{ color: '#E9E7E2' }}>{offer.multiplier}× ({offer.multiplier - 1}× bonus)</strong> in your wallet — credited automatically once payment is confirmed.
+              </p>
+            </div>
+            <span className="mono hidden sm:inline-flex text-[10px] uppercase tracking-[0.14em] px-2.5 py-1 flex-shrink-0"
+              style={{ background: 'rgba(242,169,59,0.15)', color: '#F2A93B', borderRadius: 4 }}>
+              Limited offer
+            </span>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* ── Balance Card ── */}
@@ -618,6 +660,17 @@ function WalletInner() {
                     className="input"
                     required
                   />
+                  {offerActive && offerAmt > 0 && (
+                    <div className="mt-2 px-3 py-2 text-xs flex items-center justify-between"
+                      style={{ background: 'rgba(242,169,59,0.07)', border: '1px solid rgba(242,169,59,0.28)', borderRadius: 6 }}>
+                      <span style={{ color: '#AEB5BD' }}>
+                        🎁 With the {offerMult}× offer you'll receive
+                      </span>
+                      <span className="mono font-semibold" style={{ color: '#F2A93B' }}>
+                        {fmtKes(offerTotal)} <span style={{ color: '#79818A', fontWeight: 400 }}>({fmtKes(offerBonus)} bonus)</span>
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 {method === 'mpesa' || method === 'airtel' ? (
@@ -851,6 +904,11 @@ function WalletInner() {
                       </td>
                       <td data-label="Amount" className="mono font-semibold whitespace-nowrap" style={{ color: t.type === 'deposit' ? '#3ECF8E' : '#E5484D' }}>
                         {t.type === 'deposit' ? '+' : '−'}{fmtKes(t.amount)}
+                        {t.type === 'deposit' && Number(t.bonus_amount) > 0 && (
+                          <div className="mono font-normal" style={{ color: '#F2A93B', fontSize: 11, marginTop: 2 }}>
+                            +{fmtKes(t.bonus_amount)} 🎁 bonus
+                          </div>
+                        )}
                       </td>
                       <td data-label="Status">
                         <span className="tag" style={{ color: t.status === 'success' ? '#3ECF8E' : '#F2A93B', borderColor: t.status === 'success' ? 'rgba(62,207,142,0.3)' : 'rgba(242,169,59,0.3)' }}>
