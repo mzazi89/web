@@ -8,6 +8,7 @@ import { fmtKes } from '@/lib/currency';
 const NAV_LINKS = [
   { href: '/',             label: 'Home' },
   { href: '/products',     label: 'Panels' },
+  { href: '/vps',          label: 'VPS' },
   { href: '/whatsapp-bot', label: 'WhatsApp' },
   { href: '/api',          label: 'API' },
   { href: '/temp-number',  label: 'Temp Number' },

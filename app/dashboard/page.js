@@ -8,6 +8,8 @@ export default function DashboardPage() {
   const [user, setUser]           = useState(null);
   const [loading, setLoading]     = useState(true);
   const [panels, setPanels]       = useState([]);
+  const [vpsServers, setVpsServers] = useState([]);
+  const [showVpsCreds, setShowVpsCreds] = useState({}); // id -> reveal password?
   const [balance, setBalance]     = useState(0);
   const [transactions, setTxns]   = useState([]);
   const [apiStats, setApiStats]   = useState(null); // { keys, requests }
@@ -34,7 +36,7 @@ export default function DashboardPage() {
       if (res.ok) {
         const data = await res.json();
         setUser(data.user);
-        await Promise.all([fetchPanels(), fetchWallet(), fetchApiStats(), fetchReferral()]);
+        await Promise.all([fetchPanels(), fetchVps(), fetchWallet(), fetchApiStats(), fetchReferral()]);
       } else { router.push('/login'); }
     } catch { router.push('/login'); }
     finally { setLoading(false); }
@@ -62,6 +64,13 @@ export default function DashboardPage() {
     try {
       const res = await fetch('/api/panel/list');
       if (res.ok) { const d = await res.json(); setPanels(d.panels || []); }
+    } catch {}
+  };
+
+  const fetchVps = async () => {
+    try {
+      const res = await fetch('/api/vps/my');
+      if (res.ok) { const d = await res.json(); setVpsServers(d.vps || []); }
     } catch {}
   };
 
@@ -261,6 +270,66 @@ export default function DashboardPage() {
                       </button>
                     </div>
                   ))}
+                </div>
+              )}
+            </section>
+
+            {/* My VPS servers */}
+            <section className="card overflow-hidden">
+              <header className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid #1B2026' }}>
+                <div>
+                  <h2 className="display text-base font-bold" style={{ color: '#E9E7E2' }}>My VPS servers</h2>
+                  <p className="mono text-[10px] uppercase tracking-[0.14em] mt-0.5" style={{ color: '#4C535B' }}>{vpsServers.length} purchased</p>
+                </div>
+                <Link href="/vps" className="mono text-[11px] uppercase tracking-[0.12em]" style={{ color: '#F2A93B', textDecoration: 'none' }}>
+                  Buy more →
+                </Link>
+              </header>
+
+              {vpsServers.length === 0 ? (
+                <div className="py-14 text-center">
+                  <p className="text-3xl mb-3">🖥️</p>
+                  <p className="display font-bold mb-2" style={{ color: '#E9E7E2' }}>No VPS yet</p>
+                  <p className="text-sm mb-6" style={{ color: '#79818A' }}>Get a full-access server — credentials revealed instantly after payment.</p>
+                  <Link href="/vps" className="btn btn-primary">Browse VPS</Link>
+                </div>
+              ) : (
+                <div className="divide-y" style={{ borderBottom: '1px solid #1B2026' }}>
+                  {vpsServers.map(s => {
+                    const reveal = !!showVpsCreds[s.order_id];
+                    return (
+                      <div key={s.order_id} className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 px-6 py-4">
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-3 flex-wrap">
+                            <p className="text-sm font-semibold" style={{ color: '#E9E7E2' }}>{s.package_name}</p>
+                            <span className="tag tag-green"><span className="dot" style={{ color: '#3ECF8E' }} />Active</span>
+                          </div>
+                          <p className="mono text-[11px] mt-1.5" style={{ color: '#4C535B' }}>
+                            {s.ram} · {s.cpu} · {s.disk} · {s.location || '—'} · bought {new Date(s.paid_at || s.created_at).toLocaleDateString()}
+                          </p>
+                          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 mono text-[12px]">
+                            <span style={{ color: '#AEB5BD' }}>{s.username}@{s.host} -p {s.port || 22}</span>
+                            <span style={{ color: '#79818A' }}>Pass: {reveal ? <strong style={{ color: '#F2A93B' }}>{s.password}</strong> : '••••••••'}</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                          {[
+                            { k: s.host, v: s.host },
+                            { k: s.password, v: s.password },
+                          ].map(f => (
+                            <button key={f.k} onClick={() => { if (navigator.clipboard) navigator.clipboard.writeText(f.v).catch(() => {}); }} className="btn" style={{ fontSize: 10, padding: '6px 10px' }} title="Copy">Copy</button>
+                          ))}
+                          <button
+                            onClick={() => setShowVpsCreds(p => ({ ...p, [s.order_id]: !reveal }))}
+                            className="btn btn-dark flex-shrink-0"
+                            style={{ padding: '7px 14px', fontSize: 11 }}
+                          >
+                            {reveal ? 'Hide password' : 'Reveal password'}
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </section>

@@ -6,6 +6,7 @@ const columns = [
     title: 'Products',
     links: [
       { label: 'Pterodactyl Panels', href: '/products' },
+      { label: 'VPS Servers', href: '/vps' },
       { label: 'WhatsApp Automation', href: '/whatsapp-bot' },
       { label: 'Developer API', href: '/api' },
       { label: 'Temp Numbers', href: '/temp-number' },
