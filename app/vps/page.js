@@ -38,6 +38,7 @@ function VpsInner() {
   const [displayText, setDisplayText] = useState(null);
   const [secondsLeft, setSecondsLeft] = useState(180);
   const [vps, setVps] = useState(null);          // revealed credentials
+  const [showPass, setShowPass] = useState(false);
   const [notice, setNotice] = useState('');
 
   const closeModal = useCallback(() => {
@@ -230,19 +231,32 @@ function VpsInner() {
               <p className="mono text-[10px] uppercase tracking-wider mt-0.5" style={{ color: '#4C535B' }}>{vps.package_name} · {vps.host}</p>
             </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
             {[
-              { k: 'Host / IP', v: vps.host, mono: true },
-              { k: 'Port', v: vps.port || '22', mono: true },
-              { k: 'Username', v: vps.username, mono: true },
-              { k: 'Password', v: vps.password, mono: true, secret: true },
-            ].map((f) => (
-              <div key={f.k} className="px-3 py-2.5 flex items-center justify-between gap-2" style={{ background: 'rgba(62,207,142,0.04)', border: '1px solid rgba(62,207,142,0.15)', borderRadius: 8 }}>
-                <div className="min-w-0">
-                  <div className="mono text-[9px] uppercase tracking-wider" style={{ color: '#4C535B' }}>{f.k}</div>
-                  <div className={`mt-0.5 truncate ${f.mono ? 'mono' : ''} text-sm`} style={{ color: '#E9E7E2' }}>{f.v}</div>
+              { icon: '🌐', k: 'IP ADDRESS', v: vps.host, copy: true },
+              { icon: '🆔', k: 'USERNAME', v: vps.username, copy: true },
+              { icon: '🔐', k: 'PASSWORD', v: showPass ? vps.password : '••••••••••', copy: true, raw: vps.password },
+              { icon: '🔢', k: 'ID DROPLET', v: vps.droplet_id, copy: true },
+              { icon: '🧩', k: 'HOSTNAME', v: vps.hostname },
+              { icon: '🌍', k: 'REGION', v: vps.region },
+              { icon: '💿', k: 'OS', v: vps.instance_os || vps.pkg_os },
+              { icon: '🖥️', k: 'CPU', v: vps.cpu || vps.pkg_cpu },
+            ].filter((f) => f.v).map((f) => (
+              <div key={f.k} className="px-3.5 py-2.5 flex items-center justify-between gap-3" style={{ background: 'rgba(62,207,142,0.045)', border: '1px solid rgba(62,207,142,0.14)', borderRadius: 9 }}>
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <span style={{ fontSize: 15, flexShrink: 0 }}>{f.icon}</span>
+                  <div className="min-w-0">
+                    <div className="mono text-[9px] tracking-[0.14em]" style={{ color: '#4C535B' }}>{f.k}</div>
+                    <div className="mt-0.5 mono text-[13px] truncate" style={{ color: '#E9E7E2' }}>{f.v}</div>
+                  </div>
                 </div>
-                <button onClick={() => copyText(f.v)} className="btn" style={{ fontSize: 10, padding: '5px 10px', flexShrink: 0 }} title="Copy">Copy</button>
+                {f.k === 'PASSWORD' ? (
+                  <button onClick={() => setShowPass(!showPass)} className="btn" style={{ fontSize: 10, padding: '4px 9px', flexShrink: 0 }} title="Show / hide">
+                    {showPass ? 'Hide' : 'Show'}
+                  </button>
+                ) : f.copy ? (
+                  <button onClick={() => copyText(f.raw || f.v)} className="btn" style={{ fontSize: 10, padding: '4px 9px', flexShrink: 0 }} title="Copy">Copy</button>
+                ) : null}
               </div>
             ))}
           </div>

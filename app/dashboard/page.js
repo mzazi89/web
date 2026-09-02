@@ -305,7 +305,8 @@ export default function DashboardPage() {
                             <span className="tag tag-green"><span className="dot" style={{ color: '#3ECF8E' }} />Active</span>
                           </div>
                           <p className="mono text-[11px] mt-1.5" style={{ color: '#4C535B' }}>
-                            {s.ram} · {s.cpu} · {s.disk} · {s.location || '—'} · bought {new Date(s.paid_at || s.created_at).toLocaleDateString()}
+                            {[s.hostname, s.region, s.instance_os || s.pkg_os, s.cpu || s.pkg_cpu, s.droplet_id ? `ID ${s.droplet_id}` : ''].filter(Boolean).join(' · ') || `${s.ram} · ${s.cpu}`}
+                            {s.ram ? ` · ${s.ram}` : ''} · bought {new Date(s.paid_at || s.created_at).toLocaleDateString()}
                           </p>
                           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 mono text-[12px]">
                             <span style={{ color: '#AEB5BD' }}>{s.username}@{s.host} -p {s.port || 22}</span>
