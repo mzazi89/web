@@ -5,6 +5,7 @@ import { NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 import { ensureDatabase } from '@/lib/database';
 import { auth, normalizeNumber, getAccount } from '@/lib/pairApi';
+import { resolveBotForNumber } from '@/lib/bots';
 
 export const dynamic = 'force-dynamic';
 const sql = neon(process.env.DATABASE_URL);
@@ -36,6 +37,15 @@ export async function POST(request) {
       }
     }
 
+    // Which bot holds this number. Not taken on trust from the client alone:
+    // when none is named, telemetry says who owns it. Issuing a logout to the
+    // other bot would find no such session and leave the device linked.
+    const resolved = await resolveBotForNumber(number, body.bot);
+    if (!resolved.ok) {
+      return NextResponse.json({ error: resolved.error }, { status: 400 });
+    }
+    const bot = resolved.bot;
+
     // Map the user-facing action to the bot control + payload
     let controlAction, payload;
     if (action === 'delete') {
@@ -57,11 +67,11 @@ export async function POST(request) {
     }
 
     const rows = await sql`
-      INSERT INTO bot_control (action, payload, status)
-      VALUES (${controlAction}, ${JSON.stringify(payload)}::jsonb, 'pending')
+      INSERT INTO bot_control (action, payload, status, bot_id)
+      VALUES (${controlAction}, ${JSON.stringify(payload)}::jsonb, 'pending', ${resolved.named ? bot.id : ''})
       RETURNING id
     `;
-    return NextResponse.json({ requestId: rows[0].id, number, action });
+    return NextResponse.json({ requestId: rows[0].id, number, action, bot: bot.id });
   } catch (e) {
     console.error('Pair manage error:', e.message);
     return NextResponse.json({ error: 'Failed to start the action. Try again.' }, { status: 500 });

@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 import { ensureDatabase } from '@/lib/database';
 import { auth, PLANS, getAccount } from '@/lib/pairApi';
+import { deviceBotMap } from '@/lib/bots';
 
 export const dynamic = 'force-dynamic';
 const sql = neon(process.env.DATABASE_URL);
@@ -39,6 +40,11 @@ export async function GET() {
       ORDER BY id DESC
     `;
 
+    // Which bot holds each number. The session table has no bot column — the only
+    // place this mapping exists is the telemetry each bot publishes — so it is
+    // looked up rather than assumed. null when a bot has not reported yet.
+    const botMap = await deviceBotMap();
+
     return NextResponse.json({
       plan,
       maxDevices,
@@ -47,6 +53,7 @@ export async function GET() {
         number: d.phoneNumber,
         connectedAt: d.connectedAt,
         status: d.status,
+        bot: botMap[String(d.phoneNumber)] || null,
       })),
       plans: Object.values(PLANS),
     });

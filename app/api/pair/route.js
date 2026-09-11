@@ -11,6 +11,7 @@ import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { neon } from '@neondatabase/serverless';
 import { ensureDatabase } from '@/lib/database';
+import { resolveBot, statusFor } from '@/lib/bots';
 
 export const dynamic = 'force-dynamic';
 const sql = neon(process.env.DATABASE_URL);
@@ -49,10 +50,24 @@ export async function POST(request) {
       );
     }
 
-    // the bot must be online to pair
-    const status = await sql`SELECT online FROM bot_status WHERE bot_id = 'main' ORDER BY last_seen_at DESC LIMIT 1`;
-    if (!status.length || !status[0].online) {
-      return NextResponse.json({ error: 'The bot is currently offline. Try again in a few minutes.' }, { status: 503 });
+    // Which bot this pairing is for. Refused before anything is queued, so a bad
+    // target cannot leave a row behind for a bot that will never take it.
+    const resolved = await resolveBot(body.bot);
+    if (!resolved.ok) {
+      return NextResponse.json({ error: resolved.error }, { status: 400 });
+    }
+    const bot = resolved.bot;
+
+    // THAT bot must be online to pair. This used to hardcode bot_id = 'main',
+    // which is only correct while no bot_profiles is configured — with profiles
+    // set the bot heartbeats under its own id and this check would reject every
+    // request even though the bot was up.
+    const status = await statusFor(bot.id);
+    if (!status || !status.online) {
+      return NextResponse.json(
+        { error: `${bot.name} is currently offline. Try again in a few minutes.` },
+        { status: 503 }
+      );
     }
 
     // one pairing request at a time per account
@@ -66,12 +81,15 @@ export async function POST(request) {
       return NextResponse.json({ error: 'You already have a pairing request in progress.' }, { status: 409 });
     }
 
+    // bot_id only when the caller named one. An untargeted row stays claimable
+    // by any bot, which is exactly the row this endpoint wrote before bots were
+    // selectable — so requests already queued are not stranded by the change.
     const rows = await sql`
-      INSERT INTO bot_control (action, payload, status)
-      VALUES ('pair', ${JSON.stringify({ number, accountId: user.userId })}::jsonb, 'pending')
+      INSERT INTO bot_control (action, payload, status, bot_id)
+      VALUES ('pair', ${JSON.stringify({ number, accountId: user.userId })}::jsonb, 'pending', ${resolved.named ? bot.id : ''})
       RETURNING id
     `;
-    return NextResponse.json({ requestId: rows[0].id, number });
+    return NextResponse.json({ requestId: rows[0].id, number, bot: bot.id, botName: bot.name });
   } catch (e) {
     console.error('Pair POST error:', e.message);
     return NextResponse.json({ error: 'Failed to start pairing. Try again.' }, { status: 500 });

@@ -10,12 +10,23 @@ export default function PairingPanel() {
   const [data, setData] = useState(null);     // { plan, maxDevices, devices, plans }
   const [loadErr, setLoadErr] = useState('');
 
+  // which bot
+  const [bots, setBots] = useState([]);
+  const [botId, setBotId] = useState('');
+
   // pairing
   const [pairNumber, setPairNumber] = useState('');
   const [pairPhase, setPairPhase] = useState('idle'); // idle | requesting | waiting | done | error
   const [pairCode, setPairCode] = useState('');
   const [pairError, setPairError] = useState('');
   const pollPairRef = useRef(null);
+
+  // With one bot there is nothing to choose and the selector never renders, so
+  // every request goes out exactly as it did before bots were selectable.
+  const selectedBot = bots.find((b) => b.id === botId) || bots[0] || null;
+  const botKey = selectedBot ? selectedBot.id : '';
+  const multipleBots = bots.length > 1;
+  const botName = (id) => (id && bots.find((b) => b.id === id) ? bots.find((b) => b.id === id).name : id);
 
   // unlink / buy
   const [busyNum, setBusyNum] = useState(null);
@@ -27,10 +38,25 @@ export default function PairingPanel() {
       .then((r) => {
         if (!r.ok) { setAuthed(false); return; }
         setAuthed(true);
+        loadBots();
         loadDevices();
       })
       .catch(() => setAuthed(false));
   }, []);
+
+  const loadBots = async () => {
+    try {
+      const res = await fetch('/api/pair/bots', { cache: 'no-store' });
+      if (!res.ok) return;
+      const d = await res.json();
+      if (d && Array.isArray(d.bots) && d.bots.length) {
+        setBots(d.bots);
+        // Keep the current choice if that bot still exists: one removed from
+        // bot_profiles must not leave the panel pointing at nothing.
+        setBotId((prev) => (d.bots.some((b) => b.id === prev) ? prev : d.bots[0].id));
+      }
+    } catch {}
+  };
 
   const loadDevices = async () => {
     try {
@@ -90,7 +116,9 @@ export default function PairingPanel() {
       const res = await fetch('/api/pair', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ number: digits }),
+        // bot is omitted when there is only one — an untargeted row stays
+        // claimable by any bot, which is what this posted before.
+        body: JSON.stringify({ number: digits, bot: botKey || undefined }),
       });
       const d = await res.json();
       if (!res.ok) {
@@ -113,16 +141,23 @@ export default function PairingPanel() {
     setPairCode('');
   };
 
-  const manageDevice = async (number, action) => {
-    if (action === 'unlink' && !window.confirm(`Unlink ${number}? The bot will log the device out of WhatsApp (it can be paired again later).`)) return;
-    if (action === 'delete' && !window.confirm(`Delete ${number}? This permanently removes the device from the bot and your account.`)) return;
+  const manageDevice = async (device, action) => {
+    const number = device.number;
+    // The bot telemetry says holds this number — the logout has to reach that
+    // bot, because the other one would find no such session and leave the device
+    // linked. Falls back to the panel's selection when no bot has reported the
+    // number yet, and to nothing at all with a single bot configured.
+    const targetBot = device.bot || botKey || undefined;
+    const onBot = multipleBots && targetBot ? ` from ${botName(targetBot)}` : '';
+    if (action === 'unlink' && !window.confirm(`Unlink ${number}${onBot}? The bot will log the device out of WhatsApp (it can be paired again later).`)) return;
+    if (action === 'delete' && !window.confirm(`Delete ${number}${onBot}? This permanently removes the device from the bot and your account.`)) return;
     setBusyNum(number);
     setNotice('');
     try {
       const res = await fetch('/api/pair/unlink', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ number, action }),
+        body: JSON.stringify({ number, action, bot: targetBot }),
       });
       const d = await res.json();
       if (!res.ok) { setNotice(`Error: ${d.error || 'Failed'}`); setBusyNum(null); return; }
@@ -282,6 +317,41 @@ export default function PairingPanel() {
           </div>
         ) : (
           <div>
+            {/* Above the number deliberately: which bot you are pairing into
+                decides where the code comes from. With one bot there is nothing
+                to choose and this renders nothing. */}
+            {multipleBots && (
+              <div className="mb-4">
+                <p className="mono text-[10px] uppercase tracking-[0.16em] mb-2.5" style={{ color: '#4C535B' }}>Bot</p>
+                <div className="flex flex-wrap gap-2">
+                  {bots.map((b) => {
+                    const active = selectedBot ? selectedBot.id === b.id : false;
+                    const busy = pairPhase === 'requesting' || pairPhase === 'waiting';
+                    return (
+                      <button
+                        key={b.id}
+                        type="button"
+                        onClick={() => setBotId(b.id)}
+                        disabled={busy}
+                        aria-pressed={active}
+                        title={b.online ? 'Online' : b.known ? 'Offline' : 'Never seen'}
+                        className="mono text-[11px] px-3.5 py-2 flex items-center gap-2"
+                        style={{
+                          color: active ? '#E9E7E2' : '#AEB5BD',
+                          background: active ? 'rgba(242,169,59,0.10)' : 'transparent',
+                          border: active ? '1px solid rgba(242,169,59,0.55)' : '1px solid #262C33',
+                          cursor: busy ? 'not-allowed' : 'pointer',
+                          opacity: busy ? 0.55 : 1,
+                        }}
+                      >
+                        {b.name}
+                        <span className="dot" style={{ background: b.online ? '#3ECF8E' : '#E5484D', width: 7, height: 7 }} />
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
             <div className="flex flex-col sm:flex-row gap-3">
               <input
                 value={pairNumber}
@@ -332,15 +402,23 @@ export default function PairingPanel() {
                   <div className="flex items-center gap-2.5">
                     <p className="mono font-bold text-sm truncate" style={{ color: '#E9E7E2' }}>{d.number}</p>
                     <span className="tag tag-green">
-                      <span className="dot anim-pulse" /> Active
+                      <span className="dot anim-pulse" />
+                      Active
                     </span>
+                    {/* Which bot holds this number, so unlink/delete target the
+                        right one. Hidden with a single bot. */}
+                    {multipleBots && d.bot && (
+                      <span className="tag" style={{ borderColor: 'rgba(242,169,59,0.35)', color: '#F2A93B' }}>
+                        {botName(d.bot)}
+                      </span>
+                    )}
                   </div>
                   <p className="mono text-[10px] uppercase tracking-[0.1em] mt-1" style={{ color: '#4C535B' }}>
                     {d.connectedAt ? `linked ${new Date(d.connectedAt).toLocaleDateString()}` : 'linked'}
                   </p>
                 </div>
                 <div className="flex items-center gap-1.5 flex-shrink-0">
-                  <button onClick={() => manageDevice(d.number, 'unlink')} disabled={busyNum === d.number}
+                  <button onClick={() => manageDevice(d, 'unlink')} disabled={busyNum === d.number}
                     className="mono px-2.5 py-1.5 text-[10px] uppercase tracking-[0.08em]"
                     style={{
                       color: '#4C7DFC',
@@ -351,7 +429,7 @@ export default function PairingPanel() {
                     }}>
                     Unlink
                   </button>
-                  <button onClick={() => manageDevice(d.number, 'delete')} disabled={busyNum === d.number}
+                  <button onClick={() => manageDevice(d, 'delete')} disabled={busyNum === d.number}
                     className="mono px-2.5 py-1.5 text-[10px] uppercase tracking-[0.08em]"
                     style={{
                       color: '#E5484D',
