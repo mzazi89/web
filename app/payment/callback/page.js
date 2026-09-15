@@ -1,187 +1,185 @@
 'use client';
+
+// MZAZI TECH — Payment callback.
+//
+// Where Paystack sends the customer back after a panel purchase. One verify
+// call (unchanged: GET /api/payment/verify?reference=…) and three calm states:
+// pending, success and failure — never a raw error.
+//
+//   GET /api/payment/verify?reference=<ref>
+//     success → { status: true, credentials: { username, password, panel_link } }
+//     failure → { status: false, message } | HTTP error { error }
+
 import React, { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
+import {
+  AppBackground, Button, Card, CardHeader, Alert, humaniseError, Icons,
+} from '@/components/ui';
 
-// Loading component while Suspense resolves
-function LoadingState() {
-  return (
-    <div className="min-h-[80vh] flex items-center justify-center" style={{ background: '#0B0D0F' }}>
-      <div className="text-center">
-        <div className="spinner mx-auto mb-5" />
-        <h2 className="display font-bold text-lg" style={{ color: '#E9E7E2' }}>Loading payment details…</h2>
-        <p className="mono text-[11px] uppercase tracking-[0.14em] mt-2" style={{ color: '#4C535B' }}>Please wait</p>
-      </div>
-    </div>
-  );
-}
-
-function CheckGlyph() {
-  return (
-    <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#3ECF8E' }}>
-      <circle cx="12" cy="12" r="10" />
-      <path d="m8.5 12.5 2.5 2.5 5-6" />
-    </svg>
-  );
-}
-
-function CrossGlyph() {
-  return (
-    <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#E5484D' }}>
-      <circle cx="12" cy="12" r="10" />
-      <path d="m9 9 6 6M15 9l-6 6" />
-    </svg>
-  );
-}
-
-// Main component with useSearchParams
 function PaymentCallbackContent() {
-  const [status, setStatus] = useState('verifying');
+  const [status, setStatus] = useState('pending'); // pending | success | failed
   const [credentials, setCredentials] = useState(null);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState('');
+  const [copied, setCopied] = useState('');
   const searchParams = useSearchParams();
   const reference = searchParams.get('reference');
 
   useEffect(() => {
-    if (reference) {
-      verifyPayment();
-    }
+    if (reference) verifyPayment();
+    else setStatus('pending');
   }, [reference]);
 
   const verifyPayment = async () => {
+    setStatus('pending');
+    setError('');
     try {
       const response = await fetch(`/api/payment/verify?reference=${reference}`);
-      const data = await response.json();
+      const data = await response.json().catch(() => ({}));
 
-      if (data.status) {
+      if (response.ok && data.status) {
+        setCredentials(data.credentials || null);
         setStatus('success');
-        setCredentials(data.credentials);
       } else {
+        setError(humaniseError(data.message || data.error || 'We could not confirm this payment.', 'We could not confirm this payment.'));
         setStatus('failed');
-        setError(data.message || 'Payment verification failed');
       }
-    } catch (error) {
-      setStatus('error');
-      setError('An error occurred while verifying payment');
+    } catch (e) {
+      setError(humaniseError(e));
+      setStatus('failed');
     }
   };
 
-  if (status === 'verifying') {
-    return (
-      <div className="min-h-[80vh] flex items-center justify-center" style={{ background: '#0B0D0F' }}>
-        <div className="text-center">
-          <div className="spinner mx-auto mb-5" />
-          <h2 className="display font-bold text-lg" style={{ color: '#E9E7E2' }}>Verifying payment…</h2>
-          <p className="mono text-[11px] uppercase tracking-[0.14em] mt-2" style={{ color: '#4C535B' }}>Please wait while we confirm your payment</p>
-        </div>
-      </div>
-    );
-  }
+  const copy = async (text, key) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(key);
+      setTimeout(() => setCopied(''), 2000);
+    } catch { /* clipboard unavailable */ }
+  };
 
-  if (status === 'success' && credentials) {
-    const copy = async (text) => {
-      try { await navigator.clipboard.writeText(text); } catch { /* noop */ }
-    };
-    return (
-      <div style={{ background: 'rgba(15,18,21,0.35)', minHeight: '80vh', padding: '64px 0 110px' }}>
-        <div className="container-site max-w-2xl">
-          <div className="card card-pad" style={{ borderColor: 'rgba(62,207,142,0.4)' }}>
-            <div className="text-center mb-10">
-              <CheckGlyph />
-              <h1 className="headline mt-5" style={{ fontSize: 'clamp(1.7rem, 3.6vw, 2.4rem)' }}>
-                Payment successful<span className="accent">.</span>
-              </h1>
-              <p className="text-sm mt-3" style={{ color: '#79818A' }}>
-                Your Pterodactyl panel has been provisioned
-              </p>
-            </div>
-
-            <div className="card overflow-hidden mb-8" style={{ background: '#0F1215' }}>
-              <p className="mono text-[10px] uppercase tracking-[0.18em] px-5 py-3" style={{ color: '#F2A93B', borderBottom: '1px solid #1B2026' }}>
-                Your panel credentials
-              </p>
-              <div>
-                {[
-                  { label: 'Panel link', value: credentials.panel_link, copyable: true },
-                  { label: 'Username', value: credentials.username, copyable: true },
-                  { label: 'Password', value: credentials.password, copyable: true },
-                ].map(r => (
-                  <div key={r.label} className="flex items-center justify-between gap-3 px-5 py-3.5" style={{ borderBottom: '1px solid #1B2026' }}>
-                    <div className="min-w-0">
-                      <p className="mono text-[9px] uppercase tracking-[0.14em] mb-1" style={{ color: '#4C535B' }}>{r.label}</p>
-                      <p className="mono text-sm break-all" style={{ color: '#4C7DFC' }}>{r.value}</p>
-                    </div>
-                    {r.copyable && (
-                      <button
-                        onClick={() => copy(r.value)}
-                        className="mono text-[10px] uppercase tracking-[0.1em] px-2.5 py-1.5 flex-shrink-0"
-                        style={{ color: '#F2A93B', border: '1px solid rgba(242,169,59,0.35)', background: 'transparent', cursor: 'pointer' }}>
-                        Copy
-                      </button>
-                    )}
-                  </div>
-                ))}
+  return (
+    <AppBackground variant="dashboard">
+      <div className="container-site" style={{ paddingTop: 56, paddingBottom: 100, maxWidth: 640 }}>
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <Card className="anim-fade-up" style={{ width: '100%' }}>
+            {/* ── Pending ── */}
+            {status === 'pending' && (
+              <div style={{ textAlign: 'center', padding: '12px 0' }} role="status" aria-live="polite">
+                <span className="spinner" style={{ margin: '0 auto 18px' }} />
+                <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 700, color: 'var(--ink)' }}>
+                  Confirming your payment…
+                </h1>
+                <p style={{ margin: '10px 0 0', color: 'var(--muted)', lineHeight: 1.7 }}>
+                  {reference
+                    ? 'Please wait a moment while we check with the payment provider. Don’t close this page.'
+                    : 'We don’t have a payment reference to check yet. If you just paid, give it a moment and refresh.'}
+                </p>
+                <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap', marginTop: 22 }}>
+                  {reference && <Button onClick={verifyPayment} icon={<Icons.Refresh size={16} />}>Check again</Button>}
+                  <Button variant="ghost" href="/wallet">Go to wallet</Button>
+                </div>
               </div>
-            </div>
+            )}
 
-            <div className="px-4 py-3 text-xs mb-8 flex items-start gap-3"
-              style={{ background: 'rgba(229,72,77,0.06)', border: '1px solid rgba(229,72,77,0.25)' }}>
-              <span className="mono flex-shrink-0" style={{ color: '#E5484D' }}>SAVE</span>
-              <span style={{ color: '#AEB5BD' }}>
-                Please save these credentials securely. For security reasons, the password will not be displayed again.
-              </span>
-            </div>
+            {/* ── Success ── */}
+            {status === 'success' && (
+              <div className="anim-fade-up">
+                <div style={{ textAlign: 'center', marginBottom: 22 }}>
+                  <span style={{ display: 'inline-flex', color: 'var(--good)' }} aria-hidden="true"><Icons.CheckCircle size={54} /></span>
+                  <h1 style={{ margin: '14px 0 0', fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 700, color: 'var(--ink)' }}>
+                    ✓ Payment successful
+                  </h1>
+                  <p style={{ margin: '8px 0 0', color: 'var(--muted)' }}>Your payment was received and your order is ready.</p>
+                </div>
 
-            <div className="flex flex-col sm:flex-row gap-4">
-              <button
-                onClick={() => window.open(credentials.panel_link, '_blank')}
-                className="btn btn-primary flex-1" style={{ cursor: 'pointer' }}>
-                Go to panel
-              </button>
-              <button
-                onClick={() => window.location.href = '/dashboard'}
-                className="btn btn-ghost flex-1" style={{ cursor: 'pointer' }}>
-                Go to dashboard
-              </button>
-            </div>
-          </div>
+                {credentials && (
+                  <Card pad={false} style={{ background: 'var(--surface-2)', marginBottom: 18, overflow: 'hidden' }}>
+                    <CardHeader
+                      title="Your credentials"
+                      description="Save these somewhere safe — the password is not shown again."
+                      icon={<Icons.Shield size={18} />}
+                      style={{ padding: '16px 16px 0' }}
+                    />
+                    <div style={{ padding: '0 16px 16px' }}>
+                      {[
+                        { label: 'Panel link', value: credentials.panel_link, key: 'link', href: credentials.panel_link },
+                        { label: 'Username', value: credentials.username, key: 'user' },
+                        { label: 'Password', value: credentials.password, key: 'pass' },
+                      ].filter((r) => r.value).map((r) => (
+                        <div
+                          key={r.key}
+                          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, padding: '10px 0', borderBottom: '1px solid var(--line-soft)' }}
+                        >
+                          <div style={{ minWidth: 0 }}>
+                            <p className="stat-label" style={{ marginBottom: 2 }}>{r.label}</p>
+                            <p className="mono" style={{ margin: 0, color: 'var(--blue)', wordBreak: 'break-all' }}>{r.value}</p>
+                          </div>
+                          <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
+                            {r.href && (
+                              <Button size="sm" variant="dark" href={r.href}>Open</Button>
+                            )}
+                            <Button size="sm" variant="ghost" onClick={() => copy(r.value, r.key)} icon={copied === r.key ? <Icons.Check size={14} /> : <Icons.Copy size={14} />} aria-label={`Copy ${r.label}`}>
+                              {copied === r.key ? 'Copied' : 'Copy'}
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </Card>
+                )}
+
+                <div style={{ marginBottom: 18 }}>
+                  <Alert kind="warn" title="Keep these safe">
+                    For security, the password will not be displayed again. Store it in a password manager.
+                  </Alert>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {credentials?.panel_link && (
+                    <Button href={credentials.panel_link} icon={<Icons.ExternalLink size={16} />}>Go to panel</Button>
+                  )}
+                  <Button variant="ghost" href="/dashboard" icon={<Icons.Dashboard size={16} />}>Go to dashboard</Button>
+                </div>
+              </div>
+            )}
+
+            {/* ── Failed ── */}
+            {status === 'failed' && (
+              <div className="anim-fade-up" style={{ textAlign: 'center', padding: '12px 0' }} role="alert">
+                <span style={{ display: 'inline-flex', color: 'var(--bad)' }} aria-hidden="true"><Icons.AlertCircle size={54} /></span>
+                <h1 style={{ margin: '14px 0 0', fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 700, color: 'var(--ink)' }}>
+                  ✕ Payment failed
+                </h1>
+                <p style={{ margin: '8px 0 0', color: 'var(--ink-2)' }}>Your payment was not completed.</p>
+                <p style={{ margin: '8px 0 0', color: 'var(--muted)', fontSize: 14 }}>{error}</p>
+                <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap', marginTop: 22 }}>
+                  <Button onClick={verifyPayment} icon={<Icons.Refresh size={16} />}>Try again</Button>
+                  <Button variant="ghost" href="/products">Back to products</Button>
+                  <Button variant="ghost" href="/contact">Contact support</Button>
+                </div>
+              </div>
+            )}
+          </Card>
         </div>
       </div>
-    );
-  }
-
-  if (status === 'failed' || status === 'error') {
-    return (
-      <div style={{ background: 'rgba(15,18,21,0.35)', minHeight: '80vh', padding: '64px 0 110px' }}>
-        <div className="container-site max-w-2xl">
-          <div className="card card-pad text-center" style={{ borderColor: 'rgba(229,72,77,0.35)' }}>
-            <CrossGlyph />
-            <h1 className="headline mt-5 mb-4" style={{ fontSize: 'clamp(1.7rem, 3.6vw, 2.4rem)' }}>
-              Payment failed<span className="accent">.</span>
-            </h1>
-            <p className="text-sm mb-8" style={{ color: '#AEB5BD' }}>{error}</p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button
-                onClick={() => window.location.href = '/products'}
-                className="btn btn-primary" style={{ cursor: 'pointer' }}>
-                Try again
-              </button>
-              <button
-                onClick={() => window.location.href = '/contact'}
-                className="btn btn-ghost" style={{ cursor: 'pointer' }}>
-                Contact support
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+    </AppBackground>
+  );
 }
 
-// Main export wrapped in Suspense
 export default function PaymentCallback() {
   return (
-    <Suspense fallback={<LoadingState />}>
+    <Suspense fallback={
+      <AppBackground variant="dashboard">
+        <div className="container-site" style={{ paddingTop: 56, paddingBottom: 100, maxWidth: 640 }}>
+          <Card>
+            <div className="empty" role="status" aria-live="polite">
+              <span className="spinner" />
+              <p style={{ margin: 0, color: 'var(--muted)' }}>Loading payment details…</p>
+            </div>
+          </Card>
+        </div>
+      </AppBackground>
+    }>
       <PaymentCallbackContent />
     </Suspense>
   );

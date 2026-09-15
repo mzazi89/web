@@ -14,8 +14,8 @@ function TestimonialCard({ testimonial }) {
     <div
       className="card card-pad flex flex-col"
       style={{
-        background: '#14181D',
-        border: '1px solid #262C33',
+        background: 'var(--surface)',
+        border: '1px solid var(--line)',
         borderRadius: 6,
         padding: '26px',
         display: 'flex',
@@ -24,22 +24,22 @@ function TestimonialCard({ testimonial }) {
         transition: 'transform 0.2s, box-shadow 0.2s, border-color 0.2s',
       }}
       onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.borderColor = 'rgba(242,169,59,0.45)'; e.currentTarget.style.boxShadow = '0 12px 32px rgba(0,0,0,0.35)'; }}
-      onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = '#262C33'; e.currentTarget.style.boxShadow = 'none'; }}
+      onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'var(--line)'; e.currentTarget.style.boxShadow = 'none'; }}
     >
-      <div className="mono text-2xl" style={{ color: '#F2A93B', lineHeight: 1, opacity: 0.6 }}>"</div>
-      <p className="text-sm leading-relaxed flex-1" style={{ color: '#AEB5BD' }}>{testimonial.message}</p>
+      <div className="mono text-2xl" style={{ color: 'var(--brand)', lineHeight: 1, opacity: 0.6 }}>"</div>
+      <p className="text-sm leading-relaxed flex-1" style={{ color: 'var(--ink-2)' }}>{testimonial.message}</p>
       <StarRating value={testimonial.rating} readonly />
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', paddingTop: '8px', borderTop: '1px solid #1B2026' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', paddingTop: '8px', borderTop: '1px solid var(--line-soft)' }}>
         <div style={{
           width: '40px', height: '40px', borderRadius: '50%',
           background: 'rgba(242,169,59,0.1)', border: '1px solid rgba(242,169,59,0.4)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontWeight: 700, fontSize: '14px', color: '#F2A93B', flexShrink: 0,
+          fontWeight: 700, fontSize: '14px', color: 'var(--brand)', flexShrink: 0,
           fontFamily: 'var(--font-display)',
         }}>{initials}</div>
         <div>
-          <div style={{ color: '#E9E7E2', fontWeight: 600, fontSize: '14px' }}>{testimonial.name}</div>
-          <div style={{ color: '#4C535B', fontSize: '12px' }}>{date}</div>
+          <div style={{ color: 'var(--ink)', fontWeight: 600, fontSize: '14px' }}>{testimonial.name}</div>
+          <div style={{ color: 'var(--dim)', fontSize: '12px' }}>{date}</div>
         </div>
       </div>
     </div>
@@ -75,11 +75,11 @@ function TestimonialForm({ onSubmitted }) {
   if (success) {
     return (
       <div className="card card-pad text-center" style={{ borderColor: 'rgba(62,207,142,0.4)' }}>
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#3ECF8E', margin: '0 auto' }}>
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--good)', margin: '0 auto' }}>
           <circle cx="12" cy="12" r="10" /><path d="m8.5 12.5 2.5 2.5 5-6" />
         </svg>
-        <h3 className="display font-bold text-xl mt-4 mb-2" style={{ color: '#E9E7E2' }}>Thank you!</h3>
-        <p className="text-sm" style={{ color: '#79818A' }}>Your testimonial has been submitted successfully. It will appear after a quick approval.</p>
+        <h3 className="display font-bold text-xl mt-4 mb-2" style={{ color: 'var(--ink)' }}>Thank you!</h3>
+        <p className="text-sm" style={{ color: 'var(--muted)' }}>Your testimonial has been submitted successfully. It will appear after a quick approval.</p>
         <button onClick={() => setSuccess(false)} className="btn btn-ghost mt-6" style={{ cursor: 'pointer' }}>
           Add another
         </button>
@@ -88,12 +88,12 @@ function TestimonialForm({ onSubmitted }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="card card-pad" style={{ background: '#14181D' }}>
+    <form onSubmit={handleSubmit} className="card card-pad" style={{ background: 'var(--surface)' }}>
       <p className="eyebrow">Your voice</p>
-      <h3 className="section-title text-xl mt-3 mb-6" style={{ color: '#E9E7E2' }}>Share your experience</h3>
+      <h3 className="section-title text-xl mt-3 mb-6" style={{ color: 'var(--ink)' }}>Share your experience</h3>
 
       {error && (
-        <div className="px-4 py-3 text-sm mb-5" style={{ background: 'rgba(229,72,77,0.08)', border: '1px solid rgba(229,72,77,0.3)', color: '#E5484D' }}>
+        <div className="px-4 py-3 text-sm mb-5" style={{ background: 'rgba(229,72,77,0.08)', border: '1px solid rgba(229,72,77,0.3)', color: 'var(--bad)' }}>
           {error}
         </div>
       )}
@@ -115,7 +115,7 @@ function TestimonialForm({ onSubmitted }) {
           <textarea placeholder="Tell others about your experience with MZAZI TECH..." value={form.message} required rows={5}
             onChange={e => setForm({ ...form, message: e.target.value })}
             className="input resize-none" />
-          <div className="mono text-[10px] mt-2 text-right" style={{ color: '#4C535B' }}>{form.message.length} / 1000</div>
+          <div className="mono text-[10px] mt-2 text-right" style={{ color: 'var(--dim)' }}>{form.message.length} / 1000</div>
         </div>
 
         <button type="submit" disabled={loading} className="btn btn-primary w-full" style={{ cursor: loading ? 'not-allowed' : 'pointer' }}>
@@ -181,14 +181,14 @@ export default function Testimonials() {
           <span className="tag tag-amber mb-6">
             ★ {avgRating ? `${avgRating} avg rating · ` : ''}{total} {total === 1 ? 'review' : 'reviews'}
           </span>
-          <h2 className="section-title text-3xl sm:text-4xl mt-4" style={{ color: '#E9E7E2' }}>
+          <h2 className="section-title text-3xl sm:text-4xl mt-4" style={{ color: 'var(--ink)' }}>
             What our clients say<span className="bar" style={{ margin: '14px auto 0' }} />
           </h2>
-          <p className="text-sm mt-5 max-w-md mx-auto" style={{ color: '#79818A' }}>
+          <p className="text-sm mt-5 max-w-md mx-auto" style={{ color: 'var(--muted)' }}>
             Real experiences from real customers worldwide.
           </p>
           <div className="mt-4">
-            <Link href="/testimonials" className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: '#F2A93B', textDecoration: 'none' }}>
+            <Link href="/testimonials" className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: 'var(--brand)', textDecoration: 'none' }}>
               View all reviews →
             </Link>
           </div>
@@ -196,9 +196,9 @@ export default function Testimonials() {
 
         {/* Cards */}
         {loading ? (
-          <div style={{ textAlign: 'center', color: '#79818A', padding: '40px 0' }}>Loading testimonials…</div>
+          <div style={{ textAlign: 'center', color: 'var(--muted)', padding: '40px 0' }}>Loading testimonials…</div>
         ) : testimonials.length === 0 ? (
-          <div className="card card-pad text-center mb-10" style={{ color: '#79818A' }}>
+          <div className="card card-pad text-center mb-10" style={{ color: 'var(--muted)' }}>
             <p className="text-sm">No testimonials yet — be the first to share your experience!</p>
           </div>
         ) : (

@@ -1,25 +1,62 @@
 'use client';
+
+// MZAZI TECH — Dashboard.
+//
+// Answers the five questions a returning user actually has, in the first screen:
+// is my account active, which plan, when does it expire, how many devices, is my
+// bot online — then offers the three actions that matter.
+//
+// Everything the dashboard used to do is still here, moved into clearly
+// separated secondary tabs. No fetch was changed:
+//   GET  /api/auth/me
+//   GET  /api/wallet/balance
+//   GET  /api/pair/devices          (cache: no-store)
+//   POST /api/pair/unlink           → { number }
+//   GET  /api/panel/list
+//   GET  /api/vps/my
+//   GET  /api/api-keys  ·  GET /api/dashboard/stats
+//   GET  /api/referral              (cache: no-store)
+//   GET  /api/auth/security         (cache: no-store)
+//   POST /api/auth/security         → secForm
+//   GET  /api/packages
+//   POST /api/panel/add
+//   POST /api/panel/credentials
+
 import React, { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import {
+  AppBackground, PageHeader, Button, Card, CardHeader, StatCard, Badge, StatusIndicator,
+  EmptyState, SkeletonText, SkeletonCards, ConfirmDialog, Alert, Field, Select, Input,
+  humaniseError, planLabel, planTone, Icons,
+} from '@/components/ui';
 import { fmtKes } from '@/lib/currency';
 
+const TABS = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'services', label: 'Panels & VPS' },
+  { id: 'developer', label: 'Developer' },
+  { id: 'security', label: 'Security' },
+];
+
 export default function DashboardPage() {
-  const [user, setUser]           = useState(null);
-  const [loading, setLoading]     = useState(true);
-  const [panels, setPanels]       = useState([]);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [authError, setAuthError] = useState('');
+  const [panels, setPanels] = useState([]);
   const [vpsServers, setVpsServers] = useState([]);
   const [showVpsCreds, setShowVpsCreds] = useState({}); // id -> reveal password?
-  const [balance, setBalance]     = useState(0);
-  const [transactions, setTxns]   = useState([]);
-  const [apiStats, setApiStats]   = useState(null); // { keys, requests }
-  const [referral, setReferral]   = useState(null); // { code, link, counts }
-  const [copied, setCopied]       = useState(false);
+  const [balance, setBalance] = useState(0);
+  const [transactions, setTxns] = useState([]);
+  const [apiStats, setApiStats] = useState(null); // { keys, requests }
+  const [referral, setReferral] = useState(null); // { code, link, counts }
+  const [copied, setCopied] = useState(false);
   const [credModal, setCredModal] = useState(null); // { panel } | null
-  const [addModal, setAddModal]   = useState(false); // Add Server flow
+  const [addModal, setAddModal] = useState(false); // Add Server flow
+  const [tab, setTab] = useState('overview');
   // Linked WhatsApp devices (managed on the whatsapp-bot page)
-  const [devices, setDevices]     = useState(null); // { plan, maxDevices, devices }
+  const [devices, setDevices] = useState(null); // { plan, maxDevices, devices }
   const [unlinking, setUnlinking] = useState(null);
+  const [deviceToUnlink, setDeviceToUnlink] = useState(null);
   const [devNotice, setDevNotice] = useState('');
   // Security question (password recovery)
   const [secQuestion, setSecQuestion] = useState(null); // null=unknown, ''=not set
@@ -31,15 +68,22 @@ export default function DashboardPage() {
   useEffect(() => { checkAuth(); }, []);
 
   const checkAuth = async () => {
+    setLoading(true);
+    setAuthError('');
     try {
       const res = await fetch('/api/auth/me');
       if (res.ok) {
         const data = await res.json();
         setUser(data.user);
         await Promise.all([fetchPanels(), fetchVps(), fetchWallet(), fetchApiStats(), fetchReferral()]);
-      } else { router.push('/login'); }
-    } catch { router.push('/login'); }
-    finally { setLoading(false); }
+      } else {
+        router.push('/login');
+      }
+    } catch (e) {
+      setAuthError(humaniseError(e, 'We could not load your dashboard. Please try again.'));
+    } finally {
+      setLoading(false);
+    }
   };
 
   const fetchReferral = async () => {
@@ -114,20 +158,21 @@ export default function DashboardPage() {
         body: JSON.stringify(secForm),
       });
       const d = await res.json();
-      if (!res.ok) { setSecNotice(d.error || 'Failed to save'); }
+      if (!res.ok) { setSecNotice(humaniseError(d.error || 'We could not save that.')); }
       else {
         setSecQuestion(secForm.question);
         setSecNotice('Security question saved.');
         setSecForm({ question: '', answer: '' });
       }
-    } catch {
-      setSecNotice('Connection error.');
+    } catch (e) {
+      setSecNotice(humaniseError(e));
     }
     setSecSaving(false);
   };
 
-  const unlinkDevice = async (number) => {
-    if (!window.confirm(`Unlink ${number}? The bot will disconnect and delete this session.`)) return;
+  const unlinkDevice = async () => {
+    if (!deviceToUnlink) return;
+    const number = deviceToUnlink;
     setUnlinking(number);
     setDevNotice('');
     try {
@@ -137,446 +182,447 @@ export default function DashboardPage() {
         body: JSON.stringify({ number }),
       });
       const data = await res.json();
-      if (!res.ok) { setDevNotice(data.error || 'Failed to unlink'); setUnlinking(null); return; }
+      setDeviceToUnlink(null);
+      if (!res.ok) { setDevNotice(humaniseError(data.error || 'We could not unlink that device.')); setUnlinking(null); return; }
       setDevNotice(`Unlinking ${number}…`);
-      setTimeout(fetchDevices, 14000); // the bot picks it up within ~15s
-    } catch {
-      setDevNotice('Connection error.');
+      setTimeout(() => { setUnlinking(null); fetchDevices(); }, 14000); // the bot picks it up within ~15s
+    } catch (e) {
+      setDeviceToUnlink(null);
+      setDevNotice(humaniseError(e));
       setUnlinking(null);
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <div className="spinner" />
-          <p className="mono text-[11px] uppercase tracking-[0.18em]" style={{ color: '#4C535B' }}>Loading dashboard…</p>
+      <AppBackground variant="dashboard">
+        <div className="container-site" style={{ paddingTop: 28, paddingBottom: 90, maxWidth: 1100 }}>
+          <SkeletonText lines={2} />
+          <div style={{ height: 20 }} />
+          <SkeletonCards count={4} height={110} />
+          <div style={{ height: 22 }} />
+          <SkeletonText lines={5} />
         </div>
-      </div>
+      </AppBackground>
     );
   }
 
   const firstName = user?.firstname || user?.fullname?.split(' ')[0] || 'Member';
   const activePanels = panels.filter(p => p.status === 'active').length;
 
-  const stats = [
-    { label: 'Wallet balance', value: fmtKes(balance), href: '/wallet', tone: '#F2A93B' },
-    { label: 'Active panels',  value: activePanels, href: '/products', tone: '#E9E7E2' },
-    { label: 'API keys',       value: apiStats ? apiStats.keys : '—', href: '/api/dashboard/keys', tone: '#E9E7E2' },
-    { label: 'API requests',   value: apiStats ? apiStats.requests.toLocaleString() : '—', href: '/api/dashboard', tone: '#E9E7E2' },
+  const deviceList = devices?.devices || [];
+  const maxDevices = devices?.maxDevices ?? 1;
+  const unlimited = maxDevices >= 999;
+  const planId = devices?.plan || 'FREE';
+  const endDate = devices?.endDate;
+  const liveDevices = deviceList.filter(d => String(d.status || '').toUpperCase() !== 'INACTIVE');
+  const botStatus = deviceList.length === 0
+    ? { value: 'No devices', tone: 'blue', hint: 'Connect a number to go live' }
+    : liveDevices.length > 0
+      ? { value: 'Online', tone: 'good', hint: `${liveDevices.length} live` }
+      : { value: 'Offline', tone: 'warn', hint: 'Reconnect a device' };
+
+  const facts = [
+    { label: 'Plan', value: planLabel(planId), hint: endDate ? `until ${new Date(endDate).toLocaleDateString()}` : 'Free forever', tone: planTone(planId) === 'neutral' ? 'blue' : 'brand', icon: <Icons.Sparkles size={19} /> },
+    { label: 'Devices', value: `${deviceList.length} of ${unlimited ? '∞' : maxDevices}`, hint: unlimited ? 'Unlimited plan' : `${Math.max(0, maxDevices - deviceList.length)} slot${maxDevices - deviceList.length === 1 ? '' : 's'} free`, tone: 'blue', icon: <Icons.Phone size={19} /> },
+    { label: 'Status', value: botStatus.value, hint: botStatus.hint, tone: botStatus.tone, icon: <Icons.Wifi size={19} /> },
+    { label: 'Expires', value: endDate ? new Date(endDate).toLocaleDateString() : 'Never', hint: endDate ? 'Plan renewal date' : 'No expiry', tone: 'good', icon: <Icons.Calendar size={19} /> },
   ];
 
   return (
-    <div className="py-10 sm:py-14">
-      <div className="container-site">
+    <AppBackground variant="dashboard">
+      <div className="container-site" style={{ paddingTop: 26, paddingBottom: 90, maxWidth: 1100 }}>
+        <PageHeader
+          title={<>Welcome back, {firstName} <span aria-hidden="true">👋</span></>}
+          description={user?.email ? `Signed in as ${user.email}` : 'Your account at a glance.'}
+          icon={<Icons.Dashboard size={20} />}
+          actions={
+            <>
+              <Button variant="ghost" href="/wallet" icon={<Icons.Wallet size={16} />}>Wallet</Button>
+              <Button href="/subscription" icon={<Icons.Sparkles size={16} />}>Upgrade plan</Button>
+            </>
+          }
+        />
 
-        {/* ── Header ── */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-5 mb-10">
-          <div>
-            <p className="eyebrow">Account</p>
-            <h1 className="headline mt-3" style={{ fontSize: 'clamp(1.7rem, 3.6vw, 2.5rem)' }}>
-              Welcome back, {firstName}<span className="accent">.</span>
-            </h1>
-            <p className="mono text-[11px] uppercase tracking-[0.14em] mt-2" style={{ color: '#4C535B' }}>{user?.email}</p>
+        {authError && (
+          <div style={{ marginBottom: 20 }}>
+            <Alert kind="error" title="We couldn’t load your dashboard">
+              {authError}{' '}
+              <button type="button" className="link" onClick={checkAuth} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Try again</button>
+            </Alert>
           </div>
-          <div className="flex gap-3 w-full sm:w-auto">
-            <Link href="/wallet" className="btn btn-ghost flex-1 sm:flex-none">Top up</Link>
-            <Link href="/products" className="btn btn-primary flex-1 sm:flex-none">New panel</Link>
-          </div>
-        </div>
+        )}
 
-        {/* ── Stats ledger ── */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 mb-10" style={{ border: '1px solid #262C33' }}>
-          {stats.map((s, i) => (
-            <Link
-              key={s.label}
-              href={s.href}
-              className="p-6 transition-colors"
-              style={{
-                textDecoration: 'none',
-                borderLeft: i > 0 ? '1px solid #1B2026' : 'none',
-                borderTop: i > 1 && i % 2 === 0 ? '1px solid #1B2026' : 'none',
-                background: 'rgba(255,255,255,0.012)',
-              }}
-            >
-              <div className="stat-num" style={{ color: s.tone }}>{s.value}</div>
-              <div className="stat-label">{s.label}</div>
-            </Link>
+        {/* ── Primary answer ── */}
+        <div className="grid-cards anim-fade-up" style={{ marginBottom: 22 }}>
+          {facts.map((f) => (
+            <StatCard key={f.label} label={f.label} value={f.value} hint={f.hint} icon={f.icon} tone={f.tone} />
           ))}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* ── Three actions ── */}
+        <div className="anim-fade-up d1" style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 22 }}>
+          <Button href="/devices" icon={<Icons.WhatsApp size={16} />}>Connect WhatsApp</Button>
+          <Button href="/devices" variant="dark" icon={<Icons.Phone size={16} />}>Manage devices</Button>
+          <Button href="/subscription" variant="ghost" icon={<Icons.Sparkles size={16} />}>Upgrade plan</Button>
+        </div>
 
-          {/* ── Left column (2/3): panels + activity ── */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Panels */}
-            <section className="card overflow-hidden">
-              <header className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid #1B2026' }}>
-                <div>
-                  <h2 className="display text-base font-bold" style={{ color: '#E9E7E2' }}>My panels</h2>
-                  <p className="mono text-[10px] uppercase tracking-[0.14em] mt-0.5" style={{ color: '#4C535B' }}>{panels.length} total · {activePanels} active</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => setAddModal(true)}
-                    className="mono text-[11px] uppercase tracking-[0.12em]"
-                    style={{ color: '#F2A93B', background: 'none', border: '1px solid rgba(242,169,59,0.4)', padding: '5px 10px', borderRadius: 4, cursor: 'pointer' }}
+        <div className="grid-2-responsive anim-fade-up d2" style={{ marginBottom: 26 }}>
+          {/* ── Devices preview ── */}
+          <Card>
+            <CardHeader
+              title="Your devices"
+              description={devices ? `${deviceList.length} of ${unlimited ? 'unlimited' : maxDevices} connected` : 'Loading…'}
+              icon={<Icons.Phone size={18} />}
+              action={<Button variant="ghost" size="sm" href="/devices">Manage</Button>}
+            />
+
+            {devNotice && (
+              <div style={{ marginBottom: 12 }} role="status" aria-live="polite">
+                <Alert kind="info">{devNotice}</Alert>
+              </div>
+            )}
+
+            {!devices ? (
+              <SkeletonText lines={3} />
+            ) : deviceList.length === 0 ? (
+              <EmptyState
+                compact
+                icon={<Icons.WhatsApp size={26} />}
+                title="No devices connected yet."
+                description="Connect your first WhatsApp number to get started."
+                action={<Button size="sm" href="/whatsapp-bot" icon={<Icons.WhatsApp size={15} />}>Connect WhatsApp</Button>}
+              />
+            ) : (
+              <div style={{ display: 'grid', gap: 10 }}>
+                {deviceList.slice(0, 3).map((d) => (
+                  <div
+                    key={d.number}
+                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, padding: '12px 14px', background: 'var(--surface-2)', border: '1px solid var(--line-soft)', borderRadius: 'var(--r-md)' }}
                   >
-                    ➕ Add Server
-                  </button>
-                  <Link href="/products" className="mono text-[11px] uppercase tracking-[0.12em]" style={{ color: '#F2A93B', textDecoration: 'none' }}>
-                    Deploy new →
-                  </Link>
-                </div>
-              </header>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+                      <Icons.WhatsApp size={18} />
+                      <span className="mono" style={{ fontWeight: 700, color: 'var(--ink)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{d.number}</span>
+                    </div>
+                    <Button size="sm" variant="ghost" disabled={unlinking === d.number} onClick={() => setDeviceToUnlink(d.number)} style={{ color: 'var(--bad)' }}>
+                      {unlinking === d.number ? '…' : 'Unlink'}
+                    </Button>
+                  </div>
+                ))}
+                {deviceList.length > 3 && (
+                  <p style={{ margin: 0, fontSize: 12.5, color: 'var(--dim)' }}>+{deviceList.length - 3} more on the devices page.</p>
+                )}
+              </div>
+            )}
+          </Card>
 
+          {/* ── Recent activity ── */}
+          <Card>
+            <CardHeader
+              title="Recent activity"
+              description="Wallet transactions"
+              icon={<Icons.CreditCard size={18} />}
+              action={<Button variant="ghost" size="sm" href="/payments">All payments</Button>}
+            />
+            {transactions.length === 0 ? (
+              <EmptyState
+                compact
+                icon={<Icons.CreditCard size={26} />}
+                title="No payments yet."
+                description="Top-ups and plan purchases will appear here."
+                action={<Button size="sm" href="/wallet" icon={<Icons.Plus size={15} />}>Add money</Button>}
+              />
+            ) : (
+              <div style={{ display: 'grid', gap: 8 }}>
+                {transactions.slice(0, 5).map((t) => (
+                  <div key={t.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+                    <div style={{ minWidth: 0 }}>
+                      <p style={{ margin: 0, fontSize: 13.5, color: 'var(--ink-2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {t.description || t.type}
+                      </p>
+                      <p className="mono" style={{ margin: '2px 0 0', fontSize: 11, color: 'var(--dim)' }}>{new Date(t.created_at).toLocaleDateString()}</p>
+                    </div>
+                    <span className="mono tnum" style={{ flexShrink: 0, fontWeight: 700, color: t.type === 'deposit' ? 'var(--good)' : 'var(--bad)' }}>
+                      {t.type === 'deposit' ? '+' : '−'}{fmtKes(t.amount)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </Card>
+        </div>
+
+        {/* ── Secondary tabs ── */}
+        <div className="segmented" role="tablist" aria-label="More sections" style={{ marginBottom: 20 }}>
+          {TABS.map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              role="tab"
+              aria-selected={tab === t.id}
+              className={tab === t.id ? 'is-active' : ''}
+              onClick={() => setTab(t.id)}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+
+        {/* ══ SERVICES ══ */}
+        {tab === 'services' && (
+          <div className="grid-2-responsive">
+            <Card>
+              <CardHeader
+                title="My panels"
+                description={`${panels.length} total · ${activePanels} active`}
+                icon={<Icons.Dashboard size={18} />}
+                action={<Button size="sm" onClick={() => setAddModal(true)} icon={<Icons.Plus size={15} />}>Add server</Button>}
+              />
               {panels.length === 0 ? (
-                <div className="py-16 text-center">
-                  <p className="display font-bold mb-2" style={{ color: '#E9E7E2' }}>No panels yet</p>
-                  <p className="text-sm mb-6" style={{ color: '#79818A' }}>Deploy your first Pterodactyl panel in minutes.</p>
-                  <Link href="/products" className="btn btn-primary">Deploy now</Link>
-                </div>
+                <EmptyState
+                  compact
+                  icon={<Icons.Dashboard size={26} />}
+                  title="No panels yet"
+                  description="Deploy your first Pterodactyl panel in minutes."
+                  action={<Button size="sm" href="/products">Deploy now</Button>}
+                />
               ) : (
-                <div className="divide-y" style={{ borderBottom: '1px solid #1B2026' }}>
-                  {panels.map(p => (
-                    <div key={p.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-6 py-4">
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-3">
-                          <span className="mono text-[10px]" style={{ color: '#4C535B' }}>#{p.id}</span>
-                          <p className="text-sm font-semibold truncate" style={{ color: '#E9E7E2' }}>
-                            {p.ptero_username || `Panel #${p.id}`}
-                          </p>
-                          <span className="tag" style={{ color: p.status === 'active' ? '#3ECF8E' : '#AEB5BD' }}>
-                            <span className="dot" style={{ color: p.status === 'active' ? '#3ECF8E' : '#4C535B' }} />
-                            {p.status}
-                          </span>
+                <div style={{ display: 'grid', gap: 10 }}>
+                  {panels.map((p) => (
+                    <div key={p.id} style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', background: 'var(--surface-2)', border: '1px solid var(--line-soft)', borderRadius: 'var(--r-md)' }}>
+                      <div style={{ minWidth: 0 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                          <span className="mono" style={{ fontSize: 11, color: 'var(--dim)' }}>#{p.id}</span>
+                          <span style={{ fontWeight: 700, color: 'var(--ink)' }}>{p.ptero_username || `Panel #${p.id}`}</span>
+                          <Badge tone={p.status === 'active' ? 'good' : 'neutral'} dot>{p.status}</Badge>
                         </div>
-                        <p className="mono text-[11px] mt-1.5" style={{ color: '#4C535B' }}>
+                        <p className="mono" style={{ margin: '4px 0 0', fontSize: 11.5, color: 'var(--dim)' }}>
                           {p.package_name} · {fmtKes(p.package_price || 0)}
                           {p.expires_at && (
-                            <span className="ml-2" style={{ color: p.is_expired ? '#E5484D' : '#79818A' }}>
-                              {p.is_expired ? 'EXPIRED' : `expires ${new Date(p.expires_at).toLocaleString()}`}
+                            <span style={{ marginLeft: 8, color: p.is_expired ? 'var(--bad)' : 'var(--muted)' }}>
+                              {p.is_expired ? 'EXPIRED' : `expires ${new Date(p.expires_at).toLocaleDateString()}`}
                             </span>
                           )}
                         </p>
                       </div>
-                      <button
-                        onClick={() => setCredModal({ panel: p })}
-                        className="btn btn-dark flex-shrink-0"
-                        style={{ padding: '8px 16px', fontSize: 11 }}
-                      >
-                        Credentials
-                      </button>
+                      <Button size="sm" variant="dark" onClick={() => setCredModal({ panel: p })}>Credentials</Button>
                     </div>
                   ))}
                 </div>
               )}
-            </section>
+            </Card>
 
-            {/* My VPS servers */}
-            <section className="card overflow-hidden">
-              <header className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid #1B2026' }}>
-                <div>
-                  <h2 className="display text-base font-bold" style={{ color: '#E9E7E2' }}>My VPS servers</h2>
-                  <p className="mono text-[10px] uppercase tracking-[0.14em] mt-0.5" style={{ color: '#4C535B' }}>{vpsServers.length} purchased</p>
-                </div>
-                <Link href="/vps" className="mono text-[11px] uppercase tracking-[0.12em]" style={{ color: '#F2A93B', textDecoration: 'none' }}>
-                  Buy more →
-                </Link>
-              </header>
-
+            <Card>
+              <CardHeader
+                title="My VPS servers"
+                description={`${vpsServers.length} purchased`}
+                icon={<Icons.Command size={18} />}
+                action={<Button size="sm" variant="ghost" href="/vps">Buy more</Button>}
+              />
               {vpsServers.length === 0 ? (
-                <div className="py-14 text-center">
-                  <p className="text-3xl mb-3">🖥️</p>
-                  <p className="display font-bold mb-2" style={{ color: '#E9E7E2' }}>No VPS yet</p>
-                  <p className="text-sm mb-6" style={{ color: '#79818A' }}>Get a full-access server — credentials revealed instantly after payment.</p>
-                  <Link href="/vps" className="btn btn-primary">Browse VPS</Link>
-                </div>
+                <EmptyState
+                  compact
+                  icon={<Icons.Command size={26} />}
+                  title="No VPS yet"
+                  description="Get a full-access server — credentials revealed instantly after payment."
+                  action={<Button size="sm" href="/vps">Browse VPS</Button>}
+                />
               ) : (
-                <div className="divide-y" style={{ borderBottom: '1px solid #1B2026' }}>
-                  {vpsServers.map(s => {
+                <div style={{ display: 'grid', gap: 10 }}>
+                  {vpsServers.map((s) => {
                     const reveal = !!showVpsCreds[s.order_id];
                     return (
-                      <div key={s.order_id} className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 px-6 py-4">
-                        <div className="min-w-0">
-                          <div className="flex items-center gap-3 flex-wrap">
-                            <p className="text-sm font-semibold" style={{ color: '#E9E7E2' }}>{s.package_name}</p>
-                            <span className="tag tag-green"><span className="dot" style={{ color: '#3ECF8E' }} />Active</span>
-                          </div>
-                          <p className="mono text-[11px] mt-1.5" style={{ color: '#4C535B' }}>
-                            {[s.hostname, s.region, s.instance_os || s.pkg_os, s.cpu || s.pkg_cpu, s.droplet_id ? `ID ${s.droplet_id}` : ''].filter(Boolean).join(' · ') || `${s.ram} · ${s.cpu}`}
-                            {s.ram ? ` · ${s.ram}` : ''} · bought {new Date(s.paid_at || s.created_at).toLocaleDateString()}
-                          </p>
-                          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 mono text-[12px]">
-                            <span style={{ color: '#AEB5BD' }}>{s.username}@{s.host} -p {s.port || 22}</span>
-                            <span style={{ color: '#79818A' }}>Pass: {reveal ? <strong style={{ color: '#F2A93B' }}>{s.password}</strong> : '••••••••'}</span>
-                          </div>
+                      <div key={s.order_id} style={{ padding: '12px 14px', background: 'var(--surface-2)', border: '1px solid var(--line-soft)', borderRadius: 'var(--r-md)' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                          <span style={{ fontWeight: 700, color: 'var(--ink)' }}>{s.package_name}</span>
+                          <Badge tone="good" dot>Active</Badge>
                         </div>
-                        <div className="flex items-center gap-2 flex-shrink-0">
-                          {[
-                            { k: s.host, v: s.host },
-                            { k: s.password, v: s.password },
-                          ].map(f => (
-                            <button key={f.k} onClick={() => { if (navigator.clipboard) navigator.clipboard.writeText(f.v).catch(() => {}); }} className="btn" style={{ fontSize: 10, padding: '6px 10px' }} title="Copy">Copy</button>
-                          ))}
-                          <button
-                            onClick={() => setShowVpsCreds(p => ({ ...p, [s.order_id]: !reveal }))}
-                            className="btn btn-dark flex-shrink-0"
-                            style={{ padding: '7px 14px', fontSize: 11 }}
-                          >
+                        <p className="mono" style={{ margin: '6px 0 0', fontSize: 11.5, color: 'var(--dim)' }}>
+                          {[s.hostname, s.region, s.instance_os || s.pkg_os, s.cpu || s.pkg_cpu, s.droplet_id ? `ID ${s.droplet_id}` : ''].filter(Boolean).join(' · ') || `${s.ram} · ${s.cpu}`}
+                        </p>
+                        <div className="mono" style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 8, fontSize: 12 }}>
+                          <span style={{ color: 'var(--ink-2)' }}>{s.username}@{s.host} -p {s.port || 22}</span>
+                          <span style={{ color: 'var(--muted)' }}>Pass: {reveal ? <strong style={{ color: 'var(--brand)' }}>{s.password}</strong> : '••••••••'}</span>
+                        </div>
+                        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 10 }}>
+                          <Button size="sm" variant="ghost" onClick={() => { if (navigator.clipboard) navigator.clipboard.writeText(s.host).catch(() => {}); }}>Copy host</Button>
+                          <Button size="sm" variant="ghost" onClick={() => { if (navigator.clipboard) navigator.clipboard.writeText(s.password).catch(() => {}); }}>Copy pass</Button>
+                          <Button size="sm" variant="dark" onClick={() => setShowVpsCreds(p => ({ ...p, [s.order_id]: !reveal }))}>
                             {reveal ? 'Hide password' : 'Reveal password'}
-                          </button>
+                          </Button>
                         </div>
                       </div>
                     );
                   })}
                 </div>
               )}
-            </section>
+            </Card>
+          </div>
+        )}
 
-            {/* Recent activity */}
-            <section className="card overflow-hidden">
-              <header className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid #1B2026' }}>
+        {/* ══ DEVELOPER ══ */}
+        {tab === 'developer' && (
+          <div className="grid-2-responsive">
+            <Card>
+              <CardHeader
+                title="MZAZI API"
+                description="Downloads, AI, search and 200+ more endpoints — one key, one envelope."
+                icon={<Icons.Command size={18} />}
+                action={<Button size="sm" variant="ghost" href="/api/dashboard">Open dashboard</Button>}
+              />
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 12, marginBottom: 16 }}>
                 <div>
-                  <h2 className="display text-base font-bold" style={{ color: '#E9E7E2' }}>Recent activity</h2>
-                  <p className="mono text-[10px] uppercase tracking-[0.14em] mt-0.5" style={{ color: '#4C535B' }}>Wallet transactions</p>
+                  <p className="stat-num tnum" style={{ margin: 0, fontSize: '1.35rem' }}>{apiStats ? apiStats.keys : '—'}</p>
+                  <p className="stat-label">API keys</p>
                 </div>
-                <Link href="/wallet" className="mono text-[11px] uppercase tracking-[0.12em]" style={{ color: '#F2A93B', textDecoration: 'none' }}>
-                  All →
-                </Link>
-              </header>
-              {transactions.length === 0 ? (
-                <p className="text-sm text-center py-10" style={{ color: '#4C535B' }}>No transactions yet.</p>
-              ) : (
-                <div className="divide-y" style={{ borderBottom: '1px solid #1B2026' }}>
-                  {transactions.slice(0, 5).map(t => (
-                    <div key={t.id} className="flex items-center justify-between gap-3 px-6 py-3.5">
-                      <div className="flex items-center gap-3 min-w-0">
-                        <span
-                          className="mono text-[10px] px-2 py-1 flex-shrink-0"
-                          style={{
-                            color: t.type === 'deposit' ? '#3ECF8E' : '#E5484D',
-                            border: `1px solid ${t.type === 'deposit' ? 'rgba(62,207,142,0.3)' : 'rgba(229,72,77,0.3)'}`,
-                            borderRadius: 2,
-                          }}
-                        >
-                          {t.type === 'deposit' ? 'IN' : 'OUT'}
-                        </span>
-                        <div className="min-w-0">
-                          <p className="text-[13px] truncate" style={{ color: '#AEB5BD' }}>{t.description || t.type}</p>
-                          <p className="mono text-[10px]" style={{ color: '#4C535B' }}>{new Date(t.created_at).toLocaleDateString()}</p>
-                        </div>
-                      </div>
-                      <span className="mono text-[13px] font-semibold flex-shrink-0" style={{ color: t.type === 'deposit' ? '#3ECF8E' : '#E5484D' }}>
-                        {t.type === 'deposit' ? '+' : '−'}{fmtKes(t.amount)}
-                      </span>
+                <div>
+                  <p className="stat-num tnum" style={{ margin: 0, fontSize: '1.35rem' }}>{apiStats ? apiStats.requests.toLocaleString() : '—'}</p>
+                  <p className="stat-label">Total requests</p>
+                </div>
+                {apiStats?.usage && (
+                  <>
+                    <div>
+                      <p className="stat-num tnum" style={{ margin: 0, fontSize: '1.35rem' }}>{apiStats.usage.requests_today.toLocaleString()}</p>
+                      <p className="stat-label">Requests today</p>
                     </div>
+                    <div>
+                      <p className="stat-num tnum" style={{ margin: 0, fontSize: '1.35rem', color: 'var(--good)' }}>
+                        {apiStats.usage.avg_response_ms !== null ? `${Number(apiStats.usage.avg_response_ms).toFixed(0)}ms` : '—'}
+                      </p>
+                      <p className="stat-label">Avg response</p>
+                    </div>
+                  </>
+                )}
+              </div>
+              <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                <Button size="sm" variant="ghost" href="/api/dashboard/keys">API keys</Button>
+                <Button size="sm" variant="ghost" href="/api/docs">Docs & tester</Button>
+              </div>
+            </Card>
+
+            <div style={{ display: 'grid', gap: 22, alignContent: 'start' }}>
+              {referral && (
+                <Card>
+                  <CardHeader
+                    title="Refer & earn"
+                    description="Share your link — when someone signs up and buys a panel, you get KES 20 in your wallet."
+                    icon={<Icons.Users size={18} />}
+                    action={<Badge tone="brand">KES 20 / purchase</Badge>}
+                  />
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 12, marginBottom: 14 }}>
+                    <div>
+                      <p className="stat-num tnum" style={{ margin: 0, fontSize: '1.35rem', color: 'var(--good)' }}>{referral.referred_count}</p>
+                      <p className="stat-label">Referred</p>
+                    </div>
+                    <div>
+                      <p className="stat-num tnum" style={{ margin: 0, fontSize: '1.35rem', color: 'var(--brand)' }}>{fmtKes(referral.total_earned)}</p>
+                      <p className="stat-label">Earned</p>
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+                    <code className="mono truncate-1" style={{ flex: 1, padding: '10px 12px', background: 'var(--surface-2)', border: '1px solid var(--line-soft)', borderRadius: 'var(--r-sm)', color: 'var(--ink-2)', fontSize: 11.5 }}>
+                      {referral.link}
+                    </code>
+                    <Button
+                      size="sm"
+                      variant="dark"
+                      onClick={() => { navigator.clipboard.writeText(referral.link).then(() => setCopied(true)).catch(() => {}); setTimeout(() => setCopied(false), 2000); }}
+                      icon={copied ? <Icons.Check size={15} /> : <Icons.Copy size={15} />}
+                      aria-label="Copy referral link"
+                    >
+                      {copied ? 'Copied' : 'Copy'}
+                    </Button>
+                  </div>
+                  <p className="mono" style={{ margin: 0, fontSize: 11, color: 'var(--dim)' }}>
+                    Your code: <span style={{ color: 'var(--brand)' }}>{referral.code}</span>
+                  </p>
+                </Card>
+              )}
+
+              <Card>
+                <CardHeader title="Quick links" icon={<Icons.ExternalLink size={18} />} />
+                <div style={{ display: 'grid', gap: 4 }}>
+                  {[
+                    { label: 'Deploy panel', href: '/products', icon: <Icons.Dashboard size={16} /> },
+                    { label: 'WhatsApp bot', href: '/whatsapp-bot', icon: <Icons.WhatsApp size={16} /> },
+                    { label: 'MZAZI API', href: '/api', icon: <Icons.Command size={16} /> },
+                    { label: 'Help & support', href: '/help', icon: <Icons.Help size={16} /> },
+                    { label: 'Contact support', href: '/contact', icon: <Icons.Send size={16} /> },
+                  ].map((l) => (
+                    <a key={l.href} href={l.href} className="menu-item" style={{ justifyContent: 'space-between' }}>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>{l.icon}{l.label}</span>
+                      <Icons.ChevronRight size={15} />
+                    </a>
                   ))}
                 </div>
-              )}
-            </section>
+              </Card>
+            </div>
           </div>
+        )}
 
-          {/* ── Right column (1/3) ── */}
-          <div className="space-y-6">
+        {/* ══ SECURITY ══ */}
+        {tab === 'security' && (
+          <Card>
+            <CardHeader
+              title="Security question"
+              description="Answer it correctly to reset your password if you ever forget it."
+              icon={<Icons.Shield size={18} />}
+            />
+            {secQuestion !== null && secQuestion !== '' && (
+              <div style={{ marginBottom: 16 }}><Alert kind="brand" title="Currently set">“{secQuestion}”</Alert></div>
+            )}
+            {secQuestion === '' && (
+              <div style={{ marginBottom: 16 }}><Alert kind="info">Not set yet — add one below so you can recover your password.</Alert></div>
+            )}
 
-            {/* Wallet */}
-            <section className="card p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="mono text-[10px] uppercase tracking-[0.18em]" style={{ color: '#4C535B' }}>Wallet</h2>
-                <Link href="/wallet" className="mono text-[10px] uppercase tracking-[0.12em]" style={{ color: '#F2A93B', textDecoration: 'none' }}>Manage →</Link>
-              </div>
-              <div className="stat-num mb-1" style={{ color: '#F2A93B' }}>{fmtKes(balance)}</div>
-              <p className="mono text-[10px] uppercase tracking-[0.14em] mb-5" style={{ color: '#4C535B' }}>Available balance</p>
-              <Link href="/wallet" className="btn btn-ghost w-full" style={{ padding: '10px 0', fontSize: 11 }}>
-                Deposit funds
-              </Link>
-            </section>
-
-            {/* Linked WhatsApp devices */}
-            <section className="card p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="mono text-[10px] uppercase tracking-[0.18em]" style={{ color: '#4C535B' }}>Linked devices</h2>
-                <Link href="/whatsapp-bot" className="mono text-[10px] uppercase tracking-[0.12em]" style={{ color: '#F2A93B', textDecoration: 'none' }}>Manage →</Link>
-              </div>
-              {devices ? (
-                <>
-                  <div className="stat-num mb-2" style={{ color: '#3ECF8E' }}>
-                    {devices.devices.length}
-                    <span className="text-sm font-semibold" style={{ color: '#4C535B' }}> / {devices.maxDevices === 999 ? '∞' : devices.maxDevices} linked</span>
-                  </div>
-                  <p className="mono text-[10px] uppercase tracking-[0.12em] mb-3" style={{ color: '#4C535B' }}>
-                    Plan: <span style={{ color: '#AEB5BD' }}>{devices.plan.replace('_', ' ')}</span>
-                    {devices.endDate && <> · until {new Date(devices.endDate).toLocaleDateString()}</>}
-                  </p>
-                  {devNotice && <p className="text-xs mb-3" style={{ color: '#F2A93B' }}>{devNotice}</p>}
-                  {devices.devices.length === 0 ? (
-                    <p className="text-xs py-3" style={{ color: '#4C535B' }}>
-                      No devices yet.{' '}
-                      <Link href="/whatsapp-bot" className="link" style={{ fontSize: 12 }}>Pair your first number →</Link>
-                    </p>
-                  ) : (
-                    <div className="space-y-2">
-                      {devices.devices.map((d) => (
-                        <div key={d.number} className="flex items-center justify-between gap-2 px-3 py-2.5" style={{ background: '#0F1215', border: '1px solid #1B2026' }}>
-                          <span className="mono text-xs font-semibold truncate" style={{ color: '#E9E7E2' }}>{d.number}</span>
-                          <button onClick={() => unlinkDevice(d.number)} disabled={unlinking === d.number}
-                            className="mono text-[10px] uppercase tracking-[0.1em] flex-shrink-0"
-                            style={{
-                              color: '#E5484D',
-                              border: '1px solid rgba(229,72,77,0.3)',
-                              background: 'rgba(229,72,77,0.05)',
-                              padding: '5px 10px',
-                              cursor: unlinking === d.number ? 'not-allowed' : 'pointer',
-                              opacity: unlinking === d.number ? 0.5 : 1,
-                            }}>
-                            {unlinking === d.number ? '…' : 'Unlink'}
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </>
-              ) : (
-                <p className="text-xs" style={{ color: '#4C535B' }}>Loading…</p>
-              )}
-            </section>
-
-            {/* Security question */}
-            <section className="card p-6">
-              <h2 className="mono text-[10px] uppercase tracking-[0.18em] mb-1" style={{ color: '#4C535B' }}>Security question</h2>
-              <p className="text-xs mb-4" style={{ color: '#79818A' }}>
-                Answer it correctly to reset your password if you ever forget it.
-              </p>
-
-              {secQuestion !== null && secQuestion !== '' && (
-                <p className="text-xs mb-4 px-3 py-2.5" style={{ background: 'rgba(242,169,59,0.05)', border: '1px solid rgba(242,169,59,0.25)', color: '#AEB5BD' }}>
-                  Current: <b style={{ color: '#E9E7E2' }}>{secQuestion}</b>
-                </p>
-              )}
-              {secQuestion === '' && (
-                <p className="text-xs mb-4 px-3 py-2.5" style={{ background: 'rgba(76,125,252,0.05)', border: '1px solid rgba(76,125,252,0.25)', color: '#AEB5BD' }}>
-                  Not set yet — set one below so you can recover your password.
-                </p>
-              )}
-
-              <select
-                value={secForm.question}
-                onChange={(e) => setSecForm({ ...secForm, question: e.target.value })}
-                className="input mb-2.5"
-                style={{ padding: '9px 12px', fontSize: 13 }}>
-                <option value="" disabled style={{ color: '#4C535B' }}>Choose a question…</option>
+            <Field label="Question" id="dash-sec-q">
+              <Select id="dash-sec-q" value={secForm.question} onChange={(e) => setSecForm({ ...secForm, question: e.target.value })}>
+                <option value="">Choose a question…</option>
                 {[
                   "What is your mother's maiden name?",
                   'What was the name of your first pet?',
                   'What city were you born in?',
                   'What was the name of your primary school?',
                   'What is your favourite food?',
-                ].map((q) => (
-                  <option key={q} value={q} style={{ color: '#E9E7E2' }}>{q}</option>
-                ))}
-              </select>
-              <input
+                ].map((q) => <option key={q} value={q}>{q}</option>)}
+              </Select>
+            </Field>
+
+            <Field label="Answer" id="dash-sec-a">
+              <Input
+                id="dash-sec-a"
                 type="text"
                 value={secForm.answer}
                 onChange={(e) => setSecForm({ ...secForm, answer: e.target.value })}
                 placeholder="Your answer"
-                className="input mb-3"
-                style={{ padding: '9px 12px', fontSize: 13 }}
+                autoComplete="off"
               />
-              {secNotice && <p className="text-xs mb-2" style={{ color: '#F2A93B' }}>{secNotice}</p>}
-              <button onClick={saveSecurity} disabled={secSaving}
-                className="btn btn-dark w-full"
-                style={{ padding: '10px 0', fontSize: 11, opacity: secSaving ? 0.6 : 1 }}>
-                {secSaving ? 'Saving…' : secQuestion ? 'Update security question' : 'Set security question'}
-              </button>
-            </section>
+            </Field>
 
-            {/* MZAZI API */}
-            <section className="card p-6">
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="mono text-[10px] uppercase tracking-[0.18em]" style={{ color: '#4C535B' }}>MZAZI API</h2>
-                <Link href="/api/dashboard" className="mono text-[10px] uppercase tracking-[0.12em]" style={{ color: '#F2A93B', textDecoration: 'none' }}>Dashboard →</Link>
+            {secNotice && (
+              <div style={{ marginBottom: 14 }} role="status" aria-live="polite">
+                <Alert kind={secNotice.toLowerCase().includes('saved') ? 'success' : 'error'}>{secNotice}</Alert>
               </div>
-              <p className="text-xs leading-relaxed mb-4" style={{ color: '#79818A' }}>
-                Downloads, AI, search and 200+ more endpoints — one key, one envelope.
-              </p>
-              {apiStats && apiStats.usage && (
-                <div className="grid grid-cols-2 gap-3 mb-4">
-                  <div>
-                    <div className="stat-num" style={{ fontSize: '1.35rem', color: '#E9E7E2' }}>{apiStats.usage.requests_today.toLocaleString()}</div>
-                    <div className="stat-label">Requests today</div>
-                  </div>
-                  <div>
-                    <div className="stat-num" style={{ fontSize: '1.35rem', color: '#3ECF8E' }}>{apiStats.usage.avg_response_ms !== null ? `${Number(apiStats.usage.avg_response_ms).toFixed(0)}ms` : '—'}</div>
-                    <div className="stat-label">Avg response</div>
-                  </div>
-                </div>
-              )}
-              <div className="grid grid-cols-2 gap-3">
-                <Link href="/api/dashboard/keys" className="btn btn-ghost" style={{ padding: '9px 0', fontSize: 11 }}>API keys</Link>
-                <Link href="/api/docs" className="btn btn-ghost" style={{ padding: '9px 0', fontSize: 11 }}>Docs & tester</Link>
-              </div>
-            </section>
-
-            {/* Referral */}
-            {referral && (
-              <section className="card p-6">
-                <div className="flex items-center justify-between mb-3">
-                  <h2 className="mono text-[10px] uppercase tracking-[0.18em]" style={{ color: '#4C535B' }}>Refer & earn</h2>
-                  <span className="tag tag-amber">KES 20 / purchase</span>
-                </div>
-                <p className="text-xs leading-relaxed mb-4" style={{ color: '#79818A' }}>
-                  Share your link — when someone signs up and buys a panel, you get KES 20 in your wallet.
-                </p>
-                <div className="grid grid-cols-2 gap-3 mb-4">
-                  <div>
-                    <div className="stat-num" style={{ fontSize: '1.35rem', color: '#3ECF8E' }}>{referral.referred_count}</div>
-                    <div className="stat-label">Referred</div>
-                  </div>
-                  <div>
-                    <div className="stat-num" style={{ fontSize: '1.35rem', color: '#F2A93B' }}>{fmtKes(referral.total_earned)}</div>
-                    <div className="stat-label">Earned</div>
-                  </div>
-                </div>
-                <div className="flex gap-2 mb-2">
-                  <code className="flex-1 mono text-[11px] px-3 py-2 truncate" style={{ background: '#0F1215', border: '1px solid #1B2026', color: '#AEB5BD' }}>
-                    {referral.link}
-                  </code>
-                  <button
-                    onClick={() => { navigator.clipboard.writeText(referral.link).then(() => setCopied(true)).catch(() => {}); setTimeout(() => setCopied(false), 2000); }}
-                    className="btn btn-dark"
-                    style={{ padding: '8px 14px', fontSize: 11 }}>
-                    {copied ? 'Copied' : 'Copy'}
-                  </button>
-                </div>
-                <p className="mono text-[10px]" style={{ color: '#4C535B' }}>Your code: <span style={{ color: '#F2A93B' }}>{referral.code}</span></p>
-              </section>
             )}
 
-            {/* Quick links */}
-            <section className="card p-6">
-              <p className="mono text-[10px] uppercase tracking-[0.18em] mb-3" style={{ color: '#4C535B' }}>Quick links</p>
-              <div className="divide-y" style={{ borderTop: '1px solid #1B2026', borderBottom: '1px solid #1B2026' }}>
-                {[
-                  { label: 'Deploy panel',   href: '/products' },
-                  { label: 'WhatsApp bot',   href: '/whatsapp-bot' },
-                  { label: 'MZAZI API',      href: '/api' },
-                  { label: 'Contact support',href: '/contact' },
-                ].map(l => (
-                  <Link key={l.href} href={l.href}
-                    className="flex items-center justify-between py-2.5 text-sm transition-colors"
-                    style={{ color: '#AEB5BD', textDecoration: 'none' }}>
-                    {l.label}
-                    <span className="mono text-[10px]" style={{ color: '#4C535B' }}>→</span>
-                  </Link>
-                ))}
-              </div>
-            </section>
-          </div>
-        </div>
+            <Button onClick={saveSecurity} loading={secSaving} loadingText="Saving…" variant="dark">
+              {secQuestion ? 'Update security question' : 'Set security question'}
+            </Button>
+          </Card>
+        )}
       </div>
+
+      {/* ── Unlink confirmation ── */}
+      <ConfirmDialog
+        open={!!deviceToUnlink}
+        onClose={() => { if (unlinking === null) setDeviceToUnlink(null); }}
+        onConfirm={unlinkDevice}
+        loading={unlinking !== null}
+        tone="danger"
+        title="Unlink this device?"
+        description={`${deviceToUnlink || ''} will be logged out of WhatsApp. The bot will disconnect and the session deleted — you can pair it again later.`}
+        confirmLabel="Unlink device"
+      />
 
       {/* ── Credentials Modal ── */}
       {credModal && (
@@ -592,7 +638,7 @@ export default function DashboardPage() {
           onDone={() => { fetchPanels(); }}
         />
       )}
-    </div>
+    </AppBackground>
   );
 }
 
@@ -638,13 +684,13 @@ function AddServerModal({ onClose, onDone }) {
       });
       const d = await res.json();
       if (res.ok) {
-        setMsg(`✅ Server added! (KES ${Number(d.amount).toLocaleString()}) — #${d.server_id}`);
+        setMsg(`Server added! (${fmtKes(d.amount)}) — #${d.server_id}`);
         setTimeout(() => { onDone(); onClose(); }, 1800);
       } else {
-        setMsg(`❌ ${d.error || 'Failed to add server'}`);
+        setMsg(humaniseError(d.error || 'We could not add that server.'));
       }
-    } catch {
-      setMsg('❌ Network error. Please try again.');
+    } catch (e) {
+      setMsg(humaniseError(e));
     } finally {
       setBusy(false);
     }
@@ -662,88 +708,75 @@ function AddServerModal({ onClose, onDone }) {
       style={{ backgroundColor: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(6px)' }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="w-full max-w-md overflow-hidden" style={{ backgroundColor: '#14181D', border: '1px solid #262C33', borderRadius: 4 }}>
-        <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid #262C33' }}>
-          <h3 className="text-sm font-bold" style={{ color: '#E9E7E2' }}>➕ Add Server</h3>
-          <button onClick={onClose} className="mono text-xs" style={{ color: '#79818A', background: 'none', border: 'none', cursor: 'pointer' }}>✕</button>
+      <div className="w-full max-w-md overflow-hidden" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 'var(--r-lg)' }}>
+        <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid var(--line)' }}>
+          <h3 className="text-sm font-bold" style={{ color: 'var(--ink)' }}>Add server</h3>
+          <button onClick={onClose} className="icon-btn" aria-label="Close dialog" style={{ width: 34, height: 34 }}><Icons.X size={16} /></button>
         </div>
         <div className="p-5">
           {msg && (
-            <p className="text-sm mb-4" style={{ color: msg.startsWith('✅') ? '#3ECF8E' : '#E5484D' }}>{msg}</p>
+            <div style={{ marginBottom: 16 }}>
+              <Alert kind={msg.startsWith('Server added') ? 'success' : 'error'}>{msg}</Alert>
+            </div>
           )}
 
           {step === 'username' && (
             <form onSubmit={(e) => { e.preventDefault(); if (username.trim()) setStep('choice'); }}>
-              <label className="block text-xs mb-2" style={{ color: '#79818A' }}>
-                Panel username <span style={{ color: '#4C535B' }}>(the username of your existing server)</span>
-              </label>
-              <input
-                ref={inputRef}
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="e.g. johndoe"
-                className="input w-full"
-                style={{ marginBottom: 12 }}
-              />
-              <button className="btn btn-primary w-full" disabled={!username.trim()}>Continue</button>
+              <Field label="Panel username" id="add-username" hint="The username of your existing server.">
+                <input
+                  id="add-username"
+                  ref={inputRef}
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="e.g. johndoe"
+                  className="input"
+                />
+              </Field>
+              <Button type="submit" block disabled={!username.trim()}>Continue</Button>
             </form>
           )}
 
           {step === 'choice' && (
             <div>
-              <p className="text-xs mb-3" style={{ color: '#79818A' }}>
-                Username: <b style={{ color: '#E9E7E2' }}>{username}</b>
+              <p style={{ margin: '0 0 12px', fontSize: 13.5, color: 'var(--muted)' }}>
+                Username: <strong style={{ color: 'var(--ink)' }}>{username}</strong>
               </p>
-              <div className="space-y-2">
-                <button
-                  className="btn w-full"
-                  style={{ justifyContent: 'flex-start' }}
-                  onClick={() => { setMode('similar'); setStep('confirm'); }}
-                >
-                  🔄 Similar server — 30% of your first server&apos;s price
+              <div style={{ display: 'grid', gap: 10 }}>
+                <button className="option-card" type="button" style={{ textAlign: 'left' }} onClick={() => { setMode('similar'); setStep('confirm'); }}>
+                  Similar server — 30% of your first server’s price
                 </button>
-                <button
-                  className="btn w-full"
-                  style={{ justifyContent: 'flex-start' }}
-                  onClick={() => { setMode('different'); setStep('packages'); pickPackages(); }}
-                >
-                  📦 Different server — full price
+                <button className="option-card" type="button" style={{ textAlign: 'left' }} onClick={() => { setMode('different'); setStep('packages'); pickPackages(); }}>
+                  Different server — full price
                 </button>
               </div>
-              <button className="mono text-xs mt-4" style={{ color: '#79818A', background: 'none', border: 'none', cursor: 'pointer' }} onClick={back}>← Back</button>
+              <Button variant="ghost" size="sm" onClick={back} style={{ marginTop: 16 }}>Back</Button>
             </div>
           )}
 
           {step === 'packages' && (
             <div>
-              <p className="text-xs mb-3" style={{ color: '#79818A' }}>Choose a package (full price):</p>
-              <div className="space-y-2 max-h-56 overflow-auto">
-                {pkgs.length === 0 && <p className="text-xs" style={{ color: '#4C535B' }}>Loading packages…</p>}
+              <p style={{ margin: '0 0 12px', fontSize: 13.5, color: 'var(--muted)' }}>Choose a package (full price):</p>
+              <div style={{ display: 'grid', gap: 8, maxHeight: 220, overflow: 'auto' }}>
+                {pkgs.length === 0 && <p style={{ margin: 0, fontSize: 13, color: 'var(--dim)' }}>Loading packages…</p>}
                 {pkgs.map((p) => (
-                  <label key={p.id} className="flex items-center gap-3 text-sm" style={{ color: '#E9E7E2', cursor: 'pointer' }}>
-                    <input
-                      type="radio"
-                      name="addpkg"
-                      checked={String(pkgId) === String(p.id)}
-                      onChange={() => setPkgId(p.id)}
-                      style={{ accentColor: '#F2A93B' }}
-                    />
-                    {p.name} — KES {Number(p.price).toLocaleString()}
+                  <label key={p.id} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, color: 'var(--ink)', cursor: 'pointer' }}>
+                    <input type="radio" name="addpkg" checked={String(pkgId) === String(p.id)} onChange={() => setPkgId(p.id)} style={{ accentColor: 'var(--brand)' }} />
+                    {p.name} — {fmtKes(p.price)}
                   </label>
                 ))}
               </div>
-              <button className="btn btn-primary w-full mt-4" disabled={!pkgId} onClick={() => setStep('confirm')}>Continue</button>
-              <button className="mono text-xs mt-3" style={{ color: '#79818A', background: 'none', border: 'none', cursor: 'pointer' }} onClick={back}>← Back</button>
+              <Button block disabled={!pkgId} onClick={() => setStep('confirm')} style={{ marginTop: 16 }}>Continue</Button>
+              <Button variant="ghost" size="sm" onClick={back} style={{ marginTop: 10 }}>Back</Button>
             </div>
           )}
 
           {step === 'confirm' && (
             <form onSubmit={submit}>
-              <p className="text-sm mb-4" style={{ color: '#E9E7E2' }}>
-                Add a <b>{mode === 'similar' ? 'similar server (same specs, 30% of your first server&apos;s price)' : 'different server (full package price)'}</b> to username{' '}
-                <b style={{ color: '#F2A93B' }}>{username}</b>? The amount is deducted from your wallet.
+              <p style={{ margin: '0 0 16px', fontSize: 14, color: 'var(--ink)' }}>
+                Add a <strong>{mode === 'similar' ? 'similar server (same specs, 30% of your first server’s price)' : 'different server (full package price)'}</strong> to username{' '}
+                <strong style={{ color: 'var(--brand)' }}>{username}</strong>? The amount is deducted from your wallet.
               </p>
-              <button className="btn btn-primary w-full" disabled={busy}>{busy ? 'Working…' : '✅ Confirm & Pay'}</button>
+              <Button type="submit" block disabled={busy} loading={busy} loadingText="Working…">Confirm & pay</Button>
             </form>
           )}
         </div>
@@ -780,10 +813,10 @@ function CredentialsModal({ panel, user, onClose }) {
       if (res.ok) {
         setCreds(data.credentials);
       } else {
-        setError(data.error || 'Failed to verify');
+        setError(humaniseError(data.error || 'We could not verify that password.'));
       }
-    } catch {
-      setError('Network error. Please try again.');
+    } catch (e) {
+      setError(humaniseError(e));
     } finally {
       setLoading(false);
     }
@@ -800,35 +833,25 @@ function CredentialsModal({ panel, user, onClose }) {
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
       style={{ backgroundColor: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(6px)' }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
-      <div className="w-full max-w-md overflow-hidden" style={{ backgroundColor: '#14181D', border: '1px solid #262C33', borderRadius: 4 }}>
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid #1B2026' }}>
+      <div className="w-full max-w-md overflow-hidden" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 'var(--r-lg)' }}>
+        <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid var(--line-soft)' }}>
           <div>
-            <p className="display text-sm font-bold" style={{ color: '#E9E7E2' }}>Panel credentials</p>
-            <p className="mono text-[10px] uppercase tracking-[0.12em] mt-0.5" style={{ color: '#4C535B' }}>{panel.ptero_username || `Panel #${panel.id}`}</p>
+            <p className="display text-sm font-bold" style={{ color: 'var(--ink)' }}>Panel credentials</p>
+            <p className="mono text-[10px] uppercase tracking-[0.12em] mt-0.5" style={{ color: 'var(--dim)' }}>{panel.ptero_username || `Panel #${panel.id}`}</p>
           </div>
-          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center" style={{ color: '#79818A', border: '1px solid #262C33', background: 'transparent', cursor: 'pointer' }}>✕</button>
+          <button onClick={onClose} className="icon-btn" aria-label="Close dialog" style={{ width: 34, height: 34 }}><Icons.X size={16} /></button>
         </div>
 
         <div className="p-6">
           {!creds ? (
-            /* Password gate */
             <form onSubmit={handleReveal} className="space-y-4">
-              <div className="px-4 py-3" style={{ background: 'rgba(242,169,59,0.05)', border: '1px solid rgba(242,169,59,0.25)' }}>
-                <p className="text-xs leading-relaxed" style={{ color: '#AEB5BD' }}>
-                  For your security, enter your account password to view the credentials for this panel.
-                </p>
-              </div>
+              <Alert kind="info">For your security, enter your account password to view the credentials for this panel.</Alert>
 
-              {error && (
-                <div className="px-3 py-2.5 text-xs" style={{ background: 'rgba(229,72,77,0.08)', border: '1px solid rgba(229,72,77,0.3)', color: '#E5484D' }}>
-                  {error}
-                </div>
-              )}
+              {error && <Alert kind="error">{error}</Alert>}
 
-              <div>
-                <label className="label">Account password</label>
+              <Field label="Account password" id="cred-pass">
                 <input
+                  id="cred-pass"
                   ref={inputRef}
                   type="password"
                   value={password}
@@ -837,22 +860,15 @@ function CredentialsModal({ panel, user, onClose }) {
                   className="input"
                   required
                 />
-              </div>
+              </Field>
 
-              <button
-                type="submit"
-                disabled={loading || !password}
-                className="btn btn-primary w-full"
-                style={{ opacity: loading || !password ? 0.6 : 1 }}>
-                {loading ? 'Verifying…' : 'Reveal credentials'}
-              </button>
+              <Button type="submit" block disabled={loading || (!password && !isGoogleOnly)} loading={loading} loadingText="Verifying…">
+                Reveal credentials
+              </Button>
             </form>
           ) : (
-            /* Credentials view */
             <div className="space-y-3">
-              <div className="px-3 py-2.5 text-xs" style={{ background: 'rgba(62,207,142,0.06)', border: '1px solid rgba(62,207,142,0.25)', color: '#3ECF8E' }}>
-                Identity verified — credentials revealed below.
-              </div>
+              <Alert kind="success">Identity verified — credentials revealed below.</Alert>
 
               {[
                 { label: 'Panel URL',  value: creds.panel_url,  key: 'url',   link: creds.panel_url },
@@ -861,33 +877,27 @@ function CredentialsModal({ panel, user, onClose }) {
                 { label: 'Password',   value: creds.password,   key: 'pass' },
               ].map(({ label, value, key, link }) => (
                 <div key={key} className="flex items-center justify-between gap-3 px-3 py-3"
-                  style={{ background: '#0F1215', border: '1px solid #1B2026' }}>
+                  style={{ background: 'var(--surface-2)', border: '1px solid var(--line-soft)', borderRadius: 'var(--r-sm)' }}>
                   <div className="min-w-0">
-                    <p className="mono text-[9px] uppercase tracking-[0.14em]" style={{ color: '#4C535B' }}>{label}</p>
-                    <p className="mono text-sm font-semibold truncate mt-0.5" style={{ color: key === 'pass' ? '#F2A93B' : '#E9E7E2' }}>
+                    <p className="mono text-[9px] uppercase tracking-[0.14em]" style={{ color: 'var(--dim)' }}>{label}</p>
+                    <p className="mono text-sm font-semibold truncate mt-0.5" style={{ color: key === 'pass' ? 'var(--brand)' : 'var(--ink)' }}>
                       {key === 'pass' ? '••••••••' : value}
                     </p>
                   </div>
                   <div className="flex gap-1.5 flex-shrink-0">
                     {link && (
-                      <a href={link} target="_blank" rel="noopener noreferrer"
-                        className="btn btn-dark" style={{ padding: '6px 12px', fontSize: 10 }}>
-                        Open
-                      </a>
+                      <a href={link} target="_blank" rel="noopener noreferrer" className="btn btn-dark btn-sm">Open</a>
                     )}
-                    <button
-                      onClick={() => copy(value, key)}
-                      className="btn btn-dark" style={{ padding: '6px 12px', fontSize: 10, color: copied === key ? '#3ECF8E' : undefined }}>
+                    <Button size="sm" variant="dark" onClick={() => copy(value, key)}>
                       {copied === key ? 'Copied' : 'Copy'}
-                    </button>
+                    </Button>
                   </div>
                 </div>
               ))}
 
-              {/* Show real password (toggle) */}
               <PasswordReveal password={creds.password} />
 
-              <p className="text-xs text-center" style={{ color: '#4C535B' }}>
+              <p className="text-xs text-center" style={{ color: 'var(--dim)' }}>
                 Keep these credentials safe — do not share them with anyone.
               </p>
             </div>
@@ -902,18 +912,16 @@ function PasswordReveal({ password }) {
   const [show, setShow] = useState(false);
   return (
     <div className="flex items-center justify-between px-3 py-3"
-      style={{ background: 'rgba(242,169,59,0.04)', border: '1px solid rgba(242,169,59,0.2)' }}>
+      style={{ background: 'var(--brand-tint)', border: '1px solid var(--brand-soft)', borderRadius: 'var(--r-sm)' }}>
       <div>
-        <p className="mono text-[9px] uppercase tracking-[0.14em] mb-0.5" style={{ color: '#4C535B' }}>Password (visible)</p>
-        <p className="mono text-sm font-bold" style={{ color: '#F2A93B', letterSpacing: show ? 0 : '0.1em' }}>
+        <p className="mono text-[9px] uppercase tracking-[0.14em] mb-0.5" style={{ color: 'var(--dim)' }}>Password (visible)</p>
+        <p className="mono text-sm font-bold" style={{ color: 'var(--brand)', letterSpacing: show ? 0 : '0.1em' }}>
           {show ? password : '••••••••••••'}
         </p>
       </div>
-      <button
-        onClick={() => setShow(v => !v)}
-        className="btn btn-dark" style={{ padding: '6px 12px', fontSize: 10 }}>
+      <Button size="sm" variant="dark" onClick={() => setShow(v => !v)}>
         {show ? 'Hide' : 'Show'}
-      </button>
+      </Button>
     </div>
   );
 }

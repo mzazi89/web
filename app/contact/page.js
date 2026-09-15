@@ -9,7 +9,7 @@ const channels = [
         <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
       </svg>
     ),
-    color: '#4C7DFC', title: 'Telegram', desc: 'Replies within minutes.',
+    color: 'var(--blue)', title: 'Telegram', desc: 'Replies within minutes.',
     action: 'Open Telegram', href: 'https://t.me/mzazitech',
   },
   {
@@ -18,7 +18,7 @@ const channels = [
         <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
       </svg>
     ),
-    color: '#3ECF8E', title: 'WhatsApp', desc: 'Chat with support team.',
+    color: 'var(--good)', title: 'WhatsApp', desc: 'Chat with support team.',
     action: 'Chat on WhatsApp', href: 'https://wa.me/254108595201',
   },
   {
@@ -27,12 +27,12 @@ const channels = [
         <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
       </svg>
     ),
-    color: '#F2A93B', title: 'Email', desc: 'Billing & formal inquiries.',
+    color: 'var(--brand)', title: 'Email', desc: 'Billing & formal inquiries.',
     action: 'Send Email', href: 'mailto:mzazitechinc@gmail.com',
   },
 ];
 
-const STATUS_COLOR = { open: '#F2A93B', replied: '#3ECF8E', closed: '#79818A' };
+const STATUS_COLOR = { open: 'var(--brand)', replied: 'var(--good)', closed: 'var(--muted)' };
 
 function PenGlyph() {
   return (
@@ -44,7 +44,7 @@ function PenGlyph() {
 
 function LockGlyph() {
   return (
-    <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#F2A93B' }}>
+    <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--brand)' }}>
       <rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
     </svg>
   );
@@ -213,8 +213,8 @@ export default function ContactPage() {
                   {c.icon}
                 </div>
                 <div className="min-w-0">
-                  <p className="display font-bold text-base mb-0.5" style={{ color: '#E9E7E2' }}>{c.title}</p>
-                  <p className="text-xs mb-3" style={{ color: '#79818A' }}>{c.desc}</p>
+                  <p className="display font-bold text-base mb-0.5" style={{ color: 'var(--ink)' }}>{c.title}</p>
+                  <p className="text-xs mb-3" style={{ color: 'var(--muted)' }}>{c.desc}</p>
                   <span className="mono text-[10px] uppercase tracking-[0.12em]" style={{ color: c.color }}>
                     {c.action} →
                   </span>
@@ -235,15 +235,15 @@ export default function ContactPage() {
           ) : !user ? (
             <div className="card card-pad text-center py-14">
               <LockGlyph />
-              <p className="display font-bold text-xl mt-5 mb-1" style={{ color: '#E9E7E2' }}>Login to send inquiries</p>
-              <p className="text-sm mb-7" style={{ color: '#79818A' }}>Log in to chat with our support team directly from here.</p>
+              <p className="display font-bold text-xl mt-5 mb-1" style={{ color: 'var(--ink)' }}>Login to send inquiries</p>
+              <p className="text-sm mb-7" style={{ color: 'var(--muted)' }}>Log in to chat with our support team directly from here.</p>
               <div className="flex justify-center gap-3">
                 <Link href="/login" className="btn btn-primary" style={{ textDecoration: 'none' }}>Log in</Link>
                 <Link href="/signup" className="btn btn-ghost" style={{ textDecoration: 'none' }}>Sign up</Link>
               </div>
             </div>
           ) : (
-            <div className="card overflow-hidden" style={{ background: '#14181D' }}>
+            <div className="card overflow-hidden" style={{ background: 'var(--surface)' }}>
 
               {/* ─────────── MOBILE layout ─────────── */}
               <div className="block md:hidden" style={{ height: 'calc(100dvh - 280px)', minHeight: '480px', display: 'flex', flexDirection: 'column' }}>
@@ -251,11 +251,11 @@ export default function ContactPage() {
                 {mobileView === 'list' && (
                   <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                     {/* Mobile list header */}
-                    <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: '1px solid #262C33', background: '#0F1215', flexShrink: 0 }}>
-                      <p className="display font-bold text-sm" style={{ color: '#E9E7E2' }}>Support chat</p>
+                    <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: '1px solid var(--line)', background: 'var(--bg-2)', flexShrink: 0 }}>
+                      <p className="display font-bold text-sm" style={{ color: 'var(--ink)' }}>Support chat</p>
                       <button onClick={openCompose}
                         className="mono flex items-center gap-1.5 px-3 py-1.5 text-[10px] uppercase tracking-[0.1em]"
-                        style={{ background: 'rgba(242,169,59,0.1)', color: '#F2A93B', border: '1px solid rgba(242,169,59,0.3)', borderRadius: 2, cursor: 'pointer' }}>
+                        style={{ background: 'rgba(242,169,59,0.1)', color: 'var(--brand)', border: '1px solid rgba(242,169,59,0.3)', borderRadius: 2, cursor: 'pointer' }}>
                         <PenGlyph /> New
                       </button>
                     </div>
@@ -263,8 +263,8 @@ export default function ContactPage() {
                     <div style={{ flex: 1, overflowY: 'auto' }}>
                       {threads.length === 0 ? (
                         <div className="flex flex-col items-center justify-center h-full gap-3 p-6 text-center">
-                          <p className="text-sm font-semibold" style={{ color: '#E9E7E2' }}>No conversations yet</p>
-                          <p className="text-xs" style={{ color: '#4C535B' }}>Start a new conversation to contact support.</p>
+                          <p className="text-sm font-semibold" style={{ color: 'var(--ink)' }}>No conversations yet</p>
+                          <p className="text-xs" style={{ color: 'var(--dim)' }}>Start a new conversation to contact support.</p>
                           <button onClick={openCompose}
                             className="btn btn-primary mt-2" style={{ padding: '11px 18px', fontSize: 11, cursor: 'pointer' }}>
                             Start chat
@@ -302,12 +302,12 @@ export default function ContactPage() {
               {/* ─────────── DESKTOP layout ─────────── */}
               <div className="hidden md:flex" style={{ height: '620px' }}>
                 {/* Left: thread list */}
-                <div style={{ width: '300px', minWidth: '240px', borderRight: '1px solid #262C33', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
-                  <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: '1px solid #262C33', background: '#0F1215', flexShrink: 0 }}>
-                    <p className="display font-bold text-sm" style={{ color: '#E9E7E2' }}>Support chat</p>
+                <div style={{ width: '300px', minWidth: '240px', borderRight: '1px solid var(--line)', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
+                  <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: '1px solid var(--line)', background: 'var(--bg-2)', flexShrink: 0 }}>
+                    <p className="display font-bold text-sm" style={{ color: 'var(--ink)' }}>Support chat</p>
                     <button onClick={openCompose}
                       className="flex items-center justify-center w-8 h-8"
-                      style={{ background: 'rgba(242,169,59,0.1)', color: '#F2A93B', border: '1px solid rgba(242,169,59,0.3)', borderRadius: 2, cursor: 'pointer' }}
+                      style={{ background: 'rgba(242,169,59,0.1)', color: 'var(--brand)', border: '1px solid rgba(242,169,59,0.3)', borderRadius: 2, cursor: 'pointer' }}
                       title="New Inquiry">
                       <PenGlyph />
                     </button>
@@ -315,7 +315,7 @@ export default function ContactPage() {
                   <div style={{ flex: 1, overflowY: 'auto' }}>
                     {threads.length === 0 ? (
                       <div className="flex flex-col items-center justify-center h-full gap-3 px-4 text-center">
-                        <p className="text-xs" style={{ color: '#4C535B' }}>No conversations yet. Start one!</p>
+                        <p className="text-xs" style={{ color: 'var(--dim)' }}>No conversations yet. Start one!</p>
                       </div>
                     ) : threads.map(t => (
                       <ThreadRow key={t.id} t={t} active={activeThread?.id === t.id && !composing} onClick={() => openThread(t)} fmtDate={fmtDate} />
@@ -346,8 +346,8 @@ export default function ContactPage() {
                   ) : (
                     <div className="flex flex-col items-center justify-center h-full gap-4">
                       <div className="text-center">
-                        <p className="display font-bold text-lg mb-1" style={{ color: '#E9E7E2' }}>Your support chats</p>
-                        <p className="text-sm mb-6" style={{ color: '#79818A' }}>Select a conversation or start a new one.</p>
+                        <p className="display font-bold text-lg mb-1" style={{ color: 'var(--ink)' }}>Your support chats</p>
+                        <p className="text-sm mb-6" style={{ color: 'var(--muted)' }}>Select a conversation or start a new one.</p>
                         <button onClick={openCompose}
                           className="btn btn-primary" style={{ cursor: 'pointer' }}>
                           <PenGlyph /> New inquiry
@@ -369,25 +369,25 @@ export default function ContactPage() {
 /* ── Shared sub-components ─────────────────────────────────────────────────── */
 
 function ThreadRow({ t, active, onClick, fmtDate }) {
-  const color = STATUS_COLOR[t.status] || '#F2A93B';
+  const color = STATUS_COLOR[t.status] || 'var(--brand)';
   return (
     <button onClick={onClick} className="w-full text-left px-4 py-3 transition-all"
       style={{
         background: active ? 'rgba(242,169,59,0.06)' : 'transparent',
         borderBottom: '1px solid rgba(38,44,51,0.6)',
-        borderLeft: active ? '3px solid #F2A93B' : '3px solid transparent',
+        borderLeft: active ? '3px solid var(--brand)' : '3px solid transparent',
         cursor: 'pointer',
       }}>
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold truncate" style={{ color: '#E9E7E2' }}>{t.subject}</p>
-          <p className="text-xs mt-0.5 truncate" style={{ color: '#4C535B' }}>
+          <p className="text-sm font-semibold truncate" style={{ color: 'var(--ink)' }}>{t.subject}</p>
+          <p className="text-xs mt-0.5 truncate" style={{ color: 'var(--dim)' }}>
             {t.last_sender === 'admin' ? 'Admin: ' : 'You: '}
             {(t.last_message || t.message || '').slice(0, 38)}{(t.last_message || t.message || '').length > 38 ? '…' : ''}
           </p>
         </div>
         <div className="flex flex-col items-end gap-1 flex-shrink-0">
-          <p className="mono text-[10px]" style={{ color: '#4C535B' }}>{fmtDate(t.updated_at || t.created_at)}</p>
+          <p className="mono text-[10px]" style={{ color: 'var(--dim)' }}>{fmtDate(t.updated_at || t.created_at)}</p>
           <span className="tag" style={{ color, borderColor: `${color}50`, background: `${color}12` }}>
             {t.status}
           </span>
@@ -402,13 +402,13 @@ function ComposeForm({ newSubject, setNewSubject, newMsg, setNewMsg, sending, al
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       {/* Header */}
       <div className="flex items-center gap-3 px-4 sm:px-5 py-3"
-        style={{ borderBottom: '1px solid #262C33', background: '#0F1215', flexShrink: 0 }}>
+        style={{ borderBottom: '1px solid var(--line)', background: 'var(--bg-2)', flexShrink: 0 }}>
         <button onClick={onBack}
           className="mono text-[11px] uppercase tracking-[0.1em]"
-          style={{ color: '#79818A', background: 'none', border: 'none', cursor: 'pointer' }}>
+          style={{ color: 'var(--muted)', background: 'none', border: 'none', cursor: 'pointer' }}>
           ← Back
         </button>
-        <p className="display font-bold text-sm" style={{ color: '#E9E7E2' }}>New inquiry</p>
+        <p className="display font-bold text-sm" style={{ color: 'var(--ink)' }}>New inquiry</p>
       </div>
       <form onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', flex: 1, padding: '16px', gap: '12px', overflowY: 'auto' }}>
         {alert && (
@@ -416,7 +416,7 @@ function ComposeForm({ newSubject, setNewSubject, newMsg, setNewMsg, sending, al
             style={{
               background: alert.type === 'success' ? 'rgba(62,207,142,0.08)' : 'rgba(229,72,77,0.08)',
               border: `1px solid ${alert.type === 'success' ? 'rgba(62,207,142,0.3)' : 'rgba(229,72,77,0.3)'}`,
-              color: alert.type === 'success' ? '#3ECF8E' : '#E5484D',
+              color: alert.type === 'success' ? 'var(--good)' : 'var(--bad)',
             }}>{alert.text}</div>
         )}
         <div>
@@ -445,21 +445,21 @@ function ChatWindow({ thread, messages, msgLoading, newMsg, setNewMsg, sending, 
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       {/* Header */}
       <div className="flex items-center gap-3 px-4 py-3"
-        style={{ borderBottom: '1px solid #262C33', background: '#0F1215', flexShrink: 0 }}>
+        style={{ borderBottom: '1px solid var(--line)', background: 'var(--bg-2)', flexShrink: 0 }}>
         {showBack && (
           <button onClick={onBack}
             className="flex items-center justify-center w-8 h-8 flex-shrink-0"
-            style={{ color: '#F2A93B', background: 'rgba(242,169,59,0.08)', border: '1px solid rgba(242,169,59,0.3)', borderRadius: 2, cursor: 'pointer' }}>
+            style={{ color: 'var(--brand)', background: 'rgba(242,169,59,0.08)', border: '1px solid rgba(242,169,59,0.3)', borderRadius: 2, cursor: 'pointer' }}>
             ←
           </button>
         )}
         <div className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0"
-          style={{ background: 'rgba(242,169,59,0.12)', border: '1px solid rgba(242,169,59,0.4)', color: '#F2A93B' }}>A</div>
+          style={{ background: 'rgba(242,169,59,0.12)', border: '1px solid rgba(242,169,59,0.4)', color: 'var(--brand)' }}>A</div>
         <div className="min-w-0 flex-1">
-          <p className="display font-bold text-sm truncate" style={{ color: '#E9E7E2' }}>{thread.subject}</p>
+          <p className="display font-bold text-sm truncate" style={{ color: 'var(--ink)' }}>{thread.subject}</p>
           <p className="mono text-[10px] uppercase tracking-[0.12em] flex items-center gap-1.5"
-            style={{ color: thread.status === 'replied' ? '#3ECF8E' : thread.status === 'open' ? '#F2A93B' : '#79818A' }}>
-            <span className="dot" style={{ color: thread.status === 'replied' ? '#3ECF8E' : thread.status === 'open' ? '#F2A93B' : '#79818A' }} />
+            style={{ color: thread.status === 'replied' ? 'var(--good)' : thread.status === 'open' ? 'var(--brand)' : 'var(--muted)' }}>
+            <span className="dot" style={{ color: thread.status === 'replied' ? 'var(--good)' : thread.status === 'open' ? 'var(--brand)' : 'var(--muted)' }} />
             {thread.status === 'replied' ? 'Replied' : thread.status === 'open' ? 'Awaiting reply' : 'Closed'}
           </p>
         </div>
@@ -473,7 +473,7 @@ function ChatWindow({ thread, messages, msgLoading, newMsg, setNewMsg, sending, 
           </div>
         ) : messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full gap-2">
-            <p className="text-xs" style={{ color: '#4C535B' }}>No messages yet</p>
+            <p className="text-xs" style={{ color: 'var(--dim)' }}>No messages yet</p>
           </div>
         ) : messages.map((msg, i) => {
           const isUser = msg.sender === 'user';
@@ -482,7 +482,7 @@ function ChatWindow({ thread, messages, msgLoading, newMsg, setNewMsg, sending, 
             <div key={msg.id}>
               {showDate && (
                 <div className="flex justify-center my-3">
-                  <span className="mono text-[10px] px-3 py-1" style={{ background: '#0F1215', border: '1px solid #262C33', color: '#4C535B' }}>
+                  <span className="mono text-[10px] px-3 py-1" style={{ background: 'var(--bg-2)', border: '1px solid var(--line)', color: 'var(--dim)' }}>
                     {fmtDate(msg.created_at)}
                   </span>
                 </div>
@@ -490,18 +490,18 @@ function ChatWindow({ thread, messages, msgLoading, newMsg, setNewMsg, sending, 
               <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-1`}>
                 {!isUser && (
                   <div className="w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs mr-2 flex-shrink-0 self-end"
-                    style={{ background: 'rgba(242,169,59,0.12)', border: '1px solid rgba(242,169,59,0.4)', color: '#F2A93B' }}>A</div>
+                    style={{ background: 'rgba(242,169,59,0.12)', border: '1px solid rgba(242,169,59,0.4)', color: 'var(--brand)' }}>A</div>
                 )}
                 <div className="px-3.5 py-2.5 text-sm leading-relaxed"
                   style={{
                     maxWidth: 'min(75%, 360px)',
-                    background: isUser ? 'rgba(242,169,59,0.14)' : '#1A1F25',
-                    border: isUser ? '1px solid rgba(242,169,59,0.4)' : '1px solid #262C33',
-                    color: '#E9E7E2',
+                    background: isUser ? 'rgba(242,169,59,0.14)' : 'var(--surface-2)',
+                    border: isUser ? '1px solid rgba(242,169,59,0.4)' : '1px solid var(--line)',
+                    color: 'var(--ink)',
                     borderRadius: isUser ? '14px 14px 3px 14px' : '14px 14px 14px 3px',
                   }}>
                   <p className="whitespace-pre-wrap break-words text-sm">{msg.message}</p>
-                  <p className="mono text-[10px] mt-1" style={{ color: isUser ? '#F2A93B' : '#4C535B', textAlign: 'right' }}>
+                  <p className="mono text-[10px] mt-1" style={{ color: isUser ? 'var(--brand)' : 'var(--dim)', textAlign: 'right' }}>
                     {fmtTime(msg.created_at)}{isUser ? ' ✓✓' : ''}
                   </p>
                 </div>
@@ -513,9 +513,9 @@ function ChatWindow({ thread, messages, msgLoading, newMsg, setNewMsg, sending, 
       </div>
 
       {/* Input */}
-      <div className="px-3 py-3" style={{ borderTop: '1px solid #262C33', background: '#0F1215', flexShrink: 0 }}>
+      <div className="px-3 py-3" style={{ borderTop: '1px solid var(--line)', background: 'var(--bg-2)', flexShrink: 0 }}>
         {thread.status === 'closed' ? (
-          <p className="mono text-[10px] uppercase tracking-[0.12em] text-center py-1" style={{ color: '#4C535B' }}>
+          <p className="mono text-[10px] uppercase tracking-[0.12em] text-center py-1" style={{ color: 'var(--dim)' }}>
             This inquiry is closed. Start a new one to contact support.
           </p>
         ) : (
@@ -530,7 +530,7 @@ function ChatWindow({ thread, messages, msgLoading, newMsg, setNewMsg, sending, 
               className="input flex-1"
               style={{
                 resize: 'none', maxHeight: '100px', lineHeight: '1.5',
-                background: '#14181D', padding: '11px 14px',
+                background: 'var(--surface)', padding: '11px 14px',
               }}
             />
             <button type="submit" disabled={sending || !newMsg.trim()}

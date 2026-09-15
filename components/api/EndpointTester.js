@@ -53,7 +53,7 @@ export default function EndpointTester({ endpoint }) {
   };
 
   return (
-    <div className="card card-pad" style={{ background: '#0F1215', padding: '18px' }}>
+    <div className="card card-pad" style={{ background: 'var(--bg-2)', padding: '18px' }}>
       <div className="flex flex-wrap items-end gap-3 mb-3">
         <div className="flex-1 min-w-[200px]">
           <label className="label">API key <span className="tag tag-green" style={{ fontSize: 9, padding: '1px 6px', marginLeft: 6 }}>optional</span></label>
@@ -64,7 +64,7 @@ export default function EndpointTester({ endpoint }) {
           <div key={p.name} className="flex-1 min-w-[140px]">
             <label className="label">
               {p.name}
-              {required.some(r => r.name === p.name) && <span style={{ color: '#E5484D' }}> *</span>}
+              {required.some(r => r.name === p.name) && <span style={{ color: 'var(--bad)' }}> *</span>}
             </label>
             <input value={values[p.name] || ''} onChange={e => setValues(v => ({ ...v, [p.name]: e.target.value }))}
               placeholder={p.example || p.name}
@@ -81,12 +81,12 @@ export default function EndpointTester({ endpoint }) {
         <div className="space-y-2">
           <div className="flex flex-wrap items-center gap-2 mono text-xs">
             <span className="tag" style={{
-              color: result.ok ? '#3ECF8E' : '#E5484D',
+              color: result.ok ? 'var(--good)' : 'var(--bad)',
               borderColor: result.ok ? 'rgba(62,207,142,0.35)' : 'rgba(229,72,77,0.35)',
               background: result.ok ? 'rgba(62,207,142,0.06)' : 'rgba(229,72,77,0.06)',
             }}>HTTP {result.status}</span>
-            <span style={{ color: '#79818A' }}>{result.ms}ms</span>
-            <span className="break-all" style={{ color: '#4C535B' }}>{result.url}</span>
+            <span style={{ color: 'var(--muted)' }}>{result.ms}ms</span>
+            <span className="break-all" style={{ color: 'var(--dim)' }}>{result.url}</span>
             <CopyButton text={result.url} label="Copy URL" />
           </div>
           <CodeBlock label="JSON response" code={result.body} />

@@ -10,10 +10,10 @@ function fmtDate(iso) {
   return isNaN(d) ? '—' : d.toLocaleString();
 }
 
-function StatCell({ label, value, tone = '#AEB5BD' }) {
+function StatCell({ label, value, tone = 'var(--ink-2)' }) {
   return (
     <div className="card p-4">
-      <p className="mono text-[10px] uppercase tracking-[0.14em] mb-1.5" style={{ color: '#4C535B' }}>{label}</p>
+      <p className="mono text-[10px] uppercase tracking-[0.14em] mb-1.5" style={{ color: 'var(--dim)' }}>{label}</p>
       <p className="display font-bold text-xl" style={{ color: tone }}>{value}</p>
     </div>
   );
@@ -69,7 +69,7 @@ export default function ApiUsage() {
   if (loading && !data) return (
     <div className="container-site py-24 text-center">
       <div className="spinner mx-auto mb-4" />
-      <p className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: '#79818A' }}>Loading usage…</p>
+      <p className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: 'var(--muted)' }}>Loading usage…</p>
     </div>
   );
 
@@ -86,11 +86,11 @@ export default function ApiUsage() {
               <h1 className="headline mt-4" style={{ fontSize: 'clamp(1.9rem, 4vw, 2.8rem)' }}>
                 Usage analytics<span className="accent">.</span>
               </h1>
-              <p className="text-sm mt-3" style={{ color: '#79818A' }}>
+              <p className="text-sm mt-3" style={{ color: 'var(--muted)' }}>
                 Requests per day, per endpoint, success and failure rates.
               </p>
             </div>
-            <Link href="/api/dashboard" className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: '#79818A', textDecoration: 'none' }}>
+            <Link href="/api/dashboard" className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: 'var(--muted)', textDecoration: 'none' }}>
               ← Back to dashboard
             </Link>
           </div>
@@ -120,42 +120,42 @@ export default function ApiUsage() {
           </div>
 
           {/* Summary ledger */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-px card overflow-hidden mb-10" style={{ background: '#262C33' }}>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-px card overflow-hidden mb-10" style={{ background: 'var(--line)' }}>
             <StatCell label="Total" value={(s.total || 0).toLocaleString()} />
-            <StatCell label="Successful" value={(s.success || 0).toLocaleString()} tone="#3ECF8E" />
-            <StatCell label="Failed" value={(s.failed || 0).toLocaleString()} tone="#E5484D" />
-            <StatCell label="Provider failures" value={(s.provider_failures || 0).toLocaleString()} tone="#F2A93B" />
-            <StatCell label="Avg response" value={s.avg_response_ms !== null && s.avg_response_ms !== undefined ? `${Number(s.avg_response_ms).toFixed(1)}ms` : '—'} tone="#4C7DFC" />
+            <StatCell label="Successful" value={(s.success || 0).toLocaleString()} tone="var(--good)" />
+            <StatCell label="Failed" value={(s.failed || 0).toLocaleString()} tone="var(--bad)" />
+            <StatCell label="Provider failures" value={(s.provider_failures || 0).toLocaleString()} tone="var(--brand)" />
+            <StatCell label="Avg response" value={s.avg_response_ms !== null && s.avg_response_ms !== undefined ? `${Number(s.avg_response_ms).toFixed(1)}ms` : '—'} tone="var(--blue)" />
           </div>
 
           {/* Per-day + per-endpoint */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-10">
             <div className="card card-pad">
-              <h2 className="section-title text-xl mb-6" style={{ color: '#E9E7E2' }}>Requests per day</h2>
+              <h2 className="section-title text-xl mb-6" style={{ color: 'var(--ink)' }}>Requests per day</h2>
               {(data?.per_day || []).length === 0 ? (
-                <p className="text-sm py-10 text-center" style={{ color: '#79818A' }}>No data in this range.</p>
+                <p className="text-sm py-10 text-center" style={{ color: 'var(--muted)' }}>No data in this range.</p>
               ) : (
                 <LineChart data={data.per_day} valueKey="requests" />
               )}
             </div>
             <div className="card card-pad">
-              <h2 className="section-title text-xl mb-6" style={{ color: '#E9E7E2' }}>Requests per endpoint</h2>
+              <h2 className="section-title text-xl mb-6" style={{ color: 'var(--ink)' }}>Requests per endpoint</h2>
               {(data?.per_endpoint || []).length === 0 ? (
-                <p className="text-sm py-10 text-center" style={{ color: '#79818A' }}>No data in this range.</p>
+                <p className="text-sm py-10 text-center" style={{ color: 'var(--muted)' }}>No data in this range.</p>
               ) : (
                 <div className="space-y-4">
                   {data.per_endpoint.map(e => (
                     <div key={e.endpoint}>
                       <div className="flex items-center justify-between gap-3 mono text-[11px] mb-1.5">
-                        <code className="truncate" style={{ color: '#E9E7E2' }}>{e.endpoint}</code>
-                        <span className="flex-shrink-0" style={{ color: '#79818A' }}>
+                        <code className="truncate" style={{ color: 'var(--ink)' }}>{e.endpoint}</code>
+                        <span className="flex-shrink-0" style={{ color: 'var(--muted)' }}>
                           {e.count.toLocaleString()} · {e.avg_response_ms !== null ? `${Number(e.avg_response_ms).toFixed(0)}ms` : '—'}
                         </span>
                       </div>
-                      <div className="h-1" style={{ background: '#1B2026' }}>
+                      <div className="h-1" style={{ background: 'var(--line-soft)' }}>
                         <div className="h-full" style={{
                           width: `${Math.min(100, (e.count / Math.max(1, data.per_endpoint[0].count)) * 100)}%`,
-                          background: '#F2A93B',
+                          background: 'var(--brand)',
                         }} />
                       </div>
                     </div>
@@ -179,26 +179,26 @@ export default function ApiUsage() {
                 <tbody>
                   {(data?.requests || []).length === 0 ? (
                     <tr>
-                      <td colSpan={8} className="text-center" style={{ color: '#79818A', padding: '44px 0' }}>
+                      <td colSpan={8} className="text-center" style={{ color: 'var(--muted)', padding: '44px 0' }}>
                         No requests match the current filters.
                       </td>
                     </tr>
                   ) : (
                     data.requests.map(r => (
                       <tr key={r.request_id} data-label="Endpoint">
-                        <td data-label="Request ID" className="mono text-[11px]" style={{ color: '#79818A' }}>{r.request_id}</td>
-                        <td data-label="Key" style={{ color: '#AEB5BD' }}>
+                        <td data-label="Request ID" className="mono text-[11px]" style={{ color: 'var(--muted)' }}>{r.request_id}</td>
+                        <td data-label="Key" style={{ color: 'var(--ink-2)' }}>
                           {r.key_name || '—'}
-                          {r.key_prefix && <span className="block mono text-[10px]" style={{ color: '#4C535B' }}>{r.key_prefix}</span>}
+                          {r.key_prefix && <span className="block mono text-[10px]" style={{ color: 'var(--dim)' }}>{r.key_prefix}</span>}
                         </td>
-                        <td data-label="Endpoint" className="mono text-[12px]" style={{ color: '#E9E7E2' }}>{r.endpoint}</td>
+                        <td data-label="Endpoint" className="mono text-[12px]" style={{ color: 'var(--ink)' }}>{r.endpoint}</td>
                         <td data-label="Status">
-                          <span className="mono text-[12px] font-semibold" style={{ color: r.status_code < 400 ? '#3ECF8E' : '#E5484D' }}>{r.status_code}</span>
+                          <span className="mono text-[12px] font-semibold" style={{ color: r.status_code < 400 ? 'var(--good)' : 'var(--bad)' }}>{r.status_code}</span>
                         </td>
-                        <td data-label="Time" style={{ color: '#AEB5BD' }}>{r.response_time_ms}ms</td>
-                        <td data-label="Provider" style={{ color: '#79818A' }}>{r.provider || '—'}</td>
-                        <td data-label="Error" style={{ color: r.error_code ? '#F2A93B' : '#4C535B' }}>{r.error_code || '—'}</td>
-                        <td data-label="When" style={{ color: '#79818A' }}>{fmtDate(r.created_at)}</td>
+                        <td data-label="Time" style={{ color: 'var(--ink-2)' }}>{r.response_time_ms}ms</td>
+                        <td data-label="Provider" style={{ color: 'var(--muted)' }}>{r.provider || '—'}</td>
+                        <td data-label="Error" style={{ color: r.error_code ? 'var(--brand)' : 'var(--dim)' }}>{r.error_code || '—'}</td>
+                        <td data-label="When" style={{ color: 'var(--muted)' }}>{fmtDate(r.created_at)}</td>
                       </tr>
                     ))
                   )}
@@ -208,8 +208,8 @@ export default function ApiUsage() {
 
             {/* Pagination */}
             {meta.total_pages > 1 && (
-              <div className="flex items-center justify-between px-5 py-3 flex-wrap gap-3" style={{ borderTop: '1px solid #1B2026' }}>
-                <span className="mono text-[11px]" style={{ color: '#79818A' }}>
+              <div className="flex items-center justify-between px-5 py-3 flex-wrap gap-3" style={{ borderTop: '1px solid var(--line-soft)' }}>
+                <span className="mono text-[11px]" style={{ color: 'var(--muted)' }}>
                   Page {meta.page} of {meta.total_pages} · {meta.total.toLocaleString()} requests
                 </span>
                 <div className="flex gap-2">

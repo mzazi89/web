@@ -9,18 +9,18 @@ export default function manifest() {
     scope: '/',
     display: 'standalone',
     orientation: 'portrait',
-    background_color: '#0B0D0F',
-    theme_color: '#0B0D0F',
+    background_color: '#F6F7FB',
+    theme_color: '#7C3AED',
     categories: ['productivity', 'utilities', 'business'],
     icons: [
       { src: '/icon', sizes: '512x512', type: 'image/png' },
       { src: '/icon', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
     ],
     shortcuts: [
-      { name: 'Deploy Panel', url: '/products', icons: [{ src: '/icon', sizes: '512x512' }] },
-      { name: 'WhatsApp Bot', url: '/whatsapp-bot', icons: [{ src: '/icon', sizes: '512x512' }] },
-      { name: 'Wallet', url: '/wallet', icons: [{ src: '/icon', sizes: '512x512' }] },
-      { name: 'API Docs', url: '/api/docs', icons: [{ src: '/icon', sizes: '512x512' }] },
+      { name: 'Dashboard', url: '/dashboard', icons: [{ src: '/icon', sizes: '512x512' }] },
+      { name: 'Connected Devices', url: '/devices', icons: [{ src: '/icon', sizes: '512x512' }] },
+      { name: 'Subscription', url: '/subscription', icons: [{ src: '/icon', sizes: '512x512' }] },
+      { name: 'Help', url: '/help', icons: [{ src: '/icon', sizes: '512x512' }] },
     ],
   };
 }

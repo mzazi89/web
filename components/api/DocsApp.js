@@ -83,7 +83,7 @@ export default function DocsApp({ endpoints }) {
         <div className="absolute inset-0 pointer-events-none grid-bg" style={{ maskImage: 'linear-gradient(180deg, rgba(0,0,0,0.5), transparent 80%)', WebkitMaskImage: 'linear-gradient(180deg, rgba(0,0,0,0.5), transparent 80%)' }} />
         <div className="container-site relative">
           <div className="max-w-3xl">
-            <a href="/api" className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: '#79818A', textDecoration: 'none' }}>← Back to API</a>
+            <a href="/api" className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: 'var(--muted)', textDecoration: 'none' }}>← Back to API</a>
             <p className="eyebrow mt-8">Reference</p>
             <h1 className="headline mt-4" style={{ fontSize: 'clamp(2rem, 4.4vw, 3.2rem)' }}>
               API documentation<span className="accent">.</span>
@@ -99,9 +99,9 @@ export default function DocsApp({ endpoints }) {
               <button key={id} onClick={() => setTab(id)}
                 className="mono text-[11px] uppercase tracking-[0.1em] px-4 py-2.5"
                 style={{
-                  background: tab === id ? '#F2A93B' : 'transparent',
-                  color: tab === id ? '#14100A' : '#79818A',
-                  border: `1px solid ${tab === id ? '#F2A93B' : '#262C33'}`,
+                  background: tab === id ? 'var(--brand)' : 'transparent',
+                  color: tab === id ? 'var(--on-brand)' : 'var(--muted)',
+                  border: `1px solid ${tab === id ? 'var(--brand)' : 'var(--line)'}`,
                   cursor: 'pointer',
                   borderRadius: 2,
                 }}>
@@ -119,14 +119,14 @@ export default function DocsApp({ endpoints }) {
               {GUIDES.map(g => (
                 <section key={g.id} className="card card-pad">
                   <p className="eyebrow">{g.id}</p>
-                  <h2 className="section-title text-2xl mt-3 mb-3" style={{ color: '#E9E7E2' }}>{g.title}</h2>
-                  <p className="text-sm leading-relaxed mb-5" style={{ color: '#AEB5BD' }}>{g.body}</p>
+                  <h2 className="section-title text-2xl mt-3 mb-3" style={{ color: 'var(--ink)' }}>{g.title}</h2>
+                  <p className="text-sm leading-relaxed mb-5" style={{ color: 'var(--ink-2)' }}>{g.body}</p>
                   {g.code && <CodeBlock label={g.title} code={g.code} />}
                 </section>
               ))}
               <section className="card card-pad">
-                <h2 className="section-title text-2xl mb-3" style={{ color: '#E9E7E2' }}>Support</h2>
-                <p className="text-sm" style={{ color: '#AEB5BD' }}>
+                <h2 className="section-title text-2xl mb-3" style={{ color: 'var(--ink)' }}>Support</h2>
+                <p className="text-sm" style={{ color: 'var(--ink-2)' }}>
                   Need help? Check the <a href="/api/status" className="link">status page</a>, the
                   {' '}<a href="/api/explorer" className="link">explorer</a>, or the
                   {' '}<a href="/contact" className="link">contact page</a>.
@@ -147,17 +147,17 @@ export default function DocsApp({ endpoints }) {
                   />
                   <button onClick={() => { setActiveCategory('ALL'); setSearch(''); }}
                     className="w-full text-left px-3 py-2 mono text-[11px] uppercase tracking-[0.1em]"
-                    style={{ background: activeCategory === 'ALL' ? 'rgba(242,169,59,0.08)' : 'transparent', color: activeCategory === 'ALL' ? '#F2A93B' : '#79818A', border: 'none', cursor: 'pointer' }}>
-                    All categories <span style={{ color: '#4C535B' }}>({activeCount} live)</span>
+                    style={{ background: activeCategory === 'ALL' ? 'rgba(242,169,59,0.08)' : 'transparent', color: activeCategory === 'ALL' ? 'var(--brand)' : 'var(--muted)', border: 'none', cursor: 'pointer' }}>
+                    All categories <span style={{ color: 'var(--dim)' }}>({activeCount} live)</span>
                   </button>
-                  <div style={{ borderTop: '1px solid #1B2026', marginTop: 8, paddingTop: 8 }}>
+                  <div style={{ borderTop: '1px solid var(--line-soft)', marginTop: 8, paddingTop: 8 }}>
                     {categories.map(c => (
                       <button key={c.name} onClick={() => setActiveCategory(activeCategory === c.name ? 'ALL' : c.name)}
                         className="w-full text-left px-3 py-2 mono text-[11px]"
-                        style={{ background: activeCategory === c.name ? 'rgba(242,169,59,0.08)' : 'transparent', color: activeCategory === c.name ? '#F2A93B' : '#79818A', border: 'none', cursor: 'pointer' }}>
-                        <span className="mr-2" style={{ color: activeCategory === c.name ? '#F2A93B' : '#4C535B' }}>{CATEGORY_CODES[c.name] || '??'}</span>
+                        style={{ background: activeCategory === c.name ? 'rgba(242,169,59,0.08)' : 'transparent', color: activeCategory === c.name ? 'var(--brand)' : 'var(--muted)', border: 'none', cursor: 'pointer' }}>
+                        <span className="mr-2" style={{ color: activeCategory === c.name ? 'var(--brand)' : 'var(--dim)' }}>{CATEGORY_CODES[c.name] || '??'}</span>
                         {CATEGORY_LABELS[c.name] || c.name}
-                        <span className="ml-1" style={{ color: '#4C535B' }}>{c.active}/{c.total}</span>
+                        <span className="ml-1" style={{ color: 'var(--dim)' }}>{c.active}/{c.total}</span>
                       </button>
                     ))}
                   </div>
@@ -168,20 +168,20 @@ export default function DocsApp({ endpoints }) {
               <div className="lg:col-span-3 space-y-10">
                 {grouped.length === 0 && (
                   <div className="card card-pad text-center py-14">
-                    <p className="text-sm" style={{ color: '#79818A' }}>No endpoints match your search.</p>
+                    <p className="text-sm" style={{ color: 'var(--muted)' }}>No endpoints match your search.</p>
                   </div>
                 )}
                 {grouped.map(([cat, eps]) => (
                   <section key={cat} id={`cat-${encodeURIComponent(cat)}`} className="scroll-mt-32">
                     <div className="flex items-center gap-3 mb-4">
                       <span className="mono text-[11px] font-bold px-2 py-1"
-                        style={{ color: '#F2A93B', border: '1px solid rgba(242,169,59,0.4)' }}>
+                        style={{ color: 'var(--brand)', border: '1px solid rgba(242,169,59,0.4)' }}>
                         {CATEGORY_CODES[cat] || '??'}
                       </span>
-                      <h2 className="section-title text-xl" style={{ color: '#E9E7E2' }}>
+                      <h2 className="section-title text-xl" style={{ color: 'var(--ink)' }}>
                         {CATEGORY_LABELS[cat] || cat}
                       </h2>
-                      <span className="mono text-[10px] uppercase tracking-[0.1em]" style={{ color: '#4C535B' }}>
+                      <span className="mono text-[10px] uppercase tracking-[0.1em]" style={{ color: 'var(--dim)' }}>
                         {eps.filter(e => e.is_active).length} live · {eps.length} total
                       </span>
                     </div>
@@ -195,21 +195,21 @@ export default function DocsApp({ endpoints }) {
                             <button onClick={() => setExpanded(isOpen ? null : e.path)}
                               className="w-full flex flex-wrap items-center gap-3 px-5 py-3.5 text-left" style={{ cursor: 'pointer', background: 'transparent', border: 'none' }}>
                               <span className="mono text-[10px] font-bold px-1.5 py-0.5"
-                                style={{ background: e.method === 'GET' ? 'rgba(76,125,252,0.12)' : 'rgba(242,169,59,0.1)', color: e.method === 'GET' ? '#4C7DFC' : '#F2A93B', border: `1px solid ${e.method === 'GET' ? 'rgba(76,125,252,0.35)' : 'rgba(242,169,59,0.3)'}` }}>
+                                style={{ background: e.method === 'GET' ? 'rgba(76,125,252,0.12)' : 'rgba(242,169,59,0.1)', color: e.method === 'GET' ? 'var(--blue)' : 'var(--brand)', border: `1px solid ${e.method === 'GET' ? 'rgba(76,125,252,0.35)' : 'rgba(242,169,59,0.3)'}` }}>
                                 {e.method}
                               </span>
-                              <code className="mono text-xs flex-1" style={{ color: '#E9E7E2' }}>{e.path}</code>
-                              <span className="text-xs font-semibold hidden sm:block" style={{ color: '#79818A' }}>{e.name}</span>
+                              <code className="mono text-xs flex-1" style={{ color: 'var(--ink)' }}>{e.path}</code>
+                              <span className="text-xs font-semibold hidden sm:block" style={{ color: 'var(--muted)' }}>{e.name}</span>
                               <span className={`tag ${e.is_active ? 'tag-green' : 'tag'}`}>
                                 {e.is_active ? 'Live' : 'Not configured'}
                               </span>
-                              <span className="mono text-xs" style={{ color: '#4C535B' }}>{isOpen ? '−' : '+'}</span>
+                              <span className="mono text-xs" style={{ color: 'var(--dim)' }}>{isOpen ? '−' : '+'}</span>
                             </button>
 
                             {isOpen && (
-                              <div className="px-5 pb-5 space-y-5" style={{ borderTop: '1px solid #1B2026' }}>
-                                <p className="text-sm pt-4" style={{ color: '#AEB5BD' }}>
-                                  {e.description || e.name} · Provider: <code className="mono text-xs" style={{ color: '#F2A93B' }}>{e.provider || '—'}</code>
+                              <div className="px-5 pb-5 space-y-5" style={{ borderTop: '1px solid var(--line-soft)' }}>
+                                <p className="text-sm pt-4" style={{ color: 'var(--ink-2)' }}>
+                                  {e.description || e.name} · Provider: <code className="mono text-xs" style={{ color: 'var(--brand)' }}>{e.provider || '—'}</code>
                                 </p>
 
                                 {(req.length > 0 || opt.length > 0) && (
@@ -228,9 +228,9 @@ export default function DocsApp({ endpoints }) {
                                           const example = typeof def === 'object' ? def.example : null;
                                           return (
                                             <tr key={n}>
-                                              <td className="mono text-xs" style={{ color: '#E9E7E2' }}>{n}</td>
-                                              <td style={{ color: isReq ? '#E5484D' : '#4C535B' }}>{isReq ? 'Yes' : 'No'}</td>
-                                              <td className="mono text-xs break-all" style={{ color: '#79818A' }}>{example || '—'}</td>
+                                              <td className="mono text-xs" style={{ color: 'var(--ink)' }}>{n}</td>
+                                              <td style={{ color: isReq ? 'var(--bad)' : 'var(--dim)' }}>{isReq ? 'Yes' : 'No'}</td>
+                                              <td className="mono text-xs break-all" style={{ color: 'var(--muted)' }}>{example || '—'}</td>
                                             </tr>
                                           );
                                         })}
@@ -240,17 +240,17 @@ export default function DocsApp({ endpoints }) {
                                 )}
 
                                 <div>
-                                  <p className="mono text-[10px] uppercase tracking-[0.14em] mb-2" style={{ color: '#4C535B' }}>Example request</p>
+                                  <p className="mono text-[10px] uppercase tracking-[0.14em] mb-2" style={{ color: 'var(--dim)' }}>Example request</p>
                                   <CodeBlock label="curl" code={`curl "${BASE}${e.path}?${[...req, ...opt].map(n => `${n}=YOUR_VALUE`).join('&')}${(req.length || opt.length) ? '&' : ''}apikey=YOUR_API_KEY"`} />
                                 </div>
 
                                 {e.is_active ? (
                                   <div>
-                                    <p className="mono text-[10px] uppercase tracking-[0.14em] mb-2" style={{ color: '#4C535B' }}>Live tester</p>
+                                    <p className="mono text-[10px] uppercase tracking-[0.14em] mb-2" style={{ color: 'var(--dim)' }}>Live tester</p>
                                     <EndpointTester endpoint={e} />
                                   </div>
                                 ) : (
-                                  <p className="text-xs" style={{ color: '#F2A93B' }}>
+                                  <p className="text-xs" style={{ color: 'var(--brand)' }}>
                                     Endpoint is registered but not yet configured — it returns <code className="mono">ENDPOINT_DISABLED</code> until enabled with a verified upstream.
                                   </p>
                                 )}

@@ -1,16 +1,33 @@
 'use client';
+
+// MZAZI TECH — Payments & Wallet.
+//
+// Presentation only: every payment call is the same one the product already
+// used, and nothing about the Paystack flows was reimplemented.
+//
+//   GET  /api/auth/me                     → session gate
+//   GET  /api/wallet/balance              → { balance, transactions[] }
+//   GET  /api/wallet/offer                → { offer }
+//   POST /api/wallet/deposit              → card: { authorization_url } | mobile_money: { reference }
+//   GET  /api/wallet/status?reference=…   → polled until success / failed / abandoned
+//   POST /api/vouchers/redeem             → { code }
+
 import React, { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import {
+  AppBackground, PageHeader, Button, Card, CardHeader, Badge, Modal, DataTable,
+  EmptyState, ErrorState, Alert, SkeletonText, Field, Input, humaniseError, Icons,
+} from '@/components/ui';
 import { fmtKes } from '@/lib/currency';
 
-// ─── Receipt printer (no library needed) ────────────────────────────────────
+// ─── Receipt printer (unchanged behaviour) ──────────────────────────────────
 function downloadReceipt(t, userEmail, balance) {
   const date = new Date(t.created_at);
   const dateStr = date.toLocaleDateString('en-KE', { year: 'numeric', month: 'long', day: 'numeric' });
   const timeStr = date.toLocaleTimeString('en-KE', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   const isDebit = t.type !== 'deposit';
   const sign = isDebit ? '-' : '+';
-  const color = isDebit ? '#e5484d' : '#3ecf8e';
+  const color = isDebit ? 'var(--bad)' : 'var(--good)';
 
   const html = `<!DOCTYPE html>
 <html>
@@ -20,7 +37,7 @@ function downloadReceipt(t, userEmail, balance) {
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Mono:wght@400;600&display=swap');
     * { margin:0; padding:0; box-sizing:border-box; }
-    body { background:#f5f4f2; display:flex; justify-content:center; align-items:flex-start; padding:clamp(12px, 4vw, 30px); font-family:'Space Grotesk',sans-serif; }
+    body { background:var(--ink); display:flex; justify-content:center; align-items:flex-start; padding:clamp(12px, 4vw, 30px); font-family:'Space Grotesk',sans-serif; }
     .receipt {
       background:#fff;
       width:100%;
@@ -34,26 +51,26 @@ function downloadReceipt(t, userEmail, balance) {
       content:'';
       display:block;
       height:14px;
-      background: radial-gradient(circle at 10px 14px, #f5f4f2 10px, transparent 0) repeat-x, #fff;
+      background: radial-gradient(circle at 10px 14px, var(--ink) 10px, transparent 0) repeat-x, #fff;
       background-size:20px 14px, 100% 100%;
     }
     .receipt::after {
       content:'';
       display:block;
       height:14px;
-      background: radial-gradient(circle at 10px 0px, #f5f4f2 10px, transparent 0) repeat-x, #fff;
+      background: radial-gradient(circle at 10px 0px, var(--ink) 10px, transparent 0) repeat-x, #fff;
       background-size:20px 14px, 100% 100%;
       transform:rotate(180deg);
     }
     .header {
-      background:#0B0D0F;
+      background:var(--bg);
       color:#fff;
       text-align:center;
       padding:28px 24px 20px;
     }
     .logo { font-size:20px; font-weight:700; letter-spacing:0.5px; margin-bottom:4px; }
-    .logo span { color:#F2A93B; }
-    .tagline { font-family:'IBM Plex Mono',monospace; font-size:9px; color:#79818A; letter-spacing:2px; text-transform:uppercase; }
+    .logo span { color:var(--brand); }
+    .tagline { font-family:'IBM Plex Mono',monospace; font-size:9px; color:var(--muted); letter-spacing:2px; text-transform:uppercase; }
     .status-badge {
       display:inline-block;
       margin-top:14px;
@@ -65,37 +82,37 @@ function downloadReceipt(t, userEmail, balance) {
       letter-spacing:1px;
       text-transform:uppercase;
       background:${t.status === 'success' ? 'rgba(62,207,142,0.15)' : 'rgba(242,169,59,0.15)'};
-      color:${t.status === 'success' ? '#3ecf8e' : '#f2a93b'};
+      color:${t.status === 'success' ? 'var(--good)' : 'var(--brand)'};
       border:1px solid ${t.status === 'success' ? 'rgba(62,207,142,0.4)' : 'rgba(242,169,59,0.4)'};
     }
     .body { padding:24px; }
-    .amount-section { text-align:center; padding:20px 0 24px; border-bottom:1px dashed #e0dedb; }
-    .amount-label { font-family:'IBM Plex Mono',monospace; font-size:9px; color:#94908a; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:6px; }
+    .amount-section { text-align:center; padding:20px 0 24px; border-bottom:1px dashed var(--ink); }
+    .amount-label { font-family:'IBM Plex Mono',monospace; font-size:9px; color:var(--muted); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:6px; }
     .amount { font-size:38px; font-weight:700; color:${color}; letter-spacing:-1px; }
     .currency { font-size:16px; font-weight:500; }
-    .rows { padding:20px 0; border-bottom:1px dashed #e0dedb; }
+    .rows { padding:20px 0; border-bottom:1px dashed var(--ink); }
     .row { display:flex; justify-content:space-between; align-items:flex-start; padding:7px 0; font-size:13px; }
-    .row-label { color:#8a8680; font-size:11px; font-family:'IBM Plex Mono',monospace; text-transform:uppercase; letter-spacing:0.6px; }
-    .row-value { color:#1c1e20; font-weight:600; text-align:right; max-width:200px; word-break:break-all; }
-    .ref { font-family:'IBM Plex Mono',monospace; font-size:11px; color:#4c7dfc; }
+    .row-label { color:var(--muted); font-size:11px; font-family:'IBM Plex Mono',monospace; text-transform:uppercase; letter-spacing:0.6px; }
+    .row-value { color:var(--surface-2); font-weight:600; text-align:right; max-width:200px; word-break:break-all; }
+    .ref { font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--blue); }
     .warranty {
       margin:16px 0 0;
       padding:12px 14px;
-      background:#faf6ef;
+      background:var(--ink);
       border-radius:2px;
-      border-left:3px solid #F2A93B;
+      border-left:3px solid var(--brand);
       font-size:11px;
       color:#7a6a4f;
       line-height:1.6;
     }
-    .warranty strong { display:block; margin-bottom:2px; font-size:12px; color:#0B0D0F; }
+    .warranty strong { display:block; margin-bottom:2px; font-size:12px; color:var(--bg); }
     .footer { text-align:center; padding:16px 24px 20px; }
-    .footer p { font-size:10px; color:#94908a; line-height:1.7; }
-    .footer a { color:#4c7dfc; text-decoration:none; }
+    .footer p { font-size:10px; color:var(--muted); line-height:1.7; }
+    .footer a { color:var(--blue); text-decoration:none; }
     .barcode {
       font-family:'IBM Plex Mono',monospace;
       font-size:9px;
-      color:#cfccc6;
+      color:var(--ink);
       letter-spacing:4px;
       margin-top:8px;
       word-break:break-all;
@@ -147,7 +164,6 @@ function downloadReceipt(t, userEmail, balance) {
   const url = URL.createObjectURL(blob);
   const win = window.open(url, '_blank', 'width=480,height=720,scrollbars=yes');
   if (!win) {
-    // fallback: direct download
     const a = document.createElement('a');
     a.href = url;
     a.download = `Mzazi-Receipt-${t.id}.html`;
@@ -156,8 +172,7 @@ function downloadReceipt(t, userEmail, balance) {
   setTimeout(() => URL.revokeObjectURL(url), 60000);
 }
 
-// ─── Deposit UI helpers ──────────────────────────────────────────────────────
-
+// ─── Deposit helpers ──────────────────────────────────────────────────────────
 const METHOD_LABELS = {
   card: 'Card',
   mpesa: 'M-PESA',
@@ -183,111 +198,24 @@ function maskPhone(phone) {
 }
 
 const PAYMENT_METHODS = [
-  {
-    id: 'card',
-    name: 'Card',
-    desc: 'Visa, Mastercard & more — secure Paystack checkout',
-    color: '#4C7DFC',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
-        <rect x="2.5" y="5" width="19" height="14" rx="2.5" />
-        <path d="M2.5 9.5h19" />
-        <path d="M6 14.5h4" />
-      </svg>
-    ),
-  },
-  {
-    id: 'mpesa',
-    name: 'M-PESA',
-    desc: 'Instant STK push to your M-PESA phone',
-    color: '#3ECF8E',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
-        <rect x="7" y="2.5" width="10" height="19" rx="2.5" />
-        <path d="M11 18.5h2" />
-        <path d="M11 5.5h2" />
-      </svg>
-    ),
-  },
-  {
-    id: 'airtel',
-    name: 'Airtel Money',
-    desc: 'Pay from your Airtel Money wallet',
-    color: '#E5484D',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
-        <rect x="7" y="2.5" width="10" height="19" rx="2.5" />
-        <path d="M11 18.5h2" />
-        <path d="M12 6.5l-2 3.2 2 1.3 2-1.3-2-3.2z" fill="currentColor" stroke="none" />
-      </svg>
-    ),
-  },
-  {
-    id: 'mpesa_till',
-    name: 'M-PESA Till',
-    desc: 'Pay from a registered M-PESA Till',
-    color: '#F2A93B',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
-        <path d="M3.5 9.5 12 3l8.5 6.5" />
-        <path d="M5.5 9v11h13V9" />
-        <path d="M10 20v-5.5h4V20" />
-      </svg>
-    ),
-  },
+  { id: 'card', name: 'Card', desc: 'Visa, Mastercard & more — secure Paystack checkout', icon: <Icons.CreditCard size={22} /> },
+  { id: 'mpesa', name: 'M-PESA', desc: 'Instant STK push to your M-PESA phone', icon: <Icons.Phone size={22} /> },
+  { id: 'airtel', name: 'Airtel Money', desc: 'Pay from your Airtel Money wallet', icon: <Icons.Phone size={22} /> },
+  { id: 'mpesa_till', name: 'M-PESA Till', desc: 'Pay from a registered M-PESA Till', icon: <Icons.CreditCard size={22} /> },
 ];
 
-function MethodIcon({ m, selected }) {
+function MethodIcon({ m }) {
   return (
-    <div
-      className="flex items-center justify-center flex-shrink-0 rounded-lg"
+    <span
+      aria-hidden="true"
       style={{
-        width: 46,
-        height: 46,
-        background: `${m.color}14`,
-        color: m.color,
-        border: `1px solid ${selected ? m.color : `${m.color}33`}`,
+        width: 44, height: 44, flex: '0 0 44px',
+        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+        borderRadius: 'var(--r-md)', background: 'var(--brand-tint)', color: 'var(--brand)',
       }}
     >
       {m.icon}
-    </div>
-  );
-}
-
-// ─── Status glyphs ───────────────────────────────────────────────────────────
-function CheckGlyph() {
-  return (
-    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#3ECF8E', animation: 'mz-pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both' }}>
-      <circle cx="12" cy="12" r="10" />
-      <path d="m8 12.5 2.8 2.8 5.4-6.4" style={{ animation: 'mz-draw 0.5s 0.15s ease both' }} />
-    </svg>
-  );
-}
-
-function CrossGlyph() {
-  return (
-    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#E5484D', animation: 'mz-pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both' }}>
-      <circle cx="12" cy="12" r="10" />
-      <path d="m9 9 6 6M15 9l-6 6" style={{ animation: 'mz-draw 0.5s 0.15s ease both' }} />
-    </svg>
-  );
-}
-
-function PhonePulseGlyph({ color }) {
-  return (
-    <div style={{ position: 'relative', width: 84, height: 84, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <span style={{ position: 'absolute', inset: 0, borderRadius: '50%', border: `2px solid ${color}55`, animation: 'mz-ping 1.8s ease-out infinite' }} />
-      <span style={{ position: 'absolute', inset: 0, borderRadius: '50%', border: `2px solid ${color}33`, animation: 'mz-ping 1.8s 0.6s ease-out infinite' }} />
-      <div
-        className="flex items-center justify-center rounded-full"
-        style={{ width: 56, height: 56, background: `${color}14`, border: `1px solid ${color}44`, color }}
-      >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7">
-          <rect x="7" y="2.5" width="10" height="19" rx="2.5" />
-          <path d="M11 18.5h2" />
-        </svg>
-      </div>
-    </div>
+    </span>
   );
 }
 
@@ -297,15 +225,17 @@ function WalletInner() {
   const [balance, setBalance] = useState(0);
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
   const [voucherCode, setVoucherCode] = useState('');
   const [redeemingVoucher, setRedeemingVoucher] = useState(false);
-  const [showVoucherForm, setShowVoucherForm] = useState(false);
-  const [message, setMessage] = useState(null);
+  const [voucherOpen, setVoucherOpen] = useState(false);
+  const [message, setMessage] = useState(null); // { type, text }
+  const [depositOpen, setDepositOpen] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Deposit flow state
-  const [step, setStep] = useState('method'); // method → form → processing | redirecting → success | failed
+  // Deposit flow: method → form → confirm → processing | redirecting → success | failed
+  const [step, setStep] = useState('method');
   const [method, setMethod] = useState(null);
   const [depositAmount, setDepositAmount] = useState('');
   const [phone, setPhone] = useState('');
@@ -314,7 +244,7 @@ function WalletInner() {
   const [depositing, setDepositing] = useState(false);
   const [failureMsg, setFailureMsg] = useState('');
   const [creditedAmount, setCreditedAmount] = useState(0);
-  const [offer, setOffer] = useState(null); // { enabled, multiplier, adText } | null
+  const [offer, setOffer] = useState(null);
   const [adDismissed, setAdDismissed] = useState(false);
 
   useEffect(() => {
@@ -339,16 +269,24 @@ function WalletInner() {
       const data = await res.json();
       setUser(data.user);
       await fetchWallet();
-    } catch { router.push('/login'); }
-    finally { setLoading(false); }
+    } catch {
+      router.push('/login');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const fetchWallet = async () => {
-    const res = await fetch('/api/wallet/balance');
-    if (res.ok) {
+    try {
+      const res = await fetch('/api/wallet/balance');
+      if (res.status === 401) { router.push('/login'); return; }
+      if (!res.ok) throw new Error('Wallet request failed');
       const data = await res.json();
       setBalance(data.balance || 0);
       setTransactions(data.transactions || []);
+      setLoadError('');
+    } catch (e) {
+      setLoadError(humaniseError(e, 'We could not load your wallet. Please try again.'));
     }
     try {
       const ores = await fetch('/api/wallet/offer');
@@ -398,14 +336,14 @@ function WalletInner() {
       if (res.ok) {
         setMessage({ type: 'success', text: data.message });
         setVoucherCode('');
-        setShowVoucherForm(false);
+        setVoucherOpen(false);
         setBalance(data.newBalance);
         await fetchWallet();
       } else {
-        setMessage({ type: 'error', text: data.error || 'Invalid voucher code' });
+        setMessage({ type: 'error', text: humaniseError(data.error || 'Invalid voucher code') });
       }
-    } catch {
-      setMessage({ type: 'error', text: 'Network error. Please try again.' });
+    } catch (e) {
+      setMessage({ type: 'error', text: humaniseError(e) });
     } finally {
       setRedeemingVoucher(false);
     }
@@ -418,17 +356,16 @@ function WalletInner() {
     setTill('');
     setFailureMsg('');
     setStep('form');
+    setDepositOpen(true);
   };
 
-  // "Deposit & double" CTA on the offer ad → scrolls to the deposit card and
-  // drops the user straight into the amount step (defaults to card if they
-  // haven't picked a method yet).
   const startOfferDeposit = () => {
     setAdDismissed(true);
-    document.getElementById('deposit-card')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     if (!method || step === 'method') {
-      selectMethod('card');
+      setStep('form');
+      setMethod('card');
     }
+    setDepositOpen(true);
   };
 
   const backToMethods = () => {
@@ -437,7 +374,8 @@ function WalletInner() {
     setStep('method');
   };
 
-  const handlePayNow = async () => {
+  // Validate the form, then move to the review step (no network yet).
+  const reviewDeposit = () => {
     const amount = parseFloat(depositAmount);
     if (!amount || amount < 10) { setFailureMsg('Minimum deposit is KES 10'); setStep('failed'); return; }
     if (amount > 150000) { setFailureMsg('Maximum deposit is KES 150,000'); setStep('failed'); return; }
@@ -454,7 +392,12 @@ function WalletInner() {
       setStep('failed');
       return;
     }
+    setFailureMsg('');
+    setStep('confirm');
+  };
 
+  const handlePayNow = async () => {
+    const amount = parseFloat(depositAmount);
     setFailureMsg('');
     setDepositing(true);
     setStep('processing'); // flips to 'redirecting' below for card
@@ -480,10 +423,10 @@ function WalletInner() {
         setStep('processing');
         return;
       }
-      setFailureMsg(data.error || 'Payment could not be started. Please try again.');
+      setFailureMsg(humaniseError(data.error || 'Payment could not be started. Please try again.'));
       setStep('failed');
-    } catch {
-      setFailureMsg('Network error. Please try again.');
+    } catch (e) {
+      setFailureMsg(humaniseError(e));
       setStep('failed');
     } finally {
       setDepositing(false);
@@ -500,13 +443,23 @@ function WalletInner() {
     setStep('method');
   };
 
+  const openDeposit = () => {
+    resetDeposit();
+    setDepositOpen(true);
+  };
+
+  const closeDeposit = () => {
+    if (depositing) return;
+    setDepositOpen(false);
+    resetDeposit();
+  };
+
   // ── Derived helpers ──
   const selectedMethod = PAYMENT_METHODS.find((m) => m.id === method) || null;
   const phoneNorm = (method === 'mpesa' || method === 'airtel') ? normalizePhoneClient(phone) : null;
   const quickAmounts = [100, 200, 500, 1000, 2000];
   const amountLabel = depositAmount ? fmtKes(parseFloat(depositAmount) || 0) : '';
 
-  // Deposit-offer derived values (offer state is fetched from /api/wallet/offer)
   const offerActive = !!(offer && offer.enabled);
   const offerMult = Number(offer?.multiplier) > 1 ? Number(offer.multiplier) : 2;
   const offerAmt = parseFloat(depositAmount) || 0;
@@ -515,542 +468,394 @@ function WalletInner() {
 
   if (loading) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <div className="spinner" />
-      </div>
+      <AppBackground variant="dashboard">
+        <div className="container-site" style={{ paddingTop: 26, paddingBottom: 90, maxWidth: 900 }}>
+          <SkeletonText lines={2} />
+          <div style={{ height: 140 }} />
+          <SkeletonText lines={4} />
+        </div>
+      </AppBackground>
     );
   }
 
   return (
-    <div className="py-10 sm:py-14">
-      <div className="container-site max-w-4xl">
+    <AppBackground variant="dashboard">
+      <div className="container-site" style={{ paddingTop: 26, paddingBottom: 90, maxWidth: 900 }}>
+        <PageHeader
+          title="Payments & wallet"
+          description="Add money, redeem vouchers, and use your balance to pay for WhatsApp bot plans."
+          icon={<Icons.Wallet size={20} />}
+          actions={
+            <>
+              <Button variant="ghost" onClick={() => setVoucherOpen(true)} icon={<Icons.Ticket size={16} />}>Redeem voucher</Button>
+              <Button onClick={openDeposit} icon={<Icons.Plus size={16} />}>Add money</Button>
+            </>
+          }
+          breadcrumb={['Dashboard', 'Wallet']}
+        />
 
-        {/* ── Header ── */}
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-5 mb-10">
-          <div>
-            <p className="eyebrow">Wallet</p>
-            <h1 className="headline mt-3" style={{ fontSize: 'clamp(1.9rem, 4vw, 2.6rem)' }}>
-              My wallet<span className="accent">.</span>
-            </h1>
-            <p className="text-sm mt-2" style={{ color: '#79818A' }}>
-              Deposit funds and use them to deploy panels instantly.
-            </p>
-          </div>
-          <a
-            href="https://t.me/mzazitech"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn btn-ghost"
-            style={{ padding: '11px 18px', fontSize: 11 }}
-          >
-            <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5">
-              <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
-            </svg>
-            Telegram support
-          </a>
-        </div>
-
-        {/* ── Alert ── */}
         {message && (
-          <div className="mb-6 px-4 py-3 text-sm" style={{
-            background: message.type === 'success' ? 'rgba(62,207,142,0.08)' : message.type === 'error' ? 'rgba(229,72,77,0.08)' : 'rgba(76,125,252,0.08)',
-            border: `1px solid ${message.type === 'success' ? 'rgba(62,207,142,0.3)' : message.type === 'error' ? 'rgba(229,72,77,0.3)' : 'rgba(76,125,252,0.3)'}`,
-            color: message.type === 'success' ? '#3ECF8E' : message.type === 'error' ? '#E5484D' : '#AEB5BD',
-          }}>
-            {message.text}
+          <div style={{ marginBottom: 20 }} role="status" aria-live="polite">
+            <Alert kind={message.type === 'success' ? 'success' : message.type === 'error' ? 'error' : 'info'}>
+              {message.text}
+            </Alert>
           </div>
         )}
 
-        {/* ── Warranty Notice ── */}
-        <div className="mb-8 flex items-start gap-3 px-4 py-3 text-xs"
-          style={{ background: 'rgba(242,169,59,0.05)', border: '1px solid rgba(242,169,59,0.2)' }}>
-          <span className="mono flex-shrink-0" style={{ color: '#F2A93B' }}>WRN</span>
-          <p style={{ color: '#79818A', lineHeight: 1.7 }}>
-            <span className="font-semibold" style={{ color: '#F2A93B' }}>Panel warranty: </span>
-            Pterodactyl panel replacement warranty is valid for <strong style={{ color: '#E9E7E2' }}>2 weeks</strong> from purchase date.
-            Contact <a href="https://t.me/mzazitech" target="_blank" rel="noopener noreferrer" className="link" style={{ fontSize: 12 }}>support</a> within this period for a free replacement.
-          </p>
-        </div>
+        {loadError && (
+          <div style={{ marginBottom: 20 }}>
+            <Alert kind="error" title="We couldn’t refresh your wallet">
+              {loadError}{' '}
+              <button type="button" className="link" onClick={fetchWallet} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Try again</button>
+            </Alert>
+          </div>
+        )}
 
-        {/* ── Deposit Offer — screen ad (settings-driven) ── */}
+        {/* ── Balance ── */}
+        <Card accent className="anim-fade-up" style={{ marginBottom: 20 }}>
+          <p className="stat-label" style={{ margin: 0 }}>Available balance</p>
+          <p className="stat-num tnum" style={{ margin: '6px 0 0', color: 'var(--brand)' }}>{fmtKes(balance)}</p>
+          {user && <p style={{ margin: '8px 0 0', fontSize: 12.5, color: 'var(--dim)' }}>Account: {user.email}</p>}
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 16 }}>
+            <Button onClick={openDeposit} icon={<Icons.Plus size={16} />}>Add money</Button>
+            <Button variant="ghost" href="/subscription" icon={<Icons.Sparkles size={16} />}>Spend on a plan</Button>
+          </div>
+        </Card>
+
+        {/* ── Deposit offer ── */}
         {offer?.enabled && !adDismissed && (
-          <div className="relative mb-7 overflow-hidden"
-            style={{
-              animation: 'mz-ad-in 0.55s cubic-bezier(0.16, 1, 0.3, 1) both',
-              background: 'radial-gradient(120% 180% at 0% 0%, rgba(242,169,59,0.30) 0%, rgba(20,18,16,0.55) 42%, rgba(15,14,12,0.85) 100%), linear-gradient(90deg, #1B1712 0%, #2A2115 55%, #1B1712 100%)',
-              border: '1px solid rgba(242,169,59,0.55)',
-              borderRadius: 12,
-              boxShadow: '0 14px 34px rgba(0,0,0,0.38), 0 0 0 1px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.08)',
-            }}>
-            {/* shine sweep */}
-            <div style={{
-              position: 'absolute', inset: 0, pointerEvents: 'none',
-              background: 'linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.10) 46%, rgba(255,255,255,0.03) 52%, transparent 68%)',
-              backgroundSize: '220% 100%',
-              backgroundRepeat: 'no-repeat',
-              animation: 'mz-ad-shine 3.2s ease-in-out infinite',
-            }} />
-
-            <div className="flex items-center gap-4 px-5 py-5 sm:px-6">
-              {/* animated 2x badge */}
-              <div className="flex-shrink-0 relative flex items-center justify-center"
-                style={{ width: 84, height: 84, animation: 'mz-ad-bounce 2.2s ease-in-out infinite' }}>
-                <div style={{
-                  position: 'absolute', inset: 0, borderRadius: '50%',
-                  background: 'radial-gradient(circle at 35% 30%, #FFD98A, #F2A93B 55%, #B26E10)',
-                  boxShadow: '0 8px 20px rgba(242,169,59,0.45), inset 0 -2px 6px rgba(0,0,0,0.25)',
-                }} />
-                <span className="mono font-extrabold" style={{ color: '#201507', fontSize: 34, letterSpacing: '-0.04em', textShadow: '0 1px 0 rgba(255,255,255,0.25)' }}>
-                  ×{offerMult}
-                </span>
-                <span style={{
-                  position: 'absolute', top: -6, right: -6, fontSize: 20,
-                  animation: 'mz-ad-wiggle 1.6s ease-in-out infinite',
-                }}>🎁</span>
-              </div>
-
-              {/* copy */}
-              <div className="flex-1 min-w-0">
-                <p className="mono text-[9px] uppercase tracking-[0.22em] mb-1" style={{ color: '#F2A93B' }}>
-                  ⚡ Limited offer · auto-credited
-                </p>
-                <p className="text-base sm:text-lg font-extrabold leading-snug" style={{ color: '#FFEFD6', textShadow: '0 1px 2px rgba(0,0,0,0.4)' }}>
-                  {offer.adText || `Deposit & get ${offer.multiplier}× your money`}
-                </p>
-                <p className="text-xs mt-1.5 hidden xs:block sm:block" style={{ color: '#C9B48F', lineHeight: 1.6 }}>
-                  Any top-up is <strong style={{ color: '#FFD98A' }}>{offer.multiplier}×</strong> — you get{' '}
-                  <strong style={{ color: '#FFD98A' }}>{offer.multiplier - 1}× extra</strong> free in your wallet the moment payment is confirmed.
-                </p>
-              </div>
-
-              {/* CTA */}
-              <button
-                onClick={startOfferDeposit}
-                className="flex-shrink-0 font-bold"
+          <Card className="anim-fade-up d1" style={{ marginBottom: 20, borderColor: 'var(--brand-soft)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+              <span
+                aria-hidden="true"
+                className="anim-pulse"
                 style={{
-                  background: 'linear-gradient(180deg, #FFD98A, #F2A93B 60%, #D98F1F)',
-                  color: '#201507',
-                  border: 'none',
-                  borderRadius: 10,
-                  padding: '13px 18px',
-                  fontSize: 13,
-                  boxShadow: '0 6px 16px rgba(242,169,59,0.35), inset 0 1px 0 rgba(255,255,255,0.5)',
-                  cursor: 'pointer',
-                  whiteSpace: 'nowrap',
+                  width: 54, height: 54, flex: '0 0 54px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                  borderRadius: '50%', background: 'var(--brand-tint)', color: 'var(--brand)',
+                  fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 20,
                 }}
               >
-                🚀 Deposit & double
-              </button>
+                ×{offerMult}
+              </span>
+              <div style={{ flex: 1, minWidth: 180 }}>
+                <p className="eyebrow" style={{ margin: 0 }}>Limited offer</p>
+                <p style={{ margin: '6px 0 0', fontWeight: 700, color: 'var(--ink)' }}>
+                  {offer.adText || `Deposit & get ${offerMult}× your money`}
+                </p>
+                <p style={{ margin: '4px 0 0', fontSize: 13, color: 'var(--muted)' }}>
+                  Any top-up is {offerMult}× — you get {offerMult - 1}× extra credited the moment payment is confirmed.
+                </p>
+              </div>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                <Button onClick={startOfferDeposit} icon={<Icons.Zap size={16} />}>Deposit & double</Button>
+                <Button variant="ghost" onClick={() => setAdDismissed(true)} aria-label="Dismiss offer"><Icons.X size={16} /></Button>
+              </div>
+            </div>
+          </Card>
+        )}
 
-              {/* dismiss */}
+        {/* ── Recent transactions ── */}
+        <Card id="history" className="anim-fade-up d2">
+          <CardHeader
+            title="Recent transactions"
+            description="Your latest 10 wallet movements."
+            icon={<Icons.CreditCard size={18} />}
+          />
+
+          {transactions.length === 0 ? (
+            <EmptyState
+              icon={<Icons.CreditCard size={26} />}
+              title="You don't have any payments yet."
+              description="Add money to your wallet and your payments will show up here."
+              action={<Button onClick={openDeposit} icon={<Icons.Plus size={16} />}>Add money</Button>}
+            />
+          ) : (
+            <DataTable columns={['Date', 'Description', 'Type', 'Amount', 'Status', 'Receipt']}>
+              {transactions.map((t) => (
+                <tr key={t.id}>
+                  <td data-label="Date" className="mono tnum" style={{ color: 'var(--muted)', whiteSpace: 'nowrap' }}>
+                    {new Date(t.created_at).toLocaleDateString()}
+                  </td>
+                  <td data-label="Description" style={{ color: 'var(--ink-2)' }}>{t.description || t.type}</td>
+                  <td data-label="Type">
+                    <Badge tone={t.type === 'deposit' ? 'good' : 'blue'}>{t.type}</Badge>
+                  </td>
+                  <td data-label="Amount" className="mono tnum" style={{ color: t.type === 'deposit' ? 'var(--good)' : 'var(--bad)', fontWeight: 700, whiteSpace: 'nowrap' }}>
+                    {t.type === 'deposit' ? '+' : '−'}{fmtKes(t.amount)}
+                    {t.type === 'deposit' && Number(t.bonus_amount) > 0 && (
+                      <span style={{ display: 'block', fontWeight: 400, color: 'var(--brand)', fontSize: 11, marginTop: 2 }}>
+                        +{fmtKes(t.bonus_amount)} bonus
+                      </span>
+                    )}
+                  </td>
+                  <td data-label="Status">
+                    <Badge tone={t.status === 'success' ? 'good' : 'warn'}>{t.status}</Badge>
+                  </td>
+                  <td data-label="Receipt">
+                    <Button size="sm" variant="dark" onClick={() => downloadReceipt(t, user?.email, balance)}>Receipt</Button>
+                  </td>
+                </tr>
+              ))}
+            </DataTable>
+          )}
+        </Card>
+
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: 'space-between', alignItems: 'center', marginTop: 20 }}>
+          <p style={{ margin: 0, fontSize: 12.5, color: 'var(--muted)' }}>
+            Need a full history or a panel issue fixed?&nbsp;
+            <a className="link" href="https://t.me/mzazitech" target="_blank" rel="noopener noreferrer">Contact support on Telegram →</a>
+          </p>
+          <Button variant="ghost" size="sm" href="/payments">Open payments page</Button>
+        </div>
+      </div>
+
+      {/* ── Deposit modal ── */}
+      <Modal
+        open={depositOpen}
+        onClose={closeDeposit}
+        size="lg"
+        title={
+          step === 'method' ? 'Add money'
+            : step === 'form' ? `Deposit · ${METHOD_LABELS[method] || ''}`
+              : step === 'confirm' ? 'Confirm your deposit'
+                : step === 'processing' ? 'Payment in progress'
+                  : step === 'redirecting' ? 'Secure checkout'
+                    : step === 'success' ? 'Payment successful'
+                      : 'Payment failed'
+        }
+        description={step === 'method' ? 'Choose how you want to pay. Deposits are processed securely and your wallet is credited once payment is confirmed.' : undefined}
+        closeOnBackdrop={!depositing}
+      >
+        {/* STEP 1 — method */}
+        {step === 'method' && (
+          <div style={{ display: 'grid', gap: 10 }}>
+            {PAYMENT_METHODS.map((m) => (
               <button
-                onClick={() => setAdDismissed(true)}
-                aria-label="Dismiss ad"
-                className="flex-shrink-0"
-                style={{ position: 'absolute', top: 6, right: 8, background: 'transparent', border: 'none', color: '#8A7A5C', fontSize: 17, cursor: 'pointer', lineHeight: 1 }}
-                title="Dismiss"
+                key={m.id}
+                type="button"
+                onClick={() => selectMethod(m.id)}
+                className="option-card"
+                style={{ display: 'flex', alignItems: 'center', gap: 14, width: '100%', textAlign: 'left', cursor: 'pointer' }}
               >
-                ✕
+                <MethodIcon m={m} />
+                <span style={{ flex: 1, minWidth: 0 }}>
+                  <span style={{ display: 'block', fontWeight: 700, color: 'var(--ink)' }}>{m.name}</span>
+                  <span style={{ display: 'block', fontSize: 12.5, color: 'var(--muted)' }}>{m.desc}</span>
+                </span>
+                <Icons.ChevronRight size={16} />
               </button>
+            ))}
+            <p style={{ margin: '4px 0 0', fontSize: 12, color: 'var(--dim)', lineHeight: 1.6 }}>
+              Deposits are processed securely by Paystack. Your wallet is credited only after the payment is confirmed.
+            </p>
+          </div>
+        )}
+
+        {/* STEP 2 — form */}
+        {step === 'form' && selectedMethod && (
+          <div>
+            <div style={{ display: 'grid', gap: 10, marginBottom: 14 }}>
+              <label className="label" htmlFor="dep-amount">Amount (KES)</label>
+              <input
+                id="dep-amount"
+                type="number"
+                min="10"
+                max="150000"
+                value={depositAmount}
+                onChange={(e) => setDepositAmount(e.target.value)}
+                placeholder="Enter amount…"
+                className="input"
+                inputMode="numeric"
+              />
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                {quickAmounts.map((amt) => (
+                  <button
+                    key={amt}
+                    type="button"
+                    onClick={() => setDepositAmount(String(amt))}
+                    className="btn btn-sm"
+                    style={{
+                      background: depositAmount === String(amt) ? 'var(--brand-tint)' : 'var(--surface-2)',
+                      color: depositAmount === String(amt) ? 'var(--brand)' : 'var(--muted)',
+                      border: `1px solid ${depositAmount === String(amt) ? 'var(--brand-soft)' : 'var(--line)'}`,
+                    }}
+                  >
+                    {fmtKes(amt)}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {offerActive && offerAmt > 0 && (
+              <div style={{ marginBottom: 14 }}>
+                <Alert kind="brand">
+                  With the {offerMult}× offer you’ll receive <strong>{fmtKes(offerTotal)}</strong> ({fmtKes(offerBonus)} bonus).
+                </Alert>
+              </div>
+            )}
+
+            {(method === 'mpesa' || method === 'airtel') && (
+              <Field label={method === 'mpesa' ? 'M-PESA phone number' : 'Airtel Money phone number'} id="dep-phone" hint="We’ll send the payment prompt to this number.">
+                <Input
+                  id="dep-phone"
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="e.g. 0712345678"
+                  inputMode="tel"
+                />
+                {phone.length >= 9 && (
+                  <p className="mono" style={{ margin: '6px 0 0', fontSize: 12, color: phoneNorm?.ok ? 'var(--good)' : 'var(--bad)' }}>
+                    {phoneNorm?.ok ? `Will send to → ${phoneNorm.phone}` : phoneNorm?.error || ''}
+                  </p>
+                )}
+              </Field>
+            )}
+
+            {method === 'mpesa_till' && (
+              <Field label="M-PESA Till number" id="dep-till" hint="Enter the Till number (5–8 digits) — not your personal M-PESA number.">
+                <Input
+                  id="dep-till"
+                  type="text"
+                  inputMode="numeric"
+                  value={till}
+                  onChange={(e) => setTill(e.target.value.replace(/[^\d]/g, '').slice(0, 8))}
+                  placeholder="e.g. 522533"
+                />
+              </Field>
+            )}
+
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 4 }}>
+              <Button onClick={reviewDeposit} disabled={!depositAmount} icon={<Icons.ArrowRight size={16} />}>Review deposit</Button>
+              <Button variant="ghost" onClick={backToMethods}>Change method</Button>
             </div>
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* ── Balance Card ── */}
-          <div className="card p-6 flex flex-col justify-between">
-            <div>
-              <p className="mono text-[10px] uppercase tracking-[0.18em] mb-3" style={{ color: '#4C535B' }}>Available balance</p>
-              <p className="stat-num" style={{ color: '#F2A93B', fontSize: 'clamp(2.2rem, 5vw, 3rem)' }}>
-                {fmtKes(balance)}
-              </p>
-              {user && (
-                <p className="mono text-[11px] mt-4" style={{ color: '#4C535B' }}>
-                  Account: <span style={{ color: '#AEB5BD' }}>{user.email}</span>
-                </p>
-              )}
+        {/* STEP 3 — confirm */}
+        {step === 'confirm' && selectedMethod && (
+          <div>
+            <dl style={{ margin: 0, display: 'grid', gap: 12, padding: 16, background: 'var(--surface-2)', border: '1px solid var(--line)', borderRadius: 'var(--r-md)' }}>
+              {[
+                ['Amount', amountLabel],
+                ['Method', METHOD_LABELS[method]],
+                ...(phone ? [['Phone', maskPhone(phoneNorm?.phone || phone)]] : []),
+                ...(till ? [['Till', till]] : []),
+                ...(offerActive && offerAmt > 0 ? [['Offer bonus', `+${fmtKes(offerBonus)}`]] : []),
+                ['You’ll receive', fmtKes(offerActive && offerAmt > 0 ? offerTotal : offerAmt)],
+              ].map(([k, v]) => (
+                <div key={k} style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
+                  <dt style={{ color: 'var(--muted)', fontSize: 13.5 }}>{k}</dt>
+                  <dd className="mono tnum" style={{ margin: 0, fontWeight: 700, color: 'var(--ink)' }}>{v}</dd>
+                </div>
+              ))}
+            </dl>
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 16 }}>
+              <Button onClick={handlePayNow} icon={<Icons.Check size={16} />}>Confirm & pay</Button>
+              <Button variant="ghost" onClick={() => setStep('form')} disabled={depositing}>Back</Button>
             </div>
           </div>
+        )}
 
-          {/* ── Deposit Card (multi-step) ── */}
-          <div id="deposit-card" className="card p-6">
-            <p className="mono text-[10px] uppercase tracking-[0.18em] mb-4" style={{ color: '#4C535B' }}>
-              {step === 'method' ? 'Deposit funds' : step === 'form' ? `Deposit · ${METHOD_LABELS[method] || ''}` : step === 'processing' ? 'Payment in progress' : step === 'redirecting' ? 'Secure checkout' : step === 'success' ? 'Payment complete' : 'Payment failed'}
+        {/* STEP 4a — mobile money processing */}
+        {step === 'processing' && (
+          <div style={{ textAlign: 'center', padding: '10px 0' }} role="status" aria-live="polite">
+            <span className="spinner" style={{ margin: '0 auto 16px' }} />
+            <p style={{ margin: 0, fontWeight: 700, color: 'var(--ink)' }}>Payment request sent to your phone.</p>
+            <p style={{ margin: '8px 0 0', color: 'var(--muted)', fontSize: 14 }}>
+              Check your {METHOD_LABELS[method]} phone and complete the authorization. We’re watching for confirmation — nothing is frozen.
             </p>
-
-            {/* STEP 1 — method selection */}
-            {step === 'method' && (
-              <div>
-                <div className="grid grid-cols-1 gap-2.5">
-                  {PAYMENT_METHODS.map((m) => (
-                    <button
-                      key={m.id}
-                      type="button"
-                      onClick={() => selectMethod(m.id)}
-                      className="flex items-center gap-3.5 w-full text-left px-4 py-3.5 transition-all"
-                      style={{
-                        background: '#0F1215',
-                        border: '1px solid #262C33',
-                        borderRadius: 6,
-                        cursor: 'pointer',
-                      }}
-                      onMouseEnter={(e) => { e.currentTarget.style.borderColor = `${m.color}88`; }}
-                      onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#262C33'; }}
-                    >
-                      <MethodIcon m={m} selected={false} />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold" style={{ color: '#E9E7E2' }}>{m.name}</p>
-                        <p className="text-xs mt-0.5" style={{ color: '#79818A' }}>{m.desc}</p>
-                      </div>
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 flex-shrink-0" style={{ color: m.color }}>
-                        <path d="m9 6 6 6-6 6" />
-                      </svg>
-                    </button>
-                  ))}
-                </div>
-                <p className="text-[11px] mt-4" style={{ color: '#4C535B', lineHeight: 1.6 }}>
-                  Deposits are processed securely by Paystack. Your wallet is credited only after Paystack confirms the payment.
-                </p>
-              </div>
-            )}
-
-            {/* STEP 2 — amount + details */}
-            {step === 'form' && selectedMethod && (
-              <div>
-                <div className="mb-3">
-                  <label className="label">Amount (KES)</label>
-                  <input
-                    type="number"
-                    min="10"
-                    max="150000"
-                    value={depositAmount}
-                    onChange={e => setDepositAmount(e.target.value)}
-                    placeholder="Enter amount…"
-                    className="input"
-                    required
-                  />
-                  {offerActive && offerAmt > 0 && (
-                    <div className="mt-2 px-3 py-2 text-xs flex items-center justify-between"
-                      style={{ background: 'rgba(242,169,59,0.07)', border: '1px solid rgba(242,169,59,0.28)', borderRadius: 6 }}>
-                      <span style={{ color: '#AEB5BD' }}>
-                        🎁 With the {offerMult}× offer you'll receive
-                      </span>
-                      <span className="mono font-semibold" style={{ color: '#F2A93B' }}>
-                        {fmtKes(offerTotal)} <span style={{ color: '#79818A', fontWeight: 400 }}>({fmtKes(offerBonus)} bonus)</span>
-                      </span>
-                    </div>
-                  )}
-                </div>
-
-                {method === 'mpesa' || method === 'airtel' ? (
-                  <div className="mb-3">
-                    <label className="label">{method === 'mpesa' ? 'M-PESA phone number' : 'Airtel Money phone number'}</label>
-                    <input
-                      type="tel"
-                      value={phone}
-                      onChange={e => setPhone(e.target.value)}
-                      placeholder="e.g. 0712345678"
-                      className="input"
-                      required
-                    />
-                    {phone.length >= 9 && (
-                      <p className="mono text-[11px] mt-1.5" style={{ color: phoneNorm?.ok ? '#3ECF8E' : '#E5484D' }}>
-                        {phoneNorm?.ok ? `Will send to → ${phoneNorm.phone}` : phoneNorm?.error || ''}
-                      </p>
-                    )}
-                  </div>
-                ) : method === 'mpesa_till' ? (
-                  <div className="mb-3">
-                    <label className="label">M-PESA Till number</label>
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      value={till}
-                      onChange={e => setTill(e.target.value.replace(/[^\d]/g, '').slice(0, 8))}
-                      placeholder="e.g. 522533"
-                      className="input"
-                      required
-                    />
-                    <p className="text-[11px] mt-1.5" style={{ color: '#4C535B' }}>
-                      Enter the <strong style={{ color: '#AEB5BD' }}>Till number</strong> (5–8 digits) — not your personal M-PESA number.
-                    </p>
-                  </div>
-                ) : null}
-
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {quickAmounts.map(amt => (
-                    <button key={amt} type="button" onClick={() => setDepositAmount(String(amt))}
-                      className="mono text-[11px] px-3 py-1.5 transition-colors"
-                      style={{
-                        background: depositAmount === String(amt) ? 'rgba(242,169,59,0.12)' : '#0F1215',
-                        color: depositAmount === String(amt) ? '#F2A93B' : '#79818A',
-                        border: `1px solid ${depositAmount === String(amt) ? 'rgba(242,169,59,0.45)' : '#262C33'}`,
-                        cursor: 'pointer',
-                      }}>
-                      {fmtKes(amt)}
-                    </button>
-                  ))}
-                </div>
-
-                <button type="button" onClick={handlePayNow} disabled={depositing} className="btn btn-primary w-full" style={{ opacity: depositing ? 0.7 : 1, cursor: depositing ? 'wait' : 'pointer' }}>
-                  {depositing ? 'Contacting Paystack…' : `Pay ${amountLabel || '—'}`}
-                </button>
-                <button type="button" onClick={backToMethods} className="w-full mt-2.5 text-[11px] mono uppercase tracking-[0.12em]" style={{ color: '#79818A', background: 'transparent', border: 'none', cursor: 'pointer' }}>
-                  ← Choose another payment method
-                </button>
-              </div>
-            )}
-
-            {/* STEP 3a — mobile money processing */}
-            {step === 'processing' && selectedMethod && (
-              <div className="text-center py-4">
-                <div className="flex justify-center mb-6"><PhonePulseGlyph color={selectedMethod.color} /></div>
-                <h3 className="text-base font-bold" style={{ color: '#E9E7E2' }}>Payment request sent to your phone.</h3>
-                <p className="text-sm mt-2" style={{ color: '#AEB5BD', lineHeight: 1.7 }}>
-                  Check your {METHOD_LABELS[method]} phone and complete the authorization.
-                </p>
-                <p className="mono text-[11px] uppercase tracking-[0.16em] mt-4" style={{ color: '#4C535B' }}>
-                  Waiting for payment confirmation…
-                </p>
-
-                <div className="mt-6 rounded-lg px-4 py-3.5 text-left" style={{ background: '#0F1215', border: '1px solid #262C33' }}>
-                  {[
-                    ['Amount', amountLabel],
-                    ['Method', METHOD_LABELS[method]],
-                    ...(phone ? [['Phone', maskPhone(phoneNorm?.phone || phone)]] : []),
-                    ...(till ? [['Till', till]] : []),
-                  ].map(([k, v]) => (
-                    <div key={k} className="flex items-center justify-between py-1.5">
-                      <span className="mono text-[10px] uppercase tracking-[0.14em]" style={{ color: '#4C535B' }}>{k}</span>
-                      <span className="mono text-xs font-semibold" style={{ color: '#E9E7E2' }}>{v}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <p className="text-[11px] mt-4" style={{ color: '#4C535B', lineHeight: 1.7 }}>
-                  You'll receive an authorization prompt on your phone. This request expires in 3 minutes.
-                  Your wallet is credited automatically once Paystack confirms the payment.
-                </p>
-                <button type="button" onClick={resetDeposit} className="mt-4 text-[11px] mono uppercase tracking-[0.12em]" style={{ color: '#79818A', background: 'transparent', border: 'none', cursor: 'pointer' }}>
-                  Cancel deposit
-                </button>
-              </div>
-            )}
-
-            {/* STEP 3b — card redirect */}
-            {step === 'redirecting' && (
-              <div className="text-center py-8">
-                <div className="flex justify-center mb-6"><div className="spinner" /></div>
-                <h3 className="text-base font-bold" style={{ color: '#E9E7E2' }}>Redirecting to Paystack secure checkout…</h3>
-                <p className="text-sm mt-2" style={{ color: '#79818A', lineHeight: 1.7 }}>
-                  Complete the payment on Paystack's secure page. You'll be brought back here automatically.
-                </p>
-              </div>
-            )}
-
-            {/* STEP 4a — success */}
-            {step === 'success' && (
-              <div className="text-center py-4">
-                <div className="flex justify-center mb-5"><CheckGlyph /></div>
-                <h3 className="text-lg font-bold" style={{ color: '#E9E7E2' }}>Payment successful.</h3>
-                <p className="stat-num mt-3" style={{ color: '#3ECF8E', fontSize: 'clamp(1.7rem, 4vw, 2.3rem)' }}>
-                  {fmtKes(creditedAmount)}
-                </p>
-                <p className="text-sm mt-3" style={{ color: '#79818A', lineHeight: 1.7 }}>
-                  Your wallet has been credited. New balance: <strong style={{ color: '#F2A93B' }}>{fmtKes(balance)}</strong>
-                </p>
-                <div className="flex flex-col sm:flex-row gap-3 mt-6">
-                  <button type="button" onClick={resetDeposit} className="btn btn-primary flex-1" style={{ cursor: 'pointer' }}>
-                    Make another deposit
-                  </button>
-                  <a
-                    href="#history"
-                    className="btn btn-ghost flex-1"
-                    style={{ cursor: 'pointer', textAlign: 'center' }}
-                    onClick={(e) => { e.preventDefault(); document.getElementById('history')?.scrollIntoView({ behavior: 'smooth' }); }}
-                  >
-                    View transactions
-                  </a>
-                </div>
-              </div>
-            )}
-
-            {/* STEP 4b — failed */}
-            {step === 'failed' && (
-              <div className="text-center py-4">
-                <div className="flex justify-center mb-5"><CrossGlyph /></div>
-                <h3 className="text-base font-bold" style={{ color: '#E9E7E2' }}>Payment not completed.</h3>
-                <p className="text-sm mt-2" style={{ color: '#AEB5BD', lineHeight: 1.7 }}>{failureMsg}</p>
-                <div className="flex flex-col sm:flex-row gap-3 mt-6">
-                  <button type="button" onClick={() => setStep('form')} className="btn btn-primary flex-1" style={{ cursor: 'pointer' }}>
-                    Try again
-                  </button>
-                  <button type="button" onClick={backToMethods} className="btn btn-ghost flex-1" style={{ cursor: 'pointer' }}>
-                    Change payment method
-                  </button>
-                </div>
-              </div>
-            )}
+            <p className="mono" style={{ margin: '16px 0 0', fontSize: 11.5, color: 'var(--dim)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+              Processing payment…
+            </p>
+            <div style={{ marginTop: 18 }}>
+              <Button variant="ghost" onClick={closeDeposit}>Cancel</Button>
+            </div>
           </div>
-        </div>
+        )}
 
-        {/* ── Voucher Top-Up ── */}
-        <div className="card p-6 mt-6">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-            <div>
-              <p className="mono text-[10px] uppercase tracking-[0.18em]" style={{ color: '#4C535B' }}>Top up with voucher</p>
-              <p className="text-xs mt-1" style={{ color: '#79818A' }}>Enter a 6-character code given by admin to credit your wallet instantly.</p>
-            </div>
-            <button
-              onClick={() => { setShowVoucherForm(v => !v); setMessage(null); setVoucherCode(''); }}
-              className="btn btn-ghost"
-              style={{ padding: '10px 16px', fontSize: 11 }}>
-              {showVoucherForm ? 'Cancel' : 'Top up with voucher'}
-            </button>
+        {/* STEP 4b — card redirect */}
+        {step === 'redirecting' && (
+          <div style={{ textAlign: 'center', padding: '10px 0' }} role="status" aria-live="polite">
+            <span className="spinner" style={{ margin: '0 auto 16px' }} />
+            <p style={{ margin: 0, fontWeight: 700, color: 'var(--ink)' }}>Redirecting to secure checkout…</p>
+            <p style={{ margin: '8px 0 0', color: 'var(--muted)', fontSize: 14 }}>
+              Complete the payment on the secure page. You’ll be brought straight back here.
+            </p>
           </div>
-          {showVoucherForm && (
-            <form onSubmit={handleRedeemVoucher} className="mt-5 flex flex-col sm:flex-row gap-3 items-end">
-              <div className="flex-1 w-full">
-                <label className="label">Voucher code</label>
-                <input
-                  type="text"
-                  value={voucherCode}
-                  onChange={e => setVoucherCode(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6))}
-                  placeholder="Enter 6-character code…"
-                  maxLength={6}
-                  className="input font-mono tracking-[0.3em]"
-                  required
-                  autoFocus
-                />
-              </div>
-              <button
-                type="submit"
-                disabled={redeemingVoucher || voucherCode.length !== 6}
-                className="btn btn-primary"
-                style={{ opacity: (redeemingVoucher || voucherCode.length !== 6) ? 0.5 : 1, cursor: (redeemingVoucher || voucherCode.length !== 6) ? 'not-allowed' : 'pointer' }}>
-                {redeemingVoucher ? 'Activating…' : 'Activate'}
-              </button>
-            </form>
-          )}
-        </div>
+        )}
 
-        {/* ── Transaction History ── */}
-        <div className="card mt-8 overflow-hidden" id="history">
-          <header className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid #1B2026' }}>
-            <div>
-              <h2 className="display text-base font-bold" style={{ color: '#E9E7E2' }}>Transaction history</h2>
-              <p className="mono text-[10px] uppercase tracking-[0.14em] mt-0.5" style={{ color: '#4C535B' }}>
-                {transactions.length} record{transactions.length !== 1 ? 's' : ''}
-              </p>
+        {/* STEP 5a — success */}
+        {step === 'success' && (
+          <div style={{ textAlign: 'center', padding: '10px 0' }} role="status" aria-live="polite">
+            <span style={{ display: 'inline-flex', color: 'var(--good)' }} aria-hidden="true"><Icons.CheckCircle size={52} /></span>
+            <h3 style={{ margin: '14px 0 0', fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 700, color: 'var(--ink)' }}>
+              ✓ Payment successful
+            </h3>
+            <p style={{ margin: '6px 0 0', color: 'var(--ink-2)' }}>Your payment was received.</p>
+            <p className="stat-num tnum" style={{ margin: '14px 0 0', color: 'var(--good)' }}>{fmtKes(creditedAmount)}</p>
+            <p style={{ margin: '8px 0 0', fontSize: 13.5, color: 'var(--muted)' }}>
+              New balance: <strong style={{ color: 'var(--brand)' }}>{fmtKes(balance)}</strong>
+            </p>
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center', marginTop: 18 }}>
+              <Button onClick={() => { setDepositOpen(false); resetDeposit(); }}>Done</Button>
+              <Button variant="ghost" onClick={resetDeposit}>Make another deposit</Button>
             </div>
-          </header>
+          </div>
+        )}
 
-          {transactions.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="mono text-[11px] uppercase tracking-[0.16em]" style={{ color: '#4C535B' }}>No transactions yet</p>
+        {/* STEP 5b — failed */}
+        {step === 'failed' && (
+          <div style={{ textAlign: 'center', padding: '10px 0' }} role="alert">
+            <span style={{ display: 'inline-flex', color: 'var(--bad)' }} aria-hidden="true"><Icons.AlertCircle size={52} /></span>
+            <h3 style={{ margin: '14px 0 0', fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 700, color: 'var(--ink)' }}>
+              ✕ Payment failed
+            </h3>
+            <p style={{ margin: '6px 0 0', color: 'var(--ink-2)' }}>Your payment was not completed.</p>
+            {failureMsg && <p style={{ margin: '8px 0 0', fontSize: 13, color: 'var(--muted)' }}>{failureMsg}</p>}
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center', marginTop: 18 }}>
+              <Button onClick={() => setStep('form')}>Try again</Button>
+              <Button variant="ghost" onClick={backToMethods}>Change method</Button>
             </div>
-          ) : (
-            <div className="scroll-x">
-              <table className="table-plain">
-                <thead>
-                  <tr>
-                    {['Date', 'Description', 'Type', 'Amount', 'Status', 'Receipt'].map(h => (
-                      <th key={h}>{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {transactions.map(t => (
-                    <tr key={t.id}>
-                      <td data-label="Date" className="mono text-[11px] whitespace-nowrap" style={{ color: '#79818A' }}>
-                        {new Date(t.created_at).toLocaleDateString()}
-                      </td>
-                      <td data-label="Description" style={{ color: '#AEB5BD' }}>{t.description || t.type}</td>
-                      <td data-label="Type">
-                        <span className="tag" style={{ color: t.type === 'deposit' ? '#3ECF8E' : '#E5484D', borderColor: t.type === 'deposit' ? 'rgba(62,207,142,0.3)' : 'rgba(229,72,77,0.3)' }}>
-                          {t.type}
-                        </span>
-                      </td>
-                      <td data-label="Amount" className="mono font-semibold whitespace-nowrap" style={{ color: t.type === 'deposit' ? '#3ECF8E' : '#E5484D' }}>
-                        {t.type === 'deposit' ? '+' : '−'}{fmtKes(t.amount)}
-                        {t.type === 'deposit' && Number(t.bonus_amount) > 0 && (
-                          <div className="mono font-normal" style={{ color: '#F2A93B', fontSize: 11, marginTop: 2 }}>
-                            +{fmtKes(t.bonus_amount)} 🎁 bonus
-                          </div>
-                        )}
-                      </td>
-                      <td data-label="Status">
-                        <span className="tag" style={{ color: t.status === 'success' ? '#3ECF8E' : '#F2A93B', borderColor: t.status === 'success' ? 'rgba(62,207,142,0.3)' : 'rgba(242,169,59,0.3)' }}>
-                          {t.status}
-                        </span>
-                      </td>
-                      <td data-label="Receipt">
-                        <button
-                          onClick={() => downloadReceipt(t, user?.email, balance)}
-                          title="Download receipt"
-                          className="btn btn-dark"
-                          style={{ padding: '6px 12px', fontSize: 10 }}>
-                          Receipt
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
+          </div>
+        )}
+      </Modal>
 
-        {/* ── Bottom support strip ── */}
-        <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-3 px-5 py-4"
-          style={{ border: '1px solid #262C33', borderRadius: 4, background: '#0F1215' }}>
-          <p className="text-xs" style={{ color: '#79818A' }}>
-            Need help with a transaction or a panel issue?
-          </p>
-          <a
-            href="https://t.me/mzazitech"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mono text-[11px] uppercase tracking-[0.12em] flex items-center gap-2"
-            style={{ color: '#F2A93B', textDecoration: 'none' }}>
-            Contact support on Telegram →
-          </a>
-        </div>
-
-        {/* ── Deposit flow animations ── */}
-        <style>{`
-          @keyframes mz-pop {
-            0% { transform: scale(0.4); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-          }
-          @keyframes mz-draw {
-            0% { stroke-dasharray: 40; stroke-dashoffset: 40; opacity: 0; }
-            100% { stroke-dasharray: 40; stroke-dashoffset: 0; opacity: 1; }
-          }
-          @keyframes mz-ping {
-            0% { transform: scale(0.75); opacity: 0.9; }
-            80%, 100% { transform: scale(1.35); opacity: 0; }
-          }
-          @keyframes mz-ad-in {
-            0% { opacity: 0; transform: translateY(-14px) scale(0.985); }
-            100% { opacity: 1; transform: translateY(0) scale(1); }
-          }
-          @keyframes mz-ad-shine {
-            0% { background-position: -180% 0; }
-            55%, 100% { background-position: 220% 0; }
-          }
-          @keyframes mz-ad-bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-7px); }
-          }
-          @keyframes mz-ad-wiggle {
-            0%, 100% { transform: rotate(-8deg); }
-            50% { transform: rotate(12deg); }
-          }
-        `}</style>
-
-      </div>
-    </div>
+      {/* ── Voucher modal ── */}
+      <Modal
+        open={voucherOpen}
+        onClose={() => { setVoucherOpen(false); setVoucherCode(''); }}
+        size="sm"
+        title="Redeem a voucher"
+        description="Enter the 6-character code you were given and we’ll credit your wallet instantly."
+      >
+        <form onSubmit={handleRedeemVoucher}>
+          <Field label="Voucher code" id="voucher-code">
+            <Input
+              id="voucher-code"
+              type="text"
+              value={voucherCode}
+              onChange={(e) => setVoucherCode(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6))}
+              placeholder="ABC123"
+              maxLength={6}
+              className="input"
+              autoComplete="off"
+              style={{ letterSpacing: '0.3em', fontFamily: 'var(--font-mono)', textAlign: 'center' }}
+            />
+          </Field>
+          <Button
+            type="submit"
+            block
+            loading={redeemingVoucher}
+            loadingText="Checking…"
+            disabled={voucherCode.length !== 6}
+            icon={<Icons.Ticket size={16} />}
+          >
+            Redeem code
+          </Button>
+        </form>
+      </Modal>
+    </AppBackground>
   );
 }
 
@@ -1058,9 +863,11 @@ function WalletInner() {
 export default function WalletPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <div className="spinner" />
-      </div>
+      <AppBackground variant="dashboard">
+        <div className="container-site" style={{ paddingTop: 26, paddingBottom: 90, maxWidth: 900 }}>
+          <SkeletonText lines={4} />
+        </div>
+      </AppBackground>
     }>
       <WalletInner />
     </Suspense>

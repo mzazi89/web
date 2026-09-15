@@ -51,7 +51,7 @@ export default function ApiTester({ defaultQuery = 'Faded Alan Walker', compact 
   return (
     <div className="card card-pad" style={{ padding: '24px' }}>
       <div className="flex items-center justify-between mb-5">
-        <h3 className="display font-bold text-lg" style={{ color: '#E9E7E2' }}>API tester</h3>
+        <h3 className="display font-bold text-lg" style={{ color: 'var(--ink)' }}>API tester</h3>
         <span className="tag tag-green"><span className="dot anim-pulse" /> Live</span>
       </div>
 
@@ -91,7 +91,7 @@ export default function ApiTester({ defaultQuery = 'Faded Alan Walker', compact 
           className="btn btn-primary" style={{ opacity: testing ? 0.6 : 1, cursor: testing ? 'not-allowed' : 'pointer' }}>
           {testing ? 'Sending…' : 'Send request'}
         </button>
-        <span className="mono text-[10px] uppercase tracking-[0.1em]" style={{ color: '#4C535B' }}>
+        <span className="mono text-[10px] uppercase tracking-[0.1em]" style={{ color: 'var(--dim)' }}>
           {currentEndpoint.needsKey
             ? 'No key? You’ll see the proper JSON error — then add your key to get real results.'
             : 'This endpoint is public — no API key needed.'}
@@ -102,14 +102,14 @@ export default function ApiTester({ defaultQuery = 'Faded Alan Walker', compact 
         <div className="mt-6 space-y-3">
           <div className="flex flex-wrap items-center gap-2 mono text-xs">
             <span className="tag" style={{
-              color: result.ok ? '#3ECF8E' : '#E5484D',
+              color: result.ok ? 'var(--good)' : 'var(--bad)',
               borderColor: result.ok ? 'rgba(62,207,142,0.35)' : 'rgba(229,72,77,0.35)',
               background: result.ok ? 'rgba(62,207,142,0.06)' : 'rgba(229,72,77,0.06)',
             }}>
               HTTP {result.status}
             </span>
-            <span style={{ color: '#79818A' }}>{result.ms}ms</span>
-            <span className="break-all" style={{ color: '#4C535B' }}>{result.url}</span>
+            <span style={{ color: 'var(--muted)' }}>{result.ms}ms</span>
+            <span className="break-all" style={{ color: 'var(--dim)' }}>{result.url}</span>
             <CopyButton text={result.url} label="Copy URL" />
           </div>
           <CodeBlock label="JSON response" code={result.body} />

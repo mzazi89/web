@@ -89,7 +89,7 @@ export default async function ApiLanding() {
             {/* Copy */}
             <div className="lg:col-span-7">
               <p className="eyebrow anim-fade-up">Developer platform</p>
-              <h1 className="headline anim-fade-up d1 mt-5" style={{ color: '#E9E7E2' }}>
+              <h1 className="headline anim-fade-up d1 mt-5" style={{ color: 'var(--ink)' }}>
                 One API.<br />Every service<span className="accent">.</span>
               </h1>
               <p className="lede anim-fade-up d2 mt-6 max-w-xl">
@@ -118,9 +118,9 @@ export default async function ApiLanding() {
                 {stats.categories.map(c => (
                   <a key={c.category} href={`/api/docs#cat-${encodeURIComponent(c.category)}`}
                     className="tag"
-                    style={{ color: '#AEB5BD', textDecoration: 'none' }}>
+                    style={{ color: 'var(--ink-2)', textDecoration: 'none' }}>
                     {CATEGORY_LABELS[c.category] || c.category}
-                    <strong style={{ color: '#F2A93B' }}>{parseInt(c.active, 10) || 0}</strong>
+                    <strong style={{ color: 'var(--brand)' }}>{parseInt(c.active, 10) || 0}</strong>
                   </a>
                 ))}
               </div>
@@ -128,29 +128,29 @@ export default async function ApiLanding() {
 
             {/* Live example */}
             <div className="lg:col-span-5 anim-fade-up d2">
-              <div className="card overflow-hidden" style={{ background: '#0F1215' }}>
-                <div className="flex items-center justify-between px-4 py-2.5" style={{ borderBottom: '1px solid #1B2026' }}>
-                  <span className="mono text-[10px] uppercase tracking-[0.14em]" style={{ color: '#4C535B' }}>
+              <div className="card overflow-hidden" style={{ background: 'var(--bg-2)' }}>
+                <div className="flex items-center justify-between px-4 py-2.5" style={{ borderBottom: '1px solid var(--line-soft)' }}>
+                  <span className="mono text-[10px] uppercase tracking-[0.14em]" style={{ color: 'var(--dim)' }}>
                     Quickstart
                   </span>
                   <span className="tag tag-green"><span className="dot anim-pulse" /> Live API</span>
                 </div>
                 <div className="p-4 overflow-x-auto">
-                  <p className="mono text-[10px] uppercase tracking-[0.14em] mb-2" style={{ color: '#4C535B' }}>GET /api/download/play</p>
-                  <pre className="mono text-xs leading-relaxed" style={{ color: '#AEB5BD' }}>
+                  <p className="mono text-[10px] uppercase tracking-[0.14em] mb-2" style={{ color: 'var(--dim)' }}>GET /api/download/play</p>
+                  <pre className="mono text-xs leading-relaxed" style={{ color: 'var(--ink-2)' }}>
 {`curl "https://mzazi.shop/api/download/play?query=Faded%20Alan%20Walker&apikey=mzazi_xxxxxxxxxxxxxxxxxxxxxxxxx"`}
                   </pre>
                 </div>
-                <div className="px-4 py-3 flex items-center justify-between" style={{ borderTop: '1px solid #1B2026', background: 'rgba(242,169,59,0.04)' }}>
-                  <span className="mono text-[10px] uppercase tracking-[0.14em]" style={{ color: '#F2A93B' }}>No key? Test it below</span>
-                  <span style={{ color: '#4C535B' }}>→</span>
+                <div className="px-4 py-3 flex items-center justify-between" style={{ borderTop: '1px solid var(--line-soft)', background: 'rgba(242,169,59,0.04)' }}>
+                  <span className="mono text-[10px] uppercase tracking-[0.14em]" style={{ color: 'var(--brand)' }}>No key? Test it below</span>
+                  <span style={{ color: 'var(--dim)' }}>→</span>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Stats strip */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16 sm:mt-20 pt-10" style={{ borderTop: '1px solid #1B2026' }}>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16 sm:mt-20 pt-10" style={{ borderTop: '1px solid var(--line-soft)' }}>
             {[
               { value: stats.active, label: 'Live endpoints' },
               { value: stats.total, label: 'Total registered' },
@@ -158,7 +158,7 @@ export default async function ApiLanding() {
               { value: '1 key', label: 'All services' },
             ].map(s => (
               <div key={s.label}>
-                <div className="stat-num" style={{ color: '#E9E7E2' }}>{s.value}</div>
+                <div className="stat-num" style={{ color: 'var(--ink)' }}>{s.value}</div>
                 <div className="stat-label">{s.label}</div>
               </div>
             ))}
@@ -172,13 +172,13 @@ export default async function ApiLanding() {
           <div className="grid lg:grid-cols-12 gap-10 items-start">
             <div className="lg:col-span-4 lg:sticky lg:top-32">
               <p className="eyebrow">Live test</p>
-              <h2 className="section-title text-3xl mt-4" style={{ color: '#E9E7E2' }}>
+              <h2 className="section-title text-3xl mt-4" style={{ color: 'var(--ink)' }}>
                 Try it right now
                 <span className="bar" />
               </h2>
-              <p className="text-sm mt-5 leading-relaxed" style={{ color: '#79818A' }}>
+              <p className="text-sm mt-5 leading-relaxed" style={{ color: 'var(--muted)' }}>
                 Enter a song name and hit send. The API key is{' '}
-                <strong style={{ color: '#3ECF8E' }}>optional</strong> — without one you see the
+                <strong style={{ color: 'var(--good)' }}>optional</strong> — without one you see the
                 proper JSON error, with one you get live results.
               </p>
             </div>
@@ -194,7 +194,7 @@ export default async function ApiLanding() {
         <div className="container-site">
           <div className="max-w-3xl mb-12">
             <p className="eyebrow">Why MZAZI API</p>
-            <h2 className="section-title text-3xl sm:text-4xl mt-4" style={{ color: '#E9E7E2' }}>
+            <h2 className="section-title text-3xl sm:text-4xl mt-4" style={{ color: 'var(--ink)' }}>
               Built for production traffic
               <span className="bar" />
             </h2>
@@ -205,10 +205,10 @@ export default async function ApiLanding() {
               <div key={f.title} className="row-item">
                 <span className="row-num">{String(i + 1).padStart(2, '0')}</span>
                 <div>
-                  <h3 style={{ color: '#E9E7E2' }}>{f.title}</h3>
+                  <h3 style={{ color: 'var(--ink)' }}>{f.title}</h3>
                   <p>{f.desc}</p>
                 </div>
-                <span className="row-tag" style={{ color: '#4C535B' }}>—</span>
+                <span className="row-tag" style={{ color: 'var(--dim)' }}>—</span>
               </div>
             ))}
           </div>
@@ -221,19 +221,19 @@ export default async function ApiLanding() {
           <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
             <div>
               <p className="eyebrow">Registry</p>
-              <h2 className="section-title text-3xl sm:text-4xl mt-4" style={{ color: '#E9E7E2' }}>
+              <h2 className="section-title text-3xl sm:text-4xl mt-4" style={{ color: 'var(--ink)' }}>
                 API endpoints
                 <span className="bar" />
               </h2>
             </div>
-            <Link href="/api/status" className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: '#F2A93B', textDecoration: 'none' }}>
+            <Link href="/api/status" className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: 'var(--brand)', textDecoration: 'none' }}>
               System status →
             </Link>
           </div>
 
           {activeEndpoints.length === 0 ? (
             <div className="card card-pad text-center">
-              <p className="text-sm" style={{ color: '#4C535B' }}>Endpoint registry unavailable — run database initialization first.</p>
+              <p className="text-sm" style={{ color: 'var(--dim)' }}>Endpoint registry unavailable — run database initialization first.</p>
             </div>
           ) : (
             <div className="card overflow-hidden scroll-x">
@@ -252,14 +252,14 @@ export default async function ApiLanding() {
                     <tr key={e.path} data-label="Endpoint">
                       <td data-label="Method">
                         <span className="mono text-[10px] font-bold px-1.5 py-0.5"
-                          style={{ background: e.method === 'GET' ? 'rgba(76,125,252,0.12)' : 'rgba(242,169,59,0.1)', color: e.method === 'GET' ? '#4C7DFC' : '#F2A93B', border: `1px solid ${e.method === 'GET' ? 'rgba(76,125,252,0.35)' : 'rgba(242,169,59,0.3)'}` }}>
+                          style={{ background: e.method === 'GET' ? 'rgba(76,125,252,0.12)' : 'rgba(242,169,59,0.1)', color: e.method === 'GET' ? 'var(--blue)' : 'var(--brand)', border: `1px solid ${e.method === 'GET' ? 'rgba(76,125,252,0.35)' : 'rgba(242,169,59,0.3)'}` }}>
                           {e.method}
                         </span>
                       </td>
-                      <td data-label="Endpoint"><code className="mono text-[12px]" style={{ color: '#E9E7E2' }}>{e.path}</code></td>
-                      <td data-label="Name" className="font-semibold" style={{ color: '#E9E7E2' }}>{e.name}</td>
+                      <td data-label="Endpoint"><code className="mono text-[12px]" style={{ color: 'var(--ink)' }}>{e.path}</code></td>
+                      <td data-label="Name" className="font-semibold" style={{ color: 'var(--ink)' }}>{e.name}</td>
                       <td data-label="Category"><span className="tag">{CATEGORY_LABELS[e.category] || e.category}</span></td>
-                      <td data-label="Description" style={{ color: '#79818A' }}>{e.description}</td>
+                      <td data-label="Description" style={{ color: 'var(--muted)' }}>{e.description}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -272,7 +272,7 @@ export default async function ApiLanding() {
       {/* ── CTA ── */}
       <section className="section" style={{ paddingBottom: 110 }}>
         <div className="container-site">
-          <div className="card card-pad text-center relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #14181D 0%, #0F1215 100%)' }}>
+          <div className="card card-pad text-center relative overflow-hidden" style={{ background: 'linear-gradient(135deg, var(--surface) 0%, var(--bg-2) 100%)' }}>
             <div aria-hidden="true" className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(circle at 80% 20%, rgba(242,169,59,0.08) 0%, transparent 55%)' }} />
             <div className="relative">
               <p className="eyebrow center">Start building</p>

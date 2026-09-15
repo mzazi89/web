@@ -70,7 +70,7 @@ export default async function ApiExplorer() {
         <div className="absolute inset-0 pointer-events-none grid-bg" style={{ maskImage: 'linear-gradient(180deg, rgba(0,0,0,0.5), transparent 80%)', WebkitMaskImage: 'linear-gradient(180deg, rgba(0,0,0,0.5), transparent 80%)' }} />
         <div className="container-site relative">
           <div className="max-w-3xl">
-            <Link href="/api" className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: '#79818A', textDecoration: 'none' }}>
+            <Link href="/api" className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: 'var(--muted)', textDecoration: 'none' }}>
               ← Back to API
             </Link>
             <p className="eyebrow mt-8">Endpoint explorer</p>
@@ -89,7 +89,7 @@ export default async function ApiExplorer() {
         <div className="container-site">
           {categories.length === 0 ? (
             <div className="card card-pad text-center">
-              <p className="text-sm" style={{ color: '#4C535B' }}>Category registry unavailable — run database initialization first.</p>
+              <p className="text-sm" style={{ color: 'var(--dim)' }}>Category registry unavailable — run database initialization first.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -100,26 +100,26 @@ export default async function ApiExplorer() {
                     className="glow-card card-pad flex flex-col" style={{ textDecoration: 'none', padding: '24px 22px' }}>
                     <div className="flex items-center justify-between mb-5">
                       <span className="mono text-[11px] font-bold"
-                        style={{ color: live ? '#F2A93B' : '#4C535B', border: `1px solid ${live ? 'rgba(242,169,59,0.4)' : '#262C33'}`, padding: '4px 8px' }}>
+                        style={{ color: live ? 'var(--brand)' : 'var(--dim)', border: `1px solid ${live ? 'rgba(242,169,59,0.4)' : 'var(--line)'}`, padding: '4px 8px' }}>
                         {CATEGORY_CODES[c.category] || '??'}
                       </span>
                       <span className={`tag ${live ? 'tag-green' : 'tag'}`}>
-                        <span className="dot anim-pulse" style={{ color: live ? '#3ECF8E' : '#4C535B' }} />
+                        <span className="dot anim-pulse" style={{ color: live ? 'var(--good)' : 'var(--dim)' }} />
                         {live ? 'Live' : 'Inactive'}
                       </span>
                     </div>
-                    <h3 className="display font-bold text-lg mb-1" style={{ color: '#E9E7E2' }}>
+                    <h3 className="display font-bold text-lg mb-1" style={{ color: 'var(--ink)' }}>
                       {CATEGORY_LABELS[c.category] || c.category}
                     </h3>
-                    <p className="mono text-[11px] uppercase tracking-[0.12em] mb-4" style={{ color: '#4C535B' }}>
+                    <p className="mono text-[11px] uppercase tracking-[0.12em] mb-4" style={{ color: 'var(--dim)' }}>
                       {c.active} live · {c.total} total
                     </p>
-                    <div className="flex items-center justify-between mt-auto pt-4" style={{ borderTop: '1px solid #1B2026' }}>
-                      <span className="mono text-[10px] uppercase tracking-[0.14em]" style={{ color: '#F2A93B' }}>
+                    <div className="flex items-center justify-between mt-auto pt-4" style={{ borderTop: '1px solid var(--line-soft)' }}>
+                      <span className="mono text-[10px] uppercase tracking-[0.14em]" style={{ color: 'var(--brand)' }}>
                         Explore →
                       </span>
                       {c.requests > 0 && (
-                        <span className="mono text-[10px]" style={{ color: '#4C535B' }}>
+                        <span className="mono text-[10px]" style={{ color: 'var(--dim)' }}>
                           {c.requests.toLocaleString()} req / 14d
                         </span>
                       )}

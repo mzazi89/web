@@ -2,10 +2,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import StarRating from '@/components/StarRating';
+import { humaniseError } from '@/components/ui';
 
 function Stars({ value, size = 18 }) {
   return (
-    <span className="mono" style={{ color: '#F2A93B', fontSize: size, letterSpacing: '3px' }}>
+    <span className="mono" style={{ color: 'var(--brand)', fontSize: size, letterSpacing: '3px' }}>
       {'★'.repeat(value)}{'☆'.repeat(5 - value)}
     </span>
   );
@@ -14,18 +15,18 @@ function Stars({ value, size = 18 }) {
 function TestimonialCard({ t }) {
   const initials = t.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
   return (
-    <div className="card card-pad flex flex-col" style={{ padding: '24px 22px', background: '#14181D' }}>
+    <div className="card card-pad flex flex-col" style={{ padding: '24px 22px', background: 'var(--surface)' }}>
       <div className="flex items-center gap-3 mb-5">
         <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0"
-          style={{ background: 'rgba(242,169,59,0.12)', border: '1px solid rgba(242,169,59,0.4)', color: '#F2A93B' }}>
+          style={{ background: 'rgba(242,169,59,0.12)', border: '1px solid rgba(242,169,59,0.4)', color: 'var(--brand)' }}>
           {initials}
         </div>
         <div className="min-w-0">
-          <p className="text-sm font-bold truncate" style={{ color: '#E9E7E2' }}>{t.name}</p>
+          <p className="text-sm font-bold truncate" style={{ color: 'var(--ink)' }}>{t.name}</p>
           <Stars value={t.rating} size={13} />
         </div>
       </div>
-      <p className="text-sm leading-relaxed flex-1" style={{ color: '#AEB5BD' }}>“{t.message}”</p>
+      <p className="text-sm leading-relaxed flex-1" style={{ color: 'var(--ink-2)' }}>“{t.message}”</p>
     </div>
   );
 }
@@ -70,7 +71,7 @@ export default function TestimonialsPage() {
       setFeedback({ type: 'success', text: d.message });
       setForm({ name: '', rating: 0, message: '' });
     } catch (err) {
-      setFeedback({ type: 'error', text: err.message });
+      setFeedback({ type: 'error', text: humaniseError(err, 'We could not submit your review. Please try again.') });
     }
     setSubmitting(false);
   };
@@ -82,7 +83,7 @@ export default function TestimonialsPage() {
         <div className="absolute inset-0 pointer-events-none grid-bg" style={{ maskImage: 'linear-gradient(180deg, rgba(0,0,0,0.5), transparent 80%)', WebkitMaskImage: 'linear-gradient(180deg, rgba(0,0,0,0.5), transparent 80%)' }} />
         <div className="container-site relative py-20 sm:py-28">
           <div className="max-w-3xl">
-            <Link href="/" className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: '#79818A', textDecoration: 'none' }}>← Back to home</Link>
+            <Link href="/" className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: 'var(--muted)', textDecoration: 'none' }}>← Back to home</Link>
             <p className="eyebrow mt-8">Customer voices</p>
             <h1 className="headline mt-4" style={{ fontSize: 'clamp(2rem, 4.4vw, 3.2rem)' }}>
               What customers say<span className="accent">.</span>
@@ -94,18 +95,18 @@ export default function TestimonialsPage() {
 
           <div className="card card-pad mt-12 inline-flex flex-wrap items-center gap-x-8 gap-y-3">
             <div className="flex items-center gap-3">
-              <span className="stat-num" style={{ color: '#F2A93B' }}>{avg !== null ? avg : '—'}</span>
+              <span className="stat-num" style={{ color: 'var(--brand)' }}>{avg !== null ? avg : '—'}</span>
               <div>
                 <Stars value={avg ? Math.round(avg) : 0} size={15} />
-                <p className="mono text-[10px] uppercase tracking-[0.12em] mt-0.5" style={{ color: '#4C535B' }}>
+                <p className="mono text-[10px] uppercase tracking-[0.12em] mt-0.5" style={{ color: 'var(--dim)' }}>
                   {total} review{total !== 1 ? 's' : ''}
                 </p>
               </div>
             </div>
-            <span className="hidden sm:block w-px h-10" style={{ background: '#262C33' }} />
+            <span className="hidden sm:block w-px h-10" style={{ background: 'var(--line)' }} />
             <div>
-              <p className="text-sm" style={{ color: '#AEB5BD' }}>Rated by real customers worldwide</p>
-              <p className="mono text-[10px] uppercase tracking-[0.12em] mt-0.5" style={{ color: '#4C535B' }}>Approval required before publishing</p>
+              <p className="text-sm" style={{ color: 'var(--ink-2)' }}>Rated by real customers worldwide</p>
+              <p className="mono text-[10px] uppercase tracking-[0.12em] mt-0.5" style={{ color: 'var(--dim)' }}>Approval required before publishing</p>
             </div>
           </div>
         </div>
@@ -115,10 +116,10 @@ export default function TestimonialsPage() {
       <section className="section" style={{ paddingTop: 24 }}>
         <div className="container-site max-w-5xl">
           {loading ? (
-            <p className="text-center text-sm py-10" style={{ color: '#79818A' }}>Loading reviews…</p>
+            <p className="text-center text-sm py-10" style={{ color: 'var(--muted)' }}>Loading reviews…</p>
           ) : items.length === 0 ? (
             <div className="card card-pad text-center py-14">
-              <p className="text-sm" style={{ color: '#AEB5BD' }}>No reviews yet — be the first to review us!</p>
+              <p className="text-sm" style={{ color: 'var(--ink-2)' }}>No reviews yet — be the first to review us!</p>
             </div>
           ) : (
             <>
@@ -142,13 +143,13 @@ export default function TestimonialsPage() {
         <div className="container-site max-w-xl">
           <div className="card card-pad" style={{ borderColor: 'rgba(242,169,59,0.35)' }}>
             <p className="eyebrow">Share yours</p>
-            <h2 className="section-title text-2xl mt-3 mb-2" style={{ color: '#E9E7E2' }}>Leave a review</h2>
-            <p className="text-sm mb-6" style={{ color: '#79818A' }}>
+            <h2 className="section-title text-2xl mt-3 mb-2" style={{ color: 'var(--ink)' }}>Leave a review</h2>
+            <p className="text-sm mb-6" style={{ color: 'var(--muted)' }}>
               Tell others about your experience. Reviews appear after a quick approval.
             </p>
 
             {feedback && (
-              <p className="text-sm mb-4" style={{ color: feedback.type === 'success' ? '#3ECF8E' : '#E5484D' }}>
+              <p className="text-sm mb-4" style={{ color: feedback.type === 'success' ? 'var(--good)' : 'var(--bad)' }}>
                 {feedback.text}
               </p>
             )}
@@ -183,7 +184,7 @@ export default function TestimonialsPage() {
                 className="btn btn-primary w-full" style={{ opacity: submitting ? 0.6 : 1, cursor: submitting ? 'not-allowed' : 'pointer' }}>
                 {submitting ? 'Submitting…' : 'Submit review'}
               </button>
-              <p className="mono text-[10px] text-center uppercase tracking-[0.12em]" style={{ color: '#4C535B' }}>
+              <p className="mono text-[10px] text-center uppercase tracking-[0.12em]" style={{ color: 'var(--dim)' }}>
                 Reviews must be 10–1000 characters. We approve reviews before they go live to keep things real.
               </p>
             </form>

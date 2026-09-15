@@ -45,10 +45,10 @@ export default function AboutPage() {
           </div>
 
           {/* Stats strip */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-14 pt-10" style={{ borderTop: '1px solid #1B2026' }}>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-14 pt-10" style={{ borderTop: '1px solid var(--line-soft)' }}>
             {STORY_STATS.map(s => (
               <div key={s.l}>
-                <div className="stat-num" style={{ color: '#F2A93B' }}>{s.n}</div>
+                <div className="stat-num" style={{ color: 'var(--brand)' }}>{s.n}</div>
                 <div className="stat-label">{s.l}</div>
               </div>
             ))}
@@ -61,15 +61,15 @@ export default function AboutPage() {
         <div className="container-site grid lg:grid-cols-12 gap-12">
           <div className="lg:col-span-5">
             <p className="eyebrow">Mission</p>
-            <h2 className="section-title text-3xl mt-4" style={{ color: '#E9E7E2' }}>
+            <h2 className="section-title text-3xl mt-4" style={{ color: 'var(--ink)' }}>
               Infrastructure for everyone
               <span className="bar" />
             </h2>
-            <blockquote className="border-l-2 pl-6 py-2 mt-8" style={{ borderColor: '#F2A93B' }}>
-              <p className="display text-xl font-semibold leading-snug" style={{ color: '#E9E7E2' }}>
+            <blockquote className="border-l-2 pl-6 py-2 mt-8" style={{ borderColor: 'var(--brand)' }}>
+              <p className="display text-xl font-semibold leading-snug" style={{ color: 'var(--ink)' }}>
                 “Power your digital world.”
               </p>
-              <footer className="mono text-[10px] uppercase tracking-[0.18em] mt-3" style={{ color: '#4C535B' }}>
+              <footer className="mono text-[10px] uppercase tracking-[0.18em] mt-3" style={{ color: 'var(--dim)' }}>
                 The Mzazi motto
               </footer>
             </blockquote>
@@ -80,13 +80,13 @@ export default function AboutPage() {
               worldwide. We offer enterprise-level Pterodactyl panel hosting at prices anyone can
               afford — starting from just KES 50/month.
             </p>
-            <p className="text-sm leading-relaxed" style={{ color: '#79818A' }}>
+            <p className="text-sm leading-relaxed" style={{ color: 'var(--muted)' }}>
               From small WhatsApp bots to large-scale game servers and Pterodactyl panels for
               WhatsApp bots, we provide the infrastructure backbone so you can focus on what
               matters — building your product.
             </p>
-            <p className="text-sm leading-relaxed" style={{ color: '#79818A' }}>
-              We also run <strong style={{ color: '#E9E7E2' }}>MZAZI API</strong> — a developer
+            <p className="text-sm leading-relaxed" style={{ color: 'var(--muted)' }}>
+              We also run <strong style={{ color: 'var(--ink)' }}>MZAZI API</strong> — a developer
               platform with 200+ live endpoints for downloads, AI, search, tools and more, powered
               by multiple upstream providers and secured with API-key authentication and usage
               analytics.
@@ -100,7 +100,7 @@ export default function AboutPage() {
         <div className="container-site">
           <div className="max-w-3xl mb-12">
             <p className="eyebrow">What we stand for</p>
-            <h2 className="section-title text-3xl sm:text-4xl mt-4" style={{ color: '#E9E7E2' }}>
+            <h2 className="section-title text-3xl sm:text-4xl mt-4" style={{ color: 'var(--ink)' }}>
               Our values
               <span className="bar" />
             </h2>
@@ -111,10 +111,10 @@ export default function AboutPage() {
               <div key={v.title} className="row-item">
                 <span className="row-num">/{v.num}</span>
                 <div>
-                  <h3 style={{ color: '#E9E7E2' }}>{v.title}</h3>
+                  <h3 style={{ color: 'var(--ink)' }}>{v.title}</h3>
                   <p>{v.desc}</p>
                 </div>
-                <span className="row-tag" style={{ color: '#4C535B' }}>—</span>
+                <span className="row-tag" style={{ color: 'var(--dim)' }}>—</span>
               </div>
             ))}
           </div>
@@ -124,14 +124,14 @@ export default function AboutPage() {
       {/* MZAZI API */}
       <section className="section" style={{ background: 'rgba(255,255,255,0.014)' }}>
         <div className="container-site">
-          <div className="card card-pad relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #14181D 0%, #0F1215 100%)' }}>
+          <div className="card card-pad relative overflow-hidden" style={{ background: 'linear-gradient(135deg, var(--surface) 0%, var(--bg-2) 100%)' }}>
             <div aria-hidden="true" className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(circle at 85% 15%, rgba(242,169,59,0.08) 0%, transparent 55%)' }} />
             <div className="relative grid lg:grid-cols-12 gap-10 items-center">
               <div className="lg:col-span-7">
                 <p className="eyebrow">Developer platform</p>
-                <h2 className="section-title text-3xl mt-4" style={{ color: '#E9E7E2' }}>
+                <h2 className="section-title text-3xl mt-4" style={{ color: 'var(--ink)' }}>
                   MZAZI API<span className="bar" /></h2>
-                <p className="text-sm sm:text-base leading-relaxed mt-6 max-w-xl" style={{ color: '#AEB5BD' }}>
+                <p className="text-sm sm:text-base leading-relaxed mt-6 max-w-xl" style={{ color: 'var(--ink-2)' }}>
                   One API. Multiple services. Downloads, AI chat, image generation, search, games,
                   news and tools — exposed through a single key, a single JSON envelope, with rate
                   limits and usage analytics.
@@ -142,10 +142,10 @@ export default function AboutPage() {
                 </div>
               </div>
               <div className="lg:col-span-5">
-                <div className="grid grid-cols-2 gap-px card overflow-hidden" style={{ background: '#262C33' }}>
+                <div className="grid grid-cols-2 gap-px card overflow-hidden" style={{ background: 'var(--line)' }}>
                   {API_STATS.map(s => (
-                    <div key={s.l} className="card p-5" style={{ background: '#14181D' }}>
-                      <div className="stat-num" style={{ fontSize: '1.7rem', color: '#F2A93B' }}>{s.n}</div>
+                    <div key={s.l} className="card p-5" style={{ background: 'var(--surface)' }}>
+                      <div className="stat-num" style={{ fontSize: '1.7rem', color: 'var(--brand)' }}>{s.n}</div>
                       <div className="stat-label">{s.l}</div>
                     </div>
                   ))}
@@ -164,7 +164,7 @@ export default function AboutPage() {
             <h2 className="headline mt-6" style={{ fontSize: 'clamp(1.8rem, 4vw, 2.6rem)' }}>
               Ready to get started<span className="accent">?</span>
             </h2>
-            <p className="text-sm mt-4 mb-8" style={{ color: '#79818A' }}>
+            <p className="text-sm mt-4 mb-8" style={{ color: 'var(--muted)' }}>
               Join hundreds of customers worldwide already using MZAZI TECH for their hosting needs.
             </p>
             <AuthSwap

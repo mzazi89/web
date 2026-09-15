@@ -54,7 +54,7 @@ export default function AiChatWidget({ prefill = null }) {
         aria-label="Ask MZAZI AI"
         className="fixed bottom-5 right-5 z-50 flex items-center gap-2 px-4 py-3 text-sm font-bold"
         style={{
-          background: '#F2A93B', color: '#14100A', border: 'none', cursor: 'pointer',
+          background: 'var(--brand)', color: 'var(--on-brand)', border: 'none', cursor: 'pointer',
           borderRadius: 2, boxShadow: '0 8px 30px rgba(0,0,0,0.5)',
           fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase',
         }}
@@ -74,13 +74,13 @@ export default function AiChatWidget({ prefill = null }) {
       {open && (
         <div
           className="fixed bottom-20 right-5 z-50 w-[calc(100vw-2.5rem)] max-w-sm overflow-hidden flex flex-col"
-          style={{ height: 'min(480px, 70vh)', backgroundColor: '#14181D', border: '1px solid #262C33', boxShadow: '0 20px 60px rgba(0,0,0,0.6)', borderRadius: 6 }}
+          style={{ height: 'min(480px, 70vh)', backgroundColor: 'var(--surface)', border: '1px solid var(--line)', boxShadow: '0 20px 60px rgba(0,0,0,0.6)', borderRadius: 6 }}
         >
           {/* Header */}
-          <div className="px-4 py-3 flex items-center justify-between" style={{ background: '#0F1215', borderBottom: '1px solid #262C33' }}>
+          <div className="px-4 py-3 flex items-center justify-between" style={{ background: 'var(--bg-2)', borderBottom: '1px solid var(--line)' }}>
             <div>
-              <p className="display font-bold text-sm" style={{ color: '#E9E7E2' }}>MZAZI AI</p>
-              <p className="mono text-[10px] uppercase tracking-[0.12em] mt-0.5" style={{ color: '#4C535B' }}>Instant answers — no waiting</p>
+              <p className="display font-bold text-sm" style={{ color: 'var(--ink)' }}>MZAZI AI</p>
+              <p className="mono text-[10px] uppercase tracking-[0.12em] mt-0.5" style={{ color: 'var(--dim)' }}>Instant answers — no waiting</p>
             </div>
             <span className="tag tag-green"><span className="dot anim-pulse" /> Online</span>
           </div>
@@ -88,9 +88,9 @@ export default function AiChatWidget({ prefill = null }) {
           {/* Messages */}
           <div ref={listRef} className="flex-1 overflow-y-auto px-3 py-3 space-y-2.5" style={{ background: 'rgba(11,13,15,0.6)' }}>
             {messages.length === 0 && (
-              <p className="text-xs leading-relaxed" style={{ color: '#79818A' }}>
+              <p className="text-xs leading-relaxed" style={{ color: 'var(--muted)' }}>
                 Hi! Ask me anything about MZAZI TECH — accounts, payments, WhatsApp bot pairing, panel servers, API keys…
-                <br />If you&apos;d rather talk to a person, use the <b style={{ color: '#AEB5BD' }}>contact form → Send to Admin</b>.
+                <br />If you&apos;d rather talk to a person, use the <b style={{ color: 'var(--ink-2)' }}>contact form → Send to Admin</b>.
               </p>
             )}
             {messages.map((m, i) => (
@@ -99,8 +99,8 @@ export default function AiChatWidget({ prefill = null }) {
                   className="max-w-[85%] px-3 py-2 text-sm whitespace-pre-wrap"
                   style={
                     m.role === 'user'
-                      ? { background: 'rgba(242,169,59,0.14)', border: '1px solid rgba(242,169,59,0.4)', color: '#E9E7E2', borderRadius: '10px 10px 2px 10px' }
-                      : { background: '#1A1F25', border: '1px solid #262C33', color: '#AEB5BD', borderRadius: '10px 10px 10px 2px' }
+                      ? { background: 'rgba(242,169,59,0.14)', border: '1px solid rgba(242,169,59,0.4)', color: 'var(--ink)', borderRadius: '10px 10px 2px 10px' }
+                      : { background: 'var(--surface-2)', border: '1px solid var(--line)', color: 'var(--ink-2)', borderRadius: '10px 10px 10px 2px' }
                   }
                 >
                   {m.text}
@@ -109,7 +109,7 @@ export default function AiChatWidget({ prefill = null }) {
             ))}
             {loading && (
               <div className="flex justify-start">
-                <div className="px-3 py-2 text-sm" style={{ background: '#1A1F25', border: '1px solid #262C33', color: '#79818A', borderRadius: '10px 10px 10px 2px' }}>
+                <div className="px-3 py-2 text-sm" style={{ background: 'var(--surface-2)', border: '1px solid var(--line)', color: 'var(--muted)', borderRadius: '10px 10px 10px 2px' }}>
                   <span className="spinner" style={{ width: 14, height: 14, borderWidth: 2, verticalAlign: 'middle', display: 'inline-block', marginRight: 8 }} />
                   Thinking…
                 </div>
@@ -118,7 +118,7 @@ export default function AiChatWidget({ prefill = null }) {
           </div>
 
           {/* Input */}
-          <div className="p-2.5 flex items-center gap-2" style={{ borderTop: '1px solid #262C33', background: '#0F1215' }}>
+          <div className="p-2.5 flex items-center gap-2" style={{ borderTop: '1px solid var(--line)', background: 'var(--bg-2)' }}>
             <input
               value={input}
               onChange={(e) => setInput(e.target.value)}

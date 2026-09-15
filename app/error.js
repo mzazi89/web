@@ -4,7 +4,7 @@
 export default function GlobalError({ error, reset }) {
   return (
     <div className="container-site py-28 sm:py-36 text-center" style={{ minHeight: '70vh' }}>
-      <p className="mono text-[11px] uppercase tracking-[0.2em] mb-6" style={{ color: '#E5484D' }}>
+      <p className="mono text-[11px] uppercase tracking-[0.2em] mb-6" style={{ color: 'var(--bad)' }}>
         System fault
       </p>
       <h1 className="headline" style={{ fontSize: 'clamp(1.9rem, 4vw, 3rem)' }}>

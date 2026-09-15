@@ -9,10 +9,10 @@ const SECTIONS = [
   ) },
   { id: 'services', title: '3. Services', body: (
     <>
-      <p><strong style={{ color: '#E9E7E2' }}>Panel hosting:</strong> paid hosting plans billed monthly in KES.{' '}
-      <strong style={{ color: '#E9E7E2' }}>WhatsApp bots:</strong> automation tools — you are responsible for complying with WhatsApp&apos;s Terms of Service and applicable messaging laws.{' '}
-      <strong style={{ color: '#E9E7E2' }}>MZAZI API:</strong> developer APIs subject to fair-use rate limits per your plan.{' '}
-      <strong style={{ color: '#E9E7E2' }}>Temporary numbers:</strong> provided for legitimate verification purposes only — not for fraud, spam, or unlawful activity.</p>
+      <p><strong style={{ color: 'var(--ink)' }}>Panel hosting:</strong> paid hosting plans billed monthly in KES.{' '}
+      <strong style={{ color: 'var(--ink)' }}>WhatsApp bots:</strong> automation tools — you are responsible for complying with WhatsApp&apos;s Terms of Service and applicable messaging laws.{' '}
+      <strong style={{ color: 'var(--ink)' }}>MZAZI API:</strong> developer APIs subject to fair-use rate limits per your plan.{' '}
+      <strong style={{ color: 'var(--ink)' }}>Temporary numbers:</strong> provided for legitimate verification purposes only — not for fraud, spam, or unlawful activity.</p>
     </>
   ) },
   { id: 'payments', title: '4. Payments & Refunds', body: (
@@ -39,12 +39,12 @@ export default function TermsPage() {
         <div className="absolute inset-0 pointer-events-none grid-bg" style={{ maskImage: 'linear-gradient(180deg, rgba(0,0,0,0.5), transparent 80%)', WebkitMaskImage: 'linear-gradient(180deg, rgba(0,0,0,0.5), transparent 80%)' }} />
         <div className="container-site relative">
           <div className="max-w-3xl">
-            <Link href="/" className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: '#79818A', textDecoration: 'none' }}>← Back to home</Link>
+            <Link href="/" className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: 'var(--muted)', textDecoration: 'none' }}>← Back to home</Link>
             <p className="eyebrow mt-8">Legal</p>
             <h1 className="headline mt-4" style={{ fontSize: 'clamp(2rem, 4.4vw, 3.2rem)' }}>
               Terms of service<span className="accent">.</span>
             </h1>
-            <p className="mono text-[10px] uppercase tracking-[0.14em] mt-4" style={{ color: '#4C535B' }}>
+            <p className="mono text-[10px] uppercase tracking-[0.14em] mt-4" style={{ color: 'var(--dim)' }}>
               Last updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
             </p>
           </div>
@@ -57,12 +57,12 @@ export default function TermsPage() {
             {/* TOC */}
             <aside className="lg:col-span-3">
               <div className="card p-5 lg:sticky lg:top-32">
-                <p className="mono text-[10px] uppercase tracking-[0.18em] mb-4" style={{ color: '#4C535B' }}>Contents</p>
+                <p className="mono text-[10px] uppercase tracking-[0.18em] mb-4" style={{ color: 'var(--dim)' }}>Contents</p>
                 <div className="space-y-0.5">
                   {SECTIONS.map(s => (
                     <a key={s.id} href={`#${s.id}`}
                       className="mono block text-[11px] py-1.5 px-2"
-                      style={{ color: '#79818A', textDecoration: 'none' }}>
+                      style={{ color: 'var(--muted)', textDecoration: 'none' }}>
                       {s.title}
                     </a>
                   ))}
@@ -73,12 +73,12 @@ export default function TermsPage() {
             {/* Body */}
             <div className="lg:col-span-9">
               {SECTIONS.map((s, i) => (
-                <section key={s.id} id={s.id} className="scroll-mt-32" style={{ padding: '26px 8px', borderTop: i === 0 ? 'none' : '1px solid #1B2026' }}>
+                <section key={s.id} id={s.id} className="scroll-mt-32" style={{ padding: '26px 8px', borderTop: i === 0 ? 'none' : '1px solid var(--line-soft)' }}>
                   <div className="grid sm:grid-cols-12 gap-4">
-                    <span className="mono text-[11px] sm:col-span-2" style={{ color: '#F2A93B', paddingTop: 3 }}>{String(i + 1).padStart(2, '0')}</span>
+                    <span className="mono text-[11px] sm:col-span-2" style={{ color: 'var(--brand)', paddingTop: 3 }}>{String(i + 1).padStart(2, '0')}</span>
                     <div className="sm:col-span-10">
-                      <h2 className="section-title text-xl mb-3" style={{ color: '#E9E7E2' }}>{s.title.replace(/^\d+\.\s/, '')}</h2>
-                      <div className="text-sm leading-relaxed space-y-3" style={{ color: '#AEB5BD' }}>{s.body}</div>
+                      <h2 className="section-title text-xl mb-3" style={{ color: 'var(--ink)' }}>{s.title.replace(/^\d+\.\s/, '')}</h2>
+                      <div className="text-sm leading-relaxed space-y-3" style={{ color: 'var(--ink-2)' }}>{s.body}</div>
                     </div>
                   </div>
                 </section>

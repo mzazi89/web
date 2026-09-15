@@ -116,14 +116,14 @@ export default function ProductsPage() {
             Deploy a panel<span className="accent">.</span>
           </h1>
           <div className="flex flex-wrap items-center gap-4 mt-4">
-            <p className="text-sm" style={{ color: '#79818A' }}>
+            <p className="text-sm" style={{ color: 'var(--muted)' }}>
               Choose a plan, configure your server, and go live in minutes.
             </p>
             {user && (
               <span className="tag tag-amber">
                 Wallet: <strong>{fmtKes(balance)}</strong>
                 {balance < 50 && (
-                  <Link href="/wallet" style={{ color: '#F2A93B', textDecoration: 'underline' }}>top up →</Link>
+                  <Link href="/wallet" style={{ color: 'var(--brand)', textDecoration: 'underline' }}>top up →</Link>
                 )}
               </span>
             )}
@@ -140,19 +140,19 @@ export default function ProductsPage() {
                     className="mono flex items-center justify-center text-[11px] font-semibold"
                     style={{
                       width: 26, height: 26, borderRadius: 2,
-                      background: i < stepIndex ? '#F2A93B' : i === stepIndex ? 'rgba(242,169,59,0.12)' : 'transparent',
-                      border: `1px solid ${i <= stepIndex ? '#F2A93B' : '#262C33'}`,
-                      color: i < stepIndex ? '#14100A' : i === stepIndex ? '#F2A93B' : '#4C535B',
+                      background: i < stepIndex ? 'var(--brand)' : i === stepIndex ? 'rgba(242,169,59,0.12)' : 'transparent',
+                      border: `1px solid ${i <= stepIndex ? 'var(--brand)' : 'var(--line)'}`,
+                      color: i < stepIndex ? 'var(--on-brand)' : i === stepIndex ? 'var(--brand)' : 'var(--dim)',
                     }}>
                     {i < stepIndex ? '✓' : i + 1}
                   </span>
                   <p className="mono text-[11px] uppercase tracking-[0.12em] whitespace-nowrap"
-                    style={{ color: i === stepIndex ? '#E9E7E2' : '#4C535B' }}>
+                    style={{ color: i === stepIndex ? 'var(--ink)' : 'var(--dim)' }}>
                     {s}
                   </p>
                 </div>
                 {i < STEPS.length - 1 && (
-                  <div className="h-px mx-4 min-w-6 flex-1" style={{ background: i < stepIndex ? '#F2A93B' : '#1B2026' }} />
+                  <div className="h-px mx-4 min-w-6 flex-1" style={{ background: i < stepIndex ? 'var(--brand)' : 'var(--line-soft)' }} />
                 )}
               </Fragment>
             ))}
@@ -161,7 +161,7 @@ export default function ProductsPage() {
 
         {/* ── Error ── */}
         {error && (
-          <div className="mb-6 px-4 py-3 text-sm flex flex-wrap items-center gap-2" style={{ background: 'rgba(229,72,77,0.08)', border: '1px solid rgba(229,72,77,0.3)', color: '#E5484D' }}>
+          <div className="mb-6 px-4 py-3 text-sm flex flex-wrap items-center gap-2" style={{ background: 'rgba(229,72,77,0.08)', border: '1px solid rgba(229,72,77,0.3)', color: 'var(--bad)' }}>
             {error}
             {error.includes('Insufficient') && (
               <Link href="/wallet" className="link" style={{ fontSize: 12 }}>Top up wallet →</Link>
@@ -175,12 +175,12 @@ export default function ProductsPage() {
             {!user && (
               <div className="mb-6 px-4 py-3 text-sm flex flex-col sm:flex-row items-start sm:items-center gap-3"
                 style={{ background: 'rgba(242,169,59,0.06)', border: '1px solid rgba(242,169,59,0.25)' }}>
-                <span style={{ color: '#F2A93B' }}>You need to be logged in to deploy a panel.</span>
+                <span style={{ color: 'var(--brand)' }}>You need to be logged in to deploy a panel.</span>
                 <Link href="/login" className="link flex-shrink-0" style={{ fontSize: 12 }}>Log in →</Link>
               </div>
             )}
             {packages.length === 0 ? (
-              <div className="text-center py-16" style={{ color: '#4C535B' }}>No packages available at the moment. Please check back soon.</div>
+              <div className="text-center py-16" style={{ color: 'var(--dim)' }}>No packages available at the moment. Please check back soon.</div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
                 {packages.map(p => (
@@ -188,26 +188,26 @@ export default function ProductsPage() {
                     className="card flex flex-col transition-all duration-300 hover:-translate-y-1 cursor-pointer relative"
                     style={{
                       padding: '24px 22px',
-                      background: p.popular ? '#16181C' : 'var(--surface)',
-                      border: p.popular ? '1px solid #F2A93B' : '1px solid #262C33',
+                      background: p.popular ? 'var(--surface)' : 'var(--surface)',
+                      border: p.popular ? '1px solid var(--brand)' : '1px solid var(--line)',
                     }}
                     onClick={() => handleSelectPkg(p)}>
                     {p.popular && (
                       <span className="mono absolute -top-2.5 left-4 px-2 py-0.5 text-[9px] uppercase tracking-[0.14em] font-semibold"
-                        style={{ background: '#F2A93B', color: '#14100A', borderRadius: 2 }}>
+                        style={{ background: 'var(--brand)', color: 'var(--on-brand)', borderRadius: 2 }}>
                         Most popular
                       </span>
                     )}
-                    <p className="display font-bold text-base mb-1" style={{ color: '#E9E7E2' }}>{p.name}</p>
+                    <p className="display font-bold text-base mb-1" style={{ color: 'var(--ink)' }}>{p.name}</p>
                     <div className="flex items-baseline gap-1.5 mb-3">
-                      <span className="stat-num" style={{ fontSize: '1.8rem', color: p.popular ? '#F2A93B' : '#E9E7E2' }}>{fmtKes(p.price)}</span>
-                      <span className="mono text-[10px] uppercase tracking-[0.1em]" style={{ color: '#4C535B' }}>/mo</span>
+                      <span className="stat-num" style={{ fontSize: '1.8rem', color: p.popular ? 'var(--brand)' : 'var(--ink)' }}>{fmtKes(p.price)}</span>
+                      <span className="mono text-[10px] uppercase tracking-[0.1em]" style={{ color: 'var(--dim)' }}>/mo</span>
                     </div>
-                    <p className="text-xs leading-relaxed mb-4" style={{ color: '#79818A' }}>{p.description}</p>
+                    <p className="text-xs leading-relaxed mb-4" style={{ color: 'var(--muted)' }}>{p.description}</p>
                     <ul className="space-y-1.5 mb-6 flex-1">
                       {[fmtCpu(p.cpu), fmtRam(p.ram), fmtDisk(p.disk), ...(p.expires_after_hours ? [`Auto-removed after ${p.expires_after_hours}h`] : [])].map(spec => (
-                        <li key={spec} className="mono flex items-center gap-2 text-[11px]" style={{ color: '#AEB5BD' }}>
-                          <span style={{ color: p.accent || '#F2A93B' }}>—</span>
+                        <li key={spec} className="mono flex items-center gap-2 text-[11px]" style={{ color: 'var(--ink-2)' }}>
+                          <span style={{ color: p.accent || 'var(--brand)' }}>—</span>
                           {spec}
                         </li>
                       ))}
@@ -216,9 +216,9 @@ export default function ProductsPage() {
                       className="btn w-full"
                       style={{
                         padding: '10px 0', fontSize: 11,
-                        background: p.popular ? '#F2A93B' : 'transparent',
-                        color: p.popular ? '#14100A' : '#AEB5BD',
-                        border: p.popular ? '1px solid #F2A93B' : '1px solid #262C33',
+                        background: p.popular ? 'var(--brand)' : 'transparent',
+                        color: p.popular ? 'var(--on-brand)' : 'var(--ink-2)',
+                        border: p.popular ? '1px solid var(--brand)' : '1px solid var(--line)',
                       }}
                       onClick={e => { e.stopPropagation(); handleSelectPkg(p); }}>
                       {p.popular ? 'Get started' : 'Choose plan'}
@@ -236,7 +236,7 @@ export default function ProductsPage() {
             {/* Form */}
             <div className="lg:col-span-2 card p-6 sm:p-8">
               <p className="eyebrow">Step 02</p>
-              <h2 className="display text-xl font-bold mt-3 mb-6" style={{ color: '#E9E7E2' }}>Configure your server</h2>
+              <h2 className="display text-xl font-bold mt-3 mb-6" style={{ color: 'var(--ink)' }}>Configure your server</h2>
               <form onSubmit={handleConfirm} className="space-y-5">
                 {/* Name row */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -295,30 +295,30 @@ export default function ProductsPage() {
             {/* Order summary */}
             <div>
               <div className="card p-6 lg:sticky lg:top-32">
-                <p className="mono text-[10px] uppercase tracking-[0.18em] mb-5" style={{ color: '#4C535B' }}>Order summary</p>
-                <div className="flex items-center justify-between mb-4 pb-4" style={{ borderBottom: '1px solid #1B2026' }}>
+                <p className="mono text-[10px] uppercase tracking-[0.18em] mb-5" style={{ color: 'var(--dim)' }}>Order summary</p>
+                <div className="flex items-center justify-between mb-4 pb-4" style={{ borderBottom: '1px solid var(--line-soft)' }}>
                   <div>
-                    <p className="display font-bold" style={{ color: '#E9E7E2' }}>{pkg.name} plan</p>
-                    <p className="mono text-[10px] uppercase tracking-[0.12em] mt-0.5" style={{ color: '#4C535B' }}>Monthly subscription</p>
+                    <p className="display font-bold" style={{ color: 'var(--ink)' }}>{pkg.name} plan</p>
+                    <p className="mono text-[10px] uppercase tracking-[0.12em] mt-0.5" style={{ color: 'var(--dim)' }}>Monthly subscription</p>
                   </div>
-                  <p className="stat-num" style={{ fontSize: '1.4rem', color: '#F2A93B' }}>{fmtKes(pkg.price)}</p>
+                  <p className="stat-num" style={{ fontSize: '1.4rem', color: 'var(--brand)' }}>{fmtKes(pkg.price)}</p>
                 </div>
                 <div className="space-y-1.5">
                   {[fmtCpu(pkg.cpu), fmtRam(pkg.ram), fmtDisk(pkg.disk)].map(s => (
-                    <div key={s} className="mono flex items-center gap-2 text-[11px]" style={{ color: '#79818A' }}>
-                      <span style={{ color: '#F2A93B' }}>—</span>
+                    <div key={s} className="mono flex items-center gap-2 text-[11px]" style={{ color: 'var(--muted)' }}>
+                      <span style={{ color: 'var(--brand)' }}>—</span>
                       {s}
                     </div>
                   ))}
                 </div>
-                <div className="mt-4 pt-4" style={{ borderTop: '1px solid #1B2026' }}>
-                  <div className="flex justify-between text-xs mb-1.5" style={{ color: '#4C535B' }}>
+                <div className="mt-4 pt-4" style={{ borderTop: '1px solid var(--line-soft)' }}>
+                  <div className="flex justify-between text-xs mb-1.5" style={{ color: 'var(--dim)' }}>
                     <span>Your balance</span>
-                    <span style={{ color: balance >= pkg.price ? '#3ECF8E' : '#E5484D' }}>{fmtKes(balance)}</span>
+                    <span style={{ color: balance >= pkg.price ? 'var(--good)' : 'var(--bad)' }}>{fmtKes(balance)}</span>
                   </div>
-                  <div className="flex justify-between text-xs" style={{ color: '#4C535B' }}>
+                  <div className="flex justify-between text-xs" style={{ color: 'var(--dim)' }}>
                     <span>After purchase</span>
-                    <span style={{ color: '#AEB5BD' }}>{fmtKes(Math.max(0, balance - pkg.price))}</span>
+                    <span style={{ color: 'var(--ink-2)' }}>{fmtKes(Math.max(0, balance - pkg.price))}</span>
                   </div>
                 </div>
               </div>
@@ -330,7 +330,7 @@ export default function ProductsPage() {
         {step === 'confirm' && pkg && (
           <div className="max-w-lg mx-auto card p-6 sm:p-8">
             <p className="eyebrow">Step 03</p>
-            <h2 className="display text-xl font-bold mt-3 mb-6" style={{ color: '#E9E7E2' }}>Confirm order</h2>
+            <h2 className="display text-xl font-bold mt-3 mb-6" style={{ color: 'var(--ink)' }}>Confirm order</h2>
             {[
               { label: 'Plan',      value: `${pkg.name} — ${fmtKes(pkg.price)}/mo` },
               { label: 'Resources', value: `${fmtCpu(pkg.cpu)} · ${fmtRam(pkg.ram)} · ${fmtDisk(pkg.disk)}` },
@@ -339,16 +339,16 @@ export default function ProductsPage() {
               { label: 'Nest',      value: nests.find(n => String(n.id) === String(form.nest_id))?.name || form.nest_id },
               { label: 'Egg',       value: eggs.find(e => String(e.id) === String(form.egg_id))?.name || form.egg_id },
             ].map(r => (
-              <div key={r.label} className="flex justify-between py-3 text-sm" style={{ borderBottom: '1px solid #1B2026' }}>
-                <span className="mono text-[10px] uppercase tracking-[0.12em] flex-shrink-0" style={{ color: '#4C535B', paddingTop: 3 }}>{r.label}</span>
-                <span className="font-semibold text-right ml-6" style={{ color: '#E9E7E2', wordBreak: 'break-all' }}>{r.value}</span>
+              <div key={r.label} className="flex justify-between py-3 text-sm" style={{ borderBottom: '1px solid var(--line-soft)' }}>
+                <span className="mono text-[10px] uppercase tracking-[0.12em] flex-shrink-0" style={{ color: 'var(--dim)', paddingTop: 3 }}>{r.label}</span>
+                <span className="font-semibold text-right ml-6" style={{ color: 'var(--ink)', wordBreak: 'break-all' }}>{r.value}</span>
               </div>
             ))}
-            <div className="flex justify-between py-3.5 text-base" style={{ borderBottom: '1px solid #1B2026' }}>
-              <span className="mono text-[10px] uppercase tracking-[0.12em]" style={{ color: '#4C535B', paddingTop: 4 }}>Total charge</span>
-              <span className="stat-num" style={{ fontSize: '1.3rem', color: '#F2A93B' }}>{fmtKes(pkg.price)}</span>
+            <div className="flex justify-between py-3.5 text-base" style={{ borderBottom: '1px solid var(--line-soft)' }}>
+              <span className="mono text-[10px] uppercase tracking-[0.12em]" style={{ color: 'var(--dim)', paddingTop: 4 }}>Total charge</span>
+              <span className="stat-num" style={{ fontSize: '1.3rem', color: 'var(--brand)' }}>{fmtKes(pkg.price)}</span>
             </div>
-            <p className="text-xs mt-4 mb-6" style={{ color: '#4C535B' }}>
+            <p className="text-xs mt-4 mb-6" style={{ color: 'var(--dim)' }}>
               {fmtKes(pkg.price)} will be deducted from your wallet. Balance after: {fmtKes(Math.max(0, balance - pkg.price))}
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
@@ -362,8 +362,8 @@ export default function ProductsPage() {
         {step === 'creating' && (
           <div className="text-center py-16 sm:py-24">
             <div className="spinner mx-auto mb-6" />
-            <p className="display font-bold text-lg mb-2" style={{ color: '#E9E7E2' }}>Deploying your panel…</p>
-            <p className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: '#4C535B' }}>About 30 seconds — please wait</p>
+            <p className="display font-bold text-lg mb-2" style={{ color: 'var(--ink)' }}>Deploying your panel…</p>
+            <p className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: 'var(--dim)' }}>About 30 seconds — please wait</p>
           </div>
         )}
 
@@ -374,14 +374,14 @@ export default function ProductsPage() {
               <div className="mb-6">
                 <p className="eyebrow">Step 04 — done</p>
                 <h2 className="headline mt-3" style={{ fontSize: 'clamp(1.6rem, 3vw, 2.1rem)' }}>Panel deployed<span className="accent">.</span></h2>
-                <p className="text-sm mt-2" style={{ color: '#79818A' }}>
+                <p className="text-sm mt-2" style={{ color: 'var(--muted)' }}>
                   Your server is live. Save these credentials — you will need them to log in.
                 </p>
               </div>
 
               {/* Credentials box */}
-              <div className="mb-4" style={{ border: '1px solid #262C33', background: '#0F1215' }}>
-                <p className="mono text-[10px] uppercase tracking-[0.16em] px-4 py-3" style={{ color: '#F2A93B', borderBottom: '1px solid #1B2026' }}>
+              <div className="mb-4" style={{ border: '1px solid var(--line)', background: 'var(--bg-2)' }}>
+                <p className="mono text-[10px] uppercase tracking-[0.16em] px-4 py-3" style={{ color: 'var(--brand)', borderBottom: '1px solid var(--line-soft)' }}>
                   Login credentials
                 </p>
                 {[
@@ -391,11 +391,11 @@ export default function ProductsPage() {
                   { label: 'Plan',       value: result.package   || pkg?.name },
                   { label: 'Server ID',  value: result.ptero_server_id ? String(result.ptero_server_id) : '—' },
                 ].map(r => (
-                  <div key={r.label} className="flex items-center justify-between gap-3 px-4 py-2.5 text-sm" style={{ borderBottom: '1px solid #1B2026' }}>
-                    <span className="mono text-[9px] uppercase tracking-[0.14em] flex-shrink-0" style={{ color: '#4C535B' }}>{r.label}</span>
+                  <div key={r.label} className="flex items-center justify-between gap-3 px-4 py-2.5 text-sm" style={{ borderBottom: '1px solid var(--line-soft)' }}>
+                    <span className="mono text-[9px] uppercase tracking-[0.14em] flex-shrink-0" style={{ color: 'var(--dim)' }}>{r.label}</span>
                     {r.link
-                      ? <a href={r.link} target="_blank" rel="noopener noreferrer" className="mono text-[12px] font-semibold truncate" style={{ color: '#4C7DFC', textDecoration: 'underline', wordBreak: 'break-all' }}>{r.value}</a>
-                      : <span className="mono text-[12px] font-semibold text-right" style={{ color: '#E9E7E2', wordBreak: 'break-all' }}>{r.value}</span>
+                      ? <a href={r.link} target="_blank" rel="noopener noreferrer" className="mono text-[12px] font-semibold truncate" style={{ color: 'var(--blue)', textDecoration: 'underline', wordBreak: 'break-all' }}>{r.value}</a>
+                      : <span className="mono text-[12px] font-semibold text-right" style={{ color: 'var(--ink)', wordBreak: 'break-all' }}>{r.value}</span>
                     }
                   </div>
                 ))}
@@ -403,15 +403,15 @@ export default function ProductsPage() {
 
               {/* Expiry notice */}
               {result.expires_at && (
-                <div className="px-4 py-3 mb-4 text-xs flex items-start gap-2" style={{ background: 'rgba(242,169,59,0.05)', border: '1px solid rgba(242,169,59,0.25)', color: '#AEB5BD' }}>
-                  <span className="flex-shrink-0" style={{ color: '#F2A93B' }}>EXP</span>
-                  <span>This server will be <strong style={{ color: '#E9E7E2' }}>automatically removed</strong> on {new Date(result.expires_at).toLocaleString()}. Back up your data before then.</span>
+                <div className="px-4 py-3 mb-4 text-xs flex items-start gap-2" style={{ background: 'rgba(242,169,59,0.05)', border: '1px solid rgba(242,169,59,0.25)', color: 'var(--ink-2)' }}>
+                  <span className="flex-shrink-0" style={{ color: 'var(--brand)' }}>EXP</span>
+                  <span>This server will be <strong style={{ color: 'var(--ink)' }}>automatically removed</strong> on {new Date(result.expires_at).toLocaleString()}. Back up your data before then.</span>
                 </div>
               )}
 
               {/* Warning to save creds */}
-              <div className="px-4 py-3 mb-5 text-xs" style={{ background: 'rgba(229,72,77,0.06)', border: '1px solid rgba(229,72,77,0.25)', color: '#AEB5BD' }}>
-                <strong style={{ color: '#E5484D' }}>Save your password now.</strong> It is shown only once and cannot be recovered from this page.
+              <div className="px-4 py-3 mb-5 text-xs" style={{ background: 'rgba(229,72,77,0.06)', border: '1px solid rgba(229,72,77,0.25)', color: 'var(--ink-2)' }}>
+                <strong style={{ color: 'var(--bad)' }}>Save your password now.</strong> It is shown only once and cannot be recovered from this page.
               </div>
 
               <div className="flex flex-col sm:flex-row gap-3">

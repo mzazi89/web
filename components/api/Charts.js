@@ -2,7 +2,7 @@
 
 // Lightweight dependency-free SVG charts matching the Ink & Bolt dark theme
 
-export function BarChart({ data, height = 160, color = '#4C7DFC', valueKey = 'requests', labelKey = 'date' }) {
+export function BarChart({ data, height = 160, color = 'var(--blue)', valueKey = 'requests', labelKey = 'date' }) {
   const max = Math.max(1, ...data.map(d => d[valueKey] ?? 0));
   const w = Math.max(280, data.length * 26);
   const barW = 18;
@@ -11,7 +11,7 @@ export function BarChart({ data, height = 160, color = '#4C7DFC', valueKey = 're
     <svg viewBox={`0 0 ${w} ${height + 28}`} className="w-full" style={{ display: 'block' }}>
       {[0.25, 0.5, 0.75, 1].map(f => (
         <line key={f} x1={0} x2={w} y1={height - height * f} y2={height - height * f}
-          stroke="#1B2026" strokeWidth={1} strokeDasharray="4 4" />
+          stroke="var(--line-soft)" strokeWidth={1} strokeDasharray="4 4" />
       ))}
       {data.map((d, i) => {
         const h = Math.max(2, (d[valueKey] ?? 0) / max * height);
@@ -22,7 +22,7 @@ export function BarChart({ data, height = 160, color = '#4C7DFC', valueKey = 're
               <title>{`${d[labelKey]}: ${d[valueKey]}`}</title>
             </rect>
             {i % Math.ceil(data.length / 8) === 0 && (
-              <text x={x + barW / 2} y={height + 16} textAnchor="middle" fontSize={9} fill="#4C535B" fontFamily="var(--font-mono)">
+              <text x={x + barW / 2} y={height + 16} textAnchor="middle" fontSize={9} fill="var(--dim)" fontFamily="var(--font-mono)">
                 {String(d[labelKey]).slice(5)}
               </text>
             )}
@@ -33,7 +33,7 @@ export function BarChart({ data, height = 160, color = '#4C7DFC', valueKey = 're
   );
 }
 
-export function LineChart({ data, height = 160, color = '#4C7DFC', valueKey = 'requests', labelKey = 'date' }) {
+export function LineChart({ data, height = 160, color = 'var(--blue)', valueKey = 'requests', labelKey = 'date' }) {
   const max = Math.max(1, ...data.map(d => d[valueKey] ?? 0));
   const w = Math.max(280, data.length * 26);
 
@@ -62,7 +62,7 @@ export function LineChart({ data, height = 160, color = '#4C7DFC', valueKey = 'r
             <title>{`${data[i][labelKey]}: ${data[i][valueKey]}`}</title>
           </circle>
           {i % Math.ceil(data.length / 8) === 0 && (
-            <text x={p[0]} y={height + 16} textAnchor="middle" fontSize={9} fill="#4C535B" fontFamily="var(--font-mono)">
+            <text x={p[0]} y={height + 16} textAnchor="middle" fontSize={9} fill="var(--dim)" fontFamily="var(--font-mono)">
               {String(data[i][labelKey]).slice(5)}
             </text>
           )}

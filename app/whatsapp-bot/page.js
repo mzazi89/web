@@ -1,19 +1,29 @@
 'use client';
+
+// MZAZI TECH — WhatsApp bot.
+//
+// Documents the bot (how to pair, which bot to use, the commands) and hosts the
+// interactive PairingPanel. This page makes no API calls of its own — the panel
+// owns the pairing/devices/bots/plan endpoints.
+
 import Link from 'next/link';
+import {
+  AppBackground, PageHeader, Button, Card, CardHeader, Badge, Icons,
+} from '@/components/ui';
 import PairingPanel from './PairingPanel';
 
 const BOTS = [
-  { handle: 'mzazitechquartzbot',   name: 'Bot 1', desc: 'Recommended — start here', recommended: true },
-  { handle: 'mzazitechquartz2bot',  name: 'Bot 2', desc: 'Extra session' },
-  { handle: 'mzazitechquartz3bot',  name: 'Bot 3', desc: 'Extra session' },
-  { handle: 'mzazitechquartz4bot',  name: 'Bot 4', desc: 'Extra session' },
+  { handle: 'mzazitechquartzbot', name: 'QUARTZ XD', desc: 'Recommended — start here', recommended: true },
+  { handle: 'mzazitechquartz2bot', name: 'MZAZI XMD', desc: 'Extra session' },
+  { handle: 'mzazitechquartz3bot', name: 'QUARTZ XD 3', desc: 'Extra session' },
+  { handle: 'mzazitechquartz4bot', name: 'QUARTZ XD 4', desc: 'Extra session' },
 ];
 
-const steps = [
+const STEPS = [
   {
     step: '01',
     title: 'Open a Telegram bot',
-    desc: 'Each bot connects ONE WhatsApp number. Pick Bot 1 first (recommended) and stick with it. Need more numbers later? Use Bot 2, 3 or 4.',
+    desc: 'Each bot connects ONE WhatsApp number. Pick the first bot (recommended) and stick with it. Need more numbers later? Use the others.',
     action: { label: 'Choose your bot', href: '#bots' },
   },
   {
@@ -36,7 +46,7 @@ const steps = [
   },
 ];
 
-const features = [
+const FEATURES = [
   { title: 'Instant pairing', desc: 'Link your WhatsApp number in seconds via our Telegram bots — no QR code scanning needed.' },
   { title: 'Bot commands', desc: 'Manage your bot, send broadcasts, auto-reply messages, and run custom automation workflows.' },
   { title: 'Secure connection', desc: 'No passwords are stored — only a session token, and sessions are wiped when you delete a device.' },
@@ -45,199 +55,158 @@ const features = [
   { title: 'Multi-group support', desc: 'Manage multiple WhatsApp groups and broadcast lists from one dashboard.' },
 ];
 
-function TelegramButton({ bot, size = 'lg' }) {
+const COMMANDS = [
+  { cmd: '/start', desc: 'Initialize the bot' },
+  { cmd: '/pair 254XXXXXXXXX', desc: 'Link your WhatsApp number (international format)' },
+  { cmd: '/status', desc: 'Check your connection status' },
+  { cmd: '/help', desc: 'List all available commands' },
+];
+
+function TelegramButton({ bot }) {
   const href = `https://t.me/${bot.handle}`;
   return (
-    <a href={href} target="_blank" rel="noopener noreferrer"
-      className="mono flex items-center justify-between gap-3 transition-colors"
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="btn"
       style={{
-        padding: size === 'lg' ? '12px 16px' : '8px 12px',
-        fontSize: size === 'lg' ? 12 : 11,
-        background: bot.recommended ? 'rgba(242,169,59,0.08)' : '#0F1215',
-        border: bot.recommended ? '1px solid rgba(242,169,59,0.45)' : '1px solid #262C33',
-        color: bot.recommended ? '#F2A93B' : '#AEB5BD',
-        textDecoration: 'none',
-        borderRadius: 2,
-      }}>
-      <span className="truncate">
-        {bot.recommended ? '★ ' : ''}{bot.name} · @{bot.handle}
+        justifyContent: 'space-between',
+        width: '100%',
+        background: bot.recommended ? 'var(--brand-tint)' : 'var(--surface-2)',
+        border: bot.recommended ? '1px solid var(--brand-soft)' : '1px solid var(--line)',
+        color: bot.recommended ? 'var(--brand)' : 'var(--ink-2)',
+      }}
+    >
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 9, minWidth: 0 }}>
+        <Icons.Send size={15} />
+        <span className="truncate-1">{bot.name} · @{bot.handle}</span>
       </span>
-      <span style={{ color: bot.recommended ? '#F2A93B' : '#4C535B' }}>→</span>
+      <Icons.ArrowRight size={15} />
     </a>
   );
 }
 
 export default function WhatsAppBotPage() {
   return (
-    <>
-      {/* ─── Hero ─── */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none grid-bg" style={{ maskImage: 'linear-gradient(180deg, rgba(0,0,0,0.5), transparent 70%)', WebkitMaskImage: 'linear-gradient(180deg, rgba(0,0,0,0.5), transparent 70%)' }} />
-        <div className="container-site relative py-20 sm:py-28">
-          <div className="max-w-2xl">
-            <span className="tag tag-green anim-fade-up"><span className="dot anim-pulse" /> 4 bots online</span>
-            <h1 className="headline anim-fade-up d1 mt-6" style={{ color: '#E9E7E2' }}>
-              Your WhatsApp,<br />on autopilot<span className="accent">.</span>
-            </h1>
-            <p className="lede anim-fade-up d2 mt-6">
-              Link your number through our Telegram bots in under two minutes. No technical skills —
-              one command, one code, done.
-            </p>
+    <AppBackground variant="dashboard">
+      <div className="container-site" style={{ paddingTop: 26, paddingBottom: 90, maxWidth: 1000 }}>
+        <PageHeader
+          title="WhatsApp bot"
+          description="Link your number through our Telegram bots, or pair directly here — no technical skills, one code and you’re online."
+          icon={<Icons.WhatsApp size={20} />}
+          actions={
+            <>
+              <Button href="#pair" variant="ghost" icon={<Icons.Zap size={16} />}>Pair now</Button>
+              <Button href="https://t.me/mzazitechquartzbot" icon={<Icons.Send size={16} />}>Open bot</Button>
+            </>
+          }
+          breadcrumb={['Dashboard', 'WhatsApp bot']}
+        />
 
-            <div id="bots" className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-10 max-w-lg scroll-mt-32 anim-fade-up d3">
-              {BOTS.map(bot => <TelegramButton key={bot.handle} bot={bot} />)}
-            </div>
-            <p className="mono text-[10px] uppercase tracking-[0.14em] mt-4" style={{ color: '#4C535B' }}>
-              One bot = one WhatsApp number. Keep using the same bot.
-            </p>
-          </div>
-        </div>
-      </section>
+        {/* ── Pair online ── */}
+        <section id="pair" className="scroll-x" style={{ marginBottom: 28, scrollMarginTop: 90 }}>
+          <PairingPanel />
+        </section>
 
-      {/* ─── How to pair ─── */}
-      <section className="section" style={{ paddingTop: 40 }}>
-        <div className="container-site max-w-4xl">
-          <div className="mb-12">
-            <p className="eyebrow">How it works</p>
-            <h2 className="section-title text-3xl sm:text-4xl mt-4" style={{ color: '#E9E7E2' }}>
-              Four steps, two minutes
-              <span className="bar" />
-            </h2>
-          </div>
-
-          <div className="space-y-4">
-            {steps.map(s => (
-              <div key={s.step} className="card p-6 sm:p-7 flex flex-col sm:flex-row gap-5">
-                <span className="mono text-[13px] font-semibold flex-shrink-0" style={{ color: '#F2A93B', paddingTop: 2 }}>
-                  /{s.step}
-                </span>
-                <div className="flex-1">
-                  <h3 className="display text-lg font-bold mb-2" style={{ color: '#E9E7E2' }}>{s.title}</h3>
-                  <p className="text-sm leading-relaxed mb-4" style={{ color: '#79818A' }}>{s.desc}</p>
+        {/* ── How it works ── */}
+        <Card className="anim-fade-up" style={{ marginBottom: 22 }}>
+          <CardHeader
+            title="How it works"
+            description="Four steps, about two minutes."
+            icon={<Icons.Help size={18} />}
+          />
+          <div style={{ display: 'grid', gap: 14 }}>
+            {STEPS.map((s) => (
+              <div key={s.step} style={{ display: 'flex', gap: 14, padding: '14px 0', borderBottom: '1px solid var(--line-soft)' }}>
+                <span className="mono" style={{ color: 'var(--brand)', fontWeight: 700, flex: '0 0 auto' }}>/{s.step}</span>
+                <div style={{ minWidth: 0 }}>
+                  <h3 style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 700, color: 'var(--ink)' }}>{s.title}</h3>
+                  <p style={{ margin: '6px 0 0', fontSize: 13.5, color: 'var(--muted)', lineHeight: 1.65 }}>{s.desc}</p>
                   {s.code && (
-                    <div className="inline-flex items-center gap-3 px-4 py-2.5" style={{ background: '#0F1215', border: '1px solid #262C33' }}>
-                      <code className="mono font-semibold text-[13px]" style={{ color: '#F2A93B' }}>{s.code}</code>
-                      <span className="mono text-[10px] uppercase tracking-[0.12em]" style={{ color: '#4C535B' }}>
-                        {s.step === '04' ? '— the code from your bot' : '— send this to the bot'}
+                    <div style={{ marginTop: 10 }}>
+                      <span className="mono" style={{ display: 'inline-block', padding: '8px 12px', background: 'var(--surface-2)', border: '1px solid var(--line)', borderRadius: 'var(--r-sm)', color: 'var(--brand)', fontWeight: 600, wordBreak: 'break-all' }}>
+                        {s.code}
                       </span>
                     </div>
                   )}
                   {s.action && (
-                    <a href={s.action.href}
-                      className="mono inline-flex items-center gap-2 px-4 py-2.5 text-[11px] uppercase tracking-[0.12em]"
-                      style={{ background: '#F2A93B', color: '#14100A', textDecoration: 'none' }}>
-                      {s.action.label} →
-                    </a>
+                    <div style={{ marginTop: 10 }}>
+                      <Button size="sm" href={s.action.href}>{s.action.label}</Button>
+                    </div>
                   )}
                 </div>
               </div>
             ))}
           </div>
+        </Card>
 
-          {/* Which bot? */}
-          <div className="card p-6 sm:p-8 mt-10">
-            <h3 className="display text-lg font-bold mb-2" style={{ color: '#E9E7E2' }}>Which bot should I use?</h3>
-            <p className="text-sm mb-6 leading-relaxed" style={{ color: '#79818A' }}>
-              We run <strong style={{ color: '#E9E7E2' }}>4 separate bots</strong> so you can connect up to 4 different
-              WhatsApp numbers. Each bot is an independent session — one bot = one WhatsApp number.
-              Start with <strong style={{ color: '#F2A93B' }}>Bot 1</strong>. Once you send{' '}
-              <code className="mono text-xs" style={{ color: '#F2A93B' }}>/pair</code> to a bot, keep using that same bot for that number.
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {BOTS.map(bot => (
-                <div key={bot.handle} className="flex items-center justify-between gap-3 px-4 py-3" style={{ background: '#0F1215', border: bot.recommended ? '1px solid rgba(242,169,59,0.4)' : '1px solid #262C33' }}>
-                  <div className="min-w-0">
-                    <p className="text-sm font-semibold" style={{ color: '#E9E7E2' }}>
-                      {bot.name}
-                      {bot.recommended && <span className="mono text-[9px] uppercase tracking-[0.1em] px-1.5 py-0.5 ml-2" style={{ background: 'rgba(62,207,142,0.1)', color: '#3ECF8E' }}>Recommended</span>}
-                    </p>
-                    <p className="mono text-[11px] truncate mt-0.5" style={{ color: '#4C535B' }}>t.me/{bot.handle}</p>
-                  </div>
-                  <TelegramButton bot={bot} size="sm" />
+        {/* ── Which bot ── */}
+        <Card id="bots" className="anim-fade-up d1" style={{ marginBottom: 22, scrollMarginTop: 90 }}>
+          <CardHeader
+            title="Which bot should I use?"
+            description="We run several bots so you can connect different WhatsApp numbers. One bot = one number."
+            icon={<Icons.Bot size={18} />}
+          />
+          <p style={{ margin: '0 0 14px', fontSize: 13.5, color: 'var(--muted)', lineHeight: 1.7 }}>
+            Start with <strong style={{ color: 'var(--brand)' }}>{BOTS[0].name}</strong>. Once you send{' '}
+            <code className="mono" style={{ color: 'var(--brand)' }}>/pair</code> to a bot, keep using that same bot for that number.
+          </p>
+          <div className="grid-2-responsive">
+            {BOTS.map((bot) => (
+              <div key={bot.handle} style={{ display: 'grid', gap: 8 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                  <span style={{ fontWeight: 700, color: 'var(--ink)' }}>{bot.name}</span>
+                  {bot.recommended && <Badge tone="good">Recommended</Badge>}
                 </div>
-              ))}
-            </div>
+                <TelegramButton bot={bot} />
+              </div>
+            ))}
           </div>
+          <p style={{ margin: '14px 0 0', fontSize: 12.5, color: 'var(--dim)' }}>One bot = one WhatsApp number. Keep using the same bot.</p>
+        </Card>
 
-          {/* Command reference */}
-          <div className="card p-6 sm:p-8 mt-10">
-            <h3 className="display text-lg font-bold mb-5" style={{ color: '#E9E7E2' }}>Quick command reference</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {[
-                { cmd: '/start', desc: 'Initialize the bot' },
-                { cmd: '/pair 254XXXXXXXXX', desc: 'Link your WhatsApp number (international format)' },
-                { cmd: '/status', desc: 'Check your connection status' },
-                { cmd: '/help', desc: 'List all available commands' },
-              ].map(c => (
-                <div key={c.cmd} className="flex items-start justify-between gap-3 px-4 py-3" style={{ background: '#0F1215', border: '1px solid #1B2026' }}>
-                  <code className="mono text-[12px] font-semibold" style={{ color: '#F2A93B' }}>{c.cmd}</code>
-                  <span className="text-xs text-right" style={{ color: '#79818A' }}>{c.desc}</span>
-                </div>
-              ))}
-            </div>
-            <p className="mono text-[10px] uppercase tracking-[0.12em] mt-5" style={{ color: '#4C535B' }}>
-              International format: country code + number without leading 0 or + — KE 254712345678 · NG 2348012345678 · US 14155552671
-            </p>
+        {/* ── Command reference ── */}
+        <Card className="anim-fade-up d2" style={{ marginBottom: 22 }}>
+          <CardHeader title="Quick command reference" icon={<Icons.Command size={18} />} />
+          <div className="grid-2-responsive">
+            {COMMANDS.map((c) => (
+              <div key={c.cmd} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, padding: '12px 14px', background: 'var(--surface-2)', border: '1px solid var(--line-soft)', borderRadius: 'var(--r-sm)' }}>
+                <code className="mono" style={{ fontWeight: 700, color: 'var(--brand)', wordBreak: 'break-all' }}>{c.cmd}</code>
+                <span style={{ fontSize: 12.5, color: 'var(--muted)', textAlign: 'right' }}>{c.desc}</span>
+              </div>
+            ))}
           </div>
-        </div>
-      </section>
+          <p style={{ margin: '16px 0 0', fontSize: 12, color: 'var(--dim)', lineHeight: 1.7 }}>
+            International format: country code + number without leading 0 or + — KE 254712345678 · NG 2348012345678 · US 14155552671
+          </p>
+        </Card>
 
-      {/* ─── Pair online — no Telegram needed ─── */}
-      <section className="section" style={{ background: 'rgba(255,255,255,0.014)' }}>
-        <div className="container-site max-w-5xl">
-          <div className="mb-12">
-            <p className="eyebrow">No Telegram?</p>
-            <h2 className="section-title text-3xl sm:text-4xl mt-4" style={{ color: '#E9E7E2' }}>
-              Pair directly here
-              <span className="bar" />
-            </h2>
-            <p className="mt-4 text-sm" style={{ color: '#79818A' }}>
-              Enter your number, get the code, link your WhatsApp. Manage devices and plans from your wallet.
-            </p>
-          </div>
-          <PairingPanel />
-        </div>
-      </section>
-
-      {/* ─── Features — asymmetric list ─── */}
-      <section className="section">
-        <div className="container-site max-w-4xl">
-          <div className="mb-12">
-            <p className="eyebrow">Bot features</p>
-            <h2 className="section-title text-3xl sm:text-4xl mt-4" style={{ color: '#E9E7E2' }}>
-              What you get
-              <span className="bar" />
-            </h2>
-          </div>
-          <div>
-            {features.map((f, i) => (
-              <div key={f.title} className="row-item" style={{ gridTemplateColumns: '56px 1fr' }}>
-                <span className="row-num">/{String(i + 1).padStart(2, '0')}</span>
+        {/* ── Features ── */}
+        <Card className="anim-fade-up d2">
+          <CardHeader title="What you get" description="Everything included with every plan." icon={<Icons.Sparkles size={18} />} />
+          <div className="grid-2-responsive">
+            {FEATURES.map((f) => (
+              <div key={f.title} style={{ display: 'flex', gap: 11, alignItems: 'flex-start' }}>
+                <span style={{ color: 'var(--good)', marginTop: 2, flex: '0 0 auto' }} aria-hidden="true"><Icons.Check size={16} /></span>
                 <div>
-                  <h3 style={{ color: '#E9E7E2' }}>{f.title}</h3>
-                  <p>{f.desc}</p>
+                  <p style={{ margin: 0, fontWeight: 700, color: 'var(--ink)' }}>{f.title}</p>
+                  <p style={{ margin: '3px 0 0', fontSize: 13, color: 'var(--muted)', lineHeight: 1.6 }}>{f.desc}</p>
                 </div>
               </div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* ─── CTA ─── */}
-      <section className="section" style={{ paddingTop: 40, paddingBottom: 110 }}>
-        <div className="container-site max-w-3xl text-center">
-          <p className="eyebrow center">Ready to connect?</p>
-          <h2 className="headline mt-5" style={{ fontSize: 'clamp(1.8rem, 4vw, 2.6rem)' }}>
-            Open Bot 1 and send <span className="accent">/pair</span><span className="accent">.</span>
-          </h2>
-          <p className="lede mt-4 text-sm" style={{ maxWidth: 420, margin: '1rem auto 0' }}>
-            Or skip Telegram entirely and pair right on this page.
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-lg mx-auto mt-8">
-            {BOTS.map(bot => <TelegramButton key={bot.handle} bot={bot} />)}
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 20 }}>
+            <Button href="/devices" variant="dark" icon={<Icons.Phone size={16} />}>My devices</Button>
+            <Button href="/subscription" variant="ghost" icon={<Icons.Sparkles size={16} />}>Plans</Button>
+            <Button href="/help" variant="ghost" icon={<Icons.Help size={16} />}>Help</Button>
           </div>
-        </div>
-      </section>
-    </>
+        </Card>
+
+        <p style={{ margin: '22px 0 0', fontSize: 13, color: 'var(--dim)' }}>
+          Prefer reading first? See the <Link className="link" href="/help">Help page</Link> or <Link className="link" href="/contact">contact us</Link>.
+        </p>
+      </div>
+    </AppBackground>
   );
 }

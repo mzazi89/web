@@ -28,7 +28,7 @@ function ContributorCard({ c }) {
   return (
     <div
       className="card card-pad text-center transition-all duration-300 hover:-translate-y-1"
-      style={{ padding: '32px 26px', background: '#14181D' }}
+      style={{ padding: '32px 26px', background: 'var(--surface)' }}
     >
       {/* Avatar */}
       <div style={{ position: 'relative', display: 'inline-block', marginBottom: '18px' }}>
@@ -37,7 +37,7 @@ function ContributorCard({ c }) {
           background: 'rgba(242,169,59,0.1)',
           border: '1px solid rgba(242,169,59,0.4)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: '20px', fontWeight: 800, color: '#F2A93B',
+          fontSize: '20px', fontWeight: 800, color: 'var(--brand)',
           fontFamily: 'var(--font-display)',
           margin: '0 auto',
         }}>
@@ -46,19 +46,19 @@ function ContributorCard({ c }) {
         <span className="mono text-[9px] font-bold"
           style={{
             position: 'absolute', bottom: -4, right: -6,
-            padding: '2px 6px', background: '#0F1215', border: '1px solid #262C33',
-            color: '#4C535B', borderRadius: 2,
+            padding: '2px 6px', background: 'var(--bg-2)', border: '1px solid var(--line)',
+            color: 'var(--dim)', borderRadius: 2,
           }}>
           {c.code}
         </span>
       </div>
 
-      <h3 className="display font-bold text-base mb-1.5" style={{ color: '#E9E7E2', lineHeight: 1.3 }}>
+      <h3 className="display font-bold text-base mb-1.5" style={{ color: 'var(--ink)', lineHeight: 1.3 }}>
         {c.name}
       </h3>
-      <p className="mono text-[10px] uppercase tracking-[0.14em] mb-1" style={{ color: '#F2A93B' }}>{c.role}</p>
-      <p className="text-xs" style={{ color: '#4C535B' }}>{c.company}</p>
-      <div style={{ width: '36px', height: '1px', margin: '18px auto 0', background: '#262C33' }} />
+      <p className="mono text-[10px] uppercase tracking-[0.14em] mb-1" style={{ color: 'var(--brand)' }}>{c.role}</p>
+      <p className="text-xs" style={{ color: 'var(--dim)' }}>{c.company}</p>
+      <div style={{ width: '36px', height: '1px', margin: '18px auto 0', background: 'var(--line)' }} />
     </div>
   );
 }
@@ -69,10 +69,10 @@ export default function Contributors() {
       <div className="container-site max-w-5xl">
         <div className="text-center mb-14">
           <span className="tag tag-amber mb-6">Project contributors</span>
-          <h2 className="section-title text-3xl sm:text-4xl mt-4" style={{ color: '#E9E7E2' }}>
+          <h2 className="section-title text-3xl sm:text-4xl mt-4" style={{ color: 'var(--ink)' }}>
             Built by visionaries<span className="bar" style={{ margin: '14px auto 0' }} />
           </h2>
-          <p className="text-sm mt-5 max-w-md mx-auto" style={{ color: '#79818A' }}>
+          <p className="text-sm mt-5 max-w-md mx-auto" style={{ color: 'var(--muted)' }}>
             The founders and innovators who brought this platform to life.
           </p>
         </div>

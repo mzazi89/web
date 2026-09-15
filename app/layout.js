@@ -4,16 +4,25 @@ import TechBackground from '../components/TechBackground';
 import PwaProvider from '../components/PwaProvider';
 import ClickLoader from '../components/ClickLoader';
 import AiChatWidget from '../components/AiChatWidget';
+import { ThemeProvider, THEME_BOOT_SCRIPT } from '../components/ui/ThemeProvider';
+import { ToastProvider } from '../components/ui/Toast';
 import './globals.css';
 
 export const metadata = {
   metadataBase: new URL('https://www.mzazi.shop'),
-  title: 'MZAZI TECH INC - Technology & Automation Solutions',
-  description: 'Your trusted partner for WhatsApp bots, Pterodactyl panel hosting, and automation solutions — worldwide.',
-  keywords: 'pterodactyl hosting, whatsapp bot, automation, kenya, game server',
+  title: {
+    default: 'MZAZI TECH — WhatsApp automation made simple',
+    template: '%s · MZAZI TECH',
+  },
+  description:
+    'Connect your WhatsApp, choose your bot and start automating. QUARTZ XD and MZAZI XMD with instant pairing codes, device management, subscriptions and quick Paystack payments.',
+  keywords:
+    'whatsapp automation, whatsapp bot, QUARTZ XD, MZAZI XMD, whatsapp pairing code, mzazi tech, bot subscription',
+  applicationName: 'MZAZI TECH',
   openGraph: {
-    title: 'MZAZI TECH INC - Technology & Automation Solutions',
-    description: 'Game panels, WhatsApp bots, wallet and the MZAZI API platform — deploy in under 2 minutes.',
+    title: 'MZAZI TECH — WhatsApp automation made simple',
+    description:
+      'Connect your WhatsApp. Choose your bot. Start automating. QUARTZ XD and MZAZI XMD — pairing in under a minute.',
     type: 'website',
     locale: 'en_US',
     url: 'https://www.mzazi.shop',
@@ -22,19 +31,20 @@ export const metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'MZAZI TECH INC',
-    description: 'Game panels, WhatsApp bots and the MZAZI API platform.',
+    title: 'MZAZI TECH — WhatsApp automation made simple',
+    description: 'Connect your WhatsApp. Choose your bot. Start automating.',
   },
   manifest: '/manifest.webmanifest',
   appleWebApp: {
     capable: true,
-    statusBarStyle: 'black-translucent',
+    statusBarStyle: 'default',
     title: 'MZAZI TECH',
   },
   icons: {
     icon: [{ url: '/icon', sizes: '512x512', type: 'image/png' }],
     apple: [{ url: '/apple-icon', sizes: '180x180' }],
   },
+  robots: { index: true, follow: true, googleBot: { index: true, follow: true } },
 };
 
 const jsonLd = {
@@ -43,9 +53,21 @@ const jsonLd = {
   name: 'MZAZI TECH INC',
   url: 'https://www.mzazi.shop',
   logo: 'https://www.mzazi.shop/icon',
-  description: 'Kenya-born infrastructure company — Pterodactyl panel hosting, WhatsApp automation and developer APIs.',
+  description:
+    'WhatsApp automation platform — connect your number, choose your bot (QUARTZ XD or MZAZI XMD) and start automating.',
   foundingLocation: { '@type': 'Place', name: 'Nairobi, Kenya' },
   sameAs: ['https://t.me/mzazitech', 'https://wa.me/254108595201'],
+};
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  // Zoom stays enabled for accessibility; the layout is built so it is not needed.
+  maximumScale: 5,
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#F6F7FB' },
+    { media: '(prefers-color-scheme: dark)', color: '#0D1020' },
+  ],
 };
 
 export default function RootLayout({ children }) {
@@ -55,31 +77,37 @@ export default function RootLayout({ children }) {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap"
           rel="stylesheet"
         />
-        <meta name="theme-color" content="#0B0D0F" />
+        {/* Applies the saved theme before first paint — no flash of the wrong mode. */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       </head>
-      <body className="flex flex-col min-h-screen" style={{ backgroundColor: '#0B0D0F', color: '#E9E7E2' }}>
-        <PwaProvider>
-          {/* Accessibility: skip straight to content */}
-          <a href="#main-content" className="skip-link">Skip to content</a>
+      <body className="flex flex-col min-h-screen">
+        <ThemeProvider>
+          <ToastProvider>
+            <PwaProvider>
+              {/* Accessibility: skip straight to content */}
+              <a href="#main-content" className="skip-link">Skip to content</a>
 
-          {/* Ambient background — sits behind everything */}
-          <TechBackground />
+              {/* Ambient brand background — sits behind every page */}
+              <TechBackground />
 
-          <Navbar />
-          <main id="main-content" className="flex-grow" style={{ position: 'relative', zIndex: 1 }}>
-            {children}
-          </main>
-          <Footer />
-        </PwaProvider>
-        <ClickLoader />
-        <AiChatWidget />
+              <Navbar />
+
+              <main id="main-content" className="flex-grow" style={{ position: 'relative', zIndex: 1 }}>
+                {children}
+              </main>
+
+              <Footer />
+            </PwaProvider>
+            <ClickLoader />
+            <AiChatWidget />
+          </ToastProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

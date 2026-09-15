@@ -1,245 +1,336 @@
 import Link from 'next/link';
 import Logo from '@/components/Logo';
+import { AppBackground, BotMark, Card, CardHeader, Badge, Icons } from '@/components/ui';
 
-const FEATURES = [
+// MZAZI TECH — landing page.
+//
+// Answers three questions before the fold: what is this, what do I do, what
+// happens next. Hero stays deliberately sparse — the product cards and feature
+// list carry the detail lower down.
+
+export const metadata = {
+  title: 'MZAZI TECH — WhatsApp automation made simple',
+  description:
+    'Connect your WhatsApp, choose your bot (QUARTZ XD or MZAZI XMD) and start automating. Instant pairing codes, one dashboard for every device.',
+  alternates: { canonical: 'https://www.mzazi.shop' },
+};
+
+const STATS = [
+  { value: '2 min', label: 'To connect a number' },
+  { value: '24/7', label: 'Bot uptime' },
+  { value: 'Fast', label: 'Pairing codes' },
+  { value: 'KES', label: 'Local wallet & Paystack' },
+];
+
+const BOTS = [
   {
-    num: '01',
-    title: 'Pterodactyl panels',
-    desc: 'Game servers and apps, provisioned in minutes. Four tiers from KES 50 — panel, egg and nest selected live from the API.',
-    tag: 'From KES 50/mo',
-    href: '/products',
+    id: 'quartz',
+    name: 'QUARTZ XD',
+    tagline: 'Powerful WhatsApp automation.',
+    desc: 'The everyday bot. Group management, downloads, stickers, polls and 100+ commands — ready the moment you pair.',
+    points: ['100+ built-in commands', 'Group & admin tools', 'Media downloads'],
+    tone: 'brand',
   },
   {
-    num: '02',
-    title: 'WhatsApp automation',
-    desc: 'Pair your number with the MZAZI bot, run commands from WhatsApp or Telegram, manage every device from one dashboard.',
-    tag: 'Pair in 2 min',
-    href: '/whatsapp-bot',
-  },
-  {
-    num: '03',
-    title: 'Developer API',
-    desc: 'One key, two providers, a live explorer and a status page. Rate-limited, logged, and ready for production traffic.',
-    tag: 'Free API keys',
-    href: '/api',
-  },
-  {
-    num: '04',
-    title: 'Wallet & referrals',
-    desc: 'Top up with Paystack, pay for panels from your balance, and earn commission on every friend you bring in.',
-    tag: 'KES wallet',
-    href: '/wallet',
+    id: 'mzazi',
+    name: 'MZAZI XMD',
+    tagline: 'Advanced automation tools.',
+    desc: 'For heavier workloads. Everything in QUARTZ XD plus automation workflows, scheduled tasks and multi-group broadcasting.',
+    points: ['Everything in QUARTZ XD', 'Scheduled & automated tasks', 'Multi-group broadcast'],
+    tone: 'blue',
   },
 ];
 
-const STATS = [
-  { value: '99.9%', label: 'Uptime target' },
-  { value: '2 min', label: 'Panel deploy time' },
-  { value: '24/7', label: 'Support coverage' },
-  { value: 'KES', label: 'Local wallet' },
+const STEPS = [
+  {
+    n: '01',
+    title: 'Connect your WhatsApp',
+    desc: 'Enter your number and we generate a pairing code. No QR scanning, no re-installing WhatsApp.',
+    icon: <Icons.WhatsApp size={20} />,
+  },
+  {
+    n: '02',
+    title: 'Choose your bot',
+    desc: 'Pick QUARTZ XD for everyday automation or MZAZI XMD for advanced workflows.',
+    icon: <Icons.Bot size={20} />,
+  },
+  {
+    n: '03',
+    title: 'Start automating',
+    desc: 'Your bot comes online immediately. Manage every device, plan and payment from one dashboard.',
+    icon: <Icons.Zap size={20} />,
+  },
+];
+
+const FEATURES = [
+  {
+    title: 'One dashboard for every number',
+    desc: 'See every connected WhatsApp number, which bot is serving it, and whether it is live — in one place.',
+    icon: <Icons.Phone size={19} />,
+    href: '/devices',
+    cta: 'Connected Devices',
+  },
+  {
+    title: 'Simple, affordable plans',
+    desc: 'Start free with one number. Scale to 5, 10, 20 or unlimited devices for a flat monthly fee.',
+    icon: <Icons.CreditCard size={19} />,
+    href: '/subscription',
+    cta: 'See plans',
+  },
+  {
+    title: 'Pay your way',
+    desc: 'Top up your wallet and pay with Paystack — mobile money or card. Every receipt is saved to your account.',
+    icon: <Icons.Wallet size={19} />,
+    href: '/payments',
+    cta: 'Payments',
+  },
+  {
+    title: 'Help when you need it',
+    desc: 'Step-by-step guides for pairing, device limits and billing — plus real humans on WhatsApp and Telegram.',
+    icon: <Icons.Help size={19} />,
+    href: '/help',
+    cta: 'Help centre',
+  },
 ];
 
 export default function Home() {
   return (
-    <>
-      {/* ─── Hero — left-aligned editorial ─── */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none grid-bg" style={{ maskImage: 'linear-gradient(180deg, rgba(0,0,0,0.5), transparent 75%)', WebkitMaskImage: 'linear-gradient(180deg, rgba(0,0,0,0.5), transparent 75%)' }} />
+    <AppBackground variant="hero" orbs>
+      {/* ───────────────────────── Hero ───────────────────────── */}
+      <section>
+        <div className="container-site" style={{ paddingTop: 56, paddingBottom: 48 }}>
+          <div style={{ maxWidth: 760, margin: '0 auto', textAlign: 'center' }}>
+            <p className="eyebrow center anim-fade-up" style={{ justifyContent: 'center' }}>
+              WhatsApp automation
+            </p>
 
-        <div className="container-site relative pt-20 pb-16 sm:pt-28 sm:pb-24">
-          <div className="grid lg:grid-cols-12 gap-12 items-center">
-            {/* Copy */}
-            <div className="lg:col-span-7">
-              <p className="eyebrow anim-fade-up">Infrastructure, Kenya-built</p>
-              <h1 className="headline anim-fade-up d1 mt-5" style={{ color: '#E9E7E2' }}>
-                Power your
-                <br />
-                digital world<span className="accent">.</span>
-              </h1>
-              <p className="lede anim-fade-up d2 mt-6 max-w-xl">
-                Mzazi Tech is a Nairobi-born infrastructure company. We sell Pterodactyl panels,
-                run WhatsApp automation, and expose a developer API — one wallet, one team,
-                support that actually answers.
-              </p>
+            <h1 className="headline anim-fade-up d1" style={{ marginTop: 18 }}>
+              Powerful WhatsApp
+              <br />
+              automation <span className="accent">made simple</span>.
+            </h1>
 
-              <div className="flex flex-wrap items-center gap-4 mt-9 anim-fade-up d3">
-                <Link href="/signup" className="btn btn-primary">
-                  Create free account
-                </Link>
-                <Link href="/products" className="btn btn-ghost">
-                  Browse panels
-                </Link>
-              </div>
+            <p className="lede anim-fade-up d2" style={{ marginTop: 18, maxWidth: 620, marginLeft: 'auto', marginRight: 'auto' }}>
+              Connect your WhatsApp. Choose your bot. Start automating.
+            </p>
 
-              <p className="mono text-[11px] uppercase tracking-[0.16em] mt-8" style={{ color: '#4C535B' }}>
-                Trusted by hundreds of customers — <span style={{ color: '#79818A' }}>est. Nairobi, Kenya</span>
-              </p>
-            </div>
-
-            {/* Live status card */}
-            <div className="lg:col-span-5">
-              <div className="card card-pad anim-fade-up d2" style={{ background: 'rgba(20,24,29,0.85)', backdropFilter: 'blur(8px)' }}>
-                <div className="flex items-center justify-between mb-6">
-                  <span className="mono text-[10px] uppercase tracking-[0.2em]" style={{ color: '#4C535B' }}>Live status</span>
-                  <span className="tag tag-green"><span className="dot anim-pulse" /> Operational</span>
-                </div>
-
-                <div className="space-y-4">
-                  {[
-                    { name: 'Pterodactyl API', meta: '4/4 nodes', ok: true },
-                    { name: 'WhatsApp pairing', meta: 'MZAZIBOT', ok: true },
-                    { name: 'Paystack webhooks', meta: 'verified', ok: true },
-                    { name: 'Developer API', meta: '2 providers', ok: true },
-                  ].map(s => (
-                    <div key={s.name} className="flex items-center justify-between py-2" style={{ borderBottom: '1px solid #1B2026' }}>
-                      <div>
-                        <p className="text-sm font-semibold" style={{ color: '#E9E7E2' }}>{s.name}</p>
-                        <p className="mono text-[10px] uppercase tracking-[0.12em] mt-0.5" style={{ color: '#4C535B' }}>{s.meta}</p>
-                      </div>
-                      <span className="dot" style={{ color: '#3ECF8E' }} />
-                    </div>
-                  ))}
-                </div>
-
-                <div className="mt-6 flex items-center justify-between">
-                  <span className="mono text-[10px] uppercase tracking-[0.14em]" style={{ color: '#4C535B' }}>Response &lt; 120ms</span>
-                  <span className="mono text-[10px] uppercase tracking-[0.14em]" style={{ color: '#F2A93B' }}>Nairobi — KE</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Stats strip */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16 sm:mt-20 pt-10" style={{ borderTop: '1px solid #1B2026' }}>
-            {STATS.map(s => (
-              <div key={s.label}>
-                <div className="stat-num" style={{ color: '#E9E7E2' }}>{s.value}</div>
-                <div className="stat-label">{s.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ─── What we build — numbered rows ─── */}
-      <section className="section" style={{ paddingTop: 40 }}>
-        <div className="container-site">
-          <div className="max-w-3xl mb-12">
-            <p className="eyebrow">What we build</p>
-            <h2 className="section-title text-3xl sm:text-4xl mt-4" style={{ color: '#E9E7E2' }}>
-              Four products, one account
-              <span className="bar" />
-            </h2>
-          </div>
-
-          <div>
-            {FEATURES.map(f => (
-              <Link key={f.num} href={f.href} className="row-item" style={{ textDecoration: 'none', display: 'grid' }}>
-                <span className="row-num">/{f.num}</span>
-                <div>
-                  <h3 style={{ color: '#E9E7E2' }}>{f.title}</h3>
-                  <p>{f.desc}</p>
-                </div>
-                <span className="row-tag">{f.tag} →</span>
+            <div
+              className="anim-fade-up d3"
+              style={{ marginTop: 26, display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}
+            >
+              <Link href="/signup" className="btn btn-primary btn-lg">
+                Get Started
+                <Icons.ArrowRight size={17} />
               </Link>
+              <Link href="/login" className="btn btn-ghost btn-lg">
+                Login
+              </Link>
+            </div>
+
+            <p style={{ marginTop: 16, fontSize: 13, color: 'var(--dim)', display: 'inline-flex', alignItems: 'center', gap: 7 }}>
+              <Icons.CheckCircle size={14} />
+              Free to start — no card required
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ───────────────────────── Bot profiles ───────────────────────── */}
+      <section className="section" style={{ paddingTop: 0 }}>
+        <div className="container-site">
+          <p className="eyebrow">Choose your bot</p>
+          <h2 className="section-title" style={{ marginTop: 14 }}>
+            Two bots. One account.
+          </h2>
+          <p className="lede" style={{ marginTop: 10, maxWidth: 560 }}>
+            Both bots run on the same platform, so you can connect a number to either one and manage
+            them side by side.
+          </p>
+
+          <div className="grid-2-responsive" style={{ marginTop: 28 }}>
+            {BOTS.map((bot) => (
+              <Card key={bot.id} accent={bot.tone === 'brand'} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                  <BotMark name={bot.name} size={54} />
+                  <div style={{ minWidth: 0 }}>
+                    <h3 style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 700 }}>
+                      {bot.name}
+                    </h3>
+                    <p style={{ margin: '3px 0 0', fontSize: 14, color: 'var(--brand)', fontWeight: 600 }}>
+                      {bot.tagline}
+                    </p>
+                  </div>
+                </div>
+
+                <p style={{ margin: 0, fontSize: 14.5, color: 'var(--muted)', lineHeight: 1.65 }}>{bot.desc}</p>
+
+                <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 8 }}>
+                  {bot.points.map((p) => (
+                    <li key={p} style={{ display: 'flex', gap: 9, alignItems: 'flex-start', fontSize: 14, color: 'var(--ink-2)' }}>
+                      <span style={{ color: 'var(--good)', marginTop: 1, flex: '0 0 auto' }} aria-hidden="true">
+                        <Icons.Check size={15} />
+                      </span>
+                      {p}
+                    </li>
+                  ))}
+                </ul>
+
+                <Link href="/signup" className="btn btn-dark btn-block" style={{ marginTop: 'auto' }}>
+                  Use {bot.name}
+                </Link>
+              </Card>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ─── Featured — split panels / whatsapp ─── */}
+      {/* ───────────────────────── Stats ───────────────────────── */}
+      <section style={{ borderTop: '1px solid var(--line)', borderBottom: '1px solid var(--line)', background: 'var(--surface)' }}>
+        <div className="container-site">
+          <dl
+            className="grid grid-cols-2 lg:grid-cols-4"
+            style={{ margin: 0, padding: '28px 0', gap: 20 }}
+          >
+            {STATS.map((s) => (
+              <div key={s.label} style={{ textAlign: 'center' }}>
+                <dd className="stat-num" style={{ margin: 0 }}>{s.value}</dd>
+                <dt className="stat-label">{s.label}</dt>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </section>
+
+      {/* ───────────────────────── How it works ───────────────────────── */}
       <section className="section">
         <div className="container-site">
-          <div className="grid md:grid-cols-2 gap-6">
-            <Link href="/products" className="glow-card card-pad flex flex-col justify-between min-h-[280px]" style={{ textDecoration: 'none' }}>
-              <div>
-                <span className="tag tag-amber mb-6">Pterodactyl hosting</span>
-                <h3 className="text-2xl mb-3" style={{ color: '#E9E7E2' }}>A panel in under two minutes</h3>
-                <p className="text-sm leading-relaxed" style={{ color: '#79818A' }}>
-                  Pick a tier, choose your nest and egg, pay with the wallet — credentials land in your
-                  dashboard instantly. Replacement warranty included.
-                </p>
-              </div>
-              <span className="mono text-[11px] uppercase tracking-[0.14em] mt-8" style={{ color: '#F2A93B' }}>
-                View plans →
-              </span>
-            </Link>
+          <p className="eyebrow">How it works</p>
+          <h2 className="section-title" style={{ marginTop: 14 }}>
+            Connected in three steps.
+          </h2>
 
-            <Link href="/whatsapp-bot" className="glow-card card-pad flex flex-col justify-between min-h-[280px]" style={{ textDecoration: 'none' }}>
-              <div>
-                <span className="tag tag-green mb-6">WhatsApp automation</span>
-                <h3 className="text-2xl mb-3" style={{ color: '#E9E7E2' }}>One bot, every device</h3>
-                <p className="text-sm leading-relaxed" style={{ color: '#79818A' }}>
-                  Pair numbers from the website or Telegram with the MZAZIBOT keyword. Sessions are
-                  managed from the admin — unlink to log out, delete to wipe.
-                </p>
-              </div>
-              <span className="mono text-[11px] uppercase tracking-[0.14em] mt-8" style={{ color: '#3ECF8E' }}>
-                How pairing works →
-              </span>
-            </Link>
-          </div>
+          <ol
+            className="grid-cards"
+            style={{ listStyle: 'none', margin: '28px 0 0', padding: 0 }}
+          >
+            {STEPS.map((s) => (
+              <li key={s.n}>
+                <Card style={{ height: '100%', display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <span
+                      aria-hidden="true"
+                      style={{
+                        width: 40, height: 40, flex: '0 0 40px',
+                        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                        borderRadius: 'var(--r-md)',
+                        background: 'linear-gradient(135deg, var(--brand-tint), var(--blue-tint))',
+                        color: 'var(--brand)',
+                      }}
+                    >
+                      {s.icon}
+                    </span>
+                    <span className="mono" style={{ fontSize: 12, color: 'var(--dim)', fontWeight: 700 }}>STEP {s.n}</span>
+                  </div>
+                  <h3 style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 700 }}>{s.title}</h3>
+                  <p style={{ margin: 0, fontSize: 14.5, color: 'var(--muted)', lineHeight: 1.65 }}>{s.desc}</p>
+                </Card>
+              </li>
+            ))}
+          </ol>
         </div>
       </section>
 
-      {/* ─── About — editorial two-column ─── */}
-      <section className="section" style={{ background: 'rgba(255,255,255,0.014)' }}>
-        <div className="container-site grid lg:grid-cols-12 gap-12">
-          <div className="lg:col-span-4">
-            <p className="eyebrow">About</p>
-            <h2 className="section-title text-3xl mt-4" style={{ color: '#E9E7E2' }}>
-              Built in Nairobi,<br />run worldwide
-              <span className="bar" />
-            </h2>
-          </div>
-          <div className="lg:col-span-8 space-y-8">
-            <p className="lede">
-              Mzazi Tech Inc started with a simple frustration — world-class digital infrastructure
-              was priced out of reach for most of Africa. So we built the thing we wished existed:
-              panels, bots and APIs, sold honestly, supported by humans.
-            </p>
-            <blockquote className="border-l-2 pl-6 py-2" style={{ borderColor: '#F2A93B' }}>
-              <p className="display text-xl sm:text-2xl font-semibold leading-snug" style={{ color: '#E9E7E2' }}>
-                “Power your digital world.”
-              </p>
-              <footer className="mono text-[10px] uppercase tracking-[0.18em] mt-3" style={{ color: '#4C535B' }}>
-                The Mzazi motto
-              </footer>
-            </blockquote>
-            <p className="text-sm leading-relaxed" style={{ color: '#79818A' }}>
-              Our vision is straightforward: become Africa&apos;s default infrastructure provider.
-              Our mission is the daily work — reliable hosting, honest pricing, and support that
-              replies within two hours, around the clock.
-            </p>
-            <Link href="/about" className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: '#F2A93B', textDecoration: 'none' }}>
-              Read the full story →
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ─── CTA band ─── */}
-      <section className="section" style={{ paddingBottom: 110 }}>
+      {/* ───────────────────────── Features ───────────────────────── */}
+      <section className="section" style={{ paddingTop: 0 }}>
         <div className="container-site">
-          <div className="card card-pad text-center relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #14181D 0%, #0F1215 100%)' }}>
-            <div aria-hidden="true" className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(circle at 80% 20%, rgba(242,169,59,0.08) 0%, transparent 55%)' }} />
-            <div className="relative">
-              <Logo size={44} />
-              <h2 className="headline mt-6" style={{ fontSize: 'clamp(1.8rem, 4vw, 2.8rem)' }}>
-                Start in under two minutes<span className="accent">.</span>
-              </h2>
-              <p className="lede max-w-lg mx-auto mt-4 text-sm">
-                Create an account, top up your wallet, and deploy your first panel — no tickets,
-                no waiting.
-              </p>
-              <div className="flex flex-wrap justify-center gap-4 mt-8">
-                <Link href="/signup" className="btn btn-primary">Create free account</Link>
-                <Link href="/contact" className="btn btn-ghost">Talk to support</Link>
-              </div>
-            </div>
+          <p className="eyebrow">Everything in one place</p>
+          <h2 className="section-title" style={{ marginTop: 14 }}>
+            One account for the whole platform.
+          </h2>
+
+          <div className="grid-2-responsive" style={{ marginTop: 28 }}>
+            {FEATURES.map((f) => (
+              <Card key={f.title} hover style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <CardHeader
+                  title={f.title}
+                  description={f.desc}
+                  icon={f.icon}
+                />
+                <Link
+                  href={f.href}
+                  style={{
+                    marginTop: 'auto', display: 'inline-flex', alignItems: 'center', gap: 6,
+                    fontSize: 14, fontWeight: 700, color: 'var(--brand)', textDecoration: 'none',
+                  }}
+                >
+                  {f.cta}
+                  <Icons.ArrowRight size={15} />
+                </Link>
+              </Card>
+            ))}
           </div>
         </div>
       </section>
-    </>
+
+      {/* ───────────────────────── Pricing teaser ───────────────────────── */}
+      <section className="section" style={{ paddingTop: 0 }}>
+        <div className="container-site">
+          <Card
+            accent
+            style={{
+              display: 'grid', gap: 22, padding: 28,
+              background: 'linear-gradient(135deg, var(--surface), var(--surface-2))',
+            }}
+          >
+            <div>
+              <Badge tone="brand" icon={<Icons.Sparkles size={12} />}>Plans</Badge>
+              <h2 className="section-title" style={{ marginTop: 12 }}>
+                Free to start. Scale when you need to.
+              </h2>
+              <p className="lede" style={{ marginTop: 10, maxWidth: 520 }}>
+                Begin with one number at no cost. Move up to 5, 10, 20 or unlimited devices —
+                paid plans start at KES 100 per 30 days, paid from your wallet.
+              </p>
+            </div>
+
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+              {['1 device', '5 devices', '10 devices', '20 devices', 'Unlimited'].map((t) => (
+                <span key={t} className="tag">{t}</span>
+              ))}
+            </div>
+
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+              <Link href="/subscription" className="btn btn-primary">
+                View plans
+                <Icons.ArrowRight size={17} />
+              </Link>
+              <Link href="/devices" className="btn btn-ghost">
+                See connected devices
+              </Link>
+            </div>
+          </Card>
+        </div>
+      </section>
+
+      {/* ───────────────────────── Closing CTA ───────────────────────── */}
+      <section className="section" style={{ paddingTop: 0 }}>
+        <div className="container-site" style={{ textAlign: 'center' }}>
+          <Logo size={46} />
+          <h2 className="headline" style={{ marginTop: 20, fontSize: 'clamp(1.7rem, 4.4vw, 2.6rem)' }}>
+            Ready to automate your WhatsApp?
+          </h2>
+          <p className="lede" style={{ marginTop: 14, maxWidth: 480, marginLeft: 'auto', marginRight: 'auto' }}>
+            Create an account, connect a number and have your bot running in about two minutes.
+          </p>
+          <div style={{ marginTop: 24, display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+            <Link href="/signup" className="btn btn-primary btn-lg">
+              Get Started
+              <Icons.ArrowRight size={17} />
+            </Link>
+            <Link href="/contact" className="btn btn-ghost btn-lg">Talk to us</Link>
+          </div>
+        </div>
+      </section>
+    </AppBackground>
   );
 }

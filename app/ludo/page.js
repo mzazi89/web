@@ -45,7 +45,7 @@ function Dice({ value, rolling, size = 62 }) {
       {Array.from({ length: 9 }, (_, i) => {
         const has = dots.some(([a, b]) => a + b * 3 === i);
         return <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          {has && <div style={{ width: dot, height: dot, borderRadius: '50%', background: '#14161A' }} />}
+          {has && <div style={{ width: dot, height: dot, borderRadius: '50%', background: 'var(--surface)' }} />}
         </div>;
       })}
     </div>
@@ -368,7 +368,7 @@ export default function LudoPage() {
             <h1 className="headline mt-3" style={{ fontSize: 'clamp(2rem, 5vw, 3rem)' }}>
               Ludo<span className="accent">.</span> Classic
             </h1>
-            <p className="text-sm mt-3" style={{ color: '#79818A', maxWidth: 520, margin: '0 auto', lineHeight: 1.7 }}>
+            <p className="text-sm mt-3" style={{ color: 'var(--muted)', maxWidth: 520, margin: '0 auto', lineHeight: 1.7 }}>
               Classic 4-player Ludo with server-verified dice and moves. Play locally with friends or start an
               online room — roll a 6 to leave the base, capture opponents, and be first to bring all four
               pieces home.
@@ -378,16 +378,16 @@ export default function LudoPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Create */}
             <div className="card p-6">
-              <p className="mono text-[10px] uppercase tracking-[0.18em] mb-4" style={{ color: '#4C535B' }}>New game</p>
+              <p className="mono text-[10px] uppercase tracking-[0.18em] mb-4" style={{ color: 'var(--dim)' }}>New game</p>
               <label className="label">Mode</label>
               <div className="grid grid-cols-2 gap-2 mb-4">
                 {[['local', 'This device'], ['online', 'Online room']].map(([v, l]) => (
                   <button key={v} type="button" onClick={() => setMode(v)}
                     className="px-3 py-2.5 text-xs rounded transition-all"
                     style={{
-                      background: mode === v ? 'rgba(242,169,59,0.12)' : '#0F1215',
-                      color: mode === v ? '#F2A93B' : '#79818A',
-                      border: `1px solid ${mode === v ? 'rgba(242,169,59,0.5)' : '#262C33'}`,
+                      background: mode === v ? 'rgba(242,169,59,0.12)' : 'var(--bg-2)',
+                      color: mode === v ? 'var(--brand)' : 'var(--muted)',
+                      border: `1px solid ${mode === v ? 'rgba(242,169,59,0.5)' : 'var(--line)'}`,
                       cursor: 'pointer',
                     }}>
                     {l}
@@ -401,9 +401,9 @@ export default function LudoPage() {
                   <button key={n} type="button" onClick={() => setSeats(n)}
                     className="px-4 py-2 text-sm rounded"
                     style={{
-                      background: seats === n ? 'rgba(242,169,59,0.12)' : '#0F1215',
-                      color: seats === n ? '#F2A93B' : '#79818A',
-                      border: `1px solid ${seats === n ? 'rgba(242,169,59,0.5)' : '#262C33'}`,
+                      background: seats === n ? 'rgba(242,169,59,0.12)' : 'var(--bg-2)',
+                      color: seats === n ? 'var(--brand)' : 'var(--muted)',
+                      border: `1px solid ${seats === n ? 'rgba(242,169,59,0.5)' : 'var(--line)'}`,
                       cursor: 'pointer',
                     }}>
                     {n}
@@ -412,12 +412,12 @@ export default function LudoPage() {
               </div>
 
               {mode === 'online' && (
-                <div className="flex items-center justify-between mb-4 px-3 py-2.5 rounded" style={{ background: '#0F1215', border: '1px solid #262C33' }}>
-                  <span className="text-xs" style={{ color: '#AEB5BD' }}>Fill empty seats with AI bots</span>
+                <div className="flex items-center justify-between mb-4 px-3 py-2.5 rounded" style={{ background: 'var(--bg-2)', border: '1px solid var(--line)' }}>
+                  <span className="text-xs" style={{ color: 'var(--ink-2)' }}>Fill empty seats with AI bots</span>
                   <button type="button" onClick={() => setAiFill((v) => !v)}
                     style={{
                       width: 42, height: 22, borderRadius: 11, border: 'none', cursor: 'pointer', position: 'relative',
-                      background: aiFill ? '#F2A93B' : '#262C33', transition: 'background .2s',
+                      background: aiFill ? 'var(--brand)' : 'var(--line)', transition: 'background .2s',
                     }}>
                     <span style={{
                       position: 'absolute', top: 3, left: aiFill ? 22 : 3, width: 16, height: 16, borderRadius: '50%',
@@ -431,7 +431,7 @@ export default function LudoPage() {
               <input className="input mb-4" value={name} maxLength={20}
                 onChange={(e) => setName(e.target.value)} placeholder="Player 1" />
 
-              {error && <p className="text-xs mb-3" style={{ color: '#E5484D' }}>{error}</p>}
+              {error && <p className="text-xs mb-3" style={{ color: 'var(--bad)' }}>{error}</p>}
 
               <button onClick={createGame} disabled={busy} className="btn btn-primary w-full" style={{ fontSize: 12 }}>
                 {busy ? 'Creating…' : mode === 'local' ? 'Start local game' : 'Create room'}
@@ -440,8 +440,8 @@ export default function LudoPage() {
 
             {/* Join */}
             <div className="card p-6">
-              <p className="mono text-[10px] uppercase tracking-[0.18em] mb-4" style={{ color: '#4C535B' }}>Join a room</p>
-              <p className="text-xs mb-4" style={{ color: '#79818A', lineHeight: 1.7 }}>
+              <p className="mono text-[10px] uppercase tracking-[0.18em] mb-4" style={{ color: 'var(--dim)' }}>Join a room</p>
+              <p className="text-xs mb-4" style={{ color: 'var(--muted)', lineHeight: 1.7 }}>
                 Enter the 6-character room code your friend shared, or copy it from the invite link.
               </p>
               <label className="label">Room code</label>
@@ -463,11 +463,11 @@ export default function LudoPage() {
                             title={free ? `Take ${COLOR_NAMES[s]}` : 'Taken'}
                             style={{
                               width: '100%', aspectRatio: '1/1', borderRadius: 10, cursor: free ? 'pointer' : 'not-allowed',
-                              background: selectedSeat === s ? COLORS[s] : free ? `${COLORS[s]}30` : '#0F1215',
-                              border: `2px solid ${selectedSeat === s ? COLORS[s] : free ? `${COLORS[s]}88` : '#262C33'}`,
+                              background: selectedSeat === s ? COLORS[s] : free ? `${COLORS[s]}30` : 'var(--bg-2)',
+                              border: `2px solid ${selectedSeat === s ? COLORS[s] : free ? `${COLORS[s]}88` : 'var(--line)'}`,
                               opacity: free ? 1 : 0.4, transition: 'all .2s', position: 'relative',
                             }}>
-                            {!free && <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, color: '#4C535B' }}>✕</span>}
+                            {!free && <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, color: 'var(--dim)' }}>✕</span>}
                             {free && (
                               <span style={{ position: 'absolute', bottom: -14, left: 0, right: 0, textAlign: 'center', fontSize: 8, color: COLORS[s], fontWeight: 700 }}>
                                 {COLOR_NAMES[s]}
@@ -478,7 +478,7 @@ export default function LudoPage() {
                       })}
                     </div>
                   ) : (
-                    <p className="text-[11px]" style={{ color: '#79818A' }}>Looking for room…</p>
+                    <p className="text-[11px]" style={{ color: 'var(--muted)' }}>Looking for room…</p>
                   )}
                 </div>
               )}
@@ -505,55 +505,55 @@ export default function LudoPage() {
         <div className="container-site max-w-xl">
           <div className="card p-6 sm:p-8 text-center">
             <p className="eyebrow">Online room</p>
-            <p className="mono text-[10px] uppercase tracking-[0.2em] mt-6 mb-2" style={{ color: '#4C535B' }}>Room code</p>
-            <p className="headline mb-6" style={{ color: '#F2A93B', fontSize: 'clamp(2.4rem, 7vw, 3.4rem)', letterSpacing: '0.25em' }}>
+            <p className="mono text-[10px] uppercase tracking-[0.2em] mt-6 mb-2" style={{ color: 'var(--dim)' }}>Room code</p>
+            <p className="headline mb-6" style={{ color: 'var(--brand)', fontSize: 'clamp(2.4rem, 7vw, 3.4rem)', letterSpacing: '0.25em' }}>
               {state.roomCode}
             </p>
 
-            <div className="mb-6 px-4 py-3 rounded" style={{ background: '#0F1215', border: '1px solid #262C33' }}>
-              <p className="text-xs" style={{ color: '#79818A', lineHeight: 1.7, wordBreak: 'break-all' }}>{shareLink}</p>
+            <div className="mb-6 px-4 py-3 rounded" style={{ background: 'var(--bg-2)', border: '1px solid var(--line)' }}>
+              <p className="text-xs" style={{ color: 'var(--muted)', lineHeight: 1.7, wordBreak: 'break-all' }}>{shareLink}</p>
             </div>
             <button onClick={() => navigator.clipboard?.writeText(shareLink)?.catch(() => {})}
               className="btn btn-dark mb-6" style={{ padding: '9px 16px', fontSize: 11 }}>
               Copy invite link
             </button>
 
-            <p className="mono text-[10px] uppercase tracking-[0.18em] text-left mb-3" style={{ color: '#4C535B' }}>Players</p>
+            <p className="mono text-[10px] uppercase tracking-[0.18em] text-left mb-3" style={{ color: 'var(--dim)' }}>Players</p>
             <div className="space-y-2 mb-6">
               {players.map((p) => {
                 const open = p.type === 'human' && !p.joined;
                 return (
                   <div key={p.seat} className="flex items-center justify-between px-4 py-3 rounded"
-                    style={{ background: open ? 'rgba(242,169,59,0.05)' : '#0F1215', border: `1px solid ${open ? 'rgba(242,169,59,0.25)' : '#262C33'}` }}>
+                    style={{ background: open ? 'rgba(242,169,59,0.05)' : 'var(--bg-2)', border: `1px solid ${open ? 'rgba(242,169,59,0.25)' : 'var(--line)'}` }}>
                     <div className="flex items-center gap-3">
                       <span style={{ width: 12, height: 12, borderRadius: '50%', background: p.color, display: 'inline-block' }} />
                       {open ? (
-                        <span className="text-sm" style={{ color: '#4C535B' }}>Waiting for player…</span>
+                        <span className="text-sm" style={{ color: 'var(--dim)' }}>Waiting for player…</span>
                       ) : (
-                        <span className="text-sm font-semibold" style={{ color: '#E9E7E2' }}>{p.name}</span>
+                        <span className="text-sm font-semibold" style={{ color: 'var(--ink)' }}>{p.name}</span>
                       )}
-                      {!open && p.seat === session.seat && <span className="tag" style={{ color: '#F2A93B', borderColor: 'rgba(242,169,59,0.4)' }}>you</span>}
-                      {!open && p.type === 'ai' && <span className="tag" style={{ color: '#79818A', borderColor: '#262C33' }}>bot</span>}
+                      {!open && p.seat === session.seat && <span className="tag" style={{ color: 'var(--brand)', borderColor: 'rgba(242,169,59,0.4)' }}>you</span>}
+                      {!open && p.type === 'ai' && <span className="tag" style={{ color: 'var(--muted)', borderColor: 'var(--line)' }}>bot</span>}
                     </div>
-                    <span className="mono text-[10px]" style={{ color: open ? '#4C535B' : '#4C535B' }}>{COLOR_NAMES[p.seat]}</span>
+                    <span className="mono text-[10px]" style={{ color: open ? 'var(--dim)' : 'var(--dim)' }}>{COLOR_NAMES[p.seat]}</span>
                   </div>
                 );
               })}
             </div>
 
-            {error && <p className="text-xs mb-3" style={{ color: '#E5484D' }}>{error}</p>}
+            {error && <p className="text-xs mb-3" style={{ color: 'var(--bad)' }}>{error}</p>}
 
             {canStart ? (
               <button onClick={startGame} disabled={busy} className="btn btn-primary w-full" style={{ fontSize: 12 }}>
                 {busy ? 'Starting…' : 'Start game'}
               </button>
             ) : (
-              <p className="text-xs py-3" style={{ color: '#79818A' }}>
+              <p className="text-xs py-3" style={{ color: 'var(--muted)' }}>
                 {session.seat === 0 ? 'Waiting for at least one more player…' : 'Waiting for the host to start…'}
               </p>
             )}
             <button onClick={clearSession} className="w-full mt-3 text-[11px] mono uppercase tracking-[0.12em]"
-              style={{ color: '#4C535B', background: 'none', border: 'none', cursor: 'pointer' }}>
+              style={{ color: 'var(--dim)', background: 'none', border: 'none', cursor: 'pointer' }}>
               Leave room
             </button>
           </div>
@@ -589,7 +589,7 @@ export default function LudoPage() {
           {/* Board — classic wooden Ludo look */}
           <div style={{
             padding: '16px 12px 14px', borderRadius: 16,
-            background: 'linear-gradient(155deg,#F9F3E5 0%,#F1E7D3 55%,#E8DBBF 100%)',
+            background: 'linear-gradient(155deg,var(--ink) 0%,#F1E7D3 55%,#E8DBBF 100%)',
             boxShadow: '0 14px 36px rgba(0,0,0,.45), inset 0 0 0 1px rgba(130,95,40,.25), inset 0 1px 0 rgba(255,255,255,.5)',
           }}>
             {/* Player labels — top row (red TL, green TR) */}
@@ -613,10 +613,10 @@ export default function LudoPage() {
 
                 {/* Centre pinwheel — 4 triangles meeting at the point */}
                 <g stroke="#FFFFFF" strokeWidth="0.09" strokeLinejoin="round">
-                  <polygon points="6,6 9,6 7.5,7.5" fill="#E5484D" />
-                  <polygon points="9,6 9,9 7.5,7.5" fill="#4C7DFC" />
-                  <polygon points="9,9 6,9 7.5,7.5" fill="#F2A93B" />
-                  <polygon points="6,9 6,6 7.5,7.5" fill="#3ECF8E" />
+                  <polygon points="6,6 9,6 7.5,7.5" fill="var(--bad)" />
+                  <polygon points="9,6 9,9 7.5,7.5" fill="var(--blue)" />
+                  <polygon points="9,9 6,9 7.5,7.5" fill="var(--brand)" />
+                  <polygon points="6,9 6,6 7.5,7.5" fill="var(--good)" />
                 </g>
                 <circle cx="7.5" cy="7.5" r="0.14" fill="#FFFFFF" />
 
@@ -631,7 +631,7 @@ export default function LudoPage() {
                       const [ax, ay] = col[0];
                       return (
                         <g transform={`translate(${ax + 0.5} ${ay + 0.5}) rotate(${ARROW_DEG[p]})`}>
-                          <polygon points="-0.15,-0.11 -0.15,0.11 0.16,0" fill="#222222" />
+                          <polygon points="-0.15,-0.11 -0.15,0.11 0.16,0" fill="var(--surface-2)" />
                         </g>
                       );
                     })()}
@@ -645,7 +645,7 @@ export default function LudoPage() {
                   return (
                     <g key={`t${i}`}>
                       <rect x={x + 0.07} y={y + 0.07} width="0.86" height="0.86" rx="0.1"
-                        fill={owner >= 0 ? `${COLORS[owner]}2e` : '#FFFDF6'}
+                        fill={owner >= 0 ? `${COLORS[owner]}2e` : 'var(--ink)'}
                         stroke={owner >= 0 ? COLORS[owner] : 'rgba(45,40,30,0.55)'}
                         strokeWidth="0.05" />
                       {isStar && <polygon points={starPoints(x + 0.5, y + 0.5, 0.17, 0.07)} fill="#4a4030" />}
@@ -696,12 +696,12 @@ export default function LudoPage() {
                         opacity: finished && tk.p !== state.winner ? 0.55 : 1,
                       }}>
                       {tk.movable && (
-                        <div style={{ position: 'absolute', inset: '-35%', borderRadius: '50%', border: '2px solid #F2A93B', animation: 'mz-glow 1s ease-in-out infinite' }} />
+                        <div style={{ position: 'absolute', inset: '-35%', borderRadius: '50%', border: '2px solid var(--brand)', animation: 'mz-glow 1s ease-in-out infinite' }} />
                       )}
                       <div style={{
                         position: 'absolute', inset: 0, borderRadius: '50%',
                         background: `radial-gradient(circle at 32% 28%, #ffffff55 0%, transparent 45%), ${tk.color}`,
-                        border: '2px solid #0B0D0F', boxShadow: `0 2px 6px rgba(0,0,0,.65), 0 0 0 1.5px ${tk.color}77`,
+                        border: '2px solid var(--bg)', boxShadow: `0 2px 6px rgba(0,0,0,.65), 0 0 0 1.5px ${tk.color}77`,
                       }} />
                     </div>
                   );
@@ -717,28 +717,28 @@ export default function LudoPage() {
 
           {/* Panel */}
           <div className="card p-5">
-            <p className="mono text-[10px] uppercase tracking-[0.18em] mb-3" style={{ color: '#4C535B' }}>Game panel</p>
+            <p className="mono text-[10px] uppercase tracking-[0.18em] mb-3" style={{ color: 'var(--dim)' }}>Game panel</p>
 
             <div className="grid grid-cols-2 gap-2 mb-4">
               {players.map((p) => (
                 <div key={p.seat} className="flex items-center gap-2 px-2.5 py-2 rounded"
                   style={{
-                    background: state.turn === p.seat && !finished ? `${p.color}14` : '#0F1215',
-                    border: `1px solid ${state.turn === p.seat && !finished ? `${p.color}66` : '#262C33'}`,
+                    background: state.turn === p.seat && !finished ? `${p.color}14` : 'var(--bg-2)',
+                    border: `1px solid ${state.turn === p.seat && !finished ? `${p.color}66` : 'var(--line)'}`,
                     transition: 'all .3s',
                   }}>
                   <span style={{ width: 12, height: 12, borderRadius: '50%', background: p.color, display: 'inline-block', flexShrink: 0 }} />
-                  <span className="mono text-[10px] tracking-wider truncate" style={{ color: state.turn === p.seat && !finished ? p.color : '#79818A' }}>
+                  <span className="mono text-[10px] tracking-wider truncate" style={{ color: state.turn === p.seat && !finished ? p.color : 'var(--muted)' }}>
                     {p.name}
                   </span>
-                  <span className="mono text-[10px] ml-auto" style={{ color: '#4C535B' }}>
+                  <span className="mono text-[10px] ml-auto" style={{ color: 'var(--dim)' }}>
                     {state.board[p.seat].filter((r) => r === HOME).length}/4
                   </span>
                 </div>
               ))}
             </div>
 
-            <p className="text-xs text-center mb-4" style={{ color: '#AEB5BD', lineHeight: 1.6, minHeight: 42 }}>
+            <p className="text-xs text-center mb-4" style={{ color: 'var(--ink-2)', lineHeight: 1.6, minHeight: 42 }}>
               {message}
             </p>
 
@@ -749,32 +749,32 @@ export default function LudoPage() {
             )}
             {myTurn && state.phase === 'move' && state.movable.length > 0 && (
               <div className="w-full py-2.5 text-center rounded" style={{ background: 'rgba(242,169,59,0.08)', border: '1px solid rgba(242,169,59,0.3)' }}>
-                <span className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: '#F2A93B' }}>
+                <span className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: 'var(--brand)' }}>
                   Tap a glowing piece
                 </span>
               </div>
             )}
             {myTurn && state.phase === 'move' && state.movable.length === 0 && (
-              <div className="w-full py-2.5 text-center rounded" style={{ background: '#0F1215', border: '1px solid #262C33' }}>
-                <span className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: '#79818A' }}>
+              <div className="w-full py-2.5 text-center rounded" style={{ background: 'var(--bg-2)', border: '1px solid var(--line)' }}>
+                <span className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: 'var(--muted)' }}>
                   No moves — waiting…
                 </span>
               </div>
             )}
             {!myTurn && !finished && (
-              <div className="w-full py-2.5 text-center rounded" style={{ background: `${turnPlayer?.color || '#262C33'}10`, border: `1px solid ${turnPlayer?.color || '#262C33'}44` }}>
-                <span className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: turnPlayer?.color || '#79818A' }}>
+              <div className="w-full py-2.5 text-center rounded" style={{ background: `${turnPlayer?.color || 'var(--line)'}10`, border: `1px solid ${turnPlayer?.color || 'var(--line)'}44` }}>
+                <span className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: turnPlayer?.color || 'var(--muted)' }}>
                   {turnPlayer?.type === 'ai' ? `${turnPlayer.name} is thinking…` : `Waiting for ${turnPlayer?.name}…`}
                 </span>
               </div>
             )}
 
-            {error && <p className="text-[11px] mt-3 text-center" style={{ color: '#E5484D' }}>{error}</p>}
+            {error && <p className="text-[11px] mt-3 text-center" style={{ color: 'var(--bad)' }}>{error}</p>}
 
-            <div className="mt-5 pt-4" style={{ borderTop: '1px solid #1B2026' }}>
-              <p className="mono text-[10px] uppercase tracking-[0.18em] mb-2" style={{ color: '#4C535B' }}>Rules</p>
-              <ul className="text-[11px] space-y-1.5" style={{ color: '#79818A', lineHeight: 1.6 }}>
-                <li>• Roll a <strong style={{ color: '#F2A93B' }}>6</strong> to leave the base — and roll again.</li>
+            <div className="mt-5 pt-4" style={{ borderTop: '1px solid var(--line-soft)' }}>
+              <p className="mono text-[10px] uppercase tracking-[0.18em] mb-2" style={{ color: 'var(--dim)' }}>Rules</p>
+              <ul className="text-[11px] space-y-1.5" style={{ color: 'var(--muted)', lineHeight: 1.6 }}>
+                <li>• Roll a <strong style={{ color: 'var(--brand)' }}>6</strong> to leave the base — and roll again.</li>
                 <li>• Land on an opponent to capture them (safe squares protect you).</li>
                 <li>• Exact roll to reach home. First to 4 tokens home wins.</li>
               </ul>
@@ -801,7 +801,7 @@ export default function LudoPage() {
             </div>
 
             <div className="card p-6 sm:p-8 text-center" style={{ maxWidth: 400, width: '100%', animation: 'mz-pop .45s cubic-bezier(.34,1.56,.64,1)', position: 'relative', zIndex: 1 }}>
-              <p className="mono text-[10px] uppercase tracking-[0.2em] mb-3" style={{ color: '#4C535B' }}>Game over — final rankings</p>
+              <p className="mono text-[10px] uppercase tracking-[0.2em] mb-3" style={{ color: 'var(--dim)' }}>Game over — final rankings</p>
               <h2 className="headline text-2xl mb-5" style={{ color: COLORS[state.winner] }}>
                 {players.find((p) => p.seat === state.winner)?.name} wins! 🏆
               </h2>
@@ -810,11 +810,11 @@ export default function LudoPage() {
                   const p = players.find((x) => x.seat === seat);
                   return (
                     <div key={seat} className="flex items-center gap-3 px-4 py-3 rounded"
-                      style={{ background: idx === 0 ? `${COLORS[seat]}14` : '#0F1215', border: `1px solid ${idx === 0 ? `${COLORS[seat]}66` : '#262C33'}` }}>
+                      style={{ background: idx === 0 ? `${COLORS[seat]}14` : 'var(--bg-2)', border: `1px solid ${idx === 0 ? `${COLORS[seat]}66` : 'var(--line)'}` }}>
                       <span className="text-lg" style={{ width: 34 }}>{MEDALS[idx]}</span>
                       <span style={{ width: 12, height: 12, borderRadius: '50%', background: COLORS[seat], display: 'inline-block' }} />
-                      <span className="text-sm font-semibold truncate" style={{ color: '#E9E7E2' }}>{p?.name}</span>
-                      {p?.type === 'ai' && <span className="tag ml-auto" style={{ color: '#79818A', borderColor: '#262C33' }}>bot</span>}
+                      <span className="text-sm font-semibold truncate" style={{ color: 'var(--ink)' }}>{p?.name}</span>
+                      {p?.type === 'ai' && <span className="tag ml-auto" style={{ color: 'var(--muted)', borderColor: 'var(--line)' }}>bot</span>}
                     </div>
                   );
                 })}

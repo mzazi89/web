@@ -1,85 +1,69 @@
 'use client';
 
-// ─────────────────────────────────────────────────────────────────────────────
-// MZAZI TECH — ambient background layers
-// A quiet, layered backdrop instead of a particle show:
-//   1. base colour            (set on body)
-//   2. film grain             (SVG turbulence, fixed)
-//   3. three slow aurora glows (amber / cobalt / steel, drifting)
-//   4. editorial hairline frame (thin inset border)
-//   5. wordmark watermark      (giant outlined MZAZI, bottom-right)
-//   6. soft vignette           (readability)
-// All layers honour prefers-reduced-motion (no animation).
-// ─────────────────────────────────────────────────────────────────────────────
+// MZAZI TECH — global ambient background.
+//
+// One fixed, non-interactive layer behind every page. It is intentionally
+// quiet: two slow purple/blue glows, a faint grid, and a soft vignette that
+// protects text contrast (especially in dark mode).
+//
+// Pages that need their own treatment add <AppBackground variant="…" />, which
+// composes on top of this rather than replacing it.
+//
+// Cost: no images, no JS animation loop — only CSS gradients and one blurred
+// layer each, with `prefers-reduced-motion` honoured via .anim-drift-*.
 
 export default function TechBackground() {
   return (
-    <>
-      {/* Film grain */}
+    <div aria-hidden="true" style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none', overflow: 'hidden' }}>
+      {/* Faint grid, masked so it fades out before it reaches the content */}
       <div
-        aria-hidden="true"
-        className="grain"
-        style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none', opacity: 0.045 }}
+        className="grid-bg"
+        style={{
+          position: 'absolute', inset: 0,
+          maskImage: 'radial-gradient(75% 60% at 50% 0%, #000 0%, transparent 78%)',
+          WebkitMaskImage: 'radial-gradient(75% 60% at 50% 0%, #000 0%, transparent 78%)',
+          opacity: 0.55,
+        }}
       />
 
-      {/* Aurora glows — very low opacity, slow drift */}
+      {/* Brand glow — top left */}
       <div
-        aria-hidden="true"
         className="anim-drift-a"
         style={{
-          position: 'fixed', top: '-18%', left: '-10%', width: '56vw', height: '56vw',
-          zIndex: 0, pointerEvents: 'none', opacity: 0.10, filter: 'blur(90px)',
-          background: 'radial-gradient(circle at 40% 40%, rgba(242,169,59,0.55) 0%, transparent 65%)',
+          position: 'absolute', top: '-22%', left: '-12%',
+          width: '58vw', height: '58vw', minWidth: 380, minHeight: 380,
+          borderRadius: '50%', filter: 'blur(100px)', opacity: 0.30,
+          background: 'radial-gradient(circle at 40% 40%, var(--brand) 0%, transparent 66%)',
         }}
       />
+      {/* Secondary blue glow — bottom right */}
       <div
-        aria-hidden="true"
         className="anim-drift-b"
         style={{
-          position: 'fixed', bottom: '-24%', right: '-12%', width: '60vw', height: '60vw',
-          zIndex: 0, pointerEvents: 'none', opacity: 0.09, filter: 'blur(100px)',
-          background: 'radial-gradient(circle at 55% 50%, rgba(76,125,252,0.5) 0%, transparent 65%)',
+          position: 'absolute', bottom: '-26%', right: '-14%',
+          width: '60vw', height: '60vw', minWidth: 400, minHeight: 400,
+          borderRadius: '50%', filter: 'blur(110px)', opacity: 0.26,
+          background: 'radial-gradient(circle at 60% 60%, var(--blue) 0%, transparent 66%)',
         }}
       />
+      {/* Small violet accent — keeps the middle from feeling empty on wide screens */}
       <div
-        aria-hidden="true"
         className="anim-drift-c"
         style={{
-          position: 'fixed', top: '42%', left: '52%', width: '42vw', height: '42vw',
-          zIndex: 0, pointerEvents: 'none', opacity: 0.05, filter: 'blur(110px)',
-          background: 'radial-gradient(circle, rgba(174,181,189,0.4) 0%, transparent 60%)',
+          position: 'absolute', top: '38%', right: '18%',
+          width: '26vw', height: '26vw', minWidth: 200, minHeight: 200,
+          borderRadius: '50%', filter: 'blur(90px)', opacity: 0.16,
+          background: 'radial-gradient(circle at 50% 50%, var(--brand-soft) 0%, transparent 68%)',
         }}
       />
 
-      {/* Editorial hairline frame */}
+      {/* Vignette — pulls the edges down so foreground text keeps its contrast */}
       <div
-        aria-hidden="true"
         style={{
-          position: 'fixed', inset: 10, zIndex: 0, pointerEvents: 'none',
-          border: '1px solid rgba(233,231,226,0.05)', borderRadius: 2,
+          position: 'absolute', inset: 0,
+          background: 'radial-gradient(120% 90% at 50% 40%, transparent 45%, var(--bg) 100%)',
         }}
       />
-
-      {/* Wordmark watermark */}
-      <div
-        aria-hidden="true"
-        className="watermark"
-        style={{
-          position: 'fixed', right: 18, bottom: 10, zIndex: 0,
-          fontSize: 'clamp(64px, 13vw, 190px)', whiteSpace: 'nowrap',
-        }}
-      >
-        MZAZI
-      </div>
-
-      {/* Vignette */}
-      <div
-        aria-hidden="true"
-        style={{
-          position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none',
-          background: 'radial-gradient(ellipse at center, transparent 58%, rgba(11,13,15,0.55) 100%)',
-        }}
-      />
-    </>
+    </div>
   );
 }

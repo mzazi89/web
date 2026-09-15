@@ -106,16 +106,16 @@ export default function PwaProvider({ children }) {
 
       {showCard && !dismissed && !isStandalone && (
         <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-[100] w-[calc(100%-2rem)] max-w-md">
-          <div className="p-4 rounded-2xl shadow-2xl animate-fade-in" style={{ backgroundColor: '#060b16', border: '1px solid rgba(37,99,235,0.4)' }}>
+          <div className="p-4 rounded-2xl shadow-2xl animate-fade-in" style={{ backgroundColor: 'var(--bg)', border: '1px solid rgba(37,99,235,0.4)' }}>
             <div className="flex items-start gap-3">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/icons/icon-192.png" alt="MZAZI TECH" width={44} height={44}
                 className="rounded-xl" style={{ display: 'block' }} />
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold" style={{ color: '#f0f4ff' }}>
+                <p className="text-sm font-bold" style={{ color: 'var(--ink)' }}>
                   {noPrompt ? 'Install MZAZI TECH' : 'Install MZAZI TECH App'}
                 </p>
-                <p className="text-xs mt-0.5" style={{ color: '#94a3b8' }}>
+                <p className="text-xs mt-0.5" style={{ color: 'var(--dim)' }}>
                   {noPrompt
                     ? 'Tap the browser menu (⋮) and choose "Install app" or "Add to Home screen".'
                     : isIOS
@@ -124,7 +124,7 @@ export default function PwaProvider({ children }) {
                 </p>
               </div>
               <button onClick={dismiss} aria-label="Dismiss"
-                className="text-sm flex-shrink-0" style={{ color: '#475569', cursor: 'pointer', background: 'none', border: 'none' }}>
+                className="text-sm flex-shrink-0" style={{ color: 'var(--muted)', cursor: 'pointer', background: 'none', border: 'none' }}>
                 ✕
               </button>
             </div>
@@ -132,13 +132,13 @@ export default function PwaProvider({ children }) {
               {!noPrompt && !isIOS && (
                 <button onClick={requestInstall}
                   className="flex-1 py-2.5 rounded-xl text-sm font-bold text-white"
-                  style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', cursor: 'pointer' }}>
+                  style={{ background: 'linear-gradient(135deg,var(--blue-deep),var(--blue-deep))', cursor: 'pointer' }}>
                   Install App
                 </button>
               )}
               <button onClick={dismiss}
                 className="flex-1 py-2.5 rounded-xl text-sm font-semibold"
-                style={{ color: '#94a3b8', border: '1px solid #1e3a8a', cursor: 'pointer' }}>
+                style={{ color: 'var(--dim)', border: '1px solid var(--blue-deep)', cursor: 'pointer' }}>
                 {noPrompt ? 'Got it' : 'Not now'}
               </button>
             </div>

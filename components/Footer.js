@@ -1,16 +1,32 @@
 import Link from 'next/link';
 import Logo from './Logo';
+import { Icons } from './ui';
 
-const columns = [
+// MZAZI TECH — site footer.
+// Every v1 destination is preserved; new surfaces (Devices, Subscription,
+// Payments, Help) are added under the account column so the footer mirrors the
+// main navigation.
+
+const COLUMNS = [
+  {
+    title: 'Your account',
+    links: [
+      { label: 'Dashboard', href: '/dashboard' },
+      { label: 'Connected Devices', href: '/devices' },
+      { label: 'Subscription', href: '/subscription' },
+      { label: 'Payments', href: '/payments' },
+      { label: 'Wallet', href: '/wallet' },
+      { label: 'Help & Support', href: '/help' },
+    ],
+  },
   {
     title: 'Products',
     links: [
+      { label: 'WhatsApp Automation', href: '/whatsapp-bot' },
       { label: 'Pterodactyl Panels', href: '/products' },
       { label: 'VPS Servers', href: '/vps' },
-      { label: 'WhatsApp Automation', href: '/whatsapp-bot' },
       { label: 'Developer API', href: '/api' },
       { label: 'Temp Numbers', href: '/temp-number' },
-      { label: 'Wallet', href: '/wallet' },
     ],
   },
   {
@@ -26,105 +42,111 @@ const columns = [
   {
     title: 'Support',
     links: [
-      { label: 'Telegram — t.me/mzazitech', href: 'https://t.me/mzazitech', external: true },
-      { label: 'WhatsApp — wa.me/254108595201', href: 'https://wa.me/254108595201', external: true },
-      { label: 'Bot — t.me/mrsmzazixdbot', href: 'https://t.me/mrsmzazixdbot', external: true },
-      { label: 'Email — mzazitechinc@gmail.com', href: 'mailto:mzazitechinc@gmail.com', external: true },
+      { label: 'Telegram', href: 'https://t.me/mzazitech', external: true },
+      { label: 'WhatsApp', href: 'https://wa.me/254108595201', external: true },
+      { label: 'Bot', href: 'https://t.me/mrsmzazixdbot', external: true },
+      { label: 'Email', href: 'mailto:mzazitechinc@gmail.com', external: true },
     ],
   },
 ];
 
 export default function Footer() {
   return (
-    <footer style={{ background: '#0B0D0F', borderTop: '1px solid #1B2026' }}>
-      <div className="max-w-7xl mx-auto px-5 sm:px-6">
-        {/* Top: brand + link columns */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-10 pt-14 pb-12">
-          {/* Brand — spans 5 */}
-          <div className="lg:col-span-5">
-            <Link href="/" className="flex items-center gap-2.5 mb-5" style={{ textDecoration: 'none' }}>
-              <Logo size={38} withText />
+    <footer style={{ background: 'var(--bg-2)', borderTop: '1px solid var(--line)', position: 'relative', zIndex: 1 }}>
+      <div className="container-site">
+        <div className="grid grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-10" style={{ paddingTop: 48, paddingBottom: 36 }}>
+          {/* Brand */}
+          <div className="col-span-2 lg:col-span-4">
+            <Link href="/" style={{ textDecoration: 'none' }} aria-label="MZAZI TECH home">
+              <Logo size={36} withText />
             </Link>
-            <p className="text-sm leading-relaxed max-w-sm mb-6" style={{ color: '#79818A' }}>
-              Kenya-born infrastructure company. Pterodactyl panels, WhatsApp automation and
-              developer APIs — operated from Nairobi, trusted worldwide.
+            <p style={{ margin: '14px 0 16px', fontSize: 14, lineHeight: 1.65, color: 'var(--muted)', maxWidth: 340 }}>
+              WhatsApp automation made simple. Connect your number, choose your bot —
+              QUARTZ XD or MZAZI XMD — and start automating in minutes.
             </p>
-            <div className="flex flex-col gap-1.5">
-              <span className="mono text-[11px] tracking-[0.14em] uppercase flex items-center gap-2" style={{ color: '#3ECF8E' }}>
-                <span className="dot anim-pulse" /> All systems operational
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: 13, fontWeight: 600, color: 'var(--good)' }}>
+                <span className="dot dot-online anim-pulse" aria-hidden="true" />
+                All systems operational
               </span>
-              <span className="mono text-[11px] tracking-[0.14em] uppercase" style={{ color: '#4C535B' }}>
-                Payments via Paystack · KES wallet
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: 13, color: 'var(--dim)' }}>
+                <Icons.Shield size={14} />
+                Secure payments via Paystack
               </span>
             </div>
           </div>
 
-          {/* Link columns — 7 split */}
-          {columns.map((c, i) => (
-            <div key={c.title} className={i === 0 ? 'lg:col-span-2' : 'lg:col-span-2'}>
-              <p className="mono text-[10px] font-semibold uppercase tracking-[0.2em] mb-4" style={{ color: '#F2A93B' }}>
-                {c.title}
+          {/* Link columns */}
+          {COLUMNS.map((col) => (
+            <nav key={col.title} className="col-span-1 lg:col-span-2" aria-label={col.title}>
+              <p className="side-group-label" style={{ padding: '0 0 10px', margin: 0, color: 'var(--brand)' }}>
+                {col.title}
               </p>
-              <ul className="space-y-2.5">
-                {c.links.map(l => (
+              <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 9 }}>
+                {col.links.map((l) => (
                   <li key={l.label}>
                     {l.external ? (
-                      <a href={l.href} target="_blank" rel="noopener noreferrer"
-                        className="text-[13px] transition-colors"
-                        style={{ color: '#79818A', textDecoration: 'none' }}>
+                      <a
+                        href={l.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ fontSize: 13.5, color: 'var(--muted)', textDecoration: 'none' }}
+                      >
                         {l.label}
                       </a>
                     ) : (
-                      <Link href={l.href}
-                        className="text-[13px] transition-colors"
-                        style={{ color: '#79818A', textDecoration: 'none' }}>
+                      <Link href={l.href} style={{ fontSize: 13.5, color: 'var(--muted)', textDecoration: 'none' }}>
                         {l.label}
                       </Link>
                     )}
                   </li>
                 ))}
               </ul>
-            </div>
+            </nav>
           ))}
         </div>
 
         {/* Warranty strip */}
         <div
-          className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-5 py-4 mb-10"
-          style={{ border: '1px solid #262C33', borderRadius: 4, background: '#0F1215' }}
+          className="card"
+          style={{
+            display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between',
+            gap: 12, padding: '14px 16px', marginBottom: 28, background: 'var(--surface)',
+          }}
         >
-          <p className="mono text-[11px] tracking-[0.06em]" style={{ color: '#79818A' }}>
-            <span style={{ color: '#F2A93B' }}>PANEL WARRANTY — </span>
+          <p style={{ margin: 0, fontSize: 13, color: 'var(--muted)' }}>
+            <strong style={{ color: 'var(--ink)' }}>Panel warranty — </strong>
             Pterodactyl panels carry a 2-week replacement warranty from purchase.
           </p>
-          <a href="/contact" className="mono text-[11px] tracking-[0.1em] uppercase flex-shrink-0" style={{ color: '#AEB5BD', textDecoration: 'none' }}>
+          <Link href="/contact" style={{ fontSize: 13, fontWeight: 700, color: 'var(--brand)', textDecoration: 'none', whiteSpace: 'nowrap' }}>
             Claim within 14 days →
-          </a>
+          </Link>
         </div>
 
         {/* Bottom bar */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pb-8" style={{ borderTop: '1px solid #1B2026', paddingTop: 24 }}>
-          <p className="mono text-[11px]" style={{ color: '#4C535B' }}>
+        <div
+          style={{
+            display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between',
+            gap: 12, paddingTop: 20, paddingBottom: 32, borderTop: '1px solid var(--line-soft)',
+          }}
+        >
+          <p style={{ margin: 0, fontSize: 12.5, color: 'var(--dim)' }}>
             © {new Date().getFullYear()} Mzazi Tech Inc — Nairobi, Kenya
           </p>
-          <div className="flex items-center gap-5">
-            {[
-              { label: 'Privacy', href: '/privacy' },
-              { label: 'Terms', href: '/terms' },
-              { label: 'Admin', href: 'https://admin.mzazi.shop' },
-            ].map(l => (
-              <Link key={l.label} href={l.href}
-                className="mono text-[11px] uppercase tracking-[0.1em] transition-colors"
-                style={{ color: '#4C535B', textDecoration: 'none' }}>
-                {l.label}
-              </Link>
-            ))}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
+            <Link href="/privacy" style={{ fontSize: 12.5, color: 'var(--dim)', textDecoration: 'none' }}>Privacy</Link>
+            <Link href="/terms" style={{ fontSize: 12.5, color: 'var(--dim)', textDecoration: 'none' }}>Terms</Link>
+            <a href="https://admin.mzazi.shop" style={{ fontSize: 12.5, color: 'var(--dim)', textDecoration: 'none' }}>Admin</a>
           </div>
         </div>
       </div>
 
-      {/* Giant wordmark */}
-      <div aria-hidden="true" className="watermark overflow-hidden" style={{ fontSize: 'clamp(80px, 16.5vw, 260px)', whiteSpace: 'nowrap', marginTop: -30 }}>
+      {/* Oversized wordmark — purely decorative */}
+      <div
+        aria-hidden="true"
+        className="watermark"
+        style={{ fontSize: 'clamp(60px, 15vw, 220px)', whiteSpace: 'nowrap', overflow: 'hidden', marginTop: -20, lineHeight: 0.85 }}
+      >
         MZAZI TECH
       </div>
     </footer>

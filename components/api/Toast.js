@@ -22,9 +22,9 @@ export function ToastProvider({ children }) {
             key={t.id}
             className="px-4 py-3 text-sm font-medium shadow-2xl"
             style={{
-              backgroundColor: '#14181D',
+              backgroundColor: 'var(--surface)',
               border: `1px solid ${t.type === 'error' ? 'rgba(229,72,77,0.45)' : 'rgba(62,207,142,0.45)'}`,
-              color: t.type === 'error' ? '#E5484D' : '#3ECF8E',
+              color: t.type === 'error' ? 'var(--bad)' : 'var(--good)',
               borderRadius: 4,
               boxShadow: '0 18px 44px rgba(0,0,0,0.5)',
             }}

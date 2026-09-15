@@ -72,7 +72,7 @@ export default async function ApiStatus() {
         <div className="absolute inset-0 pointer-events-none grid-bg" style={{ maskImage: 'linear-gradient(180deg, rgba(0,0,0,0.5), transparent 80%)', WebkitMaskImage: 'linear-gradient(180deg, rgba(0,0,0,0.5), transparent 80%)' }} />
         <div className="container-site relative">
           <div className="max-w-3xl">
-            <Link href="/api" className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: '#79818A', textDecoration: 'none' }}>
+            <Link href="/api" className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: 'var(--muted)', textDecoration: 'none' }}>
               ← Back to API
             </Link>
             <div className="flex flex-wrap items-center gap-4 mt-8">
@@ -88,20 +88,20 @@ export default async function ApiStatus() {
           </div>
 
           {/* System health ledger */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-px mt-12 card overflow-hidden" style={{ background: '#262C33' }}>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-px mt-12 card overflow-hidden" style={{ background: 'var(--line)' }}>
             {[
               { label: 'Database', value: db.ok ? 'Operational' : 'Unreachable', sub: `${db.ms}ms round trip`, ok: db.ok },
               { label: 'API service', value: 'Operational', sub: 'v1.0.0', ok: true },
               { label: 'Avg response', value: avgMs !== null ? `${avgMs}ms` : '—', sub: avgMs !== null ? 'last 24h window' : 'no requests yet', ok: avgMs !== null },
               { label: 'Requests today', value: todayCount.toLocaleString(), sub: `${activeEndpoints.length} active endpoints`, ok: true },
             ].map(s => (
-              <div key={s.label} className="card p-5" style={{ background: '#14181D' }}>
+              <div key={s.label} className="card p-5" style={{ background: 'var(--surface)' }}>
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="dot anim-pulse" style={{ color: s.ok ? '#3ECF8E' : '#E5484D' }} />
-                  <span className="mono text-[10px] uppercase tracking-[0.14em]" style={{ color: '#4C535B' }}>{s.label}</span>
+                  <span className="dot anim-pulse" style={{ color: s.ok ? 'var(--good)' : 'var(--bad)' }} />
+                  <span className="mono text-[10px] uppercase tracking-[0.14em]" style={{ color: 'var(--dim)' }}>{s.label}</span>
                 </div>
-                <p className="display font-bold text-lg" style={{ color: '#E9E7E2' }}>{s.value}</p>
-                <p className="mono text-[10px] mt-1" style={{ color: '#4C535B' }}>{s.sub}</p>
+                <p className="display font-bold text-lg" style={{ color: 'var(--ink)' }}>{s.value}</p>
+                <p className="mono text-[10px] mt-1" style={{ color: 'var(--dim)' }}>{s.sub}</p>
               </div>
             ))}
           </div>
@@ -113,7 +113,7 @@ export default async function ApiStatus() {
         <div className="container-site">
           <div className="mb-8">
             <p className="eyebrow">Upstream</p>
-            <h2 className="section-title text-3xl mt-4" style={{ color: '#E9E7E2' }}>
+            <h2 className="section-title text-3xl mt-4" style={{ color: 'var(--ink)' }}>
               Providers
               <span className="bar" />
             </h2>
@@ -121,7 +121,7 @@ export default async function ApiStatus() {
 
           {providers.length === 0 ? (
             <div className="card card-pad text-center">
-              <p className="text-sm" style={{ color: '#4C535B' }}>Provider registry unavailable.</p>
+              <p className="text-sm" style={{ color: 'var(--dim)' }}>Provider registry unavailable.</p>
             </div>
           ) : (
             <div className="card overflow-hidden scroll-x">
@@ -143,10 +143,10 @@ export default async function ApiStatus() {
                       <tr key={p.name} data-label="Provider">
                         <td data-label="Provider">
                           <div className="flex items-center gap-3">
-                            <span className="dot" style={{ color: active ? '#3ECF8E' : p.status === 'offline' ? '#E5484D' : '#F2A93B' }} />
+                            <span className="dot" style={{ color: active ? 'var(--good)' : p.status === 'offline' ? 'var(--bad)' : 'var(--brand)' }} />
                             <div>
-                              <p className="font-semibold" style={{ color: '#E9E7E2' }}>{p.display_name || p.name}</p>
-                              <p className="mono text-[10px]" style={{ color: '#4C535B' }}>{p.base_url}</p>
+                              <p className="font-semibold" style={{ color: 'var(--ink)' }}>{p.display_name || p.name}</p>
+                              <p className="mono text-[10px]" style={{ color: 'var(--dim)' }}>{p.base_url}</p>
                             </div>
                           </div>
                         </td>
@@ -157,12 +157,12 @@ export default async function ApiStatus() {
                           {p.avg_response_ms !== null ? `${Number(p.avg_response_ms).toFixed(0)}ms` : '—'}
                         </td>
                         <td data-label="Failures">
-                          <span className="mono text-[12px]" style={{ color: p.total_failures > 0 ? '#E5484D' : '#79818A' }}>
+                          <span className="mono text-[12px]" style={{ color: p.total_failures > 0 ? 'var(--bad)' : 'var(--muted)' }}>
                             {p.total_failures} / {p.total_requests}
                           </span>
                         </td>
-                        <td data-label="Last success" style={{ color: '#79818A' }}>{fmt(p.last_success_at)}</td>
-                        <td data-label="Last error" style={{ color: p.last_error ? '#E5484D' : '#4C535B' }}>{p.last_error || '—'}</td>
+                        <td data-label="Last success" style={{ color: 'var(--muted)' }}>{fmt(p.last_success_at)}</td>
+                        <td data-label="Last error" style={{ color: p.last_error ? 'var(--bad)' : 'var(--dim)' }}>{p.last_error || '—'}</td>
                       </tr>
                     );
                   })}
@@ -178,9 +178,9 @@ export default async function ApiStatus() {
         <div className="container-site">
           <div className="mb-8">
             <p className="eyebrow">Live routes</p>
-            <h2 className="section-title text-3xl mt-4" style={{ color: '#E9E7E2' }}>
+            <h2 className="section-title text-3xl mt-4" style={{ color: 'var(--ink)' }}>
               Active endpoints
-              <span className="mono text-sm font-medium" style={{ color: '#4C535B', letterSpacing: '0.02em' }}>
+              <span className="mono text-sm font-medium" style={{ color: 'var(--dim)', letterSpacing: '0.02em' }}>
                 {' '}({activeEndpoints.length})
               </span>
               <span className="bar" />
@@ -200,20 +200,20 @@ export default async function ApiStatus() {
               <tbody>
                 {activeEndpoints.length === 0 && (
                   <tr>
-                    <td colSpan={4} className="text-center" style={{ color: '#4C535B', padding: '36px 0' }}>No active endpoints yet.</td>
+                    <td colSpan={4} className="text-center" style={{ color: 'var(--dim)', padding: '36px 0' }}>No active endpoints yet.</td>
                   </tr>
                 )}
                 {activeEndpoints.map(e => (
                   <tr key={e.path} data-label="Endpoint">
                     <td data-label="Endpoint">
                       <span className="mono text-[10px] font-bold px-1.5 py-0.5 mr-2"
-                        style={{ background: e.method === 'GET' ? 'rgba(76,125,252,0.12)' : 'rgba(242,169,59,0.1)', color: e.method === 'GET' ? '#4C7DFC' : '#F2A93B', border: `1px solid ${e.method === 'GET' ? 'rgba(76,125,252,0.35)' : 'rgba(242,169,59,0.3)'}` }}>
+                        style={{ background: e.method === 'GET' ? 'rgba(76,125,252,0.12)' : 'rgba(242,169,59,0.1)', color: e.method === 'GET' ? 'var(--blue)' : 'var(--brand)', border: `1px solid ${e.method === 'GET' ? 'rgba(76,125,252,0.35)' : 'rgba(242,169,59,0.3)'}` }}>
                         {e.method}
                       </span>
-                      <code className="mono text-[12px]" style={{ color: '#E9E7E2' }}>{e.path}</code>
+                      <code className="mono text-[12px]" style={{ color: 'var(--ink)' }}>{e.path}</code>
                     </td>
                     <td data-label="Category"><span className="tag">{CATEGORY_LABELS[e.category] || e.category}</span></td>
-                    <td data-label="Provider" style={{ color: '#79818A' }}>{providerLabel(e.provider)}</td>
+                    <td data-label="Provider" style={{ color: 'var(--muted)' }}>{providerLabel(e.provider)}</td>
                     <td data-label="Status">
                       <span className="tag tag-green"><span className="dot anim-pulse" /> Operational</span>
                     </td>

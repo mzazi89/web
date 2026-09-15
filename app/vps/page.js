@@ -160,7 +160,7 @@ function VpsInner() {
       {/* ── Page header ── */}
       <div className="mb-8">
         <p className="eyebrow">MZAZI TECH · VPS</p>
-        <h1 className="display mt-2" style={{ color: '#E9E7E2' }}>VPS Servers</h1>
+        <h1 className="display mt-2" style={{ color: 'var(--ink)' }}>VPS Servers</h1>
         <p className="lede mt-3" style={{ maxWidth: 620 }}>
           Raw, full-access virtual servers with instant credentials. Pay with M-PESA, Airtel, Till or Card —
           your login details are revealed the moment payment is confirmed and saved to your dashboard.
@@ -168,7 +168,7 @@ function VpsInner() {
       </div>
 
       {notice && (
-        <div className={`mb-6 px-4 py-3 text-sm`} style={{ borderRadius: 8, background: notice.type === 'success' ? 'rgba(62,207,142,0.08)' : 'rgba(229,72,77,0.08)', border: `1px solid ${notice.type === 'success' ? 'rgba(62,207,142,0.3)' : 'rgba(229,72,77,0.3)'}`, color: notice.type === 'success' ? '#3ECF8E' : '#E5484D' }}>
+        <div className={`mb-6 px-4 py-3 text-sm`} style={{ borderRadius: 8, background: notice.type === 'success' ? 'rgba(62,207,142,0.08)' : 'rgba(229,72,77,0.08)', border: `1px solid ${notice.type === 'success' ? 'rgba(62,207,142,0.3)' : 'rgba(229,72,77,0.3)'}`, color: notice.type === 'success' ? 'var(--good)' : 'var(--bad)' }}>
           {notice.text}
         </div>
       )}
@@ -177,7 +177,7 @@ function VpsInner() {
         <div className="min-h-[30vh] flex items-center justify-center"><div className="spinner" /></div>
       ) : packages.length === 0 ? (
         <div className="card p-8 text-center">
-          <p className="text-sm" style={{ color: '#79818A' }}>No VPS packages available right now — check back soon.</p>
+          <p className="text-sm" style={{ color: 'var(--muted)' }}>No VPS packages available right now — check back soon.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
@@ -185,10 +185,10 @@ function VpsInner() {
             <div key={p.id} className="card p-6 flex flex-col">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <h3 className="text-base font-bold" style={{ color: '#E9E7E2' }}>{p.name}</h3>
-                  {p.description && <p className="text-xs mt-1" style={{ color: '#79818A', lineHeight: 1.5 }}>{p.description}</p>}
+                  <h3 className="text-base font-bold" style={{ color: 'var(--ink)' }}>{p.name}</h3>
+                  {p.description && <p className="text-xs mt-1" style={{ color: 'var(--muted)', lineHeight: 1.5 }}>{p.description}</p>}
                 </div>
-                <span className="mono text-[9px] uppercase tracking-[0.14em] px-2 py-1" style={{ background: Number(p.stock) > 0 ? 'rgba(62,207,142,0.1)' : 'rgba(229,72,77,0.1)', color: Number(p.stock) > 0 ? '#3ECF8E' : '#E5484D', borderRadius: 4, whiteSpace: 'nowrap' }}>
+                <span className="mono text-[9px] uppercase tracking-[0.14em] px-2 py-1" style={{ background: Number(p.stock) > 0 ? 'rgba(62,207,142,0.1)' : 'rgba(229,72,77,0.1)', color: Number(p.stock) > 0 ? 'var(--good)' : 'var(--bad)', borderRadius: 4, whiteSpace: 'nowrap' }}>
                   {Number(p.stock) > 0 ? `${p.stock} in stock` : 'Sold out'}
                 </span>
               </div>
@@ -196,16 +196,16 @@ function VpsInner() {
               <div className="mt-4 space-y-2">
                 {specRows(p).map((r) => (
                   <div key={r.k} className="flex items-center justify-between text-xs">
-                    <span className="mono uppercase tracking-wider" style={{ color: '#4C535B' }}>{r.k}</span>
-                    <span style={{ color: '#AEB5BD' }}>{r.v}</span>
+                    <span className="mono uppercase tracking-wider" style={{ color: 'var(--dim)' }}>{r.k}</span>
+                    <span style={{ color: 'var(--ink-2)' }}>{r.v}</span>
                   </div>
                 ))}
               </div>
 
               <div className="mt-auto pt-5 flex items-center justify-between gap-3">
                 <div>
-                  <div className="mono text-lg font-bold" style={{ color: '#F2A93B' }}>{fmtKes(p.price)}</div>
-                  <div className="mono text-[9px] uppercase tracking-wider" style={{ color: '#4C535B' }}>one-time</div>
+                  <div className="mono text-lg font-bold" style={{ color: 'var(--brand)' }}>{fmtKes(p.price)}</div>
+                  <div className="mono text-[9px] uppercase tracking-wider" style={{ color: 'var(--dim)' }}>one-time</div>
                 </div>
                 <button
                   onClick={() => openBuy(p)}
@@ -227,8 +227,8 @@ function VpsInner() {
           <div className="flex items-center gap-3 mb-4">
             <span style={{ fontSize: 22 }}>🖥️</span>
             <div>
-              <h2 className="text-base font-bold" style={{ color: '#E9E7E2' }}>Your VPS is live</h2>
-              <p className="mono text-[10px] uppercase tracking-wider mt-0.5" style={{ color: '#4C535B' }}>{vps.package_name} · {vps.host}</p>
+              <h2 className="text-base font-bold" style={{ color: 'var(--ink)' }}>Your VPS is live</h2>
+              <p className="mono text-[10px] uppercase tracking-wider mt-0.5" style={{ color: 'var(--dim)' }}>{vps.package_name} · {vps.host}</p>
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -246,8 +246,8 @@ function VpsInner() {
                 <div className="flex items-center gap-2.5 min-w-0">
                   <span style={{ fontSize: 15, flexShrink: 0 }}>{f.icon}</span>
                   <div className="min-w-0">
-                    <div className="mono text-[9px] tracking-[0.14em]" style={{ color: '#4C535B' }}>{f.k}</div>
-                    <div className="mt-0.5 mono text-[13px] truncate" style={{ color: '#E9E7E2' }}>{f.v}</div>
+                    <div className="mono text-[9px] tracking-[0.14em]" style={{ color: 'var(--dim)' }}>{f.k}</div>
+                    <div className="mt-0.5 mono text-[13px] truncate" style={{ color: 'var(--ink)' }}>{f.v}</div>
                   </div>
                 </div>
                 {f.k === 'PASSWORD' ? (
@@ -260,7 +260,7 @@ function VpsInner() {
               </div>
             ))}
           </div>
-          <p className="text-xs mt-4" style={{ color: '#79818A', lineHeight: 1.6 }}>
+          <p className="text-xs mt-4" style={{ color: 'var(--muted)', lineHeight: 1.6 }}>
             💡 Save these credentials — they are also saved under{' '}
             <Link href="/dashboard" className="link">your dashboard</Link>.
             Connect via any SSH client (e.g. <span className="mono">ssh {vps.username}@{vps.host} -p {vps.port || 22}</span>).
@@ -276,51 +276,51 @@ function VpsInner() {
             <div className="flex items-start justify-between mb-4">
               <div>
                 <p className="eyebrow" style={{ fontSize: 10 }}>Checkout</p>
-                <h3 className="text-base font-bold mt-1" style={{ color: '#E9E7E2' }}>{pkg.name}</h3>
-                <p className="mono text-[10px] uppercase tracking-wider mt-0.5" style={{ color: '#4C535B' }}>
+                <h3 className="text-base font-bold mt-1" style={{ color: 'var(--ink)' }}>{pkg.name}</h3>
+                <p className="mono text-[10px] uppercase tracking-wider mt-0.5" style={{ color: 'var(--dim)' }}>
                   {fmtKes(pkg.price)} · credentials revealed after payment
                 </p>
               </div>
-              <button onClick={() => !paying && closeModal()} className="btn" style={{ fontSize: 14, padding: '2px 8px', background: 'transparent', borderColor: 'transparent', color: '#79818A' }}>✕</button>
+              <button onClick={() => !paying && closeModal()} className="btn" style={{ fontSize: 14, padding: '2px 8px', background: 'transparent', borderColor: 'transparent', color: 'var(--muted)' }}>✕</button>
             </div>
 
             {step === 'method' && (
               <>
-                <p className="text-xs font-bold mb-2" style={{ color: '#AEB5BD' }}>1 · Choose payment method</p>
+                <p className="text-xs font-bold mb-2" style={{ color: 'var(--ink-2)' }}>1 · Choose payment method</p>
                 <div className="grid grid-cols-1 gap-2">
                   {METHODS.map((m) => (
                     <button key={m.id} onClick={() => setMethod(m.id)}
                       className="flex items-center gap-3 px-3.5 py-3 text-left w-full"
-                      style={{ borderRadius: 10, border: `1.5px solid ${method === m.id ? '#F2A93B' : 'rgba(233,231,226,0.12)'}`, background: method === m.id ? 'rgba(242,169,59,0.07)' : 'transparent', cursor: 'pointer', transition: 'all 0.15s' }}>
+                      style={{ borderRadius: 10, border: `1.5px solid ${method === m.id ? 'var(--brand)' : 'rgba(233,231,226,0.12)'}`, background: method === m.id ? 'rgba(242,169,59,0.07)' : 'transparent', cursor: 'pointer', transition: 'all 0.15s' }}>
                       <span style={{ fontSize: 20 }}>{m.icon}</span>
                       <span className="flex-1">
-                        <span className="block text-sm font-semibold" style={{ color: '#E9E7E2' }}>{m.label}</span>
-                        <span className="block text-[11px]" style={{ color: '#79818A' }}>{m.hint}</span>
+                        <span className="block text-sm font-semibold" style={{ color: 'var(--ink)' }}>{m.label}</span>
+                        <span className="block text-[11px]" style={{ color: 'var(--muted)' }}>{m.hint}</span>
                       </span>
-                      <span style={{ color: method === m.id ? '#F2A93B' : '#3A3F45', fontSize: 16 }}>●</span>
+                      <span style={{ color: method === m.id ? 'var(--brand)' : 'var(--line)', fontSize: 16 }}>●</span>
                     </button>
                   ))}
                 </div>
 
                 {NEEDS_PHONE.includes(method) && (
                   <div className="mt-3">
-                    <label className="mono text-[10px] uppercase tracking-wider" style={{ color: '#4C535B' }}>Phone number (receives the prompt)</label>
+                    <label className="mono text-[10px] uppercase tracking-wider" style={{ color: 'var(--dim)' }}>Phone number (receives the prompt)</label>
                     <input className="input mt-1" placeholder="07XX XXX XXX" value={phone} onChange={(e) => setPhone(e.target.value)} inputMode="tel" />
                   </div>
                 )}
                 {NEEDS_TILL.includes(method) && (
                   <div className="mt-3">
-                    <label className="mono text-[10px] uppercase tracking-wider" style={{ color: '#4C535B' }}>Till number (pay to)</label>
+                    <label className="mono text-[10px] uppercase tracking-wider" style={{ color: 'var(--dim)' }}>Till number (pay to)</label>
                     <input className="input mt-1" placeholder="e.g. 500123" value={till} onChange={(e) => setTill(e.target.value)} inputMode="numeric" />
                   </div>
                 )}
 
-                {error && <p className="text-xs mt-3" style={{ color: '#E5484D' }}>{error}</p>}
+                {error && <p className="text-xs mt-3" style={{ color: 'var(--bad)' }}>{error}</p>}
 
                 <button onClick={startPayment} disabled={paying} className="btn btn-primary w-full mt-4" style={{ padding: '13px' }}>
                   {paying ? 'Starting payment…' : `Pay ${fmtKes(pkg.price)}`}
                 </button>
-                <p className="text-[11px] mt-3 text-center" style={{ color: '#4C535B' }}>
+                <p className="text-[11px] mt-3 text-center" style={{ color: 'var(--dim)' }}>
                   🔒 Secure payment via Paystack · your VPS credentials appear here instantly on success
                 </p>
               </>
@@ -329,21 +329,21 @@ function VpsInner() {
             {step === 'waiting' && (
               <div className="text-center py-4">
                 <div className="spinner mx-auto" />
-                <p className="text-sm font-bold mt-5" style={{ color: '#E9E7E2' }}>
+                <p className="text-sm font-bold mt-5" style={{ color: 'var(--ink)' }}>
                   {method === 'mpesa_till' ? 'Waiting for Till payment…' : 'Check your phone for the prompt'}
                 </p>
                 {displayText && (
-                  <p className="text-xs mt-2 px-3 py-2 inline-block" style={{ background: 'rgba(242,169,59,0.08)', color: '#F2A93B', borderRadius: 8, fontFamily: 'monospace' }}>
+                  <p className="text-xs mt-2 px-3 py-2 inline-block" style={{ background: 'rgba(242,169,59,0.08)', color: 'var(--brand)', borderRadius: 8, fontFamily: 'monospace' }}>
                     {displayText}
                   </p>
                 )}
-                <p className="text-xs mt-3" style={{ color: '#79818A' }}>
+                <p className="text-xs mt-3" style={{ color: 'var(--muted)' }}>
                   Enter your M-PESA / Airtel PIN to authorize · auto-confirms in seconds
                 </p>
-                <p className="mono text-xs mt-2" style={{ color: secondsLeft < 30 ? '#E5484D' : '#4C535B' }}>
+                <p className="mono text-xs mt-2" style={{ color: secondsLeft < 30 ? 'var(--bad)' : 'var(--dim)' }}>
                   ⏱ {mm(Math.floor(secondsLeft / 60))}:{mm(secondsLeft % 60)}
                 </p>
-                {error && <p className="text-xs mt-3" style={{ color: '#E5484D' }}>{error}</p>}
+                {error && <p className="text-xs mt-3" style={{ color: 'var(--bad)' }}>{error}</p>}
                 <button onClick={() => { setRef(null); setStep('method'); setError(''); }} className="btn mt-5" style={{ fontSize: 12 }}>← Cancel</button>
               </div>
             )}
