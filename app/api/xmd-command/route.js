@@ -17,10 +17,10 @@
 // are genuinely different bots rather than one bot with two names.
 //
 // The key is resolved in this order (first hit wins):
-//   1. bot_config.xmd_bot_api_key   — settable from the admin dashboard
-//   2. XMD_BOT_API_KEY              — this bot's own environment variable
-//   3. bot_config.bot_api_key       — shared fallback so it works out of the box
-//   4. BOT_API_KEY                  — shared environment fallback
+//   1. settings.xmd_bot_api_key     — the MZAZI XMD bot's own key, written by
+//      the admin Settings page (this is what the bot and admin now use)
+//   2. getBotApiKey()               — the shared bot_config.bot_api_key
+//   3. XMD_BOT_API_KEY              — this bot's own environment variable
 import { NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { neon } from '@neondatabase/serverless';
@@ -65,17 +65,25 @@ function clientKey(request) {
   return url.searchParams.get('key') || '';
 }
 
-/** This bot's key specifically, falling back to the shared one. */
+/**
+ * This bot's key specifically, falling back to the shared one.
+ *
+ * The XMD key now lives in the shared `settings` table as `xmd_bot_api_key`
+ * (written by the admin Settings page) — that is authoritative, because it is
+ * also the value the bot reads into its own config. The old
+ * `bot_config.bot_api_key` shared key and the `XMD_BOT_API_KEY` env var remain
+ * as fallbacks so an existing deployment keeps working unchanged.
+ */
 async function getXmdBotApiKey() {
   try {
-    const rows = await sql`SELECT value FROM bot_config WHERE key = 'xmd_bot_api_key'`;
+    const rows = await sql`SELECT value FROM settings WHERE key = 'xmd_bot_api_key'`;
     const own = rows[0]?.value;
     if (own) return own;
   } catch (e) {
     // Table or row missing is expected on a fresh install — fall through.
     console.error('[xmd-command] xmd key lookup failed:', e?.message);
   }
-  return (await getBotApiKey()) || process.env.XMD_BOT_API_KEY || process.env.BOT_API_KEY || '';
+  return (await getBotApiKey()) || process.env.XMD_BOT_API_KEY || '';
 }
 
 export async function GET(request) {
