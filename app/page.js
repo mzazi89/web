@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Logo from '@/components/Logo';
-import { AppBackground, BotMark, Card, CardHeader, Badge, Icons } from '@/components/ui';
+import { AppBackground, BotMark, Card, CardHeader, Badge, ImageWithFallback, Icons } from '@/components/ui';
 
 // MZAZI TECH — landing page.
 //
@@ -95,7 +95,7 @@ const FEATURES = [
 
 export default function Home() {
   return (
-    <AppBackground variant="hero" orbs>
+    <AppBackground variant="hero" orbs image="/images/hero-bg.webp" imageOpacity={0.55} scrim={0.45}>
       {/* ───────────────────────── Hero ───────────────────────── */}
       <section>
         <div className="container-site" style={{ paddingTop: 56, paddingBottom: 48 }}>
@@ -131,6 +131,56 @@ export default function Home() {
               <Icons.CheckCircle size={14} />
               Free to start — no card required
             </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ───────────────────────── Photo showcase ───────────────────────── */}
+      <section className="section" style={{ paddingTop: 0 }}>
+        <div className="container-site">
+          <div className="grid-2-responsive" style={{ alignItems: 'center', gap: 30 }}>
+            <div>
+              <p className="eyebrow">The phone you already have</p>
+              <h2 className="section-title" style={{ marginTop: 14 }}>
+                Your WhatsApp, running itself.
+              </h2>
+              <p className="lede" style={{ marginTop: 12 }}>
+                No new SIM and no second handset. Link your number once with a pairing code,
+                and your bot handles the rest from then on.
+              </p>
+
+              <ul style={{ listStyle: 'none', margin: '22px 0 0', padding: 0, display: 'grid', gap: 11 }}>
+                {[
+                  'Link any number with a pairing code — no QR scanning',
+                  'Keep using WhatsApp normally on the same phone',
+                  'Manage every linked number from one dashboard',
+                ].map((t) => (
+                  <li key={t} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', fontSize: 14.5, color: 'var(--ink-2)' }}>
+                    <span style={{ color: 'var(--good)', marginTop: 1, flex: '0 0 auto' }} aria-hidden="true">
+                      <Icons.CheckCircle size={17} />
+                    </span>
+                    {t}
+                  </li>
+                ))}
+              </ul>
+
+              <div style={{ marginTop: 26, display: 'flex', gap: 11, flexWrap: 'wrap' }}>
+                <Link href="/signup" className="btn btn-primary">
+                  Connect your number
+                  <Icons.ArrowRight size={17} />
+                </Link>
+                <Link href="/devices" className="btn btn-ghost">See connected devices</Link>
+              </div>
+            </div>
+
+            <ImageWithFallback
+              src="/images/photo-devices.webp"
+              alt="Two smartphones lit by purple and blue light, ready to be linked to the WhatsApp bot"
+              ratio="4-3"
+              rounded="xl"
+              label="MZAZI TECH"
+              imgStyle={{ objectPosition: 'center' }}
+            />
           </div>
         </div>
       </section>
@@ -209,10 +259,21 @@ export default function Home() {
             Connected in three steps.
           </h2>
 
-          <ol
-            className="grid-cards"
-            style={{ listStyle: 'none', margin: '28px 0 0', padding: 0 }}
+          <div
+            className="grid-2-responsive"
+            style={{ marginTop: 28, alignItems: 'center', gap: 30 }}
           >
+            <ImageWithFallback
+              src="/images/whatsapp-automation.webp"
+              alt="A phone receiving automated WhatsApp replies, surrounded by floating interface panels"
+              ratio="4-3"
+              rounded="xl"
+              label="Automation"
+            />
+            <ol
+              className="grid-cards"
+              style={{ listStyle: 'none', margin: 0, padding: 0, gridTemplateColumns: '1fr' }}
+            >
             {STEPS.map((s) => (
               <li key={s.n}>
                 <Card style={{ height: '100%', display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -236,7 +297,8 @@ export default function Home() {
                 </Card>
               </li>
             ))}
-          </ol>
+            </ol>
+          </div>
         </div>
       </section>
 

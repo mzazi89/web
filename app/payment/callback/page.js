@@ -58,7 +58,7 @@ function PaymentCallbackContent() {
   };
 
   return (
-    <AppBackground variant="dashboard">
+    <AppBackground variant="dashboard" image="/images/dashboard-bg.webp" imageOpacity={0.45} scrim={0.55}>
       <div className="container-site" style={{ paddingTop: 56, paddingBottom: 100, maxWidth: 640 }}>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <Card className="anim-fade-up" style={{ width: '100%' }}>
@@ -169,7 +169,7 @@ function PaymentCallbackContent() {
 export default function PaymentCallback() {
   return (
     <Suspense fallback={
-      <AppBackground variant="dashboard">
+      <AppBackground variant="dashboard" image="/images/dashboard-bg.webp" imageOpacity={0.45} scrim={0.55}>
         <div className="container-site" style={{ paddingTop: 56, paddingBottom: 100, maxWidth: 640 }}>
           <Card>
             <div className="empty" role="status" aria-live="polite">

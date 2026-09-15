@@ -119,7 +119,7 @@ export default function AccountPage() {
   const memberSince = user?.created_at ? new Date(user.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) : null;
 
   return (
-    <AppBackground variant="dashboard">
+    <AppBackground variant="dashboard" image="/images/dashboard-bg.webp" imageOpacity={0.45} scrim={0.55}>
       <div className="container-site" style={{ paddingTop: 26, paddingBottom: 90, maxWidth: 1000 }}>
         <PageHeader
           title="Account"

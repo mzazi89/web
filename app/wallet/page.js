@@ -468,7 +468,7 @@ function WalletInner() {
 
   if (loading) {
     return (
-      <AppBackground variant="dashboard">
+      <AppBackground variant="dashboard" image="/images/dashboard-bg.webp" imageOpacity={0.45} scrim={0.55}>
         <div className="container-site" style={{ paddingTop: 26, paddingBottom: 90, maxWidth: 900 }}>
           <SkeletonText lines={2} />
           <div style={{ height: 140 }} />
@@ -479,7 +479,7 @@ function WalletInner() {
   }
 
   return (
-    <AppBackground variant="dashboard">
+    <AppBackground variant="dashboard" image="/images/dashboard-bg.webp" imageOpacity={0.45} scrim={0.55}>
       <div className="container-site" style={{ paddingTop: 26, paddingBottom: 90, maxWidth: 900 }}>
         <PageHeader
           title="Payments & wallet"
@@ -863,7 +863,7 @@ function WalletInner() {
 export default function WalletPage() {
   return (
     <Suspense fallback={
-      <AppBackground variant="dashboard">
+      <AppBackground variant="dashboard" image="/images/dashboard-bg.webp" imageOpacity={0.45} scrim={0.55}>
         <div className="container-site" style={{ paddingTop: 26, paddingBottom: 90, maxWidth: 900 }}>
           <SkeletonText lines={4} />
         </div>
