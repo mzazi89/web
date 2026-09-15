@@ -102,7 +102,7 @@ export default function RootLayout({ children }) {
 
               <Navbar />
 
-              <main id="main-content" className="flex-grow" style={{ position: 'relative', zIndex: 1 }}>
+              <main id="main-content" className="flex-grow app-content">
                 {children}
               </main>
 
