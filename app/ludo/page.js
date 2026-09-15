@@ -433,7 +433,7 @@ export default function LudoPage() {
 
               {error && <p className="text-xs mb-3" style={{ color: 'var(--bad)' }}>{error}</p>}
 
-              <button onClick={createGame} disabled={busy} className="btn btn-primary w-full" style={{ fontSize: 12 }}>
+              <button onClick={createGame} disabled={busy} className="btn btn-primary w-full" style={{ fontSize: 13 }}>
                 {busy ? 'Creating…' : mode === 'local' ? 'Start local game' : 'Create room'}
               </button>
             </div>
@@ -469,7 +469,7 @@ export default function LudoPage() {
                             }}>
                             {!free && <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, color: 'var(--dim)' }}>✕</span>}
                             {free && (
-                              <span style={{ position: 'absolute', bottom: -14, left: 0, right: 0, textAlign: 'center', fontSize: 8, color: COLORS[s], fontWeight: 700 }}>
+                              <span style={{ position: 'absolute', bottom: -14, left: 0, right: 0, textAlign: 'center', fontSize: 12.5, color: COLORS[s], fontWeight: 700 }}>
                                 {COLOR_NAMES[s]}
                               </span>
                             )}
@@ -487,7 +487,7 @@ export default function LudoPage() {
               <input className="input mb-4" value={name} maxLength={20}
                 onChange={(e) => setName(e.target.value)} placeholder="Player" />
               <button onClick={joinGame} disabled={busy || joinCode.length < 4} className="btn btn-ghost w-full"
-                style={{ fontSize: 12, opacity: busy || joinCode.length < 4 ? 0.5 : 1 }}>
+                style={{ fontSize: 13, opacity: busy || joinCode.length < 4 ? 0.5 : 1 }}>
                 {busy ? 'Joining…' : 'Join room'}
               </button>
             </div>
@@ -514,7 +514,7 @@ export default function LudoPage() {
               <p className="text-xs" style={{ color: 'var(--muted)', lineHeight: 1.7, wordBreak: 'break-all' }}>{shareLink}</p>
             </div>
             <button onClick={() => navigator.clipboard?.writeText(shareLink)?.catch(() => {})}
-              className="btn btn-dark mb-6" style={{ padding: '9px 16px', fontSize: 11 }}>
+              className="btn btn-dark mb-6" style={{ padding: '9px 16px', fontSize: 12.5 }}>
               Copy invite link
             </button>
 
@@ -544,7 +544,7 @@ export default function LudoPage() {
             {error && <p className="text-xs mb-3" style={{ color: 'var(--bad)' }}>{error}</p>}
 
             {canStart ? (
-              <button onClick={startGame} disabled={busy} className="btn btn-primary w-full" style={{ fontSize: 12 }}>
+              <button onClick={startGame} disabled={busy} className="btn btn-primary w-full" style={{ fontSize: 13 }}>
                 {busy ? 'Starting…' : 'Start game'}
               </button>
             ) : (
@@ -580,7 +580,7 @@ export default function LudoPage() {
             <p className="eyebrow">Arcade · {state.mode === 'online' ? `Room ${state.roomCode}` : 'Local game'}</p>
             <h1 className="headline mt-2" style={{ fontSize: 'clamp(1.7rem, 4vw, 2.3rem)' }}>Ludo<span className="accent">.</span></h1>
           </div>
-          <button onClick={clearSession} className="btn btn-ghost" style={{ padding: '9px 14px', fontSize: 11 }}>
+          <button onClick={clearSession} className="btn btn-ghost" style={{ padding: '9px 14px', fontSize: 12.5 }}>
             {finished ? 'New game' : 'Quit'}
           </button>
         </div>
@@ -743,7 +743,7 @@ export default function LudoPage() {
             </p>
 
             {myTurn && state.phase === 'roll' && (
-              <button onClick={rollDice} disabled={busy} className="btn btn-primary w-full" style={{ fontSize: 12 }}>
+              <button onClick={rollDice} disabled={busy} className="btn btn-primary w-full" style={{ fontSize: 13 }}>
                 {busy ? 'Rolling…' : 'Roll dice'}
               </button>
             )}
@@ -821,13 +821,13 @@ export default function LudoPage() {
               </div>
               <div className="flex gap-2.5">
                 {session?.mode === 'local' && (
-                  <button onClick={rematch} disabled={busy} className="btn btn-primary flex-1" style={{ fontSize: 12 }}>
+                  <button onClick={rematch} disabled={busy} className="btn btn-primary flex-1" style={{ fontSize: 13 }}>
                     {busy ? 'Starting…' : 'Rematch'}
                   </button>
                 )}
-                <button onClick={clearSession} className="btn btn-ghost flex-1" style={{ fontSize: 12 }}>New game</button>
+                <button onClick={clearSession} className="btn btn-ghost flex-1" style={{ fontSize: 13 }}>New game</button>
               </div>
-              <Link href="/" className="btn btn-dark w-full mt-2.5" style={{ fontSize: 11 }}>Back to home</Link>
+              <Link href="/" className="btn btn-dark w-full mt-2.5" style={{ fontSize: 12.5 }}>Back to home</Link>
             </div>
           </div>
         )}

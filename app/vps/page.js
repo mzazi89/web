@@ -251,11 +251,11 @@ function VpsInner() {
                   </div>
                 </div>
                 {f.k === 'PASSWORD' ? (
-                  <button onClick={() => setShowPass(!showPass)} className="btn" style={{ fontSize: 10, padding: '4px 9px', flexShrink: 0 }} title="Show / hide">
+                  <button onClick={() => setShowPass(!showPass)} className="btn" style={{ fontSize: 12, padding: '4px 9px', flexShrink: 0 }} title="Show / hide">
                     {showPass ? 'Hide' : 'Show'}
                   </button>
                 ) : f.copy ? (
-                  <button onClick={() => copyText(f.raw || f.v)} className="btn" style={{ fontSize: 10, padding: '4px 9px', flexShrink: 0 }} title="Copy">Copy</button>
+                  <button onClick={() => copyText(f.raw || f.v)} className="btn" style={{ fontSize: 12, padding: '4px 9px', flexShrink: 0 }} title="Copy">Copy</button>
                 ) : null}
               </div>
             ))}
@@ -275,7 +275,7 @@ function VpsInner() {
             {/* header */}
             <div className="flex items-start justify-between mb-4">
               <div>
-                <p className="eyebrow" style={{ fontSize: 10 }}>Checkout</p>
+                <p className="eyebrow" style={{ fontSize: 12 }}>Checkout</p>
                 <h3 className="text-base font-bold mt-1" style={{ color: 'var(--ink)' }}>{pkg.name}</h3>
                 <p className="mono text-[10px] uppercase tracking-wider mt-0.5" style={{ color: 'var(--dim)' }}>
                   {fmtKes(pkg.price)} · credentials revealed after payment
@@ -344,7 +344,7 @@ function VpsInner() {
                   ⏱ {mm(Math.floor(secondsLeft / 60))}:{mm(secondsLeft % 60)}
                 </p>
                 {error && <p className="text-xs mt-3" style={{ color: 'var(--bad)' }}>{error}</p>}
-                <button onClick={() => { setRef(null); setStep('method'); setError(''); }} className="btn mt-5" style={{ fontSize: 12 }}>← Cancel</button>
+                <button onClick={() => { setRef(null); setStep('method'); setError(''); }} className="btn mt-5" style={{ fontSize: 13 }}>← Cancel</button>
               </div>
             )}
           </div>

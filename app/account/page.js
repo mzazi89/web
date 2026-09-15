@@ -247,7 +247,7 @@ export default function AccountPage() {
                     {plan?.maxDevices >= 999 ? 'Unlimited devices' : `${plan?.maxDevices ?? 1} device${(plan?.maxDevices ?? 1) === 1 ? '' : 's'}`}
                   </span>
                 </div>
-                <p style={{ margin: '10px 0 0', fontSize: 13, color: 'var(--muted)' }}>
+                <p style={{ margin: '10px 0 0', fontSize: 13.5, color: 'var(--muted)' }}>
                   {plan?.endDate ? `Expires ${new Date(plan.endDate).toLocaleDateString()}` : 'Never expires'}
                 </p>
                 <div style={{ marginTop: 14 }}>

@@ -162,7 +162,7 @@ export default function DevicesPage() {
               )}
 
               {data?.endDate && (
-                <p style={{ margin: '12px 0 0', fontSize: 13, color: 'var(--muted)' }}>
+                <p style={{ margin: '12px 0 0', fontSize: 13.5, color: 'var(--muted)' }}>
                   Plan renews / expires on {new Date(data.endDate).toLocaleDateString()}
                 </p>
               )}

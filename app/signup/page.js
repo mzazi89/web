@@ -160,7 +160,7 @@ export default function SignupPage() {
 
               <div style={{ marginTop: 22, paddingTop: 18, borderTop: '1px solid var(--line-soft)' }}>
                 <p className="side-group-label" style={{ padding: '0 0 8px' }}>Account recovery</p>
-                <p style={{ margin: '0 0 14px', fontSize: 13, color: 'var(--muted)', lineHeight: 1.6 }}>
+                <p style={{ margin: '0 0 14px', fontSize: 13.5, color: 'var(--muted)', lineHeight: 1.6 }}>
                   Used only if you forget your password. Choose something only you would know.
                 </p>
 

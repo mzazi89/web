@@ -340,7 +340,7 @@ export default function DashboardPage() {
                       <p style={{ margin: 0, fontSize: 13.5, color: 'var(--ink-2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {t.description || t.type}
                       </p>
-                      <p className="mono" style={{ margin: '2px 0 0', fontSize: 11, color: 'var(--dim)' }}>{new Date(t.created_at).toLocaleDateString()}</p>
+                      <p className="mono" style={{ margin: '2px 0 0', fontSize: 12.5, color: 'var(--dim)' }}>{new Date(t.created_at).toLocaleDateString()}</p>
                     </div>
                     <span className="mono tnum" style={{ flexShrink: 0, fontWeight: 700, color: t.type === 'deposit' ? 'var(--good)' : 'var(--bad)' }}>
                       {t.type === 'deposit' ? '+' : '−'}{fmtKes(t.amount)}
@@ -392,11 +392,11 @@ export default function DashboardPage() {
                     <div key={p.id} style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', background: 'var(--surface-2)', border: '1px solid var(--line-soft)', borderRadius: 'var(--r-md)' }}>
                       <div style={{ minWidth: 0 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                          <span className="mono" style={{ fontSize: 11, color: 'var(--dim)' }}>#{p.id}</span>
+                          <span className="mono" style={{ fontSize: 12.5, color: 'var(--dim)' }}>#{p.id}</span>
                           <span style={{ fontWeight: 700, color: 'var(--ink)' }}>{p.ptero_username || `Panel #${p.id}`}</span>
                           <Badge tone={p.status === 'active' ? 'good' : 'neutral'} dot>{p.status}</Badge>
                         </div>
-                        <p className="mono" style={{ margin: '4px 0 0', fontSize: 11.5, color: 'var(--dim)' }}>
+                        <p className="mono" style={{ margin: '4px 0 0', fontSize: 12.5, color: 'var(--dim)' }}>
                           {p.package_name} · {fmtKes(p.package_price || 0)}
                           {p.expires_at && (
                             <span style={{ marginLeft: 8, color: p.is_expired ? 'var(--bad)' : 'var(--muted)' }}>
@@ -437,10 +437,10 @@ export default function DashboardPage() {
                           <span style={{ fontWeight: 700, color: 'var(--ink)' }}>{s.package_name}</span>
                           <Badge tone="good" dot>Active</Badge>
                         </div>
-                        <p className="mono" style={{ margin: '6px 0 0', fontSize: 11.5, color: 'var(--dim)' }}>
+                        <p className="mono" style={{ margin: '6px 0 0', fontSize: 12.5, color: 'var(--dim)' }}>
                           {[s.hostname, s.region, s.instance_os || s.pkg_os, s.cpu || s.pkg_cpu, s.droplet_id ? `ID ${s.droplet_id}` : ''].filter(Boolean).join(' · ') || `${s.ram} · ${s.cpu}`}
                         </p>
-                        <div className="mono" style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 8, fontSize: 12 }}>
+                        <div className="mono" style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 8, fontSize: 13 }}>
                           <span style={{ color: 'var(--ink-2)' }}>{s.username}@{s.host} -p {s.port || 22}</span>
                           <span style={{ color: 'var(--muted)' }}>Pass: {reveal ? <strong style={{ color: 'var(--brand)' }}>{s.password}</strong> : '••••••••'}</span>
                         </div>
@@ -520,7 +520,7 @@ export default function DashboardPage() {
                     </div>
                   </div>
                   <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
-                    <code className="mono truncate-1" style={{ flex: 1, padding: '10px 12px', background: 'var(--surface-2)', border: '1px solid var(--line-soft)', borderRadius: 'var(--r-sm)', color: 'var(--ink-2)', fontSize: 11.5 }}>
+                    <code className="mono truncate-1" style={{ flex: 1, padding: '10px 12px', background: 'var(--surface-2)', border: '1px solid var(--line-soft)', borderRadius: 'var(--r-sm)', color: 'var(--ink-2)', fontSize: 12.5 }}>
                       {referral.link}
                     </code>
                     <Button
@@ -533,7 +533,7 @@ export default function DashboardPage() {
                       {copied ? 'Copied' : 'Copy'}
                     </Button>
                   </div>
-                  <p className="mono" style={{ margin: 0, fontSize: 11, color: 'var(--dim)' }}>
+                  <p className="mono" style={{ margin: 0, fontSize: 12.5, color: 'var(--dim)' }}>
                     Your code: <span style={{ color: 'var(--brand)' }}>{referral.code}</span>
                   </p>
                 </Card>
@@ -757,7 +757,7 @@ function AddServerModal({ onClose, onDone }) {
             <div>
               <p style={{ margin: '0 0 12px', fontSize: 13.5, color: 'var(--muted)' }}>Choose a package (full price):</p>
               <div style={{ display: 'grid', gap: 8, maxHeight: 220, overflow: 'auto' }}>
-                {pkgs.length === 0 && <p style={{ margin: 0, fontSize: 13, color: 'var(--dim)' }}>Loading packages…</p>}
+                {pkgs.length === 0 && <p style={{ margin: 0, fontSize: 13.5, color: 'var(--dim)' }}>Loading packages…</p>}
                 {pkgs.map((p) => (
                   <label key={p.id} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, color: 'var(--ink)', cursor: 'pointer' }}>
                     <input type="radio" name="addpkg" checked={String(pkgId) === String(p.id)} onChange={() => setPkgId(p.id)} style={{ accentColor: 'var(--brand)' }} />

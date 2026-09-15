@@ -56,9 +56,9 @@ export default function EndpointTester({ endpoint }) {
     <div className="card card-pad" style={{ background: 'var(--bg-2)', padding: '18px' }}>
       <div className="flex flex-wrap items-end gap-3 mb-3">
         <div className="flex-1 min-w-[200px]">
-          <label className="label">API key <span className="tag tag-green" style={{ fontSize: 9, padding: '1px 6px', marginLeft: 6 }}>optional</span></label>
+          <label className="label">API key <span className="tag tag-green" style={{ fontSize: 12, padding: '1px 6px', marginLeft: 6 }}>optional</span></label>
           <input value={key} onChange={e => setKey(e.target.value)} placeholder="mzazi_..."
-            className="input font-mono" style={{ padding: '9px 12px', fontSize: 13 }} />
+            className="input font-mono" style={{ padding: '9px 12px', fontSize: 13.5 }} />
         </div>
         {all.map(p => (
           <div key={p.name} className="flex-1 min-w-[140px]">
@@ -68,11 +68,11 @@ export default function EndpointTester({ endpoint }) {
             </label>
             <input value={values[p.name] || ''} onChange={e => setValues(v => ({ ...v, [p.name]: e.target.value }))}
               placeholder={p.example || p.name}
-              className="input" style={{ padding: '9px 12px', fontSize: 13 }} />
+              className="input" style={{ padding: '9px 12px', fontSize: 13.5 }} />
           </div>
         ))}
         <button onClick={run} disabled={testing}
-          className="btn btn-primary" style={{ padding: '10px 18px', fontSize: 10, opacity: testing ? 0.6 : 1, cursor: testing ? 'not-allowed' : 'pointer' }}>
+          className="btn btn-primary" style={{ padding: '10px 18px', fontSize: 12, opacity: testing ? 0.6 : 1, cursor: testing ? 'not-allowed' : 'pointer' }}>
           {testing ? 'Sending…' : 'Send request'}
         </button>
       </div>

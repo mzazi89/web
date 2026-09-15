@@ -164,7 +164,7 @@ export default function ProductsPage() {
           <div className="mb-6 px-4 py-3 text-sm flex flex-wrap items-center gap-2" style={{ background: 'rgba(229,72,77,0.08)', border: '1px solid rgba(229,72,77,0.3)', color: 'var(--bad)' }}>
             {error}
             {error.includes('Insufficient') && (
-              <Link href="/wallet" className="link" style={{ fontSize: 12 }}>Top up wallet →</Link>
+              <Link href="/wallet" className="link" style={{ fontSize: 13 }}>Top up wallet →</Link>
             )}
           </div>
         )}
@@ -176,7 +176,7 @@ export default function ProductsPage() {
               <div className="mb-6 px-4 py-3 text-sm flex flex-col sm:flex-row items-start sm:items-center gap-3"
                 style={{ background: 'rgba(242,169,59,0.06)', border: '1px solid rgba(242,169,59,0.25)' }}>
                 <span style={{ color: 'var(--brand)' }}>You need to be logged in to deploy a panel.</span>
-                <Link href="/login" className="link flex-shrink-0" style={{ fontSize: 12 }}>Log in →</Link>
+                <Link href="/login" className="link flex-shrink-0" style={{ fontSize: 13 }}>Log in →</Link>
               </div>
             )}
             {packages.length === 0 ? (
@@ -215,7 +215,7 @@ export default function ProductsPage() {
                     <button
                       className="btn w-full"
                       style={{
-                        padding: '10px 0', fontSize: 11,
+                        padding: '10px 0', fontSize: 12.5,
                         background: p.popular ? 'var(--brand)' : 'transparent',
                         color: p.popular ? 'var(--on-brand)' : 'var(--ink-2)',
                         border: p.popular ? '1px solid var(--brand)' : '1px solid var(--line)',

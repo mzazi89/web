@@ -75,10 +75,10 @@ export default function ApiDashboard() {
               </p>
             </div>
             <div className="flex flex-wrap gap-3">
-              <Link href="/api/dashboard/keys" className="btn btn-primary" style={{ textDecoration: 'none', padding: '11px 18px', fontSize: 11 }}>
+              <Link href="/api/dashboard/keys" className="btn btn-primary" style={{ textDecoration: 'none', padding: '11px 18px', fontSize: 12.5 }}>
                 + Create API key
               </Link>
-              <Link href="/api/dashboard/usage" className="btn btn-ghost" style={{ textDecoration: 'none', padding: '11px 18px', fontSize: 11 }}>
+              <Link href="/api/dashboard/usage" className="btn btn-ghost" style={{ textDecoration: 'none', padding: '11px 18px', fontSize: 12.5 }}>
                 Usage logs
               </Link>
             </div>
@@ -137,7 +137,7 @@ export default function ApiDashboard() {
             {data.quotas.length === 0 ? (
               <div className="py-12 text-center">
                 <p className="text-sm mb-5" style={{ color: 'var(--muted)' }}>You don&apos;t have any active API keys yet.</p>
-                <Link href="/api/dashboard/keys" className="btn btn-primary" style={{ textDecoration: 'none', padding: '11px 18px', fontSize: 11 }}>
+                <Link href="/api/dashboard/keys" className="btn btn-primary" style={{ textDecoration: 'none', padding: '11px 18px', fontSize: 12.5 }}>
                   Create your first key
                 </Link>
               </div>

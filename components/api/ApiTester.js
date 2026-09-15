@@ -66,7 +66,7 @@ export default function ApiTester({ defaultQuery = 'Faded Alan Walker', compact 
           </select>
         </div>
         <div>
-          <label className="label">API key <span className="tag tag-green" style={{ fontSize: 9, padding: '1px 6px', marginLeft: 6 }}>optional</span></label>
+          <label className="label">API key <span className="tag tag-green" style={{ fontSize: 12, padding: '1px 6px', marginLeft: 6 }}>optional</span></label>
           <input
             value={form.key}
             onChange={e => setForm(f => ({ ...f, key: e.target.value }))}

@@ -331,7 +331,7 @@ export default function PairingPanel() {
                         style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, width: '100%', textAlign: 'left', cursor: 'pointer' }}
                       >
                         <BotMark name={b.name} compact />
-                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 11.5, color: b.online ? 'var(--good)' : 'var(--dim)', fontWeight: 600 }}>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12.5, color: b.online ? 'var(--good)' : 'var(--dim)', fontWeight: 600 }}>
                           <span className={`dot ${b.online ? 'dot-online' : 'dot-offline'}`} aria-hidden="true" />
                           {b.online ? 'Online' : b.known ? 'Offline' : 'Never seen'}
                         </span>
@@ -461,7 +461,7 @@ export default function PairingPanel() {
           action={<Badge tone="brand">{planLabel(plan)}</Badge>}
         />
         {!unlimited && <ProgressBar value={stepsPct} />}
-        <p style={{ margin: '10px 0 0', fontSize: 13, color: 'var(--muted)' }}>
+        <p style={{ margin: '10px 0 0', fontSize: 13.5, color: 'var(--muted)' }}>
           {data?.endDate ? `Plan expires ${new Date(data.endDate).toLocaleDateString()}.` : 'Free plan — never expires.'}
         </p>
 
@@ -485,7 +485,7 @@ export default function PairingPanel() {
                 <p className="stat-num tnum" style={{ margin: 0, fontSize: '1.3rem', color: isCurrent ? 'var(--brand)' : 'var(--good)' }}>
                   {fmtKes(p.priceKsh)}
                 </p>
-                <p style={{ margin: 0, fontSize: 12, color: 'var(--dim)' }}>
+                <p style={{ margin: 0, fontSize: 13, color: 'var(--dim)' }}>
                   {p.maxDevices >= 999 ? 'Unlimited devices' : `${p.maxDevices} devices`} · {p.days} days
                 </p>
                 {isCurrent ? (
@@ -500,7 +500,7 @@ export default function PairingPanel() {
           })}
         </div>
 
-        <p style={{ margin: '14px 0 0', fontSize: 13, color: 'var(--muted)' }}>
+        <p style={{ margin: '14px 0 0', fontSize: 13.5, color: 'var(--muted)' }}>
           Paid from your wallet balance. Need more funds?{' '}
           <Link className="link" href="/wallet">Deposit now</Link>
         </p>
@@ -543,7 +543,7 @@ export default function PairingPanel() {
                     <Badge tone="good" dot>Active</Badge>
                     {multipleBots && d.bot && <Badge tone="blue">{botName(d.bot)}</Badge>}
                   </div>
-                  <p className="mono" style={{ margin: '4px 0 0', fontSize: 11, color: 'var(--dim)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                  <p className="mono" style={{ margin: '4px 0 0', fontSize: 12.5, color: 'var(--dim)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                     {d.connectedAt ? `linked ${new Date(d.connectedAt).toLocaleDateString()}` : 'linked'}
                   </p>
                 </div>

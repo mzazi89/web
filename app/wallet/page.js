@@ -70,14 +70,14 @@ function downloadReceipt(t, userEmail, balance) {
     }
     .logo { font-size:20px; font-weight:700; letter-spacing:0.5px; margin-bottom:4px; }
     .logo span { color:var(--brand); }
-    .tagline { font-family:'IBM Plex Mono',monospace; font-size:9px; color:var(--muted); letter-spacing:2px; text-transform:uppercase; }
+    .tagline { font-family:'IBM Plex Mono',monospace; font-size: 12.5px; color:var(--muted); letter-spacing:2px; text-transform:uppercase; }
     .status-badge {
       display:inline-block;
       margin-top:14px;
       padding:4px 16px;
       border-radius:2px;
       font-family:'IBM Plex Mono',monospace;
-      font-size:10px;
+      font-size: 12.5px;
       font-weight:600;
       letter-spacing:1px;
       text-transform:uppercase;
@@ -87,31 +87,31 @@ function downloadReceipt(t, userEmail, balance) {
     }
     .body { padding:24px; }
     .amount-section { text-align:center; padding:20px 0 24px; border-bottom:1px dashed var(--ink); }
-    .amount-label { font-family:'IBM Plex Mono',monospace; font-size:9px; color:var(--muted); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:6px; }
+    .amount-label { font-family:'IBM Plex Mono',monospace; font-size: 12.5px; color:var(--muted); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:6px; }
     .amount { font-size:38px; font-weight:700; color:${color}; letter-spacing:-1px; }
     .currency { font-size:16px; font-weight:500; }
     .rows { padding:20px 0; border-bottom:1px dashed var(--ink); }
     .row { display:flex; justify-content:space-between; align-items:flex-start; padding:7px 0; font-size:13px; }
-    .row-label { color:var(--muted); font-size:11px; font-family:'IBM Plex Mono',monospace; text-transform:uppercase; letter-spacing:0.6px; }
+    .row-label { color:var(--muted); font-size: 12.5px; font-family:'IBM Plex Mono',monospace; text-transform:uppercase; letter-spacing:0.6px; }
     .row-value { color:var(--surface-2); font-weight:600; text-align:right; max-width:200px; word-break:break-all; }
-    .ref { font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--blue); }
+    .ref { font-family:'IBM Plex Mono',monospace; font-size: 12.5px; color:var(--blue); }
     .warranty {
       margin:16px 0 0;
       padding:12px 14px;
       background:var(--ink);
       border-radius:2px;
       border-left:3px solid var(--brand);
-      font-size:11px;
+      font-size: 12.5px;
       color:#7a6a4f;
       line-height:1.6;
     }
     .warranty strong { display:block; margin-bottom:2px; font-size:12px; color:var(--bg); }
     .footer { text-align:center; padding:16px 24px 20px; }
-    .footer p { font-size:10px; color:var(--muted); line-height:1.7; }
+    .footer p { font-size: 12.5px; color:var(--muted); line-height:1.7; }
     .footer a { color:var(--blue); text-decoration:none; }
     .barcode {
       font-family:'IBM Plex Mono',monospace;
-      font-size:9px;
+      font-size: 12.5px;
       color:var(--ink);
       letter-spacing:4px;
       margin-top:8px;
@@ -542,7 +542,7 @@ function WalletInner() {
                 <p style={{ margin: '6px 0 0', fontWeight: 700, color: 'var(--ink)' }}>
                   {offer.adText || `Deposit & get ${offerMult}× your money`}
                 </p>
-                <p style={{ margin: '4px 0 0', fontSize: 13, color: 'var(--muted)' }}>
+                <p style={{ margin: '4px 0 0', fontSize: 13.5, color: 'var(--muted)' }}>
                   Any top-up is {offerMult}× — you get {offerMult - 1}× extra credited the moment payment is confirmed.
                 </p>
               </div>
@@ -583,7 +583,7 @@ function WalletInner() {
                   <td data-label="Amount" className="mono tnum" style={{ color: t.type === 'deposit' ? 'var(--good)' : 'var(--bad)', fontWeight: 700, whiteSpace: 'nowrap' }}>
                     {t.type === 'deposit' ? '+' : '−'}{fmtKes(t.amount)}
                     {t.type === 'deposit' && Number(t.bonus_amount) > 0 && (
-                      <span style={{ display: 'block', fontWeight: 400, color: 'var(--brand)', fontSize: 11, marginTop: 2 }}>
+                      <span style={{ display: 'block', fontWeight: 400, color: 'var(--brand)', fontSize: 12.5, marginTop: 2 }}>
                         +{fmtKes(t.bonus_amount)} bonus
                       </span>
                     )}
@@ -645,7 +645,7 @@ function WalletInner() {
                 <Icons.ChevronRight size={16} />
               </button>
             ))}
-            <p style={{ margin: '4px 0 0', fontSize: 12, color: 'var(--dim)', lineHeight: 1.6 }}>
+            <p style={{ margin: '4px 0 0', fontSize: 13, color: 'var(--dim)', lineHeight: 1.6 }}>
               Deposits are processed securely by Paystack. Your wallet is credited only after the payment is confirmed.
             </p>
           </div>
@@ -705,7 +705,7 @@ function WalletInner() {
                   inputMode="tel"
                 />
                 {phone.length >= 9 && (
-                  <p className="mono" style={{ margin: '6px 0 0', fontSize: 12, color: phoneNorm?.ok ? 'var(--good)' : 'var(--bad)' }}>
+                  <p className="mono" style={{ margin: '6px 0 0', fontSize: 13, color: phoneNorm?.ok ? 'var(--good)' : 'var(--bad)' }}>
                     {phoneNorm?.ok ? `Will send to → ${phoneNorm.phone}` : phoneNorm?.error || ''}
                   </p>
                 )}
@@ -765,7 +765,7 @@ function WalletInner() {
             <p style={{ margin: '8px 0 0', color: 'var(--muted)', fontSize: 14 }}>
               Check your {METHOD_LABELS[method]} phone and complete the authorization. We’re watching for confirmation — nothing is frozen.
             </p>
-            <p className="mono" style={{ margin: '16px 0 0', fontSize: 11.5, color: 'var(--dim)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+            <p className="mono" style={{ margin: '16px 0 0', fontSize: 12.5, color: 'var(--dim)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
               Processing payment…
             </p>
             <div style={{ marginTop: 18 }}>
@@ -812,7 +812,7 @@ function WalletInner() {
               ✕ Payment failed
             </h3>
             <p style={{ margin: '6px 0 0', color: 'var(--ink-2)' }}>Your payment was not completed.</p>
-            {failureMsg && <p style={{ margin: '8px 0 0', fontSize: 13, color: 'var(--muted)' }}>{failureMsg}</p>}
+            {failureMsg && <p style={{ margin: '8px 0 0', fontSize: 13.5, color: 'var(--muted)' }}>{failureMsg}</p>}
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center', marginTop: 18 }}>
               <Button onClick={() => setStep('form')}>Try again</Button>
               <Button variant="ghost" onClick={backToMethods}>Change method</Button>

@@ -266,7 +266,7 @@ export default function ContactPage() {
                           <p className="text-sm font-semibold" style={{ color: 'var(--ink)' }}>No conversations yet</p>
                           <p className="text-xs" style={{ color: 'var(--dim)' }}>Start a new conversation to contact support.</p>
                           <button onClick={openCompose}
-                            className="btn btn-primary mt-2" style={{ padding: '11px 18px', fontSize: 11, cursor: 'pointer' }}>
+                            className="btn btn-primary mt-2" style={{ padding: '11px 18px', fontSize: 12.5, cursor: 'pointer' }}>
                             Start chat
                           </button>
                         </div>
@@ -535,7 +535,7 @@ function ChatWindow({ thread, messages, msgLoading, newMsg, setNewMsg, sending, 
             />
             <button type="submit" disabled={sending || !newMsg.trim()}
               className="btn btn-primary flex-shrink-0"
-              style={{ padding: '11px 16px', fontSize: 11, cursor: sending || !newMsg.trim() ? 'not-allowed' : 'pointer' }}>
+              style={{ padding: '11px 16px', fontSize: 12.5, cursor: sending || !newMsg.trim() ? 'not-allowed' : 'pointer' }}>
               {sending
                 ? <span className="spinner" style={{ width: 14, height: 14, borderWidth: 2, display: 'block' }} />
                 : <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" style={{ display: 'block' }}><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>

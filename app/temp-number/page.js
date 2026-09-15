@@ -226,7 +226,7 @@ export default function TempNumberPage() {
                 ) : (
                   <>
                     <div className="flex flex-wrap gap-3 mb-4">
-                      <button onClick={() => fetchMessages()} disabled={loadingMsgs} className="btn btn-primary" style={{ padding: '11px 18px', fontSize: 11, opacity: loadingMsgs ? 0.6 : 1, cursor: loadingMsgs ? 'not-allowed' : 'pointer' }}>
+                      <button onClick={() => fetchMessages()} disabled={loadingMsgs} className="btn btn-primary" style={{ padding: '11px 18px', fontSize: 12.5, opacity: loadingMsgs ? 0.6 : 1, cursor: loadingMsgs ? 'not-allowed' : 'pointer' }}>
                         {loadingMsgs ? 'Checking…' : 'Check messages'}
                       </button>
                       <label className="flex items-center gap-2 text-xs cursor-pointer" style={{ color: 'var(--ink-2)' }}>

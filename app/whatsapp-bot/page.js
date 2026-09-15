@@ -177,7 +177,7 @@ export default function WhatsAppBotPage() {
               </div>
             ))}
           </div>
-          <p style={{ margin: '16px 0 0', fontSize: 12, color: 'var(--dim)', lineHeight: 1.7 }}>
+          <p style={{ margin: '16px 0 0', fontSize: 13, color: 'var(--dim)', lineHeight: 1.7 }}>
             International format: country code + number without leading 0 or + — KE 254712345678 · NG 2348012345678 · US 14155552671
           </p>
         </Card>
@@ -191,7 +191,7 @@ export default function WhatsAppBotPage() {
                 <span style={{ color: 'var(--good)', marginTop: 2, flex: '0 0 auto' }} aria-hidden="true"><Icons.Check size={16} /></span>
                 <div>
                   <p style={{ margin: 0, fontWeight: 700, color: 'var(--ink)' }}>{f.title}</p>
-                  <p style={{ margin: '3px 0 0', fontSize: 13, color: 'var(--muted)', lineHeight: 1.6 }}>{f.desc}</p>
+                  <p style={{ margin: '3px 0 0', fontSize: 13.5, color: 'var(--muted)', lineHeight: 1.6 }}>{f.desc}</p>
                 </div>
               </div>
             ))}
@@ -203,7 +203,7 @@ export default function WhatsAppBotPage() {
           </div>
         </Card>
 
-        <p style={{ margin: '22px 0 0', fontSize: 13, color: 'var(--dim)' }}>
+        <p style={{ margin: '22px 0 0', fontSize: 13.5, color: 'var(--dim)' }}>
           Prefer reading first? See the <Link className="link" href="/help">Help page</Link> or <Link className="link" href="/contact">contact us</Link>.
         </p>
       </div>

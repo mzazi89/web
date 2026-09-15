@@ -65,11 +65,11 @@ export default function Footer() {
               QUARTZ XD or MZAZI XMD — and start automating in minutes.
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: 13, fontWeight: 600, color: 'var(--good)' }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: 13.5, fontWeight: 600, color: 'var(--good)' }}>
                 <span className="dot dot-online anim-pulse" aria-hidden="true" />
                 All systems operational
               </span>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: 13, color: 'var(--dim)' }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: 13.5, color: 'var(--dim)' }}>
                 <Icons.Shield size={14} />
                 Secure payments via Paystack
               </span>
@@ -114,11 +114,11 @@ export default function Footer() {
             gap: 12, padding: '14px 16px', marginBottom: 28, background: 'var(--surface)',
           }}
         >
-          <p style={{ margin: 0, fontSize: 13, color: 'var(--muted)' }}>
+          <p style={{ margin: 0, fontSize: 13.5, color: 'var(--muted)' }}>
             <strong style={{ color: 'var(--ink)' }}>Panel warranty — </strong>
             Pterodactyl panels carry a 2-week replacement warranty from purchase.
           </p>
-          <Link href="/contact" style={{ fontSize: 13, fontWeight: 700, color: 'var(--brand)', textDecoration: 'none', whiteSpace: 'nowrap' }}>
+          <Link href="/contact" style={{ fontSize: 13.5, fontWeight: 700, color: 'var(--brand)', textDecoration: 'none', whiteSpace: 'nowrap' }}>
             Claim within 14 days →
           </Link>
         </div>

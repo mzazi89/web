@@ -56,7 +56,7 @@ export default function AiChatWidget({ prefill = null }) {
         style={{
           background: 'var(--brand)', color: 'var(--on-brand)', border: 'none', cursor: 'pointer',
           borderRadius: 2, boxShadow: '0 8px 30px rgba(0,0,0,0.5)',
-          fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase',
+          fontFamily: 'var(--font-mono)', fontSize: 12.5, letterSpacing: '0.08em', textTransform: 'uppercase',
         }}
       >
         {open ? '✕ Close' : (

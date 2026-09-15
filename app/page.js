@@ -127,7 +127,7 @@ export default function Home() {
               </Link>
             </div>
 
-            <p style={{ marginTop: 16, fontSize: 13, color: 'var(--dim)', display: 'inline-flex', alignItems: 'center', gap: 7 }}>
+            <p style={{ marginTop: 16, fontSize: 13.5, color: 'var(--dim)', display: 'inline-flex', alignItems: 'center', gap: 7 }}>
               <Icons.CheckCircle size={14} />
               Free to start — no card required
             </p>
@@ -290,7 +290,7 @@ export default function Home() {
                     >
                       {s.icon}
                     </span>
-                    <span className="mono" style={{ fontSize: 12, color: 'var(--dim)', fontWeight: 700 }}>STEP {s.n}</span>
+                    <span className="mono" style={{ fontSize: 13, color: 'var(--dim)', fontWeight: 700 }}>STEP {s.n}</span>
                   </div>
                   <h3 style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 700 }}>{s.title}</h3>
                   <p style={{ margin: 0, fontSize: 14.5, color: 'var(--muted)', lineHeight: 1.65 }}>{s.desc}</p>

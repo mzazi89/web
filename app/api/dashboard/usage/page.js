@@ -214,11 +214,11 @@ export default function ApiUsage() {
                 </span>
                 <div className="flex gap-2">
                   <button disabled={meta.page <= 1} onClick={() => setFilters(f => ({ ...f, page: f.page - 1 }))}
-                    className="btn btn-ghost" style={{ padding: '9px 16px', fontSize: 10, cursor: meta.page <= 1 ? 'not-allowed' : 'pointer' }}>
+                    className="btn btn-ghost" style={{ padding: '9px 16px', fontSize: 12, cursor: meta.page <= 1 ? 'not-allowed' : 'pointer' }}>
                     ← Prev
                   </button>
                   <button disabled={meta.page >= meta.total_pages} onClick={() => setFilters(f => ({ ...f, page: f.page + 1 }))}
-                    className="btn btn-ghost" style={{ padding: '9px 16px', fontSize: 10, cursor: meta.page >= meta.total_pages ? 'not-allowed' : 'pointer' }}>
+                    className="btn btn-ghost" style={{ padding: '9px 16px', fontSize: 12, cursor: meta.page >= meta.total_pages ? 'not-allowed' : 'pointer' }}>
                     Next →
                   </button>
                 </div>
