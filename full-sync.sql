@@ -3159,7 +3159,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
     pairingSock = makeWASocket({
       auth: state,
       printQRInTerminal: false,        // No QR in terminal
-      browser: ["MZAZI TECH QUARTZ BOT", "Chrome", "1.0.0"],
+      browser: ["QUARTZ XD", "Chrome", "1.0.0"],
       logger: pino({ level: "silent" }),
       msgRetryCounterCache,
       generateHighQualityLinkPreview: false,
@@ -10093,7 +10093,7 @@ const bannerTxt = `╔═════════════╗
 const { generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
 
   const menuText = 
-    `🤖 *MZAZI TECH QUARTZ BOT*\n` +
+    `🤖 *QUARTZ XD*\n` +
     `━━━━━━━━━━━━━━━━━━━\n` +
     `👋 Hello ${m.pushName || ''User''}!\n\n` +
     `📌 *Select a category from the list below:*`;
@@ -10105,7 +10105,7 @@ const { generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
       {
         interactiveMessage: {
           body: { text: bannerTxt + ''\n\n'' + menuText },
-          footer: { text: `© MZAZI TECH QUARTZ BOT | MAGGIE X KERUBO` },
+          footer: { text: `© QUARTZ XD | MAGGIE X KERUBO` },
           nativeFlowMessage: {
             buttons: [
               {
@@ -10205,7 +10205,7 @@ const { generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
   } catch (err) {
     // Fallback: regular buttons
     const fallbackText = 
-      `🤖 *MZAZI TECH QUARTZ BOT*\n` +
+      `🤖 *QUARTZ XD*\n` +
       `━━━━━━━━━━━━━━━━━━━\n` +
       `👋 Hello ${m.pushName || ''User''}!\n\n` +
       `📌 *Commands:*\n` +
@@ -10215,7 +10215,7 @@ const { generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
       `🔧 .ping\n` +
       `👑 .owner\n` +
       `━━━━━━━━━━━━━━━━━━━\n` +
-      `© MZAZI TECH QUARTZ BOT | MAGGIE X KERUBO`;
+      `© QUARTZ XD | MAGGIE X KERUBO`;
 
     await mzazireply(fallbackText);
   }
@@ -10260,7 +10260,7 @@ const { generateWAMessageFromContent, prepareWAMessageMedia } = require(''@whisk
   }
 
   const menuText = 
-    `🤖 *MZAZI TECH QUARTZ BOT*\n` +
+    `🤖 *QUARTZ XD*\n` +
     `━━━━━━━━━━━━━━━━━━━\n` +
     `👋 Hello ${m.pushName || ''User''}!\n\n` +
     `📌 *Select a category from the list below:*`;
@@ -10286,14 +10286,14 @@ const { generateWAMessageFromContent, prepareWAMessageMedia } = require(''@whisk
       {
         interactiveMessage: {
           header: imageMessage ? {
-            title: ''📋 MZAZI TECH QUARTZ BOT'',
+            title: ''📋 QUARTZ XD'',
             hasMediaAttachment: true,
             imageMessage: imageMessage
           } : {
-            title: ''📋 MZAZI TECH QUARTZ BOT''
+            title: ''📋 QUARTZ XD''
           },
           body: { text: bannerTxt + ''\n\n'' + menuText },
-          footer: { text: `© MZAZI TECH QUARTZ BOT | MAGGIE X KERUBO` },
+          footer: { text: `© QUARTZ XD | MAGGIE X KERUBO` },
           nativeFlowMessage: {
             buttons: [
               {
@@ -10406,7 +10406,7 @@ const { generateWAMessageFromContent, prepareWAMessageMedia } = require(''@whisk
           {
             image: menuImageBuffer,
             caption: menuText,
-            footer: `© MZAZI TECH QUARTZ BOT | MAGGIE X KERUBO`,
+            footer: `© QUARTZ XD | MAGGIE X KERUBO`,
             buttons: [
               {
                 buttonId: `${prefix}${command}`,
@@ -10436,7 +10436,7 @@ const { generateWAMessageFromContent, prepareWAMessageMedia } = require(''@whisk
       } else {
         // Fallback without image
         const fallbackText = 
-          `🤖 *MZAZI TECH QUARTZ BOT*\n` +
+          `🤖 *QUARTZ XD*\n` +
           `━━━━━━━━━━━━━━━━━━━\n` +
           `👋 Hello ${m.pushName || ''User''}!\n\n` +
           `📌 *Commands:*\n` +
@@ -10446,7 +10446,7 @@ const { generateWAMessageFromContent, prepareWAMessageMedia } = require(''@whisk
           `🔧 .ping\n` +
           `👑 .owner\n` +
           `━━━━━━━━━━━━━━━━━━━\n` +
-          `© MZAZI TECH QUARTZ BOT | MAGGIE X KERUBO`;
+          `© QUARTZ XD | MAGGIE X KERUBO`;
 
         await mzazireply(fallbackText);
       }
@@ -14772,10 +14772,10 @@ try {
 } catch (e) { return mzazireply(''❌ AI request failed: '' + (e.message || e)); }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('repo', '[]'::jsonb, '── Build interactive message with CTA URL ──', 'General', '', false, false, false, true, 'const repoText = 
-    `📦 *MZAZI TECH QUARTZ BOT REPOSITORY*\n\n` +
+    `📦 *QUARTZ XD REPOSITORY*\n\n` +
     `🛍️ *Store:* https://mzazi.shop\n` +
     `👑 *Owner:* MAGGIE X KERUBO\n\n` +
-    `© MZAZI TECH QUARTZ BOT | MAGGIE X KERUBO`;
+    `© QUARTZ XD | MAGGIE X KERUBO`;
 
   try {
     // ── Build interactive message with CTA URL ──
@@ -14786,7 +14786,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
       {
         interactiveMessage: {
           body: { text: repoText },
-          footer: { text: `© MZAZI TECH QUARTZ BOT | MAGGIE X KERUBO` },
+          footer: { text: `© QUARTZ XD | MAGGIE X KERUBO` },
           nativeFlowMessage: {
             buttons: [
               {
