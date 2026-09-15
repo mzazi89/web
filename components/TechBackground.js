@@ -46,14 +46,24 @@ export default function TechBackground() {
           background: 'radial-gradient(circle at 60% 60%, var(--blue) 0%, transparent 66%)',
         }}
       />
-      {/* Small violet accent — keeps the middle from feeling empty on wide screens */}
+      {/* Pink accent — keeps the middle from feeling empty on wide screens */}
       <div
         className="anim-drift-c"
         style={{
           position: 'absolute', top: '38%', right: '18%',
           width: '26vw', height: '26vw', minWidth: 200, minHeight: 200,
-          borderRadius: '50%', filter: 'blur(90px)', opacity: 0.16,
-          background: 'radial-gradient(circle at 50% 50%, var(--brand-soft) 0%, transparent 68%)',
+          borderRadius: '50%', filter: 'blur(90px)', opacity: 0.18,
+          background: 'radial-gradient(circle at 50% 50%, var(--pink) 0%, transparent 68%)',
+        }}
+      />
+      {/* Yellow spark — small, low opacity, top right */}
+      <div
+        className="anim-drift-a"
+        style={{
+          position: 'absolute', top: '6%', right: '8%',
+          width: '14vw', height: '14vw', minWidth: 140, minHeight: 140,
+          borderRadius: '50%', filter: 'blur(80px)', opacity: 0.12,
+          background: 'radial-gradient(circle at 50% 50%, var(--yellow) 0%, transparent 70%)',
         }}
       />
 

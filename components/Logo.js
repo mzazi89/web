@@ -18,6 +18,7 @@ export default function Logo({ size = 34, withText = false }) {
         <defs>
           <linearGradient id="mzazi-bolt" x1="0" y1="0" x2="1" y2="1">
             <stop offset="0%" stopColor="var(--brand)" />
+            <stop offset="52%" stopColor="var(--pink)" />
             <stop offset="100%" stopColor="var(--blue)" />
           </linearGradient>
         </defs>
@@ -35,8 +36,8 @@ export default function Logo({ size = 34, withText = false }) {
           fill="url(#mzazi-bolt)"
         />
         {/* Corner accents */}
-        <circle cx="8.5" cy="8.5" r="1.5" fill="var(--blue)" />
-        <circle cx="39.5" cy="39.5" r="1.5" fill="var(--brand)" />
+        <circle cx="8.5" cy="8.5" r="1.5" fill="var(--yellow)" />
+        <circle cx="39.5" cy="39.5" r="1.5" fill="var(--pink)" />
       </svg>
 
       {withText && (

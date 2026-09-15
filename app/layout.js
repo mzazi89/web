@@ -65,8 +65,8 @@ export const viewport = {
   // Zoom stays enabled for accessibility; the layout is built so it is not needed.
   maximumScale: 5,
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#F6F7FB' },
-    { media: '(prefers-color-scheme: dark)', color: '#0D1020' },
+    { media: '(prefers-color-scheme: light)', color: '#FBFBFD' },
+    { media: '(prefers-color-scheme: dark)', color: '#0A0A0F' },
   ],
 };
 
