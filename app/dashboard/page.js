@@ -195,7 +195,7 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <AppBackground variant="dashboard" image="/images/dashboard-bg.webp" imageOpacity={0.45} scrim={0.55}>
+      <AppBackground variant="dashboard">
         <div className="container-site" style={{ paddingTop: 28, paddingBottom: 90, maxWidth: 1100 }}>
           <SkeletonText lines={2} />
           <div style={{ height: 20 }} />
@@ -230,7 +230,7 @@ export default function DashboardPage() {
   ];
 
   return (
-    <AppBackground variant="dashboard" image="/images/dashboard-bg.webp" imageOpacity={0.45} scrim={0.55}>
+    <AppBackground variant="dashboard">
       <div className="container-site" style={{ paddingTop: 26, paddingBottom: 90, maxWidth: 1100 }}>
         <PageHeader
           title={<>Welcome back, {firstName} <span aria-hidden="true">👋</span></>}

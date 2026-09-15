@@ -149,7 +149,7 @@ function SubscriptionInner() {
   };
 
   return (
-    <AppBackground variant="dashboard" image="/images/dashboard-bg.webp" imageOpacity={0.45} scrim={0.55}>
+    <AppBackground variant="dashboard">
       <div className="container-site" style={{ paddingTop: 26, paddingBottom: 90, maxWidth: 1120 }}>
         <PageHeader
           title="Subscription"

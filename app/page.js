@@ -95,7 +95,7 @@ const FEATURES = [
 
 export default function Home() {
   return (
-    <AppBackground variant="hero" orbs image="/images/hero-bg.webp" imageOpacity={0.55} scrim={0.45}>
+    <AppBackground variant="hero" orbs>
       {/* ───────────────────────── Hero ───────────────────────── */}
       <section>
         <div className="container-site" style={{ paddingTop: 56, paddingBottom: 48 }}>

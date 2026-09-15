@@ -1,6 +1,7 @@
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import TechBackground from '../components/TechBackground';
+import RouteBackdrop from '../components/ui/RouteBackdrop';
 import PwaProvider from '../components/PwaProvider';
 import ClickLoader from '../components/ClickLoader';
 import AiChatWidget from '../components/AiChatWidget';
@@ -95,6 +96,9 @@ export default function RootLayout({ children }) {
 
               {/* Ambient brand background — sits behind every page */}
               <TechBackground />
+
+              {/* Wallpaper/photo that matches the current page */}
+              <RouteBackdrop />
 
               <Navbar />
 

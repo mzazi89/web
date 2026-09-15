@@ -79,7 +79,7 @@ export default function ForgotPasswordPage() {
   const passwordsMismatch = confirmPassword.length > 0 && newPassword !== confirmPassword;
 
   return (
-    <AppBackground variant="auth" image="/images/auth-bg.webp" imageOpacity={0.5} scrim={0.5} style={{ minHeight: 'calc(100vh - var(--nav-h))', display: 'flex', flexDirection: 'column' }}>
+    <AppBackground variant="auth" style={{ minHeight: 'calc(100vh - var(--nav-h))', display: 'flex', flexDirection: 'column' }}>
       <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '14px 16px' }}>
         <ThemeToggle />
       </div>
