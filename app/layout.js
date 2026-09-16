@@ -3,7 +3,6 @@ import Footer from '../components/Footer';
 import TechBackground from '../components/TechBackground';
 import RouteBackdrop from '../components/ui/RouteBackdrop';
 import PwaProvider from '../components/PwaProvider';
-import ClickLoader from '../components/ClickLoader';
 import AiChatWidget from '../components/AiChatWidget';
 import { ThemeProvider, THEME_BOOT_SCRIPT } from '../components/ui/ThemeProvider';
 import { ToastProvider } from '../components/ui/Toast';
@@ -108,7 +107,6 @@ export default function RootLayout({ children }) {
 
               <Footer />
             </PwaProvider>
-            <ClickLoader />
             <AiChatWidget />
           </ToastProvider>
         </ThemeProvider>
