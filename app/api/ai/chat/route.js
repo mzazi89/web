@@ -10,9 +10,15 @@
 // Every source is fired in parallel with its own timeout; the FIRST
 // successful answer wins and is returned. If a provider throttles or dies,
 // the others keep the assistant alive. DeepSeek has been removed.
+//
+// Every answer also has to survive isProviderFailure() below before it can win.
+// A provider that has run out of quota still answers HTTP 200 — with the
+// billing notice as its "answer" — and that notice was being relayed to users
+// as the assistant's reply.
 import { NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 import { ipRateLimit, clientIp } from '@/lib/ip-limiter';
+import { isProviderFailure } from '@/lib/ai-failure';
 
 export const dynamic = 'force-dynamic';
 
@@ -100,6 +106,22 @@ function extractAnswer(payload) {
   return null;
 }
 
+// ── Is this an ANSWER, or a provider telling us it failed? ──────────────────
+// The detection lives in lib/ai-failure.js so it can be tested against real
+// provider output; see the note there for why it is needed and why the patterns
+// are narrow.
+
+// Single gate every source's answer passes through, so a failed provider can
+// never win the race no matter which call produced it.
+function acceptAnswer(label, text) {
+  if (!text) return null;
+  if (isProviderFailure(text)) {
+    console.error(`[ai-chat] ${label}: provider returned a failure notice — discarding`);
+    return null;
+  }
+  return text;
+}
+
 async function callDavidCyril(model, question, packagesTxt) {
   try {
     const prompt = buildDcPrompt(question, packagesTxt);
@@ -118,7 +140,7 @@ async function callDavidCyril(model, question, packagesTxt) {
       console.error(`[ai-chat] DC ${model}: non-JSON response`);
       return null;
     }
-    const answer = extractAnswer(await res.json());
+    const answer = acceptAnswer(`DC ${model}`, extractAnswer(await res.json()));
     if (answer) console.error(`[ai-chat] DC ${model}: OK (${answer.length} chars)`);
     return answer;
   } catch (e) {
@@ -152,7 +174,14 @@ async function callPollinations(fullPrompt, question) {
       return null;
     }
     const json = await res.json();
-    const answer = json?.choices?.[0]?.message?.content || null;
+    // A completion reporting zero tokens generated nothing, whatever its content
+    // claims — the other tell that this is a notice rather than an answer.
+    const totalTokens = json?.usage ? Number(json.usage.total_tokens || 0) : null;
+    if (totalTokens === 0) {
+      console.error('[ai-chat] Pollinations: 0 tokens generated — discarding');
+      return null;
+    }
+    const answer = acceptAnswer('Pollinations', json?.choices?.[0]?.message?.content || null);
     if (answer) console.error(`[ai-chat] Pollinations: OK (${answer.length} chars)`);
     return answer;
   } catch (e) {
@@ -172,9 +201,10 @@ async function callDrexApp(fullPrompt) {
       return null;
     }
     const json = await res.json();
-    const answer = pick(json, ['result', 'response', 'message']);
+    const raw = pick(json, ['result', 'response', 'message']);
+    const answer = acceptAnswer('DrexApp', raw ? String(raw).trim() : null);
     if (answer) console.error(`[ai-chat] DrexApp: OK`);
-    return answer ? String(answer).trim() : null;
+    return answer;
   } catch (e) {
     console.error(`[ai-chat] DrexApp: ${e.name === 'TimeoutError' ? 'timeout' : e.message}`);
     return null;
@@ -236,7 +266,11 @@ export async function POST(request) {
       () => callDrexApp(fullPrompt),
     ]);
 
-    if (!answer) {
+    // Every source already filters its own answer, so this is belt and braces —
+    // but no provider failure notice may ever reach a user as a reply, so the
+    // last thing before responding checks too.
+    if (!answer || isProviderFailure(answer)) {
+      if (answer) console.error('[ai-chat] all sources failed; not returning a notice as an answer');
       return NextResponse.json(
         {
           error:
