@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { fmtKes } from '@/lib/currency';
+import Portal from '@/components/ui/Portal';
 
 const METHODS = [
   { id: 'card', label: 'Card', icon: '💳', hint: 'Visa / Mastercard' },
@@ -270,85 +271,87 @@ function VpsInner() {
 
       {/* ── Purchase modal ── */}
       {pkg && !vps && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(6,6,8,0.78)', zIndex: 60, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16, backdropFilter: 'blur(3px)' }} onClick={() => !paying && closeModal()}>
-          <div className="card p-6" style={{ width: '100%', maxWidth: 430, maxHeight: '92vh', overflowY: 'auto' }} onClick={(e) => e.stopPropagation()}>
-            {/* header */}
-            <div className="flex items-start justify-between mb-4">
-              <div>
-                <p className="eyebrow" style={{ fontSize: 12 }}>Checkout</p>
-                <h3 className="text-base font-bold mt-1" style={{ color: 'var(--ink)' }}>{pkg.name}</h3>
-                <p className="mono text-[10px] uppercase tracking-wider mt-0.5" style={{ color: 'var(--dim)' }}>
-                  {fmtKes(pkg.price)} · credentials revealed after payment
-                </p>
-              </div>
-              <button onClick={() => !paying && closeModal()} className="btn" style={{ fontSize: 14, padding: '2px 8px', background: 'transparent', borderColor: 'transparent', color: 'var(--muted)' }}>✕</button>
-            </div>
-
-            {step === 'method' && (
-              <>
-                <p className="text-xs font-bold mb-2" style={{ color: 'var(--ink-2)' }}>1 · Choose payment method</p>
-                <div className="grid grid-cols-1 gap-2">
-                  {METHODS.map((m) => (
-                    <button key={m.id} onClick={() => setMethod(m.id)}
-                      className="flex items-center gap-3 px-3.5 py-3 text-left w-full"
-                      style={{ borderRadius: 10, border: `1.5px solid ${method === m.id ? 'var(--brand)' : 'rgba(233,231,226,0.12)'}`, background: method === m.id ? 'rgba(242,169,59,0.07)' : 'transparent', cursor: 'pointer', transition: 'all 0.15s' }}>
-                      <span style={{ fontSize: 20 }}>{m.icon}</span>
-                      <span className="flex-1">
-                        <span className="block text-sm font-semibold" style={{ color: 'var(--ink)' }}>{m.label}</span>
-                        <span className="block text-[11px]" style={{ color: 'var(--muted)' }}>{m.hint}</span>
-                      </span>
-                      <span style={{ color: method === m.id ? 'var(--brand)' : 'var(--line)', fontSize: 16 }}>●</span>
-                    </button>
-                  ))}
-                </div>
-
-                {NEEDS_PHONE.includes(method) && (
-                  <div className="mt-3">
-                    <label className="mono text-[10px] uppercase tracking-wider" style={{ color: 'var(--dim)' }}>Phone number (receives the prompt)</label>
-                    <input className="input mt-1" placeholder="07XX XXX XXX" value={phone} onChange={(e) => setPhone(e.target.value)} inputMode="tel" />
-                  </div>
-                )}
-                {NEEDS_TILL.includes(method) && (
-                  <div className="mt-3">
-                    <label className="mono text-[10px] uppercase tracking-wider" style={{ color: 'var(--dim)' }}>Till number (pay to)</label>
-                    <input className="input mt-1" placeholder="e.g. 500123" value={till} onChange={(e) => setTill(e.target.value)} inputMode="numeric" />
-                  </div>
-                )}
-
-                {error && <p className="text-xs mt-3" style={{ color: 'var(--bad)' }}>{error}</p>}
-
-                <button onClick={startPayment} disabled={paying} className="btn btn-primary w-full mt-4" style={{ padding: '13px' }}>
-                  {paying ? 'Starting payment…' : `Pay ${fmtKes(pkg.price)}`}
-                </button>
-                <p className="text-[11px] mt-3 text-center" style={{ color: 'var(--dim)' }}>
-                  🔒 Secure payment via Paystack · your VPS credentials appear here instantly on success
-                </p>
-              </>
-            )}
-
-            {step === 'waiting' && (
-              <div className="text-center py-4">
-                <div className="spinner mx-auto" />
-                <p className="text-sm font-bold mt-5" style={{ color: 'var(--ink)' }}>
-                  {method === 'mpesa_till' ? 'Waiting for Till payment…' : 'Check your phone for the prompt'}
-                </p>
-                {displayText && (
-                  <p className="text-xs mt-2 px-3 py-2 inline-block" style={{ background: 'rgba(242,169,59,0.08)', color: 'var(--brand)', borderRadius: 8, fontFamily: 'monospace' }}>
-                    {displayText}
+          <Portal>
+          <div style={{ position: 'fixed', inset: 0, background: 'rgba(6,6,8,0.78)', zIndex: 60, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16, backdropFilter: 'blur(3px)' }} onClick={() => !paying && closeModal()}>
+            <div className="card p-6" style={{ width: '100%', maxWidth: 430, maxHeight: '92vh', overflowY: 'auto' }} onClick={(e) => e.stopPropagation()}>
+              {/* header */}
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  <p className="eyebrow" style={{ fontSize: 12 }}>Checkout</p>
+                  <h3 className="text-base font-bold mt-1" style={{ color: 'var(--ink)' }}>{pkg.name}</h3>
+                  <p className="mono text-[10px] uppercase tracking-wider mt-0.5" style={{ color: 'var(--dim)' }}>
+                    {fmtKes(pkg.price)} · credentials revealed after payment
                   </p>
-                )}
-                <p className="text-xs mt-3" style={{ color: 'var(--muted)' }}>
-                  Enter your M-PESA / Airtel PIN to authorize · auto-confirms in seconds
-                </p>
-                <p className="mono text-xs mt-2" style={{ color: secondsLeft < 30 ? 'var(--bad)' : 'var(--dim)' }}>
-                  ⏱ {mm(Math.floor(secondsLeft / 60))}:{mm(secondsLeft % 60)}
-                </p>
-                {error && <p className="text-xs mt-3" style={{ color: 'var(--bad)' }}>{error}</p>}
-                <button onClick={() => { setRef(null); setStep('method'); setError(''); }} className="btn mt-5" style={{ fontSize: 13 }}>← Cancel</button>
+                </div>
+                <button onClick={() => !paying && closeModal()} className="btn" style={{ fontSize: 14, padding: '2px 8px', background: 'transparent', borderColor: 'transparent', color: 'var(--muted)' }}>✕</button>
               </div>
-            )}
+
+              {step === 'method' && (
+                <>
+                  <p className="text-xs font-bold mb-2" style={{ color: 'var(--ink-2)' }}>1 · Choose payment method</p>
+                  <div className="grid grid-cols-1 gap-2">
+                    {METHODS.map((m) => (
+                      <button key={m.id} onClick={() => setMethod(m.id)}
+                        className="flex items-center gap-3 px-3.5 py-3 text-left w-full"
+                        style={{ borderRadius: 10, border: `1.5px solid ${method === m.id ? 'var(--brand)' : 'rgba(233,231,226,0.12)'}`, background: method === m.id ? 'rgba(242,169,59,0.07)' : 'transparent', cursor: 'pointer', transition: 'all 0.15s' }}>
+                        <span style={{ fontSize: 20 }}>{m.icon}</span>
+                        <span className="flex-1">
+                          <span className="block text-sm font-semibold" style={{ color: 'var(--ink)' }}>{m.label}</span>
+                          <span className="block text-[11px]" style={{ color: 'var(--muted)' }}>{m.hint}</span>
+                        </span>
+                        <span style={{ color: method === m.id ? 'var(--brand)' : 'var(--line)', fontSize: 16 }}>●</span>
+                      </button>
+                    ))}
+                  </div>
+
+                  {NEEDS_PHONE.includes(method) && (
+                    <div className="mt-3">
+                      <label className="mono text-[10px] uppercase tracking-wider" style={{ color: 'var(--dim)' }}>Phone number (receives the prompt)</label>
+                      <input className="input mt-1" placeholder="07XX XXX XXX" value={phone} onChange={(e) => setPhone(e.target.value)} inputMode="tel" />
+                    </div>
+                  )}
+                  {NEEDS_TILL.includes(method) && (
+                    <div className="mt-3">
+                      <label className="mono text-[10px] uppercase tracking-wider" style={{ color: 'var(--dim)' }}>Till number (pay to)</label>
+                      <input className="input mt-1" placeholder="e.g. 500123" value={till} onChange={(e) => setTill(e.target.value)} inputMode="numeric" />
+                    </div>
+                  )}
+
+                  {error && <p className="text-xs mt-3" style={{ color: 'var(--bad)' }}>{error}</p>}
+
+                  <button onClick={startPayment} disabled={paying} className="btn btn-primary w-full mt-4" style={{ padding: '13px' }}>
+                    {paying ? 'Starting payment…' : `Pay ${fmtKes(pkg.price)}`}
+                  </button>
+                  <p className="text-[11px] mt-3 text-center" style={{ color: 'var(--dim)' }}>
+                    🔒 Secure payment via Paystack · your VPS credentials appear here instantly on success
+                  </p>
+                </>
+              )}
+
+              {step === 'waiting' && (
+                <div className="text-center py-4">
+                  <div className="spinner mx-auto" />
+                  <p className="text-sm font-bold mt-5" style={{ color: 'var(--ink)' }}>
+                    {method === 'mpesa_till' ? 'Waiting for Till payment…' : 'Check your phone for the prompt'}
+                  </p>
+                  {displayText && (
+                    <p className="text-xs mt-2 px-3 py-2 inline-block" style={{ background: 'rgba(242,169,59,0.08)', color: 'var(--brand)', borderRadius: 8, fontFamily: 'monospace' }}>
+                      {displayText}
+                    </p>
+                  )}
+                  <p className="text-xs mt-3" style={{ color: 'var(--muted)' }}>
+                    Enter your M-PESA / Airtel PIN to authorize · auto-confirms in seconds
+                  </p>
+                  <p className="mono text-xs mt-2" style={{ color: secondsLeft < 30 ? 'var(--bad)' : 'var(--dim)' }}>
+                    ⏱ {mm(Math.floor(secondsLeft / 60))}:{mm(secondsLeft % 60)}
+                  </p>
+                  {error && <p className="text-xs mt-3" style={{ color: 'var(--bad)' }}>{error}</p>}
+                  <button onClick={() => { setRef(null); setStep('method'); setError(''); }} className="btn mt-5" style={{ fontSize: 13 }}>← Cancel</button>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+          </Portal>
       )}
     </div>
   );

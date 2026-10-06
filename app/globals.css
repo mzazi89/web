@@ -1118,6 +1118,14 @@ select.input {
 @media (min-width: 640px) {
   .modal-host { align-items: center; padding: 20px; }
 }
+/* On phones the sheet is flush with the bottom edge, so on a device with a home
+   indicator or gesture bar the last row sits underneath it — the same "can't
+   reach the bottom of the sheet" symptom the stacking fix above addresses, from
+   a different cause. Lift the host by the safe area so the final control clears
+   it. `0px` keeps non-notched browsers pixel-identical. */
+@media (max-width: 639px) {
+  .modal-host { padding-bottom: env(safe-area-inset-bottom, 0px); }
+}
 
 /* Mobile navigation drawer */
 .drawer {

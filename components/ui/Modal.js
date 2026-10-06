@@ -7,8 +7,10 @@
 //   * Escape closes, backdrop click closes, body scroll locks
 //   * focus is moved in on open and restored on close
 //   * `tone="danger"` renders the destructive pattern (red confirm button)
+//   * rendered into <body> — see the note above the return, it is load-bearing
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { X, AlertTriangle } from './Icons';
 import Button from './Button';
 
@@ -26,6 +28,11 @@ export default function Modal({
 }) {
   const panelRef = useRef(null);
   const restoreRef = useRef(null);
+
+  // Portals can only target the DOM, so hold the render back for one frame on
+  // the client. Without this, SSR would touch `document`.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   useEffect(() => {
     if (!open) return;
@@ -53,11 +60,24 @@ export default function Modal({
     };
   }, [open, onClose]);
 
-  if (!open) return null;
+  if (!open || !mounted) return null;
 
   const maxWidth = { sm: 380, md: 460, lg: 620, xl: 800 }[size] || 460;
 
-  return (
+  /* Rendering into <body> is what lets the z-indexes below actually apply.
+     `.app-content` on <main> declares `position: relative; z-index: 1` so page
+     content stays above the fixed RouteBackdrop layers — and a positioned
+     element with a z-index opens a stacking context. Everything inside <main>
+     is therefore confined to it: this dialog's `.overlay` (90) and `.modal-host`
+     (91) could not paint above a sibling of <main> no matter how high they were
+     set. <Footer> is that sibling — `position: relative; z-index: 1`, and later
+     in the DOM — so it painted over this dialog and cut off its bottom, which
+     on the wallet's "Add money" sheet hid the payment methods.
+
+     A portal moves the dialog out of <main>'s context, so 90/91 now compete at
+     the top level against <Footer> (1) and the AI chat button (50). Theme tokens
+     are unaffected: `data-theme` lives on <html>, above <body>. */
+  return createPortal(
     <>
       <div className="overlay" onClick={closeOnBackdrop ? onClose : undefined} aria-hidden="true" />
       <div className="modal-host" onClick={closeOnBackdrop ? onClose : undefined}>
@@ -102,7 +122,8 @@ export default function Modal({
           {footer && <div className="modal-foot">{footer}</div>}
         </div>
       </div>
-    </>
+    </>,
+    document.body
   );
 }
 

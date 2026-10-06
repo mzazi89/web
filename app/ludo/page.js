@@ -1,6 +1,7 @@
 'use client';
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import Portal from '@/components/ui/Portal';
 import { TRACK, START, HOME_COLS, N, HOME, COLORS, COLOR_NAMES } from '@/lib/ludo/engine';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -784,52 +785,54 @@ export default function LudoPage() {
 
         {/* Win overlay with rankings */}
         {finished && state.ranks.length > 0 && (
-          <div style={{
-            position: 'fixed', inset: 0, zIndex: 90, display: 'flex', alignItems: 'center', justifyContent: 'center',
-            background: 'rgba(5,6,8,0.82)', backdropFilter: 'blur(4px)', animation: 'mz-fade .3s ease', padding: 16,
-          }}>
-            {/* Confetti */}
-            <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
-              {Array.from({ length: 46 }).map((_, i) => (
-                <span key={i} style={{
-                  position: 'absolute', top: '-6%', left: `${(i * 37) % 100}%`, width: 7, height: 11,
-                  background: COLORS[i % 4], borderRadius: 2, opacity: 0,
-                  animation: `mz-confetti ${2.6 + (i % 5) * 0.55}s ${(i % 7) * 0.28}s linear infinite`,
-                  transform: `rotate(${(i * 53) % 360}deg)`,
-                }} />
-              ))}
-            </div>
+          <Portal>
+            <div style={{
+              position: 'fixed', inset: 0, zIndex: 90, display: 'flex', alignItems: 'center', justifyContent: 'center',
+              background: 'rgba(5,6,8,0.82)', backdropFilter: 'blur(4px)', animation: 'mz-fade .3s ease', padding: 16,
+            }}>
+              {/* Confetti */}
+              <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
+                {Array.from({ length: 46 }).map((_, i) => (
+                  <span key={i} style={{
+                    position: 'absolute', top: '-6%', left: `${(i * 37) % 100}%`, width: 7, height: 11,
+                    background: COLORS[i % 4], borderRadius: 2, opacity: 0,
+                    animation: `mz-confetti ${2.6 + (i % 5) * 0.55}s ${(i % 7) * 0.28}s linear infinite`,
+                    transform: `rotate(${(i * 53) % 360}deg)`,
+                  }} />
+                ))}
+              </div>
 
-            <div className="card p-6 sm:p-8 text-center" style={{ maxWidth: 400, width: '100%', animation: 'mz-pop .45s cubic-bezier(.34,1.56,.64,1)', position: 'relative', zIndex: 1 }}>
-              <p className="mono text-[10px] uppercase tracking-[0.2em] mb-3" style={{ color: 'var(--dim)' }}>Game over — final rankings</p>
-              <h2 className="headline text-2xl mb-5" style={{ color: COLORS[state.winner] }}>
-                {players.find((p) => p.seat === state.winner)?.name} wins! 🏆
-              </h2>
-              <div className="space-y-2 mb-6">
-                {state.ranks.map((seat, idx) => {
-                  const p = players.find((x) => x.seat === seat);
-                  return (
-                    <div key={seat} className="flex items-center gap-3 px-4 py-3 rounded"
-                      style={{ background: idx === 0 ? `${COLORS[seat]}14` : 'var(--bg-2)', border: `1px solid ${idx === 0 ? `${COLORS[seat]}66` : 'var(--line)'}` }}>
-                      <span className="text-lg" style={{ width: 34 }}>{MEDALS[idx]}</span>
-                      <span style={{ width: 12, height: 12, borderRadius: '50%', background: COLORS[seat], display: 'inline-block' }} />
-                      <span className="text-sm font-semibold truncate" style={{ color: 'var(--ink)' }}>{p?.name}</span>
-                      {p?.type === 'ai' && <span className="tag ml-auto" style={{ color: 'var(--muted)', borderColor: 'var(--line)' }}>bot</span>}
-                    </div>
-                  );
-                })}
+              <div className="card p-6 sm:p-8 text-center" style={{ maxWidth: 400, width: '100%', animation: 'mz-pop .45s cubic-bezier(.34,1.56,.64,1)', position: 'relative', zIndex: 1 }}>
+                <p className="mono text-[10px] uppercase tracking-[0.2em] mb-3" style={{ color: 'var(--dim)' }}>Game over — final rankings</p>
+                <h2 className="headline text-2xl mb-5" style={{ color: COLORS[state.winner] }}>
+                  {players.find((p) => p.seat === state.winner)?.name} wins! 🏆
+                </h2>
+                <div className="space-y-2 mb-6">
+                  {state.ranks.map((seat, idx) => {
+                    const p = players.find((x) => x.seat === seat);
+                    return (
+                      <div key={seat} className="flex items-center gap-3 px-4 py-3 rounded"
+                        style={{ background: idx === 0 ? `${COLORS[seat]}14` : 'var(--bg-2)', border: `1px solid ${idx === 0 ? `${COLORS[seat]}66` : 'var(--line)'}` }}>
+                        <span className="text-lg" style={{ width: 34 }}>{MEDALS[idx]}</span>
+                        <span style={{ width: 12, height: 12, borderRadius: '50%', background: COLORS[seat], display: 'inline-block' }} />
+                        <span className="text-sm font-semibold truncate" style={{ color: 'var(--ink)' }}>{p?.name}</span>
+                        {p?.type === 'ai' && <span className="tag ml-auto" style={{ color: 'var(--muted)', borderColor: 'var(--line)' }}>bot</span>}
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className="flex gap-2.5">
+                  {session?.mode === 'local' && (
+                    <button onClick={rematch} disabled={busy} className="btn btn-primary flex-1" style={{ fontSize: 13 }}>
+                      {busy ? 'Starting…' : 'Rematch'}
+                    </button>
+                  )}
+                  <button onClick={clearSession} className="btn btn-ghost flex-1" style={{ fontSize: 13 }}>New game</button>
+                </div>
+                <Link href="/" className="btn btn-dark w-full mt-2.5" style={{ fontSize: 12.5 }}>Back to home</Link>
               </div>
-              <div className="flex gap-2.5">
-                {session?.mode === 'local' && (
-                  <button onClick={rematch} disabled={busy} className="btn btn-primary flex-1" style={{ fontSize: 13 }}>
-                    {busy ? 'Starting…' : 'Rematch'}
-                  </button>
-                )}
-                <button onClick={clearSession} className="btn btn-ghost flex-1" style={{ fontSize: 13 }}>New game</button>
-              </div>
-              <Link href="/" className="btn btn-dark w-full mt-2.5" style={{ fontSize: 12.5 }}>Back to home</Link>
             </div>
-          </div>
+          </Portal>
         )}
 
         <style>{`
