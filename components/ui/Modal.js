@@ -34,6 +34,22 @@ export default function Modal({
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
+  /* Keep the latest `onClose` in a ref so the effect below can depend on `open`
+     alone — and that is what makes typing work on a phone.
+
+     `onClose` used to be in the dependency list, and no caller gives it a stable
+     identity: `closeDeposit` is a plain function on the component body, and the
+     other six call sites pass an inline arrow. Every keystroke in a field changed
+     the parent's state, which re-rendered it, which built a new `onClose`, which
+     re-ran this effect. Its cleanup called `restoreRef.current.focus()` — pulling
+     focus back to whatever was focused before the dialog opened — and then the
+     "focus the first control" timer fired again 30ms later. The field the user was
+     typing into lost focus in between, so the keyboard closed after a single
+     digit. Read through a ref, the effect now runs once per open and cleans up
+     once per close. */
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+
   useEffect(() => {
     if (!open) return;
 
@@ -41,10 +57,10 @@ export default function Modal({
     const { overflow } = document.body.style;
     document.body.style.overflow = 'hidden';
 
-    const onKey = (e) => { if (e.key === 'Escape') onClose?.(); };
+    const onKey = (e) => { if (e.key === 'Escape') onCloseRef.current?.(); };
     document.addEventListener('keydown', onKey);
 
-    // Focus the first meaningful control, not the heading.
+    // Focus the first meaningful control, not the heading. Once per open.
     const t = setTimeout(() => {
       const node = panelRef.current?.querySelector(
         'input, select, textarea, button:not([data-close]), [href], [tabindex]:not([tabindex="-1"])'
@@ -58,7 +74,7 @@ export default function Modal({
       clearTimeout(t);
       restoreRef.current?.focus?.();
     };
-  }, [open, onClose]);
+  }, [open]);
 
   if (!open || !mounted) return null;
 
