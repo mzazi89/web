@@ -95,7 +95,7 @@ const FEATURES = [
 
 export default function Home() {
   return (
-    <AppBackground variant="hero" orbs>
+    <AppBackground>
       {/* ───────────────────────── Hero ───────────────────────── */}
       <section>
         <div className="container-site" style={{ paddingTop: 56, paddingBottom: 48 }}>

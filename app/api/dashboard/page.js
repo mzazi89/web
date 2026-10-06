@@ -60,7 +60,7 @@ export default function ApiDashboard() {
   const s = data.stats;
 
   return (
-    <div style={{ backgroundColor: 'rgba(15,18,21,0.35)', minHeight: '70vh' }}>
+    <div style={{ backgroundColor: 'var(--page-tint)', minHeight: '70vh' }}>
       <section className="section" style={{ paddingTop: 64, paddingBottom: 40 }}>
         <div className="container-site">
           {/* Header */}

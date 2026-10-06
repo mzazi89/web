@@ -77,7 +77,7 @@ export default function ApiUsage() {
   const meta = data?.meta || {};
 
   return (
-    <div style={{ backgroundColor: 'rgba(15,18,21,0.35)', minHeight: '70vh' }}>
+    <div style={{ backgroundColor: 'var(--page-tint)', minHeight: '70vh' }}>
       <section className="section" style={{ paddingTop: 64, paddingBottom: 110 }}>
         <div className="container-site max-w-6xl">
           <div className="flex flex-wrap items-end justify-between gap-4 mb-10">

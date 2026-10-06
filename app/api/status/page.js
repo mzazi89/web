@@ -67,9 +67,8 @@ export default async function ApiStatus() {
   };
 
   return (
-    <div style={{ backgroundColor: 'rgba(15,18,21,0.35)', minHeight: '70vh' }}>
+    <div style={{ backgroundColor: 'var(--page-tint)', minHeight: '70vh' }}>
       <section className="relative overflow-hidden" style={{ paddingTop: 64, paddingBottom: 40 }}>
-        <div className="absolute inset-0 pointer-events-none grid-bg" style={{ maskImage: 'linear-gradient(180deg, rgba(0,0,0,0.5), transparent 80%)', WebkitMaskImage: 'linear-gradient(180deg, rgba(0,0,0,0.5), transparent 80%)' }} />
         <div className="container-site relative">
           <div className="max-w-3xl">
             <Link href="/api" className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: 'var(--muted)', textDecoration: 'none' }}>
@@ -207,7 +206,7 @@ export default async function ApiStatus() {
                   <tr key={e.path} data-label="Endpoint">
                     <td data-label="Endpoint">
                       <span className="mono text-[10px] font-bold px-1.5 py-0.5 mr-2"
-                        style={{ background: e.method === 'GET' ? 'rgba(76,125,252,0.12)' : 'rgba(242,169,59,0.1)', color: e.method === 'GET' ? 'var(--blue)' : 'var(--brand)', border: `1px solid ${e.method === 'GET' ? 'rgba(76,125,252,0.35)' : 'rgba(242,169,59,0.3)'}` }}>
+                        style={{ background: e.method === 'GET' ? 'var(--blue-a12)' : 'var(--brand-a10)', color: e.method === 'GET' ? 'var(--blue)' : 'var(--brand)', border: `1px solid ${e.method === 'GET' ? 'var(--blue-a35)' : 'var(--brand-a35)'}` }}>
                         {e.method}
                       </span>
                       <code className="mono text-[12px]" style={{ color: 'var(--ink)' }}>{e.path}</code>

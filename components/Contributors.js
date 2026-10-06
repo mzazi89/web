@@ -34,8 +34,8 @@ function ContributorCard({ c }) {
       <div style={{ position: 'relative', display: 'inline-block', marginBottom: '18px' }}>
         <div style={{
           width: '72px', height: '72px', borderRadius: '50%',
-          background: 'rgba(242,169,59,0.1)',
-          border: '1px solid rgba(242,169,59,0.4)',
+          background: 'var(--brand-a10)',
+          border: '1px solid var(--brand-a45)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontSize: '20px', fontWeight: 800, color: 'var(--brand)',
           fontFamily: 'var(--font-display)',

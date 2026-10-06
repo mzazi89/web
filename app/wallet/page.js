@@ -27,7 +27,9 @@ function downloadReceipt(t, userEmail, balance) {
   const timeStr = date.toLocaleTimeString('en-KE', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   const isDebit = t.type !== 'deposit';
   const sign = isDebit ? '-' : '+';
-  const color = isDebit ? 'var(--bad)' : 'var(--good)';
+  // Literals, not tokens: this markup is written into a detached popup window,
+  // where none of the app's CSS custom properties exist.
+  const color = isDebit ? '#E11D48' : '#047857';
 
   const html = `<!DOCTYPE html>
 <html>
@@ -37,7 +39,7 @@ function downloadReceipt(t, userEmail, balance) {
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Mono:wght@400;600&display=swap');
     * { margin:0; padding:0; box-sizing:border-box; }
-    body { background:var(--ink); display:flex; justify-content:center; align-items:flex-start; padding:clamp(12px, 4vw, 30px); font-family:'Space Grotesk',sans-serif; }
+    body { background:#0A0A0F; display:flex; justify-content:center; align-items:flex-start; padding:clamp(12px, 4vw, 30px); font-family:'Space Grotesk',sans-serif; }
     .receipt {
       background:#fff;
       width:100%;
@@ -51,26 +53,26 @@ function downloadReceipt(t, userEmail, balance) {
       content:'';
       display:block;
       height:14px;
-      background: radial-gradient(circle at 10px 14px, var(--ink) 10px, transparent 0) repeat-x, #fff;
+      background: radial-gradient(circle at 10px 14px, #0A0A0F 10px, transparent 0) repeat-x, #fff;
       background-size:20px 14px, 100% 100%;
     }
     .receipt::after {
       content:'';
       display:block;
       height:14px;
-      background: radial-gradient(circle at 10px 0px, var(--ink) 10px, transparent 0) repeat-x, #fff;
+      background: radial-gradient(circle at 10px 0px, #0A0A0F 10px, transparent 0) repeat-x, #fff;
       background-size:20px 14px, 100% 100%;
       transform:rotate(180deg);
     }
     .header {
-      background:var(--bg);
+      background:#6D28D9;
       color:#fff;
       text-align:center;
       padding:28px 24px 20px;
     }
     .logo { font-size:20px; font-weight:700; letter-spacing:0.5px; margin-bottom:4px; }
-    .logo span { color:var(--brand); }
-    .tagline { font-family:'IBM Plex Mono',monospace; font-size: 12.5px; color:var(--muted); letter-spacing:2px; text-transform:uppercase; }
+    .logo span { color:#FDE047; }
+    .tagline { font-family:'IBM Plex Mono',monospace; font-size: 12.5px; color:rgba(255,255,255,0.78); letter-spacing:2px; text-transform:uppercase; }
     .status-badge {
       display:inline-block;
       margin-top:14px;
@@ -81,38 +83,38 @@ function downloadReceipt(t, userEmail, balance) {
       font-weight:600;
       letter-spacing:1px;
       text-transform:uppercase;
-      background:${t.status === 'success' ? 'rgba(62,207,142,0.15)' : 'rgba(242,169,59,0.15)'};
-      color:${t.status === 'success' ? 'var(--good)' : 'var(--brand)'};
-      border:1px solid ${t.status === 'success' ? 'rgba(62,207,142,0.4)' : 'rgba(242,169,59,0.4)'};
+      background:${t.status === 'success' ? 'rgba(4,120,87,0.12)' : 'rgba(124,58,237,0.12)'};
+      color:${t.status === 'success' ? '#047857' : '#6D28D9'};
+      border:1px solid ${t.status === 'success' ? 'rgba(4,120,87,0.45)' : 'rgba(124,58,237,0.45)'};
     }
     .body { padding:24px; }
-    .amount-section { text-align:center; padding:20px 0 24px; border-bottom:1px dashed var(--ink); }
-    .amount-label { font-family:'IBM Plex Mono',monospace; font-size: 12.5px; color:var(--muted); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:6px; }
+    .amount-section { text-align:center; padding:20px 0 24px; border-bottom:1px dashed #D5D7E3; }
+    .amount-label { font-family:'IBM Plex Mono',monospace; font-size: 12.5px; color:#4E5468; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:6px; }
     .amount { font-size:38px; font-weight:700; color:${color}; letter-spacing:-1px; }
     .currency { font-size:16px; font-weight:500; }
-    .rows { padding:20px 0; border-bottom:1px dashed var(--ink); }
+    .rows { padding:20px 0; border-bottom:1px dashed #D5D7E3; }
     .row { display:flex; justify-content:space-between; align-items:flex-start; padding:7px 0; font-size:13px; }
-    .row-label { color:var(--muted); font-size: 12.5px; font-family:'IBM Plex Mono',monospace; text-transform:uppercase; letter-spacing:0.6px; }
-    .row-value { color:var(--surface-2); font-weight:600; text-align:right; max-width:200px; word-break:break-all; }
-    .ref { font-family:'IBM Plex Mono',monospace; font-size: 12.5px; color:var(--blue); }
+    .row-label { color:#4E5468; font-size: 12.5px; font-family:'IBM Plex Mono',monospace; text-transform:uppercase; letter-spacing:0.6px; }
+    .row-value { color:#0A0A0F; font-weight:600; text-align:right; max-width:200px; word-break:break-all; }
+    .ref { font-family:'IBM Plex Mono',monospace; font-size: 12.5px; color:#2563EB; }
     .warranty {
       margin:16px 0 0;
       padding:12px 14px;
-      background:var(--ink);
+      background:#0A0A0F;
       border-radius:2px;
-      border-left:3px solid var(--brand);
+      border-left:3px solid #6D28D9;
       font-size: 12.5px;
-      color:#7a6a4f;
+      color:#C6C6D6;
       line-height:1.6;
     }
-    .warranty strong { display:block; margin-bottom:2px; font-size:12px; color:var(--bg); }
+    .warranty strong { display:block; margin-bottom:2px; font-size:12px; color:#FFFFFF; }
     .footer { text-align:center; padding:16px 24px 20px; }
-    .footer p { font-size: 12.5px; color:var(--muted); line-height:1.7; }
-    .footer a { color:var(--blue); text-decoration:none; }
+    .footer p { font-size: 12.5px; color:#4E5468; line-height:1.7; }
+    .footer a { color:#2563EB; text-decoration:none; }
     .barcode {
       font-family:'IBM Plex Mono',monospace;
       font-size: 12.5px;
-      color:var(--ink);
+      color:#0A0A0F;
       letter-spacing:4px;
       margin-top:8px;
       word-break:break-all;

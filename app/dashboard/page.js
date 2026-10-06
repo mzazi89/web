@@ -29,6 +29,7 @@ import {
   EmptyState, SkeletonText, SkeletonCards, ConfirmDialog, Alert, Field, Select, Input,
   humaniseError, planLabel, planTone, Icons,
 } from '@/components/ui';
+import Portal from '@/components/ui/Portal';
 import { fmtKes } from '@/lib/currency';
 
 const TABS = [
@@ -703,6 +704,7 @@ function AddServerModal({ onClose, onDone }) {
   };
 
   return (
+    <Portal>
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
       style={{ backgroundColor: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(6px)' }}
@@ -782,6 +784,7 @@ function AddServerModal({ onClose, onDone }) {
         </div>
       </div>
     </div>
+    </Portal>
   );
 }
 
@@ -829,6 +832,7 @@ function CredentialsModal({ panel, user, onClose }) {
   };
 
   return (
+    <Portal>
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
       style={{ backgroundColor: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(6px)' }}
@@ -905,6 +909,7 @@ function CredentialsModal({ panel, user, onClose }) {
         </div>
       </div>
     </div>
+    </Portal>
   );
 }
 

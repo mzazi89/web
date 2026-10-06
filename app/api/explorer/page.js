@@ -65,9 +65,8 @@ export default async function ApiExplorer() {
   const totalActive = categories.reduce((a, c) => a + c.active, 0);
 
   return (
-    <div style={{ backgroundColor: 'rgba(15,18,21,0.35)', minHeight: '70vh' }}>
+    <div style={{ backgroundColor: 'var(--page-tint)', minHeight: '70vh' }}>
       <section className="relative overflow-hidden" style={{ paddingTop: 64, paddingBottom: 40 }}>
-        <div className="absolute inset-0 pointer-events-none grid-bg" style={{ maskImage: 'linear-gradient(180deg, rgba(0,0,0,0.5), transparent 80%)', WebkitMaskImage: 'linear-gradient(180deg, rgba(0,0,0,0.5), transparent 80%)' }} />
         <div className="container-site relative">
           <div className="max-w-3xl">
             <Link href="/api" className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: 'var(--muted)', textDecoration: 'none' }}>
@@ -100,7 +99,7 @@ export default async function ApiExplorer() {
                     className="glow-card card-pad flex flex-col" style={{ textDecoration: 'none', padding: '24px 22px' }}>
                     <div className="flex items-center justify-between mb-5">
                       <span className="mono text-[11px] font-bold"
-                        style={{ color: live ? 'var(--brand)' : 'var(--dim)', border: `1px solid ${live ? 'rgba(242,169,59,0.4)' : 'var(--line)'}`, padding: '4px 8px' }}>
+                        style={{ color: live ? 'var(--brand)' : 'var(--dim)', border: `1px solid ${live ? 'var(--brand-a45)' : 'var(--line)'}`, padding: '4px 8px' }}>
                         {CATEGORY_CODES[c.category] || '??'}
                       </span>
                       <span className={`tag ${live ? 'tag-green' : 'tag'}`}>

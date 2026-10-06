@@ -99,7 +99,7 @@ export default function AiChatWidget({ prefill = null }) {
                   className="max-w-[85%] px-3 py-2 text-sm whitespace-pre-wrap"
                   style={
                     m.role === 'user'
-                      ? { background: 'rgba(242,169,59,0.14)', border: '1px solid rgba(242,169,59,0.4)', color: 'var(--ink)', borderRadius: '10px 10px 2px 10px' }
+                      ? { background: 'var(--brand-a15)', border: '1px solid var(--brand-a45)', color: 'var(--ink)', borderRadius: '10px 10px 2px 10px' }
                       : { background: 'var(--surface-2)', border: '1px solid var(--line)', color: 'var(--ink-2)', borderRadius: '10px 10px 10px 2px' }
                   }
                 >

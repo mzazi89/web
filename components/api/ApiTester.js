@@ -103,8 +103,8 @@ export default function ApiTester({ defaultQuery = 'Faded Alan Walker', compact 
           <div className="flex flex-wrap items-center gap-2 mono text-xs">
             <span className="tag" style={{
               color: result.ok ? 'var(--good)' : 'var(--bad)',
-              borderColor: result.ok ? 'rgba(62,207,142,0.35)' : 'rgba(229,72,77,0.35)',
-              background: result.ok ? 'rgba(62,207,142,0.06)' : 'rgba(229,72,77,0.06)',
+              borderColor: result.ok ? 'var(--good-a35)' : 'var(--bad-a35)',
+              background: result.ok ? 'var(--good-a06)' : 'var(--bad-a06)',
             }}>
               HTTP {result.status}
             </span>

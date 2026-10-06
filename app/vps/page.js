@@ -169,7 +169,7 @@ function VpsInner() {
       </div>
 
       {notice && (
-        <div className={`mb-6 px-4 py-3 text-sm`} style={{ borderRadius: 8, background: notice.type === 'success' ? 'rgba(62,207,142,0.08)' : 'rgba(229,72,77,0.08)', border: `1px solid ${notice.type === 'success' ? 'rgba(62,207,142,0.3)' : 'rgba(229,72,77,0.3)'}`, color: notice.type === 'success' ? 'var(--good)' : 'var(--bad)' }}>
+        <div className={`mb-6 px-4 py-3 text-sm`} style={{ borderRadius: 8, background: notice.type === 'success' ? 'var(--good-a08)' : 'var(--bad-a08)', border: `1px solid ${notice.type === 'success' ? 'var(--good-a35)' : 'var(--bad-a35)'}`, color: notice.type === 'success' ? 'var(--good)' : 'var(--bad)' }}>
           {notice.text}
         </div>
       )}
@@ -189,7 +189,7 @@ function VpsInner() {
                   <h3 className="text-base font-bold" style={{ color: 'var(--ink)' }}>{p.name}</h3>
                   {p.description && <p className="text-xs mt-1" style={{ color: 'var(--muted)', lineHeight: 1.5 }}>{p.description}</p>}
                 </div>
-                <span className="mono text-[9px] uppercase tracking-[0.14em] px-2 py-1" style={{ background: Number(p.stock) > 0 ? 'rgba(62,207,142,0.1)' : 'rgba(229,72,77,0.1)', color: Number(p.stock) > 0 ? 'var(--good)' : 'var(--bad)', borderRadius: 4, whiteSpace: 'nowrap' }}>
+                <span className="mono text-[9px] uppercase tracking-[0.14em] px-2 py-1" style={{ background: Number(p.stock) > 0 ? 'var(--good-a10)' : 'var(--bad-a10)', color: Number(p.stock) > 0 ? 'var(--good)' : 'var(--bad)', borderRadius: 4, whiteSpace: 'nowrap' }}>
                   {Number(p.stock) > 0 ? `${p.stock} in stock` : 'Sold out'}
                 </span>
               </div>
@@ -224,7 +224,7 @@ function VpsInner() {
 
       {/* ── Revealed credentials (callback / after success) ── */}
       {vps && (
-        <div className="card mt-8 p-6" style={{ border: '1px solid rgba(62,207,142,0.35)' }}>
+        <div className="card mt-8 p-6" style={{ border: '1px solid var(--good-a35)' }}>
           <div className="flex items-center gap-3 mb-4">
             <span style={{ fontSize: 22 }}>🖥️</span>
             <div>
@@ -243,7 +243,7 @@ function VpsInner() {
               { icon: '💿', k: 'OS', v: vps.instance_os || vps.pkg_os },
               { icon: '🖥️', k: 'CPU', v: vps.cpu || vps.pkg_cpu },
             ].filter((f) => f.v).map((f) => (
-              <div key={f.k} className="px-3.5 py-2.5 flex items-center justify-between gap-3" style={{ background: 'rgba(62,207,142,0.045)', border: '1px solid rgba(62,207,142,0.14)', borderRadius: 9 }}>
+              <div key={f.k} className="px-3.5 py-2.5 flex items-center justify-between gap-3" style={{ background: 'var(--good-a04)', border: '1px solid var(--good-a15)', borderRadius: 9 }}>
                 <div className="flex items-center gap-2.5 min-w-0">
                   <span style={{ fontSize: 15, flexShrink: 0 }}>{f.icon}</span>
                   <div className="min-w-0">
@@ -293,7 +293,7 @@ function VpsInner() {
                     {METHODS.map((m) => (
                       <button key={m.id} onClick={() => setMethod(m.id)}
                         className="flex items-center gap-3 px-3.5 py-3 text-left w-full"
-                        style={{ borderRadius: 10, border: `1.5px solid ${method === m.id ? 'var(--brand)' : 'rgba(233,231,226,0.12)'}`, background: method === m.id ? 'rgba(242,169,59,0.07)' : 'transparent', cursor: 'pointer', transition: 'all 0.15s' }}>
+                        style={{ borderRadius: 10, border: `1.5px solid ${method === m.id ? 'var(--brand)' : 'rgba(233,231,226,0.12)'}`, background: method === m.id ? 'var(--brand-a06)' : 'transparent', cursor: 'pointer', transition: 'all 0.15s' }}>
                         <span style={{ fontSize: 20 }}>{m.icon}</span>
                         <span className="flex-1">
                           <span className="block text-sm font-semibold" style={{ color: 'var(--ink)' }}>{m.label}</span>
@@ -335,7 +335,7 @@ function VpsInner() {
                     {method === 'mpesa_till' ? 'Waiting for Till payment…' : 'Check your phone for the prompt'}
                   </p>
                   {displayText && (
-                    <p className="text-xs mt-2 px-3 py-2 inline-block" style={{ background: 'rgba(242,169,59,0.08)', color: 'var(--brand)', borderRadius: 8, fontFamily: 'monospace' }}>
+                    <p className="text-xs mt-2 px-3 py-2 inline-block" style={{ background: 'var(--brand-a08)', color: 'var(--brand)', borderRadius: 8, fontFamily: 'monospace' }}>
                       {displayText}
                     </p>
                   )}

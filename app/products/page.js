@@ -151,7 +151,7 @@ export default function ProductsPage() {
                     className="mono flex items-center justify-center text-[11px] font-semibold"
                     style={{
                       width: 26, height: 26, borderRadius: 2,
-                      background: i < stepIndex ? 'var(--brand)' : i === stepIndex ? 'rgba(242,169,59,0.12)' : 'transparent',
+                      background: i < stepIndex ? 'var(--brand)' : i === stepIndex ? 'var(--brand-a12)' : 'transparent',
                       border: `1px solid ${i <= stepIndex ? 'var(--brand)' : 'var(--line)'}`,
                       color: i < stepIndex ? 'var(--on-brand)' : i === stepIndex ? 'var(--brand)' : 'var(--dim)',
                     }}>
@@ -172,7 +172,7 @@ export default function ProductsPage() {
 
         {/* ── Error ── */}
         {error && (
-          <div className="mb-6 px-4 py-3 text-sm flex flex-wrap items-center gap-2" style={{ background: 'rgba(229,72,77,0.08)', border: '1px solid rgba(229,72,77,0.3)', color: 'var(--bad)' }}>
+          <div className="mb-6 px-4 py-3 text-sm flex flex-wrap items-center gap-2" style={{ background: 'var(--bad-a08)', border: '1px solid var(--bad-a35)', color: 'var(--bad)' }}>
             {error}
             {error.includes('Insufficient') && (
               <Link href="/wallet" className="link" style={{ fontSize: 13 }}>Top up wallet →</Link>
@@ -185,7 +185,7 @@ export default function ProductsPage() {
           <>
             {!user && (
               <div className="mb-6 px-4 py-3 text-sm flex flex-col sm:flex-row items-start sm:items-center gap-3"
-                style={{ background: 'rgba(242,169,59,0.06)', border: '1px solid rgba(242,169,59,0.25)' }}>
+                style={{ background: 'var(--brand-a06)', border: '1px solid var(--brand-a25)' }}>
                 <span style={{ color: 'var(--brand)' }}>You need to be logged in to deploy a panel.</span>
                 <Link href="/login" className="link flex-shrink-0" style={{ fontSize: 13 }}>Log in →</Link>
               </div>
@@ -387,7 +387,7 @@ export default function ProductsPage() {
         {/* ════ STEP: done ════ */}
         {step === 'done' && result && (
           <div className="max-w-lg mx-auto">
-            <div className="card p-6 sm:p-8" style={{ borderColor: 'rgba(62,207,142,0.4)' }}>
+            <div className="card p-6 sm:p-8" style={{ borderColor: 'var(--good-a45)' }}>
               <div className="mb-6">
                 <p className="eyebrow">Step 04 — done</p>
                 <h2 className="headline mt-3" style={{ fontSize: 'clamp(1.6rem, 3vw, 2.1rem)' }}>Panel deployed<span className="accent">.</span></h2>
@@ -420,14 +420,14 @@ export default function ProductsPage() {
 
               {/* Expiry notice */}
               {result.expires_at && (
-                <div className="px-4 py-3 mb-4 text-xs flex items-start gap-2" style={{ background: 'rgba(242,169,59,0.05)', border: '1px solid rgba(242,169,59,0.25)', color: 'var(--ink-2)' }}>
+                <div className="px-4 py-3 mb-4 text-xs flex items-start gap-2" style={{ background: 'var(--brand-a04)', border: '1px solid var(--brand-a25)', color: 'var(--ink-2)' }}>
                   <span className="flex-shrink-0" style={{ color: 'var(--brand)' }}>EXP</span>
                   <span>This server will be <strong style={{ color: 'var(--ink)' }}>automatically removed</strong> on {new Date(result.expires_at).toLocaleString()}. Back up your data before then.</span>
                 </div>
               )}
 
               {/* Warning to save creds */}
-              <div className="px-4 py-3 mb-5 text-xs" style={{ background: 'rgba(229,72,77,0.06)', border: '1px solid rgba(229,72,77,0.25)', color: 'var(--ink-2)' }}>
+              <div className="px-4 py-3 mb-5 text-xs" style={{ background: 'var(--bad-a06)', border: '1px solid var(--bad-a25)', color: 'var(--ink-2)' }}>
                 <strong style={{ color: 'var(--bad)' }}>Save your password now.</strong> It is shown only once and cannot be recovered from this page.
               </div>
 

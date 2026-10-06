@@ -23,7 +23,7 @@ function TestimonialCard({ testimonial }) {
         gap: '14px',
         transition: 'transform 0.2s, box-shadow 0.2s, border-color 0.2s',
       }}
-      onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.borderColor = 'rgba(242,169,59,0.45)'; e.currentTarget.style.boxShadow = '0 12px 32px rgba(0,0,0,0.35)'; }}
+      onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.borderColor = 'var(--brand-a45)'; e.currentTarget.style.boxShadow = '0 12px 32px rgba(0,0,0,0.35)'; }}
       onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'var(--line)'; e.currentTarget.style.boxShadow = 'none'; }}
     >
       <div className="mono text-2xl" style={{ color: 'var(--brand)', lineHeight: 1, opacity: 0.6 }}>"</div>
@@ -32,7 +32,7 @@ function TestimonialCard({ testimonial }) {
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', paddingTop: '8px', borderTop: '1px solid var(--line-soft)' }}>
         <div style={{
           width: '40px', height: '40px', borderRadius: '50%',
-          background: 'rgba(242,169,59,0.1)', border: '1px solid rgba(242,169,59,0.4)',
+          background: 'var(--brand-a10)', border: '1px solid var(--brand-a45)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontWeight: 700, fontSize: '14px', color: 'var(--brand)', flexShrink: 0,
           fontFamily: 'var(--font-display)',
@@ -74,7 +74,7 @@ function TestimonialForm({ onSubmitted }) {
 
   if (success) {
     return (
-      <div className="card card-pad text-center" style={{ borderColor: 'rgba(62,207,142,0.4)' }}>
+      <div className="card card-pad text-center" style={{ borderColor: 'var(--good-a45)' }}>
         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--good)', margin: '0 auto' }}>
           <circle cx="12" cy="12" r="10" /><path d="m8.5 12.5 2.5 2.5 5-6" />
         </svg>
@@ -93,7 +93,7 @@ function TestimonialForm({ onSubmitted }) {
       <h3 className="section-title text-xl mt-3 mb-6" style={{ color: 'var(--ink)' }}>Share your experience</h3>
 
       {error && (
-        <div className="px-4 py-3 text-sm mb-5" style={{ background: 'rgba(229,72,77,0.08)', border: '1px solid rgba(229,72,77,0.3)', color: 'var(--bad)' }}>
+        <div className="px-4 py-3 text-sm mb-5" style={{ background: 'var(--bad-a08)', border: '1px solid var(--bad-a35)', color: 'var(--bad)' }}>
           {error}
         </div>
       )}

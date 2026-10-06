@@ -78,9 +78,8 @@ export default function DocsApp({ endpoints }) {
   const BASE = typeof window !== 'undefined' ? window.location.origin : 'https://mzazi.shop';
 
   return (
-    <div style={{ backgroundColor: 'rgba(15,18,21,0.35)', minHeight: '70vh' }}>
+    <div style={{ backgroundColor: 'var(--page-tint)', minHeight: '70vh' }}>
       <section className="relative overflow-hidden" style={{ paddingTop: 64, paddingBottom: 32 }}>
-        <div className="absolute inset-0 pointer-events-none grid-bg" style={{ maskImage: 'linear-gradient(180deg, rgba(0,0,0,0.5), transparent 80%)', WebkitMaskImage: 'linear-gradient(180deg, rgba(0,0,0,0.5), transparent 80%)' }} />
         <div className="container-site relative">
           <div className="max-w-3xl">
             <a href="/api" className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: 'var(--muted)', textDecoration: 'none' }}>← Back to API</a>
@@ -147,14 +146,14 @@ export default function DocsApp({ endpoints }) {
                   />
                   <button onClick={() => { setActiveCategory('ALL'); setSearch(''); }}
                     className="w-full text-left px-3 py-2 mono text-[11px] uppercase tracking-[0.1em]"
-                    style={{ background: activeCategory === 'ALL' ? 'rgba(242,169,59,0.08)' : 'transparent', color: activeCategory === 'ALL' ? 'var(--brand)' : 'var(--muted)', border: 'none', cursor: 'pointer' }}>
+                    style={{ background: activeCategory === 'ALL' ? 'var(--brand-a08)' : 'transparent', color: activeCategory === 'ALL' ? 'var(--brand)' : 'var(--muted)', border: 'none', cursor: 'pointer' }}>
                     All categories <span style={{ color: 'var(--dim)' }}>({activeCount} live)</span>
                   </button>
                   <div style={{ borderTop: '1px solid var(--line-soft)', marginTop: 8, paddingTop: 8 }}>
                     {categories.map(c => (
                       <button key={c.name} onClick={() => setActiveCategory(activeCategory === c.name ? 'ALL' : c.name)}
                         className="w-full text-left px-3 py-2 mono text-[11px]"
-                        style={{ background: activeCategory === c.name ? 'rgba(242,169,59,0.08)' : 'transparent', color: activeCategory === c.name ? 'var(--brand)' : 'var(--muted)', border: 'none', cursor: 'pointer' }}>
+                        style={{ background: activeCategory === c.name ? 'var(--brand-a08)' : 'transparent', color: activeCategory === c.name ? 'var(--brand)' : 'var(--muted)', border: 'none', cursor: 'pointer' }}>
                         <span className="mr-2" style={{ color: activeCategory === c.name ? 'var(--brand)' : 'var(--dim)' }}>{CATEGORY_CODES[c.name] || '??'}</span>
                         {CATEGORY_LABELS[c.name] || c.name}
                         <span className="ml-1" style={{ color: 'var(--dim)' }}>{c.active}/{c.total}</span>
@@ -175,7 +174,7 @@ export default function DocsApp({ endpoints }) {
                   <section key={cat} id={`cat-${encodeURIComponent(cat)}`} className="scroll-mt-32">
                     <div className="flex items-center gap-3 mb-4">
                       <span className="mono text-[11px] font-bold px-2 py-1"
-                        style={{ color: 'var(--brand)', border: '1px solid rgba(242,169,59,0.4)' }}>
+                        style={{ color: 'var(--brand)', border: '1px solid var(--brand-a45)' }}>
                         {CATEGORY_CODES[cat] || '??'}
                       </span>
                       <h2 className="section-title text-xl" style={{ color: 'var(--ink)' }}>
@@ -195,7 +194,7 @@ export default function DocsApp({ endpoints }) {
                             <button onClick={() => setExpanded(isOpen ? null : e.path)}
                               className="w-full flex flex-wrap items-center gap-3 px-5 py-3.5 text-left" style={{ cursor: 'pointer', background: 'transparent', border: 'none' }}>
                               <span className="mono text-[10px] font-bold px-1.5 py-0.5"
-                                style={{ background: e.method === 'GET' ? 'rgba(76,125,252,0.12)' : 'rgba(242,169,59,0.1)', color: e.method === 'GET' ? 'var(--blue)' : 'var(--brand)', border: `1px solid ${e.method === 'GET' ? 'rgba(76,125,252,0.35)' : 'rgba(242,169,59,0.3)'}` }}>
+                                style={{ background: e.method === 'GET' ? 'var(--blue-a12)' : 'var(--brand-a10)', color: e.method === 'GET' ? 'var(--blue)' : 'var(--brand)', border: `1px solid ${e.method === 'GET' ? 'var(--blue-a35)' : 'var(--brand-a35)'}` }}>
                                 {e.method}
                               </span>
                               <code className="mono text-xs flex-1" style={{ color: 'var(--ink)' }}>{e.path}</code>

@@ -93,11 +93,14 @@ export default function RootLayout({ children }) {
               {/* Accessibility: skip straight to content */}
               <a href="#main-content" className="skip-link">Skip to content</a>
 
-              {/* Ambient brand background — sits behind every page */}
-              <TechBackground />
-
-              {/* Wallpaper/photo that matches the current page */}
+              {/* Wallpaper/photo that matches the current page. Painted first of
+                  the two background layers, so the animated aurora sits over it
+                  — otherwise the motion is buried under the wallpaper scrim and
+                  every page reads as static. */}
               <RouteBackdrop />
+
+              {/* Ambient animated aurora, over the wallpaper and under content */}
+              <TechBackground />
 
               <Navbar />
 

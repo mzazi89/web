@@ -76,13 +76,12 @@ export default async function ApiLanding() {
   const activeEndpoints = endpoints.filter(e => e.is_active);
 
   return (
-    <div style={{ backgroundColor: 'rgba(15,18,21,0.35)' }}>
+    <div style={{ backgroundColor: 'var(--page-tint)' }}>
 
       {/* ── Hero ── */}
       <section className="relative overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none grid-bg" style={{ maskImage: 'linear-gradient(180deg, rgba(0,0,0,0.5), transparent 75%)', WebkitMaskImage: 'linear-gradient(180deg, rgba(0,0,0,0.5), transparent 75%)' }} />
         <div className="absolute top-10 right-1/4 w-96 h-96 rounded-full pointer-events-none"
-          style={{ background: 'radial-gradient(circle, rgba(242,169,59,0.07) 0%, transparent 70%)', filter: 'blur(56px)' }} />
+          style={{ background: 'radial-gradient(circle, var(--brand-a06) 0%, transparent 70%)', filter: 'blur(56px)' }} />
 
         <div className="container-site relative pt-20 pb-16 sm:pt-28 sm:pb-24">
           <div className="grid lg:grid-cols-12 gap-12 items-center">
@@ -141,7 +140,7 @@ export default async function ApiLanding() {
 {`curl "https://mzazi.shop/api/download/play?query=Faded%20Alan%20Walker&apikey=mzazi_xxxxxxxxxxxxxxxxxxxxxxxxx"`}
                   </pre>
                 </div>
-                <div className="px-4 py-3 flex items-center justify-between" style={{ borderTop: '1px solid var(--line-soft)', background: 'rgba(242,169,59,0.04)' }}>
+                <div className="px-4 py-3 flex items-center justify-between" style={{ borderTop: '1px solid var(--line-soft)', background: 'var(--brand-a04)' }}>
                   <span className="mono text-[10px] uppercase tracking-[0.14em]" style={{ color: 'var(--brand)' }}>No key? Test it below</span>
                   <span style={{ color: 'var(--dim)' }}>→</span>
                 </div>
@@ -190,7 +189,7 @@ export default async function ApiLanding() {
       </section>
 
       {/* ── Features ── */}
-      <section className="section" style={{ background: 'rgba(255,255,255,0.014)' }}>
+      <section className="section" style={{ background: 'var(--tint-hairline)' }}>
         <div className="container-site">
           <div className="max-w-3xl mb-12">
             <p className="eyebrow">Why MZAZI API</p>
@@ -252,7 +251,7 @@ export default async function ApiLanding() {
                     <tr key={e.path} data-label="Endpoint">
                       <td data-label="Method">
                         <span className="mono text-[10px] font-bold px-1.5 py-0.5"
-                          style={{ background: e.method === 'GET' ? 'rgba(76,125,252,0.12)' : 'rgba(242,169,59,0.1)', color: e.method === 'GET' ? 'var(--blue)' : 'var(--brand)', border: `1px solid ${e.method === 'GET' ? 'rgba(76,125,252,0.35)' : 'rgba(242,169,59,0.3)'}` }}>
+                          style={{ background: e.method === 'GET' ? 'var(--blue-a12)' : 'var(--brand-a10)', color: e.method === 'GET' ? 'var(--blue)' : 'var(--brand)', border: `1px solid ${e.method === 'GET' ? 'var(--blue-a35)' : 'var(--brand-a35)'}` }}>
                           {e.method}
                         </span>
                       </td>
@@ -273,7 +272,7 @@ export default async function ApiLanding() {
       <section className="section" style={{ paddingBottom: 110 }}>
         <div className="container-site">
           <div className="card card-pad text-center relative overflow-hidden" style={{ background: 'linear-gradient(135deg, var(--surface) 0%, var(--bg-2) 100%)' }}>
-            <div aria-hidden="true" className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(circle at 80% 20%, rgba(242,169,59,0.08) 0%, transparent 55%)' }} />
+            <div aria-hidden="true" className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(circle at 80% 20%, var(--brand-a08) 0%, transparent 55%)' }} />
             <div className="relative">
               <p className="eyebrow center">Start building</p>
               <h2 className="headline mt-6" style={{ fontSize: 'clamp(1.8rem, 4vw, 2.8rem)' }}>

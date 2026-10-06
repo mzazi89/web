@@ -52,7 +52,7 @@ const COLUMNS = [
 
 export default function Footer() {
   return (
-    <footer style={{ background: 'var(--bg-2)', borderTop: '1px solid var(--line)', position: 'relative', zIndex: 1 }}>
+    <footer className="site-footer" style={{ background: 'var(--bg-2)', borderTop: '1px solid var(--line)', position: 'relative', zIndex: 1 }}>
       <div className="container-site">
         <div className="grid grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-10" style={{ paddingTop: 48, paddingBottom: 36 }}>
           {/* Brand */}

@@ -18,7 +18,7 @@ function TestimonialCard({ t }) {
     <div className="card card-pad flex flex-col" style={{ padding: '24px 22px', background: 'var(--surface)' }}>
       <div className="flex items-center gap-3 mb-5">
         <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0"
-          style={{ background: 'rgba(242,169,59,0.12)', border: '1px solid rgba(242,169,59,0.4)', color: 'var(--brand)' }}>
+          style={{ background: 'var(--brand-a12)', border: '1px solid var(--brand-a45)', color: 'var(--brand)' }}>
           {initials}
         </div>
         <div className="min-w-0">
@@ -77,10 +77,9 @@ export default function TestimonialsPage() {
   };
 
   return (
-    <div style={{ backgroundColor: 'rgba(15,18,21,0.35)' }}>
+    <div style={{ backgroundColor: 'var(--page-tint)' }}>
       {/* Hero + rating summary */}
       <section className="relative overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none grid-bg" style={{ maskImage: 'linear-gradient(180deg, rgba(0,0,0,0.5), transparent 80%)', WebkitMaskImage: 'linear-gradient(180deg, rgba(0,0,0,0.5), transparent 80%)' }} />
         <div className="container-site relative py-20 sm:py-28">
           <div className="max-w-3xl">
             <Link href="/" className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: 'var(--muted)', textDecoration: 'none' }}>← Back to home</Link>
@@ -141,7 +140,7 @@ export default function TestimonialsPage() {
       {/* Submit form */}
       <section className="section" style={{ paddingBottom: 110 }}>
         <div className="container-site max-w-xl">
-          <div className="card card-pad" style={{ borderColor: 'rgba(242,169,59,0.35)' }}>
+          <div className="card card-pad" style={{ borderColor: 'var(--brand-a35)' }}>
             <p className="eyebrow">Share yours</p>
             <h2 className="section-title text-2xl mt-3 mb-2" style={{ color: 'var(--ink)' }}>Leave a review</h2>
             <p className="text-sm mb-6" style={{ color: 'var(--muted)' }}>

@@ -25,12 +25,11 @@ const API_STATS = [
 
 export default function AboutPage() {
   return (
-    <div style={{ backgroundColor: 'rgba(15,18,21,0.35)' }}>
+    <div style={{ backgroundColor: 'var(--page-tint)' }}>
       {/* Hero */}
       <section className="relative overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none grid-bg" style={{ maskImage: 'linear-gradient(180deg, rgba(0,0,0,0.5), transparent 80%)', WebkitMaskImage: 'linear-gradient(180deg, rgba(0,0,0,0.5), transparent 80%)' }} />
         <div className="absolute top-10 right-1/4 w-96 h-96 rounded-full pointer-events-none"
-          style={{ background: 'radial-gradient(circle, rgba(242,169,59,0.07) 0%, transparent 70%)', filter: 'blur(56px)' }} />
+          style={{ background: 'radial-gradient(circle, var(--brand-a06) 0%, transparent 70%)', filter: 'blur(56px)' }} />
         <div className="container-site relative py-20 sm:py-28">
           <div className="max-w-3xl">
             <p className="eyebrow">About us</p>
@@ -57,7 +56,7 @@ export default function AboutPage() {
       </section>
 
       {/* Mission */}
-      <section className="section" style={{ background: 'rgba(255,255,255,0.014)' }}>
+      <section className="section" style={{ background: 'var(--tint-hairline)' }}>
         <div className="container-site grid lg:grid-cols-12 gap-12">
           <div className="lg:col-span-5">
             <p className="eyebrow">Mission</p>
@@ -122,10 +121,10 @@ export default function AboutPage() {
       </section>
 
       {/* MZAZI API */}
-      <section className="section" style={{ background: 'rgba(255,255,255,0.014)' }}>
+      <section className="section" style={{ background: 'var(--tint-hairline)' }}>
         <div className="container-site">
           <div className="card card-pad relative overflow-hidden" style={{ background: 'linear-gradient(135deg, var(--surface) 0%, var(--bg-2) 100%)' }}>
-            <div aria-hidden="true" className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(circle at 85% 15%, rgba(242,169,59,0.08) 0%, transparent 55%)' }} />
+            <div aria-hidden="true" className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(circle at 85% 15%, var(--brand-a08) 0%, transparent 55%)' }} />
             <div className="relative grid lg:grid-cols-12 gap-10 items-center">
               <div className="lg:col-span-7">
                 <p className="eyebrow">Developer platform</p>

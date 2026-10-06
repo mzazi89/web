@@ -386,9 +386,9 @@ export default function LudoPage() {
                   <button key={v} type="button" onClick={() => setMode(v)}
                     className="px-3 py-2.5 text-xs rounded transition-all"
                     style={{
-                      background: mode === v ? 'rgba(242,169,59,0.12)' : 'var(--bg-2)',
+                      background: mode === v ? 'var(--brand-a12)' : 'var(--bg-2)',
                       color: mode === v ? 'var(--brand)' : 'var(--muted)',
-                      border: `1px solid ${mode === v ? 'rgba(242,169,59,0.5)' : 'var(--line)'}`,
+                      border: `1px solid ${mode === v ? 'var(--brand-a45)' : 'var(--line)'}`,
                       cursor: 'pointer',
                     }}>
                     {l}
@@ -402,9 +402,9 @@ export default function LudoPage() {
                   <button key={n} type="button" onClick={() => setSeats(n)}
                     className="px-4 py-2 text-sm rounded"
                     style={{
-                      background: seats === n ? 'rgba(242,169,59,0.12)' : 'var(--bg-2)',
+                      background: seats === n ? 'var(--brand-a12)' : 'var(--bg-2)',
                       color: seats === n ? 'var(--brand)' : 'var(--muted)',
-                      border: `1px solid ${seats === n ? 'rgba(242,169,59,0.5)' : 'var(--line)'}`,
+                      border: `1px solid ${seats === n ? 'var(--brand-a45)' : 'var(--line)'}`,
                       cursor: 'pointer',
                     }}>
                     {n}
@@ -525,7 +525,7 @@ export default function LudoPage() {
                 const open = p.type === 'human' && !p.joined;
                 return (
                   <div key={p.seat} className="flex items-center justify-between px-4 py-3 rounded"
-                    style={{ background: open ? 'rgba(242,169,59,0.05)' : 'var(--bg-2)', border: `1px solid ${open ? 'rgba(242,169,59,0.25)' : 'var(--line)'}` }}>
+                    style={{ background: open ? 'var(--brand-a04)' : 'var(--bg-2)', border: `1px solid ${open ? 'var(--brand-a25)' : 'var(--line)'}` }}>
                     <div className="flex items-center gap-3">
                       <span style={{ width: 12, height: 12, borderRadius: '50%', background: p.color, display: 'inline-block' }} />
                       {open ? (
@@ -533,7 +533,7 @@ export default function LudoPage() {
                       ) : (
                         <span className="text-sm font-semibold" style={{ color: 'var(--ink)' }}>{p.name}</span>
                       )}
-                      {!open && p.seat === session.seat && <span className="tag" style={{ color: 'var(--brand)', borderColor: 'rgba(242,169,59,0.4)' }}>you</span>}
+                      {!open && p.seat === session.seat && <span className="tag" style={{ color: 'var(--brand)', borderColor: 'var(--brand-a45)' }}>you</span>}
                       {!open && p.type === 'ai' && <span className="tag" style={{ color: 'var(--muted)', borderColor: 'var(--line)' }}>bot</span>}
                     </div>
                     <span className="mono text-[10px]" style={{ color: open ? 'var(--dim)' : 'var(--dim)' }}>{COLOR_NAMES[p.seat]}</span>
@@ -749,7 +749,7 @@ export default function LudoPage() {
               </button>
             )}
             {myTurn && state.phase === 'move' && state.movable.length > 0 && (
-              <div className="w-full py-2.5 text-center rounded" style={{ background: 'rgba(242,169,59,0.08)', border: '1px solid rgba(242,169,59,0.3)' }}>
+              <div className="w-full py-2.5 text-center rounded" style={{ background: 'var(--brand-a08)', border: '1px solid var(--brand-a35)' }}>
                 <span className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: 'var(--brand)' }}>
                   Tap a glowing piece
                 </span>
@@ -839,7 +839,7 @@ export default function LudoPage() {
           @keyframes mz-dice { 0% { transform: rotate(0deg) scale(1); } 25% { transform: rotate(90deg) scale(1.08); } 50% { transform: rotate(180deg) scale(1); } 75% { transform: rotate(270deg) scale(1.08); } 100% { transform: rotate(360deg) scale(1); } }
           @keyframes mz-dice-in { from { transform: rotate(-120deg) scale(0.6); opacity: 0; } to { transform: rotate(0) scale(1); opacity: 1; } }
           @keyframes mz-confetti { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(105vh) rotate(720deg); opacity: 0; } }
-          @keyframes mz-glow { 0%,100% { box-shadow: 0 0 0 0 rgba(242,169,59,0.5); } 50% { box-shadow: 0 0 0 6px rgba(242,169,59,0); } }
+          @keyframes mz-glow { 0%,100% { box-shadow: 0 0 0 0 var(--brand-a45); } 50% { box-shadow: 0 0 0 6px transparent; } }
           @keyframes mz-fade { from { opacity: 0; } to { opacity: 1; } }
           @keyframes mz-pop { from { transform: scale(0.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         `}</style>

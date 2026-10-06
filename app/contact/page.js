@@ -187,11 +187,10 @@ export default function ContactPage() {
   };
 
   return (
-    <div style={{ backgroundColor: 'rgba(15,18,21,0.35)', minHeight: '100vh' }}>
+    <div style={{ backgroundColor: 'var(--page-tint)', minHeight: '100vh' }}>
 
       {/* ── Hero ── */}
       <section className="relative overflow-hidden" style={{ paddingTop: 64, paddingBottom: 40 }}>
-        <div className="absolute inset-0 pointer-events-none grid-bg" style={{ maskImage: 'linear-gradient(180deg, rgba(0,0,0,0.5), transparent 80%)', WebkitMaskImage: 'linear-gradient(180deg, rgba(0,0,0,0.5), transparent 80%)' }} />
         <div className="container-site relative">
           <div className="max-w-3xl">
             <span className="tag tag-amber"><span className="dot anim-pulse" /> 24/7 support available</span>
@@ -255,7 +254,7 @@ export default function ContactPage() {
                       <p className="display font-bold text-sm" style={{ color: 'var(--ink)' }}>Support chat</p>
                       <button onClick={openCompose}
                         className="mono flex items-center gap-1.5 px-3 py-1.5 text-[10px] uppercase tracking-[0.1em]"
-                        style={{ background: 'rgba(242,169,59,0.1)', color: 'var(--brand)', border: '1px solid rgba(242,169,59,0.3)', borderRadius: 2, cursor: 'pointer' }}>
+                        style={{ background: 'var(--brand-a10)', color: 'var(--brand)', border: '1px solid var(--brand-a35)', borderRadius: 2, cursor: 'pointer' }}>
                         <PenGlyph /> New
                       </button>
                     </div>
@@ -307,7 +306,7 @@ export default function ContactPage() {
                     <p className="display font-bold text-sm" style={{ color: 'var(--ink)' }}>Support chat</p>
                     <button onClick={openCompose}
                       className="flex items-center justify-center w-8 h-8"
-                      style={{ background: 'rgba(242,169,59,0.1)', color: 'var(--brand)', border: '1px solid rgba(242,169,59,0.3)', borderRadius: 2, cursor: 'pointer' }}
+                      style={{ background: 'var(--brand-a10)', color: 'var(--brand)', border: '1px solid var(--brand-a35)', borderRadius: 2, cursor: 'pointer' }}
                       title="New Inquiry">
                       <PenGlyph />
                     </button>
@@ -373,7 +372,7 @@ function ThreadRow({ t, active, onClick, fmtDate }) {
   return (
     <button onClick={onClick} className="w-full text-left px-4 py-3 transition-all"
       style={{
-        background: active ? 'rgba(242,169,59,0.06)' : 'transparent',
+        background: active ? 'var(--brand-a06)' : 'transparent',
         borderBottom: '1px solid rgba(38,44,51,0.6)',
         borderLeft: active ? '3px solid var(--brand)' : '3px solid transparent',
         cursor: 'pointer',
@@ -414,8 +413,8 @@ function ComposeForm({ newSubject, setNewSubject, newMsg, setNewMsg, sending, al
         {alert && (
           <div className="px-4 py-3 text-sm"
             style={{
-              background: alert.type === 'success' ? 'rgba(62,207,142,0.08)' : 'rgba(229,72,77,0.08)',
-              border: `1px solid ${alert.type === 'success' ? 'rgba(62,207,142,0.3)' : 'rgba(229,72,77,0.3)'}`,
+              background: alert.type === 'success' ? 'var(--good-a08)' : 'var(--bad-a08)',
+              border: `1px solid ${alert.type === 'success' ? 'var(--good-a35)' : 'var(--bad-a35)'}`,
               color: alert.type === 'success' ? 'var(--good)' : 'var(--bad)',
             }}>{alert.text}</div>
         )}
@@ -449,12 +448,12 @@ function ChatWindow({ thread, messages, msgLoading, newMsg, setNewMsg, sending, 
         {showBack && (
           <button onClick={onBack}
             className="flex items-center justify-center w-8 h-8 flex-shrink-0"
-            style={{ color: 'var(--brand)', background: 'rgba(242,169,59,0.08)', border: '1px solid rgba(242,169,59,0.3)', borderRadius: 2, cursor: 'pointer' }}>
+            style={{ color: 'var(--brand)', background: 'var(--brand-a08)', border: '1px solid var(--brand-a35)', borderRadius: 2, cursor: 'pointer' }}>
             ←
           </button>
         )}
         <div className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0"
-          style={{ background: 'rgba(242,169,59,0.12)', border: '1px solid rgba(242,169,59,0.4)', color: 'var(--brand)' }}>A</div>
+          style={{ background: 'var(--brand-a12)', border: '1px solid var(--brand-a45)', color: 'var(--brand)' }}>A</div>
         <div className="min-w-0 flex-1">
           <p className="display font-bold text-sm truncate" style={{ color: 'var(--ink)' }}>{thread.subject}</p>
           <p className="mono text-[10px] uppercase tracking-[0.12em] flex items-center gap-1.5"
@@ -490,13 +489,13 @@ function ChatWindow({ thread, messages, msgLoading, newMsg, setNewMsg, sending, 
               <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-1`}>
                 {!isUser && (
                   <div className="w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs mr-2 flex-shrink-0 self-end"
-                    style={{ background: 'rgba(242,169,59,0.12)', border: '1px solid rgba(242,169,59,0.4)', color: 'var(--brand)' }}>A</div>
+                    style={{ background: 'var(--brand-a12)', border: '1px solid var(--brand-a45)', color: 'var(--brand)' }}>A</div>
                 )}
                 <div className="px-3.5 py-2.5 text-sm leading-relaxed"
                   style={{
                     maxWidth: 'min(75%, 360px)',
-                    background: isUser ? 'rgba(242,169,59,0.14)' : 'var(--surface-2)',
-                    border: isUser ? '1px solid rgba(242,169,59,0.4)' : '1px solid var(--line)',
+                    background: isUser ? 'var(--brand-a15)' : 'var(--surface-2)',
+                    border: isUser ? '1px solid var(--brand-a45)' : '1px solid var(--line)',
                     color: 'var(--ink)',
                     borderRadius: isUser ? '14px 14px 3px 14px' : '14px 14px 14px 3px',
                   }}>

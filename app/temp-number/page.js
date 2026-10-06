@@ -102,9 +102,8 @@ export default function TempNumberPage() {
   const msgTime = (m) => pick(m, ['time', 'date', 'received_at', 'timestamp'], null);
 
   return (
-    <div style={{ backgroundColor: 'rgba(15,18,21,0.35)', minHeight: '70vh' }}>
+    <div style={{ backgroundColor: 'var(--page-tint)', minHeight: '70vh' }}>
       <section className="relative overflow-hidden" style={{ paddingTop: 64, paddingBottom: 40 }}>
-        <div className="absolute inset-0 pointer-events-none grid-bg" style={{ maskImage: 'linear-gradient(180deg, rgba(0,0,0,0.5), transparent 80%)', WebkitMaskImage: 'linear-gradient(180deg, rgba(0,0,0,0.5), transparent 80%)' }} />
         <div className="container-site relative">
           <div className="max-w-3xl">
             <a href="/api" className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: 'var(--muted)', textDecoration: 'none' }}>← Back to API</a>
@@ -146,8 +145,8 @@ export default function TempNumberPage() {
 
           {status && (
             <div className="mb-6 px-4 py-3 text-sm" style={{
-              background: status.type === 'success' ? 'rgba(62,207,142,0.07)' : 'rgba(229,72,77,0.08)',
-              border: `1px solid ${status.type === 'success' ? 'rgba(62,207,142,0.3)' : 'rgba(229,72,77,0.3)'}`,
+              background: status.type === 'success' ? 'var(--good-a06)' : 'var(--bad-a08)',
+              border: `1px solid ${status.type === 'success' ? 'var(--good-a35)' : 'var(--bad-a35)'}`,
               color: status.type === 'success' ? 'var(--good)' : 'var(--bad)',
             }}>
               {status.text}
@@ -188,8 +187,8 @@ export default function TempNumberPage() {
                         <button key={i} onClick={() => { setSelected(num); setMessages(null); }}
                           className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left"
                           style={{
-                            background: isSel ? 'rgba(242,169,59,0.07)' : 'rgba(15,18,21,0.6)',
-                            border: `1px solid ${isSel ? 'rgba(242,169,59,0.5)' : 'var(--line)'}`,
+                            background: isSel ? 'var(--brand-a06)' : 'var(--surface-2)',
+                            border: `1px solid ${isSel ? 'var(--brand-a45)' : 'var(--line)'}`,
                             cursor: 'pointer',
                             borderRadius: 3,
                           }}>
@@ -249,7 +248,7 @@ export default function TempNumberPage() {
                     ) : (
                       <div className="space-y-2 max-h-[480px] overflow-y-auto pr-1">
                         {messages.map((m, i) => (
-                          <div key={i} className="p-3.5" style={{ background: 'rgba(15,18,21,0.6)', border: '1px solid var(--line)', borderRadius: 3 }}>
+                          <div key={i} className="p-3.5" style={{ background: 'var(--surface-2)', border: '1px solid var(--line)', borderRadius: 3 }}>
                             <div className="flex items-center justify-between gap-2 mb-1.5">
                               <span className="mono text-[10px] font-bold uppercase tracking-[0.12em]" style={{ color: 'var(--brand)' }}>
                                 From {msgFrom(m)}

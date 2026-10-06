@@ -117,7 +117,7 @@ function KeysInner() {
   );
 
   return (
-    <div style={{ backgroundColor: 'rgba(15,18,21,0.35)', minHeight: '70vh' }}>
+    <div style={{ backgroundColor: 'var(--page-tint)', minHeight: '70vh' }}>
       <section className="section" style={{ paddingTop: 64, paddingBottom: 110 }}>
         <div className="container-site max-w-6xl">
           <div className="flex flex-wrap items-end justify-between gap-4 mb-10">
@@ -222,25 +222,25 @@ function KeysInner() {
                               <>
                                 <button onClick={() => act(k, 'revoke')} disabled={busyId === k.id}
                                   className="mono px-2.5 py-1.5 text-[10px] uppercase tracking-[0.08em]"
-                                  style={{ border: '1px solid rgba(229,72,77,0.4)', color: 'var(--bad)', background: 'transparent', cursor: 'pointer' }}>
+                                  style={{ border: '1px solid var(--bad-a45)', color: 'var(--bad)', background: 'transparent', cursor: 'pointer' }}>
                                   Revoke
                                 </button>
                                 <button onClick={() => act(k, 'regenerate')} disabled={busyId === k.id}
                                   className="mono px-2.5 py-1.5 text-[10px] uppercase tracking-[0.08em]"
-                                  style={{ border: '1px solid rgba(242,169,59,0.4)', color: 'var(--brand)', background: 'transparent', cursor: 'pointer' }}>
+                                  style={{ border: '1px solid var(--brand-a45)', color: 'var(--brand)', background: 'transparent', cursor: 'pointer' }}>
                                   Regenerate
                                 </button>
                               </>
                             ) : (
                               <button onClick={() => act(k, 'restore')} disabled={busyId === k.id}
                                 className="mono px-2.5 py-1.5 text-[10px] uppercase tracking-[0.08em]"
-                                style={{ border: '1px solid rgba(62,207,142,0.4)', color: 'var(--good)', background: 'transparent', cursor: 'pointer' }}>
+                                style={{ border: '1px solid var(--good-a45)', color: 'var(--good)', background: 'transparent', cursor: 'pointer' }}>
                                 Restore
                               </button>
                             )}
                             <button onClick={() => removeKey(k)} disabled={busyId === k.id}
                               className="mono px-2.5 py-1.5 text-[10px] uppercase tracking-[0.08em]"
-                              style={{ border: '1px solid rgba(229,72,77,0.4)', color: 'var(--bad)', background: 'transparent', cursor: 'pointer' }}>
+                              style={{ border: '1px solid var(--bad-a45)', color: 'var(--bad)', background: 'transparent', cursor: 'pointer' }}>
                               Delete
                             </button>
                           </div>
@@ -272,7 +272,7 @@ function KeysInner() {
                 </p>
                 <div className="flex items-center gap-2 mb-6">
                   <code className="mono flex-1 px-3 py-2.5 text-xs break-all"
-                    style={{ background: 'var(--surface)', border: '1px solid rgba(242,169,59,0.4)', color: 'var(--brand)' }}>
+                    style={{ background: 'var(--surface)', border: '1px solid var(--brand-a45)', color: 'var(--brand)' }}>
                     {newKey}
                   </code>
                   <CopyButton text={newKey} label="Copy" />
