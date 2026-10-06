@@ -3,11 +3,14 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { cookies } from 'next/headers';
 import { neon } from '@neondatabase/serverless';
+// The panel URL is part of the credentials handed to the buyer, so it has to be
+// the admin-configured one rather than an env default — otherwise the customer
+// is pointed at the wrong host and reports "no panel access".
+import { pteroConfig } from '@/lib/ptero';
 
 export const dynamic = 'force-dynamic';
 const sql = neon(process.env.DATABASE_URL);
 const JWT_SECRET = process.env.JWT_SECRET;
-const PTERO_URL = process.env.PTERODACTYL_URL || 'https://public.mzazi.shop';
 
 // POST /api/panel/credentials
 // Body: { panel_id, password }
@@ -53,9 +56,11 @@ export async function POST(request) {
     if (panelRows.length === 0) return NextResponse.json({ error: 'Panel not found' }, { status: 404 });
     const panel = panelRows[0];
 
+    const { url: panelUrl } = await pteroConfig();
+
     return NextResponse.json({
       credentials: {
-        panel_url:      PTERO_URL,
+        panel_url:      panelUrl,
         username:       panel.ptero_username,
         password:       panel.ptero_password || '(saved before this feature — reset via admin)',
         email:          panel.ptero_email    || `${panel.ptero_username?.toLowerCase()}_${userId}@panel.mzazitech.local`,

@@ -20,6 +20,7 @@ export default function ProductsPage() {
   const [eggs, setEggs]         = useState([]);
   const [loadingNests, setLN]   = useState(false);
   const [loadingEggs, setLE]    = useState(false);
+  const [panelError, setPanelError] = useState('');   // panel/credential failures, shown beside the selectors
   const [form, setForm]         = useState({ ptero_username: '', ptero_password: '', firstname: '', lastname: '', nest_id: '', egg_id: '' });
   const [step, setStep]         = useState('select');
   const [result, setResult]     = useState(null);
@@ -44,24 +45,34 @@ export default function ProductsPage() {
 
   const handleSelectPkg = async (p) => {
     if (!user) { router.push('/login'); return; }
-    setPkg(p); setStep('configure'); setError('');
+    setPkg(p); setStep('configure'); setError(''); setPanelError('');
     setLN(true);
     try {
       const res = await fetch('/api/panel/nests');
-      if (res.ok) { const d = await res.json(); setNests(d.nests || []); }
-    } catch {}
+      const d = await res.json().catch(() => ({}));
+      // Surface the reason. Swallowing it here is what turned a panel error into
+      // an empty "Select a nest" dropdown with nothing to explain it.
+      if (res.ok) setNests(d.nests || []);
+      else setPanelError(d.error || 'Could not load the server types from the panel.');
+    } catch {
+      setPanelError('Could not reach the server. Check your connection and try again.');
+    }
     setLN(false);
   };
 
   const handleNestChange = async (nestId) => {
     setForm(f => ({ ...f, nest_id: nestId, egg_id: '' }));
-    setEggs([]);
+    setEggs([]); setPanelError('');
     if (!nestId) return;
     setLE(true);
     try {
       const res = await fetch(`/api/panel/eggs?nest_id=${nestId}`);
-      if (res.ok) { const d = await res.json(); setEggs(d.eggs || []); }
-    } catch {}
+      const d = await res.json().catch(() => ({}));
+      if (res.ok) setEggs(d.eggs || []);
+      else setPanelError(d.error || 'Could not load the software list from the panel.');
+    } catch {
+      setPanelError('Could not reach the server. Check your connection and try again.');
+    }
     setLE(false);
   };
 
@@ -93,7 +104,7 @@ export default function ProductsPage() {
     }
   };
 
-  const reset = () => { setPkg(null); setStep('select'); setForm({ ptero_username:'',ptero_password:'',firstname:'',lastname:'',nest_id:'',egg_id:'' }); setResult(null); setError(''); setNests([]); setEggs([]); };
+  const reset = () => { setPkg(null); setStep('select'); setForm({ ptero_username:'',ptero_password:'',firstname:'',lastname:'',nest_id:'',egg_id:'' }); setResult(null); setError(''); setPanelError(''); setNests([]); setEggs([]); };
 
   if (loading) {
     return (
@@ -284,6 +295,12 @@ export default function ProductsPage() {
                     {eggs.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}
                   </select>
                 </div>
+
+                {panelError && (
+                  <p className="text-sm px-3 py-2.5" style={{ background: 'var(--bad-tint)', color: 'var(--bad)', borderRadius: 'var(--r-md)', border: '1px solid var(--line-soft)' }}>
+                    {panelError}
+                  </p>
+                )}
 
                 <div className="flex flex-col sm:flex-row gap-3 pt-2">
                   <button type="button" onClick={reset} className="btn btn-ghost flex-1">← Back</button>

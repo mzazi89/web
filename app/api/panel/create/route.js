@@ -2,50 +2,15 @@ import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { neon } from '@neondatabase/serverless';
+// Credentials, allocation picking and the egg lookup all come from lib/ptero so
+// this route resolves the same admin-Settings-first values as the rest of the
+// app. It used to read process.env itself, which is why a key saved in admin
+// Settings left checkout unable to reach the panel at all.
+import { pteroConfig, pteroGet, pteroPost, pteroDelete, pickFreeAllocation, fetchEgg } from '@/lib/ptero';
 
 export const dynamic = 'force-dynamic';
 const sql = neon(process.env.DATABASE_URL);
 const JWT_SECRET = process.env.JWT_SECRET;
-const PTERO_URL = process.env.PTERODACTYL_URL || 'https://public.mzazi.shop';
-const PTERO_KEY = process.env.PTERODACTYL_API_KEY;
-
-const pteroHeaders = {
-  Authorization: `Bearer ${PTERO_KEY}`,
-  'Content-Type': 'application/json',
-  Accept: 'application/json',
-};
-
-async function pteroGet(path) {
-  const res = await fetch(`${PTERO_URL}/api/application${path}`, { headers: pteroHeaders });
-  return res.json();
-}
-
-async function pteroPost(path, body) {
-  const res = await fetch(`${PTERO_URL}/api/application${path}`, {
-    method: 'POST',
-    headers: pteroHeaders,
-    body: JSON.stringify(body),
-  });
-  return { status: res.status, data: await res.json() };
-}
-
-// Pick a concrete free allocation for the new server. Automatic deployment
-// (deploy.locations) fails with "No nodes satisfying the requirements
-// specified for automatic deployment could be found." when no node in the
-// location is auto-deploy ready or has capacity/free ports. Using an
-// unassigned allocation directly works on any panel layout.
-async function pickFreeAllocation() {
-  try {
-    const res = await fetch(`${PTERO_URL}/api/application/nodes?include=allocations&per_page=100`, { headers: pteroHeaders });
-    const data = await res.json();
-    for (const n of data?.data || []) {
-      const allocs = n.attributes?.relationships?.allocations?.data || [];
-      const free = allocs.find((a) => a.attributes && !a.attributes.assigned);
-      if (free) return { allocation: { default: free.attributes.id } };
-    }
-  } catch {}
-  return { deploy: { locations: [1], dedicated_ip: false, port_range: [] } };
-}
 
 export async function POST(request) {
   try {
@@ -88,22 +53,17 @@ export async function POST(request) {
     const userRows = await sql`SELECT email, firstname, lastname FROM users WHERE id = ${userId}`;
     if (userRows.length === 0) return NextResponse.json({ error: 'User not found' }, { status: 404 });
 
-    // Fetch egg details
-    const eggData = await pteroGet(`/nests/${nest_id}/eggs/${egg_id}?include=variables`);
-    if (!eggData?.attributes) {
-      return NextResponse.json({ error: 'Could not fetch egg details from panel' }, { status: 400 });
-    }
-
-    const eggAttrs = eggData.attributes;
-    const dockerImage = eggAttrs.docker_image || eggAttrs.docker_images?.[0] || 'ghcr.io/pterodactyl/yolks:java_17';
-    const startupCmd  = eggAttrs.startup || '{{SERVER_JARFILE}}';
-
-    // Build environment from egg variables
-    const eggVariables = eggAttrs.relationships?.variables?.data || [];
-    const environment  = {};
-    for (const v of eggVariables) {
-      const attr = v.attributes;
-      environment[attr.env_variable] = attr.default_value ?? '';
+    // Fetch egg details — docker image, startup and the variable defaults.
+    let dockerImage;
+    let startupCmd;
+    let environment;
+    try {
+      ({ dockerImage, startup: startupCmd, environment } = await fetchEgg(nest_id, egg_id));
+    } catch (e) {
+      return NextResponse.json(
+        { error: e.message || 'Could not fetch egg details from panel' },
+        { status: 502 }
+      );
     }
 
     // ── Find-or-create Pterodactyl user ─────────────────────────────────────
@@ -141,14 +101,14 @@ export async function POST(request) {
       }
 
       // Username already exists — look it up by username
-      const searchRes = await pteroGet(`/users?filter[username]=${encodeURIComponent(ptero_username)}`);
+      const { data: searchRes } = await pteroGet(`/users?filter[username]=${encodeURIComponent(ptero_username)}`);
       const match = (searchRes?.data || []).find(
         u => u.attributes.username.toLowerCase() === ptero_username.toLowerCase()
       );
 
       if (!match) {
         // Conflict but can't find the user — try email search as fallback
-        const emailSearch = await pteroGet(`/users?filter[email]=${encodeURIComponent(pteroEmail)}`);
+        const { data: emailSearch } = await pteroGet(`/users?filter[email]=${encodeURIComponent(pteroEmail)}`);
         const emailMatch  = (emailSearch?.data || []).find(
           u => u.attributes.email.toLowerCase() === pteroEmail.toLowerCase()
         );
@@ -193,10 +153,7 @@ export async function POST(request) {
       // Only clean up the ptero user if we just created them
       if (freshlyCreated) {
         try {
-          await fetch(`${PTERO_URL}/api/application/users/${pteroUserId}`, {
-            method: 'DELETE',
-            headers: pteroHeaders,
-          });
+          await pteroDelete(`/users/${pteroUserId}`);
         } catch {}
       }
       const errMsg = serverRes.data?.errors?.[0]?.detail || 'Failed to create server';
@@ -237,6 +194,7 @@ export async function POST(request) {
     }
 
     // ── Return all credentials the user needs ────────────────────────────────
+    const { url: panelUrl } = await pteroConfig();
     return NextResponse.json({
       message: 'Panel created successfully!',
       panel: {
@@ -245,7 +203,7 @@ export async function POST(request) {
         username:        ptero_username,
         password:        ptero_password,
         email:           pteroEmail,
-        panel_url:       PTERO_URL,
+        panel_url:       panelUrl,
         package:         pkg.name,
         price:           pkg.price,
         expires_after_hours: pkg.expires_after_hours || null,
