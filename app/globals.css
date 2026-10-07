@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   MZAZI TECH — Design System v2  ("Aurora")
-   Purple-primary · soft-blue secondary · light & dark · mobile-first
+   MZAZI TECH — Design System v3  ("Midnight Blue")
+   Blue-primary · black & white · light & dark · mobile-first
    ───────────────────────────────────────────────────────────────────────────
    CONTRACT: every custom class name from the previous "Ink & Bolt" system is
    preserved with its original visual ROLE (button / card / chip / label …).
@@ -15,27 +15,31 @@
 
 :root {
   /* ── Brand ──────────────────────────────────────────────────────────── */
-  --brand: #7C3AED;   /* primary purple */
-  --brand-bright: #8B5CF6;
-  --brand-deep: #6D28D9;
-  --brand-soft: #A78BFA;
-  --brand-tint: rgba(124, 58, 237, 0.10);
+  --brand: #2563EB;   /* primary blue */
+  --brand-bright: #3B82F6;
+  --brand-deep: #1D4ED8;
+  --brand-soft: #93C5FD;
+  --brand-tint: rgba(37, 99, 235, 0.10);
 
-  --blue: #2563EB;   /* secondary soft blue */
-  --blue-bright: #3B82F6;
-  --blue-deep: #1D4ED8;
-  --blue-soft: #93C5FD;
-  --blue-tint: rgba(37, 99, 235, 0.10);
-  --pink: #DB2777;   /* pink accent */
-  --pink-bright: #EC4899;
-  --pink-deep: #BE185D;
-  --pink-soft: #F9A8D4;
-  --pink-tint: rgba(219, 39, 119, 0.10);
-  --yellow: #A16207;   /* yellow attention (700 for AA text on white) */
-  --yellow-bright: #FACC15;
-  --yellow-deep: #854D0E;
-  --yellow-soft: #FEF08A;
-  --yellow-tint: rgba(250, 204, 21, 0.18);
+  --blue: #0284C7;   /* secondary sky blue */
+  --blue-bright: #0EA5E9;
+  --blue-deep: #0369A1;
+  --blue-soft: #7DD3FC;
+  --blue-tint: rgba(2, 132, 199, 0.10);
+  /* --pink and --yellow survive as NAMES only. The blue/black/white palette has
+     no pink and no gold, so both families are re-pointed at the blue ramp. Tags,
+     badges and highlights that used them stay legible and on-palette rather than
+     turning grey. */
+  --pink: #0369A1;   /* accent blue (was pink) */
+  --pink-bright: #0EA5E9;
+  --pink-deep: #075985;
+  --pink-soft: #BAE6FD;
+  --pink-tint: rgba(3, 105, 161, 0.10);
+  --yellow: #1E40AF;   /* deep blue; was gold (800 keeps AA text on white) */
+  --yellow-bright: #60A5FA;
+  --yellow-deep: #1E3A8A;
+  --yellow-soft: #DBEAFE;
+  --yellow-tint: rgba(30, 64, 175, 0.12);
 
   /* ── Surfaces (light) ───────────────────────────────────────────────────
      Translucent on purpose: the page wallpaper and the animated aurora read
@@ -44,13 +48,13 @@
      text still sits on a stable, controlled field rather than on raw artwork —
      that is what keeps contrast predictable while the background stays
      visible. Making any of these opaque again hides the background everywhere. */
-  --bg: #FBFBFD;
-  --bg-2: rgba(255, 255, 255, 0.72);
-  --surface: rgba(255, 255, 255, 0.78);
-  --surface-2: rgba(255, 255, 255, 0.62);
-  --surface-3: rgba(244, 245, 250, 0.52);
-  --line: rgba(214, 217, 231, 0.80);
-  --line-soft: rgba(228, 230, 240, 0.66);
+  --bg: #F8FAFD;
+  --bg-2: rgba(255, 255, 255, 0.74);
+  --surface: rgba(255, 255, 255, 0.82);
+  --surface-2: rgba(255, 255, 255, 0.66);
+  --surface-3: rgba(238, 243, 250, 0.56);
+  --line: rgba(203, 213, 229, 0.82);
+  --line-soft: rgba(219, 227, 240, 0.68);
 
   /* One knob for every glass surface, so the whole site stays consistent. */
   --glass-blur: 18px;
@@ -59,18 +63,18 @@
   /* Content-wrapper tint. Replaces the dark scrim thirteen pages hardcoded
      inline (var(--page-tint)); that literal washed light mode out, so the
      value is theme-aware now. */
-  --page-tint: rgba(255, 255, 255, 0.34);
-  --tint-hairline: rgba(124, 58, 237, 0.05);
-  --star: rgba(124, 58, 237, 0.20);
-  --brand-a04: rgba(124, 58, 237, 0.04);
-  --brand-a06: rgba(124, 58, 237, 0.06);
-  --brand-a08: rgba(124, 58, 237, 0.08);
-  --brand-a10: rgba(124, 58, 237, 0.10);
-  --brand-a12: rgba(124, 58, 237, 0.12);
-  --brand-a15: rgba(124, 58, 237, 0.15);
-  --brand-a25: rgba(124, 58, 237, 0.25);
-  --brand-a35: rgba(124, 58, 237, 0.35);
-  --brand-a45: rgba(124, 58, 237, 0.45);
+  --page-tint: rgba(248, 250, 253, 0.34);
+  --tint-hairline: rgba(37, 99, 235, 0.05);
+  --star: rgba(37, 99, 235, 0.20);
+  --brand-a04: rgba(37, 99, 235, 0.04);
+  --brand-a06: rgba(37, 99, 235, 0.06);
+  --brand-a08: rgba(37, 99, 235, 0.08);
+  --brand-a10: rgba(37, 99, 235, 0.10);
+  --brand-a12: rgba(37, 99, 235, 0.12);
+  --brand-a15: rgba(37, 99, 235, 0.15);
+  --brand-a25: rgba(37, 99, 235, 0.25);
+  --brand-a35: rgba(37, 99, 235, 0.35);
+  --brand-a45: rgba(37, 99, 235, 0.45);
 
   --good-a04: rgba(4, 120, 87, 0.04);
   --good-a06: rgba(4, 120, 87, 0.06);
@@ -92,15 +96,15 @@
   --bad-a35: rgba(225, 29, 72, 0.35);
   --bad-a45: rgba(225, 29, 72, 0.45);
 
-  --blue-a04: rgba(37, 99, 235, 0.04);
-  --blue-a06: rgba(37, 99, 235, 0.06);
-  --blue-a08: rgba(37, 99, 235, 0.08);
-  --blue-a10: rgba(37, 99, 235, 0.10);
-  --blue-a12: rgba(37, 99, 235, 0.12);
-  --blue-a15: rgba(37, 99, 235, 0.15);
-  --blue-a25: rgba(37, 99, 235, 0.25);
-  --blue-a35: rgba(37, 99, 235, 0.35);
-  --blue-a45: rgba(37, 99, 235, 0.45);
+  --blue-a04: rgba(2, 132, 199, 0.04);
+  --blue-a06: rgba(2, 132, 199, 0.06);
+  --blue-a08: rgba(2, 132, 199, 0.08);
+  --blue-a10: rgba(2, 132, 199, 0.10);
+  --blue-a12: rgba(2, 132, 199, 0.12);
+  --blue-a15: rgba(2, 132, 199, 0.15);
+  --blue-a25: rgba(2, 132, 199, 0.25);
+  --blue-a35: rgba(2, 132, 199, 0.35);
+  --blue-a45: rgba(2, 132, 199, 0.45);
 
   /* ── Tint ramp ──────────────────────────────────────────────────────────
      Translucent washes, one alpha per step. Pages used to hardcode the old
@@ -113,10 +117,10 @@
 
 
   /* ── Text (light) ───────────────────────────────────────────────────── */
-  --ink: #0A0A0F;
-  --ink-2: #3A3F52;
-  --muted: #464B60;   /* AA over the animated background */
-  --dim: #4E5468;     /* AA over the animated background */
+  --ink: #05070D;
+  --ink-2: #33405A;
+  --muted: #46536E;   /* AA over the animated background */
+  --dim: #4E5B76;     /* AA over the animated background */
 
   /* ── Status ─────────────────────────────────────────────────────────── */
   --good: #047857;
@@ -130,11 +134,11 @@
   --on-brand: #FFFFFF;
 
   /* ── Elevation ──────────────────────────────────────────────────────── */
-  --shadow-xs: 0 1px 2px rgba(18, 21, 42, 0.05);
-  --shadow-sm: 0 2px 8px rgba(18, 21, 42, 0.06);
-  --shadow-md: 0 8px 24px rgba(18, 21, 42, 0.08);
-  --shadow-lg: 0 18px 44px rgba(18, 21, 42, 0.12);
-  --shadow-brand: 0 8px 24px rgba(124, 58, 237, 0.24);
+  --shadow-xs: 0 1px 3px rgba(13, 30, 66, 0.05);
+  --shadow-sm: 0 3px 10px rgba(13, 30, 66, 0.06);
+  --shadow-md: 0 10px 28px rgba(13, 30, 66, 0.09);
+  --shadow-lg: 0 20px 48px rgba(13, 30, 66, 0.13);
+  --shadow-brand: 0 10px 26px rgba(37, 99, 235, 0.26);
 
   /* ── Type ───────────────────────────────────────────────────────────── */
   --font-display: 'Space Grotesk', 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -155,11 +159,11 @@
   --sp-5: 24px; --sp-6: 32px; --sp-7: 48px; --sp-8: 64px;
 
   /* ── Radius ─────────────────────────────────────────────────────────── */
-  --r-xs: 6px;
-  --r-sm: 8px;
-  --r-md: 12px;
-  --r-lg: 16px;
-  --r-xl: 22px;
+  --r-xs: 8px;
+  --r-sm: 10px;
+  --r-md: 15px;
+  --r-lg: 20px;
+  --r-xl: 28px;
   --r-pill: 999px;
 
   /* ── Layout ─────────────────────────────────────────────────────────── */
@@ -171,7 +175,7 @@
   --dur: 0.2s;
 
   /* ── Translucent shell backgrounds (broader support than color-mix) ── */
-  --header-bg: rgba(251, 251, 253, 0.92);
+  --header-bg: rgba(248, 250, 253, 0.92);
   /* ── Per-page wallpaper strength (consumed by RouteBackdrop) ──────────
      Dark artwork behind a LIGHT page is exactly what made text unreadable:
      with the old flat 0.55 scrim the effective background became #98969D and
@@ -193,25 +197,25 @@
 
 /* ── Dark theme: dark slate / charcoal, never pure black ────────────────── */
 [data-theme='dark'] {
-  --bg: #0A0A0F;
-  --bg-2: rgba(16, 16, 24, 0.74);
-  --surface: rgba(26, 26, 40, 0.72);
-  --surface-2: rgba(35, 35, 51, 0.60);
-  --surface-3: rgba(37, 37, 51, 0.48);
-  --line: rgba(72, 72, 100, 0.72);
-  --line-soft: rgba(60, 60, 84, 0.62);
-  --page-tint: rgba(10, 10, 15, 0.30);
+  --bg: #04060D;
+  --bg-2: rgba(9, 13, 24, 0.74);
+  --surface: rgba(15, 21, 37, 0.72);
+  --surface-2: rgba(23, 30, 50, 0.60);
+  --surface-3: rgba(29, 37, 59, 0.48);
+  --line: rgba(52, 64, 96, 0.72);
+  --line-soft: rgba(41, 51, 78, 0.62);
+  --page-tint: rgba(4, 6, 13, 0.30);
   --tint-hairline: rgba(255, 255, 255, 0.05);
   --star: rgba(255, 255, 255, 0.26);
-  --brand-a04: rgba(167, 139, 250, 0.04);
-  --brand-a06: rgba(167, 139, 250, 0.06);
-  --brand-a08: rgba(167, 139, 250, 0.08);
-  --brand-a10: rgba(167, 139, 250, 0.10);
-  --brand-a12: rgba(167, 139, 250, 0.12);
-  --brand-a15: rgba(167, 139, 250, 0.15);
-  --brand-a25: rgba(167, 139, 250, 0.25);
-  --brand-a35: rgba(167, 139, 250, 0.35);
-  --brand-a45: rgba(167, 139, 250, 0.45);
+  --brand-a04: rgba(96, 165, 250, 0.04);
+  --brand-a06: rgba(96, 165, 250, 0.06);
+  --brand-a08: rgba(96, 165, 250, 0.08);
+  --brand-a10: rgba(96, 165, 250, 0.10);
+  --brand-a12: rgba(96, 165, 250, 0.12);
+  --brand-a15: rgba(96, 165, 250, 0.15);
+  --brand-a25: rgba(96, 165, 250, 0.25);
+  --brand-a35: rgba(96, 165, 250, 0.35);
+  --brand-a45: rgba(96, 165, 250, 0.45);
 
   --good-a04: rgba(52, 211, 153, 0.04);
   --good-a06: rgba(52, 211, 153, 0.06);
@@ -233,46 +237,46 @@
   --bad-a35: rgba(251, 113, 133, 0.35);
   --bad-a45: rgba(251, 113, 133, 0.45);
 
-  --blue-a04: rgba(96, 165, 250, 0.04);
-  --blue-a06: rgba(96, 165, 250, 0.06);
-  --blue-a08: rgba(96, 165, 250, 0.08);
-  --blue-a10: rgba(96, 165, 250, 0.10);
-  --blue-a12: rgba(96, 165, 250, 0.12);
-  --blue-a15: rgba(96, 165, 250, 0.15);
-  --blue-a25: rgba(96, 165, 250, 0.25);
-  --blue-a35: rgba(96, 165, 250, 0.35);
-  --blue-a45: rgba(96, 165, 250, 0.45);
+  --blue-a04: rgba(56, 189, 248, 0.04);
+  --blue-a06: rgba(56, 189, 248, 0.06);
+  --blue-a08: rgba(56, 189, 248, 0.08);
+  --blue-a10: rgba(56, 189, 248, 0.10);
+  --blue-a12: rgba(56, 189, 248, 0.12);
+  --blue-a15: rgba(56, 189, 248, 0.15);
+  --blue-a25: rgba(56, 189, 248, 0.25);
+  --blue-a35: rgba(56, 189, 248, 0.35);
+  --blue-a45: rgba(56, 189, 248, 0.45);
 
 
 
 
 
   --ink: #FFFFFF;
-  --ink-2: #C6C6D6;
-  --muted: #B4B6CC;   /* AA over the animated background */
-  --dim: #A8AAC2;     /* AA over the animated background */
+  --ink-2: #C9D3E6;
+  --muted: #B6C2D9;   /* AA over the animated background */
+  --dim: #A9B6CE;     /* AA over the animated background */
 
-  --brand: #A78BFA;
-  --brand-bright: #C4B5FD;
-  --brand-deep: #8B5CF6;
-  --brand-soft: #C4B5FD;
-  --brand-tint: rgba(167, 139, 250, 0.16);
+  --brand: #60A5FA;
+  --brand-bright: #93C5FD;
+  --brand-deep: #3B82F6;
+  --brand-soft: #BFDBFE;
+  --brand-tint: rgba(96, 165, 250, 0.16);
 
-  --blue: #60A5FA;
-  --blue-bright: #93C5FD;
-  --blue-deep: #3B82F6;
-  --blue-soft: #BFDBFE;
-  --blue-tint: rgba(96, 165, 250, 0.16);
-  --pink: #F472B6;   /* pink accent */
-  --pink-bright: #F9A8D4;
-  --pink-deep: #EC4899;
-  --pink-soft: #FBCFE8;
-  --pink-tint: rgba(244, 114, 182, 0.16);
-  --yellow: #FACC15;   /* yellow attention */
-  --yellow-bright: #FDE047;
-  --yellow-deep: #EAB308;
-  --yellow-soft: #FEF08A;
-  --yellow-tint: rgba(250, 204, 21, 0.16);
+  --blue: #38BDF8;
+  --blue-bright: #7DD3FC;
+  --blue-deep: #0EA5E9;
+  --blue-soft: #BAE6FD;
+  --blue-tint: rgba(56, 189, 248, 0.16);
+  --pink: #7DD3FC;   /* accent blue (was pink) */
+  --pink-bright: #BAE6FD;
+  --pink-deep: #38BDF8;
+  --pink-soft: #E0F2FE;
+  --pink-tint: rgba(125, 211, 252, 0.16);
+  --yellow: #BFDBFE;   /* pale blue; was gold */
+  --yellow-bright: #DBEAFE;
+  --yellow-deep: #93C5FD;
+  --yellow-soft: #EFF6FF;
+  --yellow-tint: rgba(147, 197, 253, 0.16);
 
   --good: #34D399;
   --good-tint: rgba(52, 211, 153, 0.14);
@@ -283,13 +287,13 @@
 
   --on-brand: #FFFFFF;
 
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.30);
-  --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.32);
-  --shadow-md: 0 10px 28px rgba(0, 0, 0, 0.40);
-  --shadow-lg: 0 20px 48px rgba(0, 0, 0, 0.50);
-  --shadow-brand: 0 8px 26px rgba(124, 58, 237, 0.36);
+  --shadow-xs: 0 1px 3px rgba(0, 0, 0, 0.40);
+  --shadow-sm: 0 3px 12px rgba(0, 0, 0, 0.42);
+  --shadow-md: 0 12px 30px rgba(0, 0, 0, 0.48);
+  --shadow-lg: 0 22px 52px rgba(0, 0, 0, 0.56);
+  --shadow-brand: 0 10px 28px rgba(96, 165, 250, 0.30);
 
-  --header-bg: rgba(12, 12, 18, 0.94);
+  --header-bg: rgba(6, 9, 17, 0.94);
   --backdrop-image: 0.70;
   --backdrop-scrim: 0.76;
 }
@@ -297,25 +301,25 @@
 /* Honour the OS preference when the user has not chosen explicitly. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
-    --bg: #0A0A0F;
-    --bg-2: rgba(16, 16, 24, 0.74);
-    --surface: rgba(26, 26, 40, 0.72);
-    --surface-2: rgba(35, 35, 51, 0.60);
-    --surface-3: rgba(37, 37, 51, 0.48);
-    --line: rgba(72, 72, 100, 0.72);
-    --line-soft: rgba(60, 60, 84, 0.62);
-    --page-tint: rgba(10, 10, 15, 0.30);
+    --bg: #04060D;
+    --bg-2: rgba(9, 13, 24, 0.74);
+    --surface: rgba(15, 21, 37, 0.72);
+    --surface-2: rgba(23, 30, 50, 0.60);
+    --surface-3: rgba(29, 37, 59, 0.48);
+    --line: rgba(52, 64, 96, 0.72);
+    --line-soft: rgba(41, 51, 78, 0.62);
+    --page-tint: rgba(4, 6, 13, 0.30);
     --tint-hairline: rgba(255, 255, 255, 0.05);
     --star: rgba(255, 255, 255, 0.26);
-    --brand-a04: rgba(167, 139, 250, 0.04);
-    --brand-a06: rgba(167, 139, 250, 0.06);
-    --brand-a08: rgba(167, 139, 250, 0.08);
-    --brand-a10: rgba(167, 139, 250, 0.10);
-    --brand-a12: rgba(167, 139, 250, 0.12);
-    --brand-a15: rgba(167, 139, 250, 0.15);
-    --brand-a25: rgba(167, 139, 250, 0.25);
-    --brand-a35: rgba(167, 139, 250, 0.35);
-    --brand-a45: rgba(167, 139, 250, 0.45);
+    --brand-a04: rgba(96, 165, 250, 0.04);
+    --brand-a06: rgba(96, 165, 250, 0.06);
+    --brand-a08: rgba(96, 165, 250, 0.08);
+    --brand-a10: rgba(96, 165, 250, 0.10);
+    --brand-a12: rgba(96, 165, 250, 0.12);
+    --brand-a15: rgba(96, 165, 250, 0.15);
+    --brand-a25: rgba(96, 165, 250, 0.25);
+    --brand-a35: rgba(96, 165, 250, 0.35);
+    --brand-a45: rgba(96, 165, 250, 0.45);
 
     --good-a04: rgba(52, 211, 153, 0.04);
     --good-a06: rgba(52, 211, 153, 0.06);
@@ -337,54 +341,54 @@
     --bad-a35: rgba(251, 113, 133, 0.35);
     --bad-a45: rgba(251, 113, 133, 0.45);
 
-    --blue-a04: rgba(96, 165, 250, 0.04);
-    --blue-a06: rgba(96, 165, 250, 0.06);
-    --blue-a08: rgba(96, 165, 250, 0.08);
-    --blue-a10: rgba(96, 165, 250, 0.10);
-    --blue-a12: rgba(96, 165, 250, 0.12);
-    --blue-a15: rgba(96, 165, 250, 0.15);
-    --blue-a25: rgba(96, 165, 250, 0.25);
-    --blue-a35: rgba(96, 165, 250, 0.35);
-    --blue-a45: rgba(96, 165, 250, 0.45);
+    --blue-a04: rgba(56, 189, 248, 0.04);
+    --blue-a06: rgba(56, 189, 248, 0.06);
+    --blue-a08: rgba(56, 189, 248, 0.08);
+    --blue-a10: rgba(56, 189, 248, 0.10);
+    --blue-a12: rgba(56, 189, 248, 0.12);
+    --blue-a15: rgba(56, 189, 248, 0.15);
+    --blue-a25: rgba(56, 189, 248, 0.25);
+    --blue-a35: rgba(56, 189, 248, 0.35);
+    --blue-a45: rgba(56, 189, 248, 0.45);
 
 
 
     --ink: #FFFFFF;
-    --ink-2: #C6C6D6;
-    --muted: #B4B6CC;
-    --dim: #A8AAC2;
-    --brand: #A78BFA;
-    --brand-bright: #C4B5FD;
-    --brand-deep: #8B5CF6;
-    --brand-soft: #C4B5FD;
-    --brand-tint: rgba(167, 139, 250, 0.16);
-    --blue: #60A5FA;
-    --blue-bright: #93C5FD;
-    --blue-deep: #3B82F6;
-    --blue-soft: #BFDBFE;
-    --blue-tint: rgba(96, 165, 250, 0.16);
-    --pink: #F472B6;   /* pink accent */
-    --pink-bright: #F9A8D4;
-    --pink-deep: #EC4899;
-    --pink-soft: #FBCFE8;
-    --pink-tint: rgba(244, 114, 182, 0.16);
-    --yellow: #FACC15;   /* yellow attention */
-    --yellow-bright: #FDE047;
-    --yellow-deep: #EAB308;
-    --yellow-soft: #FEF08A;
-    --yellow-tint: rgba(250, 204, 21, 0.16);
+    --ink-2: #C9D3E6;
+    --muted: #B6C2D9;
+    --dim: #A9B6CE;
+    --brand: #60A5FA;
+    --brand-bright: #93C5FD;
+    --brand-deep: #3B82F6;
+    --brand-soft: #BFDBFE;
+    --brand-tint: rgba(96, 165, 250, 0.16);
+    --blue: #38BDF8;
+    --blue-bright: #7DD3FC;
+    --blue-deep: #0EA5E9;
+    --blue-soft: #BAE6FD;
+    --blue-tint: rgba(56, 189, 248, 0.16);
+    --pink: #7DD3FC;   /* accent blue (was pink) */
+    --pink-bright: #BAE6FD;
+    --pink-deep: #38BDF8;
+    --pink-soft: #E0F2FE;
+    --pink-tint: rgba(125, 211, 252, 0.16);
+    --yellow: #BFDBFE;   /* pale blue; was gold */
+    --yellow-bright: #DBEAFE;
+    --yellow-deep: #93C5FD;
+    --yellow-soft: #EFF6FF;
+    --yellow-tint: rgba(147, 197, 253, 0.16);
     --good: #34D399;
     --good-tint: rgba(52, 211, 153, 0.14);
     --bad: #FB7185;
     --bad-tint: rgba(251, 113, 133, 0.14);
     --warn: #FACC15;
     --warn-tint: rgba(250, 204, 21, 0.14);
-    --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.30);
-    --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.32);
-    --shadow-md: 0 10px 28px rgba(0, 0, 0, 0.40);
-    --shadow-lg: 0 20px 48px rgba(0, 0, 0, 0.50);
-    --shadow-brand: 0 8px 26px rgba(124, 58, 237, 0.36);
-    --header-bg: rgba(12, 12, 18, 0.94);  
+    --shadow-xs: 0 1px 3px rgba(0, 0, 0, 0.40);
+    --shadow-sm: 0 3px 12px rgba(0, 0, 0, 0.42);
+    --shadow-md: 0 12px 30px rgba(0, 0, 0, 0.48);
+    --shadow-lg: 0 22px 52px rgba(0, 0, 0, 0.56);
+    --shadow-brand: 0 10px 28px rgba(96, 165, 250, 0.30);
+    --header-bg: rgba(6, 9, 17, 0.94);  
     --backdrop-image: 0.70;
     --backdrop-scrim: 0.76;
   }
@@ -536,10 +540,10 @@ h3 { font-size: var(--text-xl); }
   pointer-events: none;
   z-index: -1;
 }
-.orb-brand  { background: rgba(124, 58, 237, 0.42); }
-.orb-blue   { background: rgba(37, 99, 235, 0.38); }
-.orb-pink   { background: rgba(219, 39, 119, 0.36); }
-.orb-yellow { background: rgba(250, 204, 21, 0.34); }
+.orb-brand  { background: rgba(37, 99, 235, 0.42); }
+.orb-blue   { background: rgba(2, 132, 199, 0.38); }
+.orb-pink   { background: rgba(56, 189, 248, 0.34); }
+.orb-yellow { background: rgba(147, 197, 253, 0.30); }
 
 /* ───────────────────────── 5. LAYOUT SCAFFOLDING ─────────────────────────── */
 
@@ -571,7 +575,7 @@ h3 { font-size: var(--text-xl); }
   height: 3px;
   margin-top: 12px;
   border-radius: var(--r-pill);
-  background: linear-gradient(90deg, var(--brand), var(--pink), var(--blue));
+  background: linear-gradient(90deg, var(--brand), var(--brand-bright), var(--blue));
 }
 
 .page-pad { padding: 16px; }
@@ -581,7 +585,7 @@ h3 { font-size: var(--text-xl); }
 .grid-2-responsive {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 14px;
+  gap: 16px;
 }
 @media (min-width: 640px) { .grid-2-responsive { grid-template-columns: 1fr 1fr; } }
 
@@ -589,7 +593,7 @@ h3 { font-size: var(--text-xl); }
 .grid-cards {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 14px;
+  gap: 16px;
 }
 @media (min-width: 640px) { .grid-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (min-width: 1024px) { .grid-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
@@ -610,7 +614,7 @@ h3 { font-size: var(--text-xl); }
   text-transform: none;
   padding: 12px 20px;
   min-height: 44px;              /* accessible touch target */
-  border-radius: var(--r-md);
+  border-radius: var(--r-pill);
   cursor: pointer;
   text-decoration: none;
   border: 1px solid transparent;
@@ -624,16 +628,16 @@ h3 { font-size: var(--text-xl); }
 .btn:disabled { opacity: 0.55; cursor: not-allowed; }
 
 .btn-primary {
-  background: var(--brand);
+  background: linear-gradient(135deg, var(--brand), var(--brand-deep));
   color: var(--on-brand);
   box-shadow: var(--shadow-brand);
 }
-.btn-primary:hover { background: var(--brand-deep); }
+.btn-primary:hover { background: linear-gradient(135deg, var(--brand-deep), var(--brand)); }
 
 .btn-blue {
   background: var(--blue);
   color: #fff;
-  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.22);
+  box-shadow: 0 10px 26px rgba(2, 132, 199, 0.26);
 }
 .btn-blue:hover { background: var(--blue-deep); }
 
@@ -654,8 +658,8 @@ h3 { font-size: var(--text-xl); }
 .btn-danger { background: var(--bad); color: #fff; }
 .btn-danger:hover { filter: brightness(1.08); }
 
-.btn-sm { font-size: 13.5px; padding: 8px 14px; min-height: 36px; border-radius: var(--r-sm); }
-.btn-lg { font-size: 16px; padding: 15px 28px; min-height: 52px; border-radius: var(--r-lg); }
+.btn-sm { font-size: 13.5px; padding: 8px 14px; min-height: 36px; border-radius: var(--r-pill); }
+.btn-lg { font-size: 16px; padding: 15px 28px; min-height: 52px; border-radius: var(--r-pill); }
 .btn-block { width: 100%; }
 
 /* Mobile: make the primary action of a form easy to hit. */
@@ -669,7 +673,7 @@ h3 { font-size: var(--text-xl); }
 .card {
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: var(--r-lg);
+  border-radius: var(--r-xl);
   box-shadow: var(--shadow-xs);
 }
 .card-pad { padding: 18px; }
@@ -679,13 +683,13 @@ h3 { font-size: var(--text-xl); }
 .glow-card {
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: var(--r-lg);
+  border-radius: var(--r-xl);
   box-shadow: var(--shadow-xs);
   transition: border-color var(--dur) var(--ease), transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
 }
 .glow-card:hover {
   border-color: var(--brand-soft);
-  transform: translateY(-2px);
+  transform: translateY(-4px);
   box-shadow: var(--shadow-md);
 }
 
@@ -726,7 +730,7 @@ h3 { font-size: var(--text-xl); }
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 3px;
-  background: linear-gradient(90deg, var(--brand), var(--pink), var(--blue));
+  background: linear-gradient(90deg, var(--brand), var(--brand-bright), var(--blue));
 }
 
 /* Editorial numbered row (feature lists). Collapses gracefully on mobile. */
@@ -1373,10 +1377,10 @@ select.input {
   align-items: center;
   justify-content: center;
   background:
-    radial-gradient(70% 70% at 26% 18%, rgba(124, 58, 237, 0.88), transparent 70%),
-    radial-gradient(62% 62% at 82% 78%, rgba(37, 99, 235, 0.82), transparent 72%),
-    radial-gradient(45% 45% at 88% 12%, rgba(250, 204, 21, 0.55), transparent 70%),
-    linear-gradient(135deg, #6D28D9, #DB2777 52%, #2563EB);
+    radial-gradient(70% 70% at 26% 18%, rgba(37, 99, 235, 0.88), transparent 70%),
+    radial-gradient(62% 62% at 82% 78%, rgba(2, 132, 199, 0.82), transparent 72%),
+    radial-gradient(45% 45% at 88% 12%, rgba(96, 165, 250, 0.55), transparent 70%),
+    linear-gradient(135deg, #1D4ED8, #0EA5E9 52%, #2563EB);
   color: #fff;
   font-family: var(--font-display);
   font-weight: 700;
@@ -1542,7 +1546,7 @@ select.input {
 .step.is-done .step-num { background: var(--good-tint); color: var(--good); }
 
 .progress-track { height: 6px; border-radius: var(--r-pill); background: var(--surface-2); overflow: hidden; }
-.progress-fill { height: 100%; border-radius: var(--r-pill); background: linear-gradient(90deg, var(--brand), var(--pink), var(--blue)); transition: width 0.4s var(--ease); }
+.progress-fill { height: 100%; border-radius: var(--r-pill); background: linear-gradient(90deg, var(--brand), var(--brand-bright), var(--blue)); transition: width 0.4s var(--ease); }
 
 /* ─────────────────────── 18. MISC / LEGACY SUPPORT ───────────────────────── */
 

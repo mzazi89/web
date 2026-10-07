@@ -39,7 +39,7 @@ function downloadReceipt(t, userEmail, balance) {
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Mono:wght@400;600&display=swap');
     * { margin:0; padding:0; box-sizing:border-box; }
-    body { background:#0A0A0F; display:flex; justify-content:center; align-items:flex-start; padding:clamp(12px, 4vw, 30px); font-family:'Space Grotesk',sans-serif; }
+    body { background:#04060D; display:flex; justify-content:center; align-items:flex-start; padding:clamp(12px, 4vw, 30px); font-family:'Space Grotesk',sans-serif; }
     .receipt {
       background:#fff;
       width:100%;
@@ -53,19 +53,19 @@ function downloadReceipt(t, userEmail, balance) {
       content:'';
       display:block;
       height:14px;
-      background: radial-gradient(circle at 10px 14px, #0A0A0F 10px, transparent 0) repeat-x, #fff;
+      background: radial-gradient(circle at 10px 14px, #04060D 10px, transparent 0) repeat-x, #fff;
       background-size:20px 14px, 100% 100%;
     }
     .receipt::after {
       content:'';
       display:block;
       height:14px;
-      background: radial-gradient(circle at 10px 0px, #0A0A0F 10px, transparent 0) repeat-x, #fff;
+      background: radial-gradient(circle at 10px 0px, #04060D 10px, transparent 0) repeat-x, #fff;
       background-size:20px 14px, 100% 100%;
       transform:rotate(180deg);
     }
     .header {
-      background:#6D28D9;
+      background:#1D4ED8;
       color:#fff;
       text-align:center;
       padding:28px 24px 20px;
@@ -84,37 +84,37 @@ function downloadReceipt(t, userEmail, balance) {
       letter-spacing:1px;
       text-transform:uppercase;
       background:${t.status === 'success' ? 'rgba(4,120,87,0.12)' : 'rgba(124,58,237,0.12)'};
-      color:${t.status === 'success' ? '#047857' : '#6D28D9'};
+      color:${t.status === 'success' ? '#047857' : '#1D4ED8'};
       border:1px solid ${t.status === 'success' ? 'rgba(4,120,87,0.45)' : 'rgba(124,58,237,0.45)'};
     }
     .body { padding:24px; }
-    .amount-section { text-align:center; padding:20px 0 24px; border-bottom:1px dashed #D5D7E3; }
-    .amount-label { font-family:'IBM Plex Mono',monospace; font-size: 12.5px; color:#4E5468; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:6px; }
+    .amount-section { text-align:center; padding:20px 0 24px; border-bottom:1px dashed #CBD5E5; }
+    .amount-label { font-family:'IBM Plex Mono',monospace; font-size: 12.5px; color:#4E5B76; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:6px; }
     .amount { font-size:38px; font-weight:700; color:${color}; letter-spacing:-1px; }
     .currency { font-size:16px; font-weight:500; }
-    .rows { padding:20px 0; border-bottom:1px dashed #D5D7E3; }
+    .rows { padding:20px 0; border-bottom:1px dashed #CBD5E5; }
     .row { display:flex; justify-content:space-between; align-items:flex-start; padding:7px 0; font-size:13px; }
-    .row-label { color:#4E5468; font-size: 12.5px; font-family:'IBM Plex Mono',monospace; text-transform:uppercase; letter-spacing:0.6px; }
-    .row-value { color:#0A0A0F; font-weight:600; text-align:right; max-width:200px; word-break:break-all; }
+    .row-label { color:#4E5B76; font-size: 12.5px; font-family:'IBM Plex Mono',monospace; text-transform:uppercase; letter-spacing:0.6px; }
+    .row-value { color:#04060D; font-weight:600; text-align:right; max-width:200px; word-break:break-all; }
     .ref { font-family:'IBM Plex Mono',monospace; font-size: 12.5px; color:#2563EB; }
     .warranty {
       margin:16px 0 0;
       padding:12px 14px;
-      background:#0A0A0F;
+      background:#04060D;
       border-radius:2px;
-      border-left:3px solid #6D28D9;
+      border-left:3px solid #1D4ED8;
       font-size: 12.5px;
       color:#C6C6D6;
       line-height:1.6;
     }
     .warranty strong { display:block; margin-bottom:2px; font-size:12px; color:#FFFFFF; }
     .footer { text-align:center; padding:16px 24px 20px; }
-    .footer p { font-size: 12.5px; color:#4E5468; line-height:1.7; }
+    .footer p { font-size: 12.5px; color:#4E5B76; line-height:1.7; }
     .footer a { color:#2563EB; text-decoration:none; }
     .barcode {
       font-family:'IBM Plex Mono',monospace;
       font-size: 12.5px;
-      color:#0A0A0F;
+      color:#04060D;
       letter-spacing:4px;
       margin-top:8px;
       word-break:break-all;
