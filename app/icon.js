@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og';
 import { BoltMark } from './brand-card';
 
-// PWA / favicon icon — brand bolt on charcoal, generated at /icon
+// PWA / favicon icon — brand bolt on the page black, generated at /icon
 export const size = { width: 512, height: 512 };
 export const contentType = 'image/png';
 
@@ -12,7 +12,7 @@ export default function Icon() {
         style={{
           width: 512,
           height: 512,
-          background: '#0B0D0F',
+          background: '#04060D',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
