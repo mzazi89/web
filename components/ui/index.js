@@ -9,6 +9,7 @@ export { default as Badge, StatusIndicator, planLabel, planTone } from './Badge'
 export { default as Button } from './Button';
 export { default as Card, CardHeader, StatCard } from './Card';
 export { default as DeviceCard, formatPhone } from './DeviceCard';
+export { default as CanvasArt } from './CanvasArt';
 export { default as ImageWithFallback, Avatar } from './ImageWithFallback';
 export { default as RouteBackdrop } from './RouteBackdrop';
 export { default as Modal, ConfirmDialog } from './Modal';

@@ -1185,6 +1185,8 @@ select.input {
 .anim-fade-up.d1 { animation-delay: 0.06s; }
 .anim-fade-up.d2 { animation-delay: 0.12s; }
 .anim-fade-up.d3 { animation-delay: 0.18s; }
+.anim-fade-up.d4 { animation-delay: 0.24s; }
+.anim-fade-up.d5 { animation-delay: 0.30s; }
 
 /* Aurora band + starfield, used by TechBackground. */
 .anim-aurora-spin   { animation: aurora-spin 120s linear infinite; }

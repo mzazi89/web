@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Logo from '@/components/Logo';
-import { AppBackground, BotMark, Card, CardHeader, Badge, ImageWithFallback, Icons } from '@/components/ui';
+import { AppBackground, BotMark, CanvasArt, Card, CardHeader, Badge, Icons } from '@/components/ui';
 
 // MZAZI TECH — landing page.
 //
@@ -133,6 +133,20 @@ export default function Home() {
             </p>
           </div>
         </div>
+
+        {/* Canvas hero. No photograph: the mesh is drawn at runtime, so it is
+            sharp at any size and costs no request — and because it reads its
+            colours from the design tokens it repaints with the theme. */}
+        <div
+          className="anim-fade-up d4"
+          style={{ marginTop: 44, maxWidth: 880, marginLeft: 'auto', marginRight: 'auto' }}
+        >
+          <CanvasArt
+            kind="mesh"
+            ratio="16-9"
+            label="One MZAZI hub linked to many automations"
+          />
+        </div>
       </section>
 
       {/* ───────────────────────── Photo showcase ───────────────────────── */}
@@ -173,13 +187,10 @@ export default function Home() {
               </div>
             </div>
 
-            <ImageWithFallback
-              src="/images/photo-devices.webp"
-              alt="Two smartphones lit by purple and blue light, ready to be linked to the WhatsApp bot"
+<CanvasArt
+              kind="pairing"
               ratio="4-3"
-              rounded="xl"
-              label="MZAZI TECH"
-              imgStyle={{ objectPosition: 'center' }}
+              label="A handset showing the eight-character pairing code"
             />
           </div>
         </div>
@@ -263,12 +274,10 @@ export default function Home() {
             className="grid-2-responsive"
             style={{ marginTop: 28, alignItems: 'center', gap: 30 }}
           >
-            <ImageWithFallback
-              src="/images/whatsapp-automation.webp"
-              alt="A phone receiving automated WhatsApp replies, surrounded by floating interface panels"
+<CanvasArt
+              kind="flow"
               ratio="4-3"
-              rounded="xl"
-              label="Automation"
+              label="Three stages: link your number, choose a bot, automate the replies"
             />
             <ol
               className="grid-cards"
@@ -344,31 +353,39 @@ export default function Home() {
               background: 'linear-gradient(135deg, var(--surface), var(--surface-2))',
             }}
           >
-            <div>
-              <Badge tone="brand" icon={<Icons.Sparkles size={12} />}>Plans</Badge>
-              <h2 className="section-title" style={{ marginTop: 12 }}>
-                Free to start. Scale when you need to.
-              </h2>
-              <p className="lede" style={{ marginTop: 10, maxWidth: 520 }}>
-                Begin with one number at no cost. Move up to 5, 10, 20 or unlimited devices —
-                paid plans start at KES 100 per 30 days, paid from your wallet.
-              </p>
-            </div>
+            <div className="grid-2-responsive" style={{ gap: 28, alignItems: 'center' }}>
+              <div>
+                <Badge tone="brand" icon={<Icons.Sparkles size={12} />}>Plans</Badge>
+                <h2 className="section-title" style={{ marginTop: 12 }}>
+                  Free to start. Scale when you need to.
+                </h2>
+                <p className="lede" style={{ marginTop: 10, maxWidth: 520 }}>
+                  Begin with one number at no cost. Move up to 5, 10, 20 or unlimited devices —
+                  paid plans start at KES 100 per 30 days, paid from your wallet.
+                </p>
 
-            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-              {['1 device', '5 devices', '10 devices', '20 devices', 'Unlimited'].map((t) => (
-                <span key={t} className="tag">{t}</span>
-              ))}
-            </div>
+                <div style={{ marginTop: 20, display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                  {['1 device', '5 devices', '10 devices', '20 devices', 'Unlimited'].map((t) => (
+                    <span key={t} className="tag">{t}</span>
+                  ))}
+                </div>
 
-            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-              <Link href="/subscription" className="btn btn-primary">
-                View plans
-                <Icons.ArrowRight size={17} />
-              </Link>
-              <Link href="/devices" className="btn btn-ghost">
-                See connected devices
-              </Link>
+                <div style={{ marginTop: 20, display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                  <Link href="/subscription" className="btn btn-primary">
+                    View plans
+                    <Icons.ArrowRight size={17} />
+                  </Link>
+                  <Link href="/devices" className="btn btn-ghost">
+                    See connected devices
+                  </Link>
+                </div>
+              </div>
+
+              <CanvasArt
+                kind="scale"
+                ratio="4-3"
+                label="Plan rings climbing from one device to unlimited"
+              />
             </div>
           </Card>
         </div>
