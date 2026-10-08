@@ -94,7 +94,10 @@ const ROUTES = [
 /** Longest-prefix match, with `/` matched exactly only. */
 function backdropFor(pathname) {
   if (!pathname) return null;
-  if (pathname === '/') return { kind: 'mesh', opacity: 0.8 };
+  // The homepage is the one route that already has foreground artwork of its own
+  // (mesh hero, pairing, flow, scale), so it gets a different, quieter motif here
+  // rather than a second mesh behind the first.
+  if (pathname === '/') return { kind: 'tiles', opacity: 0.55 };
   for (const [prefix, kind, opacity] of ROUTES) {
     if (pathname === prefix || pathname.startsWith(`${prefix}/`)) {
       return { kind, opacity };
