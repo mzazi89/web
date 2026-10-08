@@ -183,7 +183,7 @@
      the artwork much harder. The wallpaper still reads as texture; it no
      longer moves the background off --bg. */
   --backdrop-image: 0.34;
-  --backdrop-scrim: 0.86;
+  --backdrop-scrim: 0.70;
 
   /* ── Backdrop alias (keep legacy var names working) ─────────────────── */
   --amber:      var(--brand);
@@ -295,7 +295,7 @@
 
   --header-bg: rgba(6, 9, 17, 0.94);
   --backdrop-image: 0.70;
-  --backdrop-scrim: 0.76;
+  --backdrop-scrim: 0.56;
 }
 
 /* Honour the OS preference when the user has not chosen explicitly. */
@@ -390,7 +390,7 @@
     --shadow-brand: 0 10px 28px rgba(96, 165, 250, 0.30);
     --header-bg: rgba(6, 9, 17, 0.94);  
     --backdrop-image: 0.70;
-    --backdrop-scrim: 0.76;
+    --backdrop-scrim: 0.56;
   }
 }
 

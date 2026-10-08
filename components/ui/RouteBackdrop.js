@@ -2,131 +2,132 @@
 
 // MZAZI TECH — route-aware page backdrop.
 //
-// One component, mounted once in the root layout, gives EVERY page a wallpaper
-// or photograph that matches what that page is about — without touching a
-// single page file. The route table below is the only place to maintain.
+// One component, mounted once in the root layout, gives EVERY page artwork that
+// matches what that page is about — without touching a single page file. The route
+// table below is the only place to maintain.
+//
+// This used to paint a photograph: 19 webp files, 524 kB, mapped onto 48 routes.
+// It now draws a canvas motif instead (components/ui/artKinds.js), which is
+// sharper at any viewport, costs no request, and follows the theme automatically
+// because the palette is read from the live CSS custom properties.
+//
+// Background motifs are built differently from the foreground art: fewer, much
+// larger, higher-contrast elements, because fine detail is wasted behind the
+// scrim. Each route picks the motif that reads as its subject — a code brace for
+// the API pages, a handset grid for devices, a padlock for auth.
 //
 // Layering (back to front):
-//   1. the image, dimmed to `opacity`
-//   2. a scrim of var(--bg), so foreground text always keeps WCAG contrast
-//      over the photo no matter how bright the image is
-//   3. the page's own AppBackground gradients, then page content
+//   1. the motif, at the route's `opacity`
+//   2. a scrim of var(--bg), so foreground text keeps WCAG contrast
+//   3. the page's own gradients, then content
 //
-// Everything is `position: fixed` and `pointer-events: none`, so it never
-// affects layout flow, never scrolls, and never intercepts a click.
-//
-// A missing or failed image simply renders nothing: the CSS gradient variants
-// still carry the design, and a broken-image icon can never appear.
+// Everything is `position: fixed` and `pointer-events: none`, so it never affects
+// layout flow, never scrolls, and never intercepts a click.
 
-import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
+import CanvasArt from './CanvasArt';
 
 /**
- * Route → artwork. ORDER MATTERS: the first match wins, so the more specific
- * paths must come before their prefixes (e.g. /api/admin before /api).
- * `opacity` dims the image; text-heavy legal pages get the lowest value.
+ * Route → { kind, opacity }. ORDER MATTERS: the first match wins, so the more
+ * specific paths must come before their prefixes (e.g. /admin/login before
+ * /admin, /api/docs before /api).
+ *
+ * `opacity` is now actually applied — it is passed to the layer as --backdrop-image.
+ * (The old table carried per-route opacities too, but the component collected them
+ * and never used them, so every route rendered at the same fixed value.)
+ *
+ * Text-heavy legal pages stay quietest; pages that are mostly a single panel can
+ * carry a stronger motif because less copy sits directly on the page background.
  */
 const ROUTES = [
   // ── Admin (most specific first) ──────────────────────────────────────────
-  ['/admin/broadcast',      '/images/broadcast-bg.webp',   0.50],
-  ['/admin/vouchers',       '/images/coupons-bg.webp',     0.48],
-  ['/admin/commands',       '/images/commands-bg.webp',    0.48],
-  ['/admin/bot',            '/images/commands-bg.webp',    0.48],
-  ['/admin/sessions',       '/images/devices-bg.webp',     0.48],
-  ['/admin/users',          '/images/community-bg.webp',   0.45],
-  ['/admin/resellers',      '/images/community-bg.webp',   0.45],
-  ['/admin/inquiries',      '/images/community-bg.webp',   0.45],
-  ['/admin/testimonials',   '/images/community-bg.webp',   0.45],
-  ['/admin/subscriptions',  '/images/billing-bg.webp',     0.45],
-  ['/admin/transactions',   '/images/billing-bg.webp',     0.45],
-  ['/admin/settings',       '/images/settings-bg.webp',    0.45],
-  ['/admin/panel-host',     '/images/hosting-bg.webp',     0.45],
-  ['/admin/panel',          '/images/settings-bg.webp',    0.45],
-  ['/admin/vps',            '/images/hosting-bg.webp',     0.45],
-  ['/admin/packages',       '/images/hosting-bg.webp',     0.45],
-  ['/admin/dashboard',      '/images/dashboard-bg.webp',   0.45],
-  ['/admin/login',          '/images/auth-bg.webp',        0.50],
-  ['/api/admin',            '/images/developers-bg.webp',  0.45],
+  ['/admin/broadcast',      'wave',     0.85],
+  ['/admin/vouchers',       'ticket',   0.85],
+  ['/admin/commands',       'terminal', 0.85],
+  ['/admin/bot',            'terminal', 0.85],
+  ['/admin/sessions',       'tiles',    0.85],
+  ['/admin/users',          'crowd',    0.8],
+  ['/admin/resellers',      'crowd',    0.8],
+  ['/admin/inquiries',      'bubbles',  0.8],
+  ['/admin/testimonials',   'crowd',    0.8],
+  ['/admin/subscriptions',  'ledger',   0.85],
+  ['/admin/transactions',   'ledger',   0.85],
+  ['/admin/settings',       'gears',    0.8],
+  ['/admin/panel-host',     'hosting',  0.85],
+  ['/admin/panel',          'gears',    0.8],
+  ['/admin/vps',            'hosting',  0.85],
+  ['/admin/packages',       'hosting',  0.85],
+  ['/admin/dashboard',      'gauges',   0.8],
+  ['/admin/login',          'lock',     0.9],
+  ['/api/admin',            'terminal', 0.8],
 
   // ── User site ────────────────────────────────────────────────────────────
-  ['/api/docs',             '/images/developers-bg.webp',  0.45],
-  ['/api/explorer',         '/images/developers-bg.webp',  0.45],
-  ['/api/status',           '/images/developers-bg.webp',  0.45],
-  ['/api/dashboard',        '/images/developers-bg.webp',  0.45],
-  ['/api',                  '/images/developers-bg.webp',  0.45],
-  ['/devices',              '/images/devices-bg.webp',     0.50],
-  ['/whatsapp-bot',         '/images/devices-bg.webp',     0.50],
-  ['/subscription',         '/images/billing-bg.webp',     0.45],
-  ['/payments',             '/images/billing-bg.webp',     0.45],
-  ['/wallet',               '/images/billing-bg.webp',     0.45],
-  ['/payment',              '/images/billing-bg.webp',     0.45],
-  ['/account',              '/images/settings-bg.webp',    0.45],
-  ['/help',                 '/images/help-bg.webp',        0.48],
-  ['/contact',              '/images/help-bg.webp',        0.48],
-  ['/about',                '/images/community-bg.webp',   0.45],
-  ['/testimonials',         '/images/community-bg.webp',   0.45],
-  ['/temp-number',          '/images/numbers-bg.webp',     0.48],
-  ['/ludo',                 '/images/games-bg.webp',       0.45],
-  ['/vps',                  '/images/photo-datacentre.webp', 0.42],
-  ['/products',             '/images/photo-datacentre.webp', 0.42],
+  ['/api/docs',             'terminal', 0.8],
+  ['/api/explorer',         'terminal', 0.8],
+  ['/api/status',           'gauges',   0.8],
+  ['/api/dashboard',        'gauges',   0.8],
+  ['/api',                  'terminal', 0.8],
+  ['/devices',              'tiles',    0.85],
+  ['/whatsapp-bot',         'tiles',    0.85],
+  ['/subscription',         'ledger',   0.8],
+  ['/payments',             'ledger',   0.8],
+  ['/wallet',               'ledger',   0.8],
+  ['/payment',              'ledger',   0.8],
+  ['/account',              'gears',    0.75],
+  ['/help',                 'bubbles',  0.8],
+  ['/contact',              'bubbles',  0.8],
+  ['/about',                'crowd',    0.8],
+  ['/testimonials',         'crowd',    0.8],
+  ['/temp-number',          'sim',      0.85],
+  ['/ludo',                 'dice',     0.8],
+  ['/vps',                  'hosting',  0.8],
+  ['/products',             'hosting',  0.8],
   // Long-form reading: keep the artwork almost subliminal.
-  ['/privacy',              '/images/legal-bg.webp',       0.30],
-  ['/terms',                '/images/legal-bg.webp',       0.30],
-  ['/login',                '/images/auth-bg.webp',        0.50],
-  ['/signup',               '/images/auth-bg.webp',        0.50],
-  ['/forgot-password',      '/images/auth-bg.webp',        0.50],
-  ['/dashboard',            '/images/dashboard-bg.webp',   0.45],
+  ['/privacy',              'scroll',   0.45],
+  ['/terms',                'scroll',   0.45],
+  ['/login',                'lock',     0.9],
+  ['/signup',               'lock',     0.9],
+  ['/forgot-password',      'lock',     0.9],
+  ['/dashboard',            'gauges',   0.8],
 ];
 
 /** Longest-prefix match, with `/` matched exactly only. */
 function backdropFor(pathname) {
   if (!pathname) return null;
-  if (pathname === '/') return { image: '/images/hero-bg.webp', opacity: 0.55 };
-  for (const [prefix, image, opacity] of ROUTES) {
+  if (pathname === '/') return { kind: 'mesh', opacity: 0.8 };
+  for (const [prefix, kind, opacity] of ROUTES) {
     if (pathname === prefix || pathname.startsWith(`${prefix}/`)) {
-      return { image, opacity };
+      return { kind, opacity };
     }
   }
-  return { image: '/images/dashboard-bg.webp', opacity: 0.45 };
+  return { kind: 'mesh', opacity: 0.7 };
 }
 
-// `scrim` is kept for call-site compatibility but is no longer used:
-// the strength now comes from --backdrop-scrim so it can differ per theme.
-export default function RouteBackdrop({ scrim }) {
+export default function RouteBackdrop() {
   const pathname = usePathname();
-  const [failedFor, setFailedFor] = useState(null);
   const spec = backdropFor(pathname);
+  if (!spec) return null;
 
-  // Reset the failure flag when navigating to a route with different artwork.
-  useEffect(() => { setFailedFor(null); }, [spec?.image]);
-
-  if (!spec || failedFor === spec.image) return null;
-
+  // `key` remounts the canvas when the route changes subject, so the previous
+  // drawing can never linger for a frame under the new route's scrim.
   return (
     <div
       aria-hidden="true"
       className="backdrop-root"
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 0,
-        pointerEvents: 'none',
-        overflow: 'hidden',
-      }}
+      style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none', overflow: 'hidden' }}
     >
-      <div
-        className="backdrop-img"
-        style={{ backgroundImage: `url("${spec.image}")` }}
-      />
-      {/* Contrast guarantee — the reason any photo is safe behind text. */}
+      <div className="backdrop-img" style={{ '--backdrop-image': spec.opacity }}>
+        <CanvasArt
+          key={spec.kind}
+          kind={spec.kind}
+          bare
+          decorative
+          animate={false}
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
+        />
+      </div>
+      {/* Contrast guarantee: the reason any artwork is safe behind text. */}
       <div className="backdrop-scrim" />
-      {/* Decoded off-screen purely to detect a broken URL. */}
-      <img
-        src={spec.image}
-        alt=""
-        onError={() => setFailedFor(spec.image)}
-        style={{ display: 'none' }}
-      />
     </div>
   );
 }
