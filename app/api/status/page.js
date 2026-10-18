@@ -29,7 +29,7 @@ const CATEGORY_LABELS = {
 
 async function getData() {
   try {
-    const sql = neon(process.env.DATABASE_URL);
+    const sql = neon(process.env.DATABASE_URL, { fetchOptions: { cache: 'no-store' } });
     const [providers, activeEndpoints, avg, today] = await Promise.all([
       sql`SELECT name, display_name, base_url, api_key_configured, status, avg_response_ms, failure_rate,
                  total_requests, total_failures, last_success_at, last_failure_at, last_error
@@ -47,7 +47,7 @@ async function getData() {
 async function measureDb() {
   const started = Date.now();
   try {
-    const sql = neon(process.env.DATABASE_URL);
+    const sql = neon(process.env.DATABASE_URL, { fetchOptions: { cache: 'no-store' } });
     await sql`SELECT 1`;
     return { ok: true, ms: Date.now() - started };
   } catch {

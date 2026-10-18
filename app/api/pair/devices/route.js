@@ -7,7 +7,7 @@ import { auth, PLANS, getAccount } from '@/lib/pairApi';
 import { deviceBotMap } from '@/lib/bots';
 
 export const dynamic = 'force-dynamic';
-const sql = neon(process.env.DATABASE_URL);
+const sql = neon(process.env.DATABASE_URL, { fetchOptions: { cache: 'no-store' } });
 
 export async function GET() {
   try {

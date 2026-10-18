@@ -6,7 +6,7 @@ import { creditReferralCommission } from '@/lib/api/referral';
 // Add this line to force dynamic rendering
 export const dynamic = 'force-dynamic';
 
-const sql = neon(process.env.DATABASE_URL);
+const sql = neon(process.env.DATABASE_URL, { fetchOptions: { cache: 'no-store' } });
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
 
 export async function GET(request) {

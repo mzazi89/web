@@ -9,7 +9,7 @@ async function getEndpoints() {
   // disable request-level caching so registry changes are always reflected
   noStore();
   try {
-    const sql = neon(process.env.DATABASE_URL);
+    const sql = neon(process.env.DATABASE_URL, { fetchOptions: { cache: 'no-store' } });
     const [rows, prov] = await Promise.all([
       sql`
         SELECT path, method, category, name, description, provider, upstream, parameters, is_active

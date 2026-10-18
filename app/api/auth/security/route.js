@@ -8,7 +8,7 @@ import { cookies } from 'next/headers';
 import { neon } from '@neondatabase/serverless';
 
 export const dynamic = 'force-dynamic';
-const sql = neon(process.env.DATABASE_URL);
+const sql = neon(process.env.DATABASE_URL, { fetchOptions: { cache: 'no-store' } });
 const JWT_SECRET = process.env.JWT_SECRET;
 
 async function auth() {

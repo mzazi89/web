@@ -8,7 +8,7 @@ import { auth, normalizeNumber, getAccount } from '@/lib/pairApi';
 import { resolveBotForNumber } from '@/lib/bots';
 
 export const dynamic = 'force-dynamic';
-const sql = neon(process.env.DATABASE_URL);
+const sql = neon(process.env.DATABASE_URL, { fetchOptions: { cache: 'no-store' } });
 
 const ACTIONS = ['unlink', 'delete'];
 

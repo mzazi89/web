@@ -29,7 +29,7 @@ export const dynamic = 'force-dynamic';
 // DavidCyril. Pinning the region restores egress that the providers accept.
 export const preferredRegion = 'sin1';
 
-const sql = neon(process.env.DATABASE_URL);
+const sql = neon(process.env.DATABASE_URL, { fetchOptions: { cache: 'no-store' } });
 
 const SYSTEM_PROMPT = `You are MZAZI AI, the friendly support assistant of MZAZI TECH (Mzazi Tech Inc — mzazi.shop).
 You read the user's question carefully and answer it directly, clearly and helpfully.

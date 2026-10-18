@@ -5,7 +5,7 @@ import { getPlanLimit, getDailyUsage } from '../../../../lib/api/rate-limit';
 import { unstable_noStore as noStore } from 'next/cache';
 
 export const dynamic = 'force-dynamic';
-const sql = neon(process.env.DATABASE_URL);
+const sql = neon(process.env.DATABASE_URL, { fetchOptions: { cache: 'no-store' } });
 
 // GET /api/dashboard/stats — real usage statistics for the logged-in user
 export async function GET() {

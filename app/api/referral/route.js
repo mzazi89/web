@@ -4,7 +4,7 @@ import { requireUser } from '@/lib/api/web-auth';
 import { ensureReferralCode } from '@/lib/api/referral';
 
 export const dynamic = 'force-dynamic';
-const sql = neon(process.env.DATABASE_URL);
+const sql = neon(process.env.DATABASE_URL, { fetchOptions: { cache: 'no-store' } });
 
 // GET /api/referral — current user's referral code, link, stats and history
 export async function GET() {

@@ -15,7 +15,7 @@ import { ensureDatabase } from '@/lib/database';
 import { pteroConfig, pteroGet, pteroPost, pickFreeAllocation, pteroErr, fetchEgg } from '@/lib/ptero';
 
 export const dynamic = 'force-dynamic';
-const sql = neon(process.env.DATABASE_URL);
+const sql = neon(process.env.DATABASE_URL, { fetchOptions: { cache: 'no-store' } });
 const JWT_SECRET = process.env.JWT_SECRET;
 
 export async function POST(request) {

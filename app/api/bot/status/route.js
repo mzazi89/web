@@ -9,7 +9,7 @@ import { getBotApiKey } from '@/lib/botKey';
 
 export const dynamic = 'force-dynamic';
 
-const sql = neon(process.env.DATABASE_URL);
+const sql = neon(process.env.DATABASE_URL, { fetchOptions: { cache: 'no-store' } });
 const ENV_BOT_API_KEY = process.env.BOT_API_KEY || '';
 
 function safeEqual(a, b) {

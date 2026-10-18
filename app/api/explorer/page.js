@@ -37,7 +37,7 @@ const CATEGORY_CODES = {
 
 async function getCategories() {
   try {
-    const sql = neon(process.env.DATABASE_URL);
+    const sql = neon(process.env.DATABASE_URL, { fetchOptions: { cache: 'no-store' } });
     const rows = await sql`
       SELECT category, COUNT(*) AS total, SUM(CASE WHEN is_active THEN 1 ELSE 0 END) AS active
       FROM endpoints GROUP BY category ORDER BY category

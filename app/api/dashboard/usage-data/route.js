@@ -5,7 +5,7 @@ import { safeInt } from '../../../../lib/api/utils';
 import { unstable_noStore as noStore } from 'next/cache';
 
 export const dynamic = 'force-dynamic';
-const sql = neon(process.env.DATABASE_URL);
+const sql = neon(process.env.DATABASE_URL, { fetchOptions: { cache: 'no-store' } });
 
 // GET /api/dashboard/usage — paginated request logs with filters
 // ?endpoint=...&key_id=...&status=success|failed&from=YYYY-MM-DD&to=YYYY-MM-DD&page=1&per_page=20

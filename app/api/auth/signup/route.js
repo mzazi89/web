@@ -6,7 +6,7 @@ import bcrypt from 'bcryptjs';
 import { neon } from '@neondatabase/serverless';
 
 export const dynamic = 'force-dynamic';
-const sql = neon(process.env.DATABASE_URL);
+const sql = neon(process.env.DATABASE_URL, { fetchOptions: { cache: 'no-store' } });
 
 // Run schema migrations inline so signup always works even if init-db was never called
 async function ensureSchema() {

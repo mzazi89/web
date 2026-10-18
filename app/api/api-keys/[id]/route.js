@@ -5,7 +5,7 @@ import { generateApiKey, hashKey } from '../../../../lib/api/utils';
 import { unstable_noStore as noStore } from 'next/cache';
 
 export const dynamic = 'force-dynamic';
-const sql = neon(process.env.DATABASE_URL);
+const sql = neon(process.env.DATABASE_URL, { fetchOptions: { cache: 'no-store' } });
 
 // Load the key only if it belongs to the current user
 async function ownKey(userId, id) {

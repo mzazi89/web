@@ -7,7 +7,7 @@ import { ensureDatabase } from '@/lib/database';
 import { auth, PLANS, ensureAccount } from '@/lib/pairApi';
 
 export const dynamic = 'force-dynamic';
-const sql = neon(process.env.DATABASE_URL);
+const sql = neon(process.env.DATABASE_URL, { fetchOptions: { cache: 'no-store' } });
 
 export async function POST(request) {
   let deducted = false;

@@ -7,7 +7,7 @@ import { MAX_KEYS_PER_USER } from '../../../lib/api/constants';
 import { unstable_noStore as noStore } from 'next/cache';
 
 export const dynamic = 'force-dynamic';
-const sql = neon(process.env.DATABASE_URL);
+const sql = neon(process.env.DATABASE_URL, { fetchOptions: { cache: 'no-store' } });
 
 // GET /api/api-keys — list the current user's API keys with live usage
 export async function GET() {

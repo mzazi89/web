@@ -30,7 +30,7 @@ import { corsHeaders, handleOptions, mergeHeaders } from '@/lib/api/cors';
 
 export const dynamic = 'force-dynamic';
 
-const sql = neon(process.env.DATABASE_URL);
+const sql = neon(process.env.DATABASE_URL, { fetchOptions: { cache: 'no-store' } });
 const PROFILE = 'xmd';
 
 const toMetadata = (r) => ({

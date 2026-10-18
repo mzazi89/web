@@ -40,7 +40,7 @@ const CATEGORY_LABELS = {
 
 async function getEndpoints() {
   try {
-    const sql = neon(process.env.DATABASE_URL);
+    const sql = neon(process.env.DATABASE_URL, { fetchOptions: { cache: 'no-store' } });
     const rows = await sql`
       SELECT path, method, category, name, description, is_active
       FROM endpoints ORDER BY is_active DESC, category ASC, path ASC
@@ -53,7 +53,7 @@ async function getEndpoints() {
 
 async function getStats() {
   try {
-    const sql = neon(process.env.DATABASE_URL);
+    const sql = neon(process.env.DATABASE_URL, { fetchOptions: { cache: 'no-store' } });
     const [counts, cats] = await Promise.all([
       sql`SELECT COUNT(*) AS total, SUM(CASE WHEN is_active THEN 1 ELSE 0 END) AS active FROM endpoints`,
       sql`SELECT category, COUNT(*) AS total, SUM(CASE WHEN is_active THEN 1 ELSE 0 END) AS active
