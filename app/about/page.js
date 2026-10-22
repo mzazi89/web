@@ -24,7 +24,7 @@ const API_STATS = [
 ];
 
 export const metadata = {
-  title: 'About MZAZI TECH',
+  title: 'About',
   description: 'Who we are and why we build WhatsApp automation for Kenyan businesses.',
 };
 
