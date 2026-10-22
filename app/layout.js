@@ -2,6 +2,7 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import TechBackground from '../components/TechBackground';
 import PwaProvider from '../components/PwaProvider';
+import AdSenseScript from '../components/AdSenseScript';
 import { ThemeProvider, THEME_BOOT_SCRIPT } from '../components/ui/ThemeProvider';
 import { ToastProvider } from '../components/ui/Toast';
 import './globals.css';
@@ -83,6 +84,10 @@ export default function RootLayout({ children }) {
         <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
+        {/* AdSense ownership verification (in addition to /ads.txt) */}
+        <meta name="google-adsense-account" content="ca-pub-8796910937166702" />
+        {/* AdSense loader — auto ads are served from here site-wide. */}
+        <AdSenseScript />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       </head>
       <body className="flex flex-col min-h-screen bg-[#04060D]">
