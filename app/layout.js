@@ -1,9 +1,7 @@
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import TechBackground from '../components/TechBackground';
-import RouteBackdrop from '../components/ui/RouteBackdrop';
 import PwaProvider from '../components/PwaProvider';
-import AiChatWidget from '../components/AiChatWidget';
 import { ThemeProvider, THEME_BOOT_SCRIPT } from '../components/ui/ThemeProvider';
 import { ToastProvider } from '../components/ui/Toast';
 import './globals.css';
@@ -62,13 +60,15 @@ const jsonLd = {
 export const viewport = {
   width: 'device-width',
   initialScale: 1,
-  // Zoom stays enabled for accessibility; the layout is built so it is not needed.
   maximumScale: 5,
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: '#F8FAFD' },
     { media: '(prefers-color-scheme: dark)', color: '#04060D' },
   ],
 };
+
+// MZAZI TECH — Perfected Layout.
+// Removed unnecessary background layers and widgets for maximum performance.
 
 export default function RootLayout({ children }) {
   return (
@@ -80,37 +80,22 @@ export default function RootLayout({ children }) {
           href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap"
           rel="stylesheet"
         />
-        {/* Applies the saved theme before first paint — no flash of the wrong mode. */}
         <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       </head>
-      <body className="flex flex-col min-h-screen">
+      <body className="flex flex-col min-h-screen bg-[#04060D]">
         <ThemeProvider>
           <ToastProvider>
             <PwaProvider>
-              {/* Accessibility: skip straight to content */}
-              <a href="#main-content" className="skip-link">Skip to content</a>
-
-              {/* Wallpaper/photo that matches the current page. Painted first of
-                  the two background layers, so the animated aurora sits over it
-                  — otherwise the motion is buried under the wallpaper scrim and
-                  every page reads as static. */}
-              <RouteBackdrop />
-
-              {/* Ambient animated aurora, over the wallpaper and under content */}
               <TechBackground />
-
               <Navbar />
-
-              <main id="main-content" className="flex-grow app-content">
+              <main id="main-content" className="flex-grow app-content relative z-10">
                 {children}
               </main>
-
               <Footer />
             </PwaProvider>
-            <AiChatWidget />
           </ToastProvider>
         </ThemeProvider>
       </body>
