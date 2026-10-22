@@ -21,10 +21,10 @@ export async function GET() {
     if (!token) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     jwt.verify(token.value, JWT_SECRET);
 
-    const { key } = await pteroConfig();
+    const { key, url, source } = await pteroConfig();
     if (!key) {
       return NextResponse.json(
-        { error: 'The panel API key is not configured. Add it in the admin Settings page.' },
+        { error: 'The panel API key is not configured. Add it in admin → Pterodactyl.' },
         { status: 503 }
       );
     }
@@ -32,6 +32,20 @@ export async function GET() {
     // per_page: the panel pages this endpoint, and the default is well below
     // what an admin will have created.
     const { status, data } = await pteroGet('/nests?per_page=100');
+
+    // 401 is the one failure worth naming precisely: it means the credentials
+    // never authenticated, so the fix is in the admin panel, not on this page.
+    if (status === 401 || status === 403) {
+      console.error(`Nests fetch rejected (HTTP ${status})`, { url, keySource: source });
+      return NextResponse.json(
+        {
+          error:
+            'The panel rejected the API key (HTTP 401). In Pterodactyl open Admin → Application API, create a key with all scopes enabled (it starts with ptla_), then paste it in admin → Pterodactyl and save.',
+        },
+        { status: 502 }
+      );
+    }
+
     if (status !== 200) {
       console.error('Nests fetch failed:', status, data);
       return NextResponse.json(

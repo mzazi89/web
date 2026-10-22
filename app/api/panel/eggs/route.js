@@ -23,15 +23,27 @@ export async function GET(request) {
     const nestId = url.searchParams.get('nest_id');
     if (!nestId) return NextResponse.json({ error: 'nest_id is required' }, { status: 400 });
 
-    const { key } = await pteroConfig();
+    const { key, url: panelUrl, source } = await pteroConfig();
     if (!key) {
       return NextResponse.json(
-        { error: 'The panel API key is not configured. Add it in the admin Settings page.' },
+        { error: 'The panel API key is not configured. Add it in admin → Pterodactyl.' },
         { status: 503 }
       );
     }
 
     const { status, data } = await pteroGet(`/nests/${encodeURIComponent(nestId)}/eggs?include=variables&per_page=100`);
+
+    if (status === 401 || status === 403) {
+      console.error(`Eggs fetch rejected (HTTP ${status})`, { url: panelUrl, keySource: source });
+      return NextResponse.json(
+        {
+          error:
+            'The panel rejected the API key (HTTP 401). In Pterodactyl open Admin → Application API, create a key with all scopes enabled (it starts with ptla_), then paste it in admin → Pterodactyl and save.',
+        },
+        { status: 502 }
+      );
+    }
+
     if (status !== 200) {
       console.error('Eggs fetch failed:', status, data);
       return NextResponse.json(
