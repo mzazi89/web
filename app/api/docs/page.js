@@ -29,6 +29,11 @@ async function getEndpoints() {
   }
 }
 
+export const metadata = {
+  title: 'API Documentation',
+  description: 'Reference for every MZAZI TECH endpoint, with request and response examples.',
+};
+
 export default async function ApiDocs() {
   const endpoints = await getEndpoints();
   return <DocsApp endpoints={endpoints} />;

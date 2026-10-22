@@ -59,6 +59,11 @@ async function getCategories() {
   }
 }
 
+export const metadata = {
+  title: 'API Explorer',
+  description: 'Try MZAZI TECH endpoints from the browser before writing any code.',
+};
+
 export default async function ApiExplorer() {
   noStore();
   const categories = await getCategories();

@@ -32,6 +32,11 @@ const SECTIONS = [
   ) },
 ];
 
+export const metadata = {
+  title: 'Terms of Service',
+  description: 'The agreement covering your use of MZAZI TECH hosting, bots and wallet.',
+};
+
 export default function TermsPage() {
   return (
     <div style={{ backgroundColor: 'var(--page-tint)', minHeight: '70vh' }}>

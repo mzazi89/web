@@ -23,6 +23,11 @@ const API_STATS = [
   { n: '24/7', l: 'Availability' },
 ];
 
+export const metadata = {
+  title: 'About MZAZI TECH',
+  description: 'Who we are and why we build WhatsApp automation for Kenyan businesses.',
+};
+
 export default function AboutPage() {
   return (
     <div style={{ backgroundColor: 'var(--page-tint)' }}>

@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { humaniseError } from '@/components/ui';
+import Link from 'next/link';
 
 const BASE_URL = typeof window !== 'undefined' ? window.location.origin : 'https://mzazi.shop';
 
@@ -106,7 +107,7 @@ export default function TempNumberPage() {
       <section className="relative overflow-hidden" style={{ paddingTop: 64, paddingBottom: 40 }}>
         <div className="container-site relative">
           <div className="max-w-3xl">
-            <a href="/api" className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: 'var(--muted)', textDecoration: 'none' }}>← Back to API</a>
+            <Link href="/api" className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: 'var(--muted)', textDecoration: 'none' }}>← Back to API</Link>
             <p className="eyebrow mt-8">SMS inbox</p>
             <h1 className="headline mt-4" style={{ fontSize: 'clamp(2rem, 4.4vw, 3.2rem)' }}>
               Temporary phone numbers<span className="accent">.</span>

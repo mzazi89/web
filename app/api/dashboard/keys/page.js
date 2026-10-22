@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import CopyButton from '@/components/api/CopyButton';
 import { ToastProvider, useToast } from '@/components/api/Toast';
-import { humaniseError } from '@/components/ui';
+import { ConfirmDialog, Modal, Button, Field, Input, humaniseError } from '@/components/ui';
 
 function fmtDate(iso) {
   if (!iso) return '—';
@@ -30,6 +30,9 @@ function KeysInner() {
   const [keyName, setKeyName] = useState('');
   const [newKey, setNewKey] = useState(null); // full key shown exactly once
   const [busyId, setBusyId] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [renameTarget, setRenameTarget] = useState(null);
+  const [renameValue, setRenameValue] = useState('');
 
   const loadKeys = useCallback(async () => {
     const res = await fetch('/api/api-keys');
@@ -95,7 +98,6 @@ function KeysInner() {
   };
 
   const removeKey = async (key) => {
-    if (!confirm(`Delete API key "${key.name}"? This cannot be undone.`)) return;
     setBusyId(key.id);
     try {
       const res = await fetch(`/api/api-keys/${key.id}`, { method: 'DELETE' });
@@ -212,7 +214,7 @@ function KeysInner() {
                         <td data-label="Expires" style={{ color: k.expires_at ? 'var(--brand)' : 'var(--muted)' }}>{fmtDate(k.expires_at)}</td>
                         <td data-label="Actions">
                           <div className="flex flex-wrap gap-1.5">
-                            <button onClick={() => act(k, 'rename', { name: prompt('New key name:', k.name) || k.name })}
+                            <button onClick={() => { setRenameTarget(k); setRenameValue(k.name); }}
                               disabled={busyId === k.id}
                               className="mono px-2.5 py-1.5 text-[10px] uppercase tracking-[0.08em]"
                               style={{ border: '1px solid var(--line)', color: 'var(--ink-2)', background: 'transparent', cursor: 'pointer' }}>
@@ -238,7 +240,7 @@ function KeysInner() {
                                 Restore
                               </button>
                             )}
-                            <button onClick={() => removeKey(k)} disabled={busyId === k.id}
+                            <button onClick={() => setDeleteTarget(k)} disabled={busyId === k.id}
                               className="mono px-2.5 py-1.5 text-[10px] uppercase tracking-[0.08em]"
                               style={{ border: '1px solid var(--bad-a45)', color: 'var(--bad)', background: 'transparent', cursor: 'pointer' }}>
                               Delete
@@ -286,6 +288,56 @@ function KeysInner() {
           )}
         </div>
       </section>
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={async () => {
+          const target = deleteTarget;
+          setDeleteTarget(null);
+          if (target) await removeKey(target);
+        }}
+        title="Delete this API key?"
+        description={deleteTarget
+          ? `“${deleteTarget.name}” will stop working immediately. Any integration using it will start failing, and this cannot be undone.`
+          : undefined}
+        confirmLabel="Delete key"
+        loading={!!busyId}
+      />
+
+      <Modal
+        open={!!renameTarget}
+        onClose={() => setRenameTarget(null)}
+        title="Rename API key"
+        description="A recognisable name makes it obvious which integration a key belongs to."
+        size="sm"
+        footer={
+          <>
+            <Button variant="ghost" onClick={() => setRenameTarget(null)}>Cancel</Button>
+            <Button
+              onClick={async () => {
+                const target = renameTarget;
+                const name = renameValue.trim();
+                setRenameTarget(null);
+                if (target && name && name !== target.name) await act(target, 'rename', { name });
+              }}
+              disabled={!renameValue.trim() || renameValue.trim() === renameTarget?.name}
+            >
+              Save name
+            </Button>
+          </>
+        }
+      >
+        <Field label="Key name">
+          <Input
+            value={renameValue}
+            onChange={(e) => setRenameValue(e.target.value)}
+            placeholder="e.g. Website contact form"
+            maxLength={60}
+            autoFocus
+          />
+        </Field>
+      </Modal>
     </div>
   );
 }

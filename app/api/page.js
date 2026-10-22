@@ -69,6 +69,11 @@ async function getStats() {
   }
 }
 
+export const metadata = {
+  title: 'API Platform',
+  description: 'Programmable access to MZAZI TECH services with keys, usage and live status.',
+};
+
 export default async function ApiLanding() {
   noStore();
   const endpoints = await getEndpoints();

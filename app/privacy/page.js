@@ -29,6 +29,11 @@ const SECTIONS = [
   ) },
 ];
 
+export const metadata = {
+  title: 'Privacy Policy',
+  description: 'What data MZAZI TECH collects, how it is used, and the control you have over it.',
+};
+
 export default function PrivacyPage() {
   return (
     <div style={{ backgroundColor: 'var(--page-tint)', minHeight: '70vh' }}>

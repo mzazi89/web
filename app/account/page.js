@@ -22,6 +22,7 @@ import {
   Icons,
 } from '@/components/ui';
 import { fmtKes } from '@/lib/currency';
+import Link from 'next/link';
 
 const QUESTIONS = [
   "What is your mother's maiden name?",
@@ -160,7 +161,7 @@ export default function AccountPage() {
                 </dl>
                 <p style={{ margin: '16px 0 0', fontSize: 12.5, color: 'var(--dim)', lineHeight: 1.6 }}>
                   Your name and email can’t be edited here yet. To change them, message support from the{' '}
-                  <a className="link" href="/help">Help page</a>.
+                  <Link className="link" href="/help">Help page</Link>.
                 </p>
               </Card>
 

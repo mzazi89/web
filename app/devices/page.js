@@ -19,6 +19,7 @@ import {
   EmptyState, ErrorState, SkeletonCards, ProgressBar, ConfirmDialog, Alert,
   planLabel, humaniseError, Icons,
 } from '@/components/ui';
+import Link from 'next/link';
 
 const HOW_TO = [
   { title: 'Open the pairing wizard', body: 'Go to the WhatsApp bot page and enter the number you want to connect — include the country code, e.g. 254712345678.' },
@@ -171,7 +172,7 @@ export default function DevicesPage() {
                 <div style={{ marginTop: 14 }}>
                   <Alert kind="warn" title="You’ve used every device slot">
                     Upgrade your plan to connect more numbers.{' '}
-                    <a className="link" href="/subscription">See plans</a>
+                    <Link className="link" href="/subscription">See plans</Link>
                   </Alert>
                 </div>
               )}

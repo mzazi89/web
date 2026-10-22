@@ -106,6 +106,17 @@ export default function ProductsPage() {
 
   const reset = () => { setPkg(null); setStep('select'); setForm({ ptero_username:'',ptero_password:'',firstname:'',lastname:'',nest_id:'',egg_id:'' }); setResult(null); setError(''); setPanelError(''); setNests([]); setEggs([]); };
 
+  // One place that decides whether the form can be submitted, so the button and
+  // the hint beneath it can never disagree.
+  const missingForReview = !form.firstname.trim() ? 'your first name'
+    : !form.lastname.trim() ? 'your last name'
+    : !form.ptero_username.trim() ? 'a panel username'
+    : form.ptero_password.length < 8 ? 'a password of at least 8 characters'
+    : !form.nest_id ? 'a server category'
+    : !form.egg_id ? 'a software version'
+    : '';
+  const canReview = missingForReview === '';
+
   if (loading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
@@ -267,33 +278,49 @@ export default function ProductsPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {[
                     { key: 'ptero_username', label: 'Panel username', placeholder: 'Your Pterodactyl username', type: 'text' },
-                    { key: 'ptero_password', label: 'Panel password',  placeholder: 'Min. 8 characters',        type: 'password' },
+                    {
+                      key: 'ptero_password', label: 'Panel password', placeholder: 'At least 8 characters', type: 'password',
+                      minLength: 8, hint: 'This is the password you will use to sign in to the game panel.',
+                    },
                   ].map(f => (
                     <div key={f.key}>
                       <label className="label">{f.label}</label>
                       <input type={f.type} value={form[f.key]} onChange={e => setForm(x => ({ ...x, [f.key]: e.target.value }))}
-                        placeholder={f.placeholder} required className="input" />
+                        placeholder={f.placeholder} required minLength={f.minLength} className="input" />
+                      {f.hint && <p className="text-xs mt-1.5" style={{ color: 'var(--dim)' }}>{f.hint}</p>}
                     </div>
                   ))}
                 </div>
 
                 {/* Nest selector */}
                 <div>
-                  <label className="label">Server type (nest)</label>
-                  <select value={form.nest_id} onChange={e => handleNestChange(e.target.value)} required className="input">
-                    <option value="">{loadingNests ? 'Loading nests…' : '— Select a nest —'}</option>
+                  <label className="label" htmlFor="nest">What will the server run?</label>
+                  <select id="nest" value={form.nest_id} onChange={e => handleNestChange(e.target.value)} required className="input">
+                    <option value="">{loadingNests ? 'Loading…' : '— Choose a category —'}</option>
                     {nests.map(n => <option key={n.id} value={n.id}>{n.name}</option>)}
                   </select>
+                  <p className="text-xs mt-1.5" style={{ color: 'var(--dim)' }}>
+                    Pick the general type — for example Minecraft, Node.js or Discord bots. You choose the exact version next.
+                  </p>
+                  {!loadingNests && nests.length === 0 && (
+                    <button type="button" onClick={() => handleSelectPkg(pkg)}
+                      className="btn btn-ghost btn-sm mt-2">
+                      ↻ Try loading the list again
+                    </button>
+                  )}
                 </div>
 
                 {/* Egg selector */}
                 <div>
-                  <label className="label">Server software (egg)</label>
-                  <select value={form.egg_id} onChange={e => setForm(f => ({ ...f, egg_id: e.target.value }))} required disabled={!form.nest_id}
+                  <label className="label" htmlFor="egg">Which software?</label>
+                  <select id="egg" value={form.egg_id} onChange={e => setForm(f => ({ ...f, egg_id: e.target.value }))} required disabled={!form.nest_id}
                     className="input" style={{ opacity: !form.nest_id ? 0.5 : 1 }}>
-                    <option value="">{loadingEggs ? 'Loading eggs…' : !form.nest_id ? '— Select a nest first —' : '— Select software —'}</option>
+                    <option value="">{loadingEggs ? 'Loading…' : !form.nest_id ? '— Choose a category first —' : '— Choose the software —'}</option>
                     {eggs.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}
                   </select>
+                  <p className="text-xs mt-1.5" style={{ color: 'var(--dim)' }}>
+                    The specific version your server starts with. This can be changed later from the panel.
+                  </p>
                 </div>
 
                 {panelError && (
@@ -302,9 +329,18 @@ export default function ProductsPage() {
                   </p>
                 )}
 
+                {!canReview && (
+                  <p className="text-xs" style={{ color: 'var(--dim)' }}>
+                    Still needed: {missingForReview}.
+                  </p>
+                )}
+
                 <div className="flex flex-col sm:flex-row gap-3 pt-2">
                   <button type="button" onClick={reset} className="btn btn-ghost flex-1">← Back</button>
-                  <button type="submit" className="btn btn-primary flex-1">Review order →</button>
+                  <button type="submit" disabled={!canReview} className="btn btn-primary flex-1"
+                    style={{ opacity: canReview ? 1 : 0.55, cursor: canReview ? 'pointer' : 'not-allowed' }}>
+                    Review order →
+                  </button>
                 </div>
               </form>
             </div>

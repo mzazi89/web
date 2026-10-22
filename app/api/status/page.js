@@ -55,6 +55,11 @@ async function measureDb() {
   }
 }
 
+export const metadata = {
+  title: 'API Status',
+  description: 'Live availability and recent incident history for the MZAZI TECH API.',
+};
+
 export default async function ApiStatus() {
   noStore();
   const db = await measureDb();
