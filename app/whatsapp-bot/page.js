@@ -88,6 +88,8 @@ function TelegramButton({ bot }) {
       style={{
         justifyContent: 'space-between',
         width: '100%',
+        minWidth: 0,
+        overflow: 'hidden',
         background: bot.recommended ? 'var(--brand-tint)' : 'var(--surface-2)',
         border: bot.recommended ? '1px solid var(--brand-soft)' : '1px solid var(--line)',
         color: bot.recommended ? 'var(--brand)' : 'var(--ink-2)',
@@ -197,7 +199,7 @@ export default function WhatsAppBotPage() {
           </p>
           <div className="grid-2-responsive">
             {BOTS.map((bot) => (
-              <div key={bot.handle} style={{ display: 'grid', gap: 8 }}>
+              <div key={bot.handle} style={{ display: 'grid', gap: 8, minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                   <span style={{ fontWeight: 700, color: 'var(--ink)' }}>{bot.name}</span>
                   {bot.recommended && <Badge tone="good">Recommended</Badge>}

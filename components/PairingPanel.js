@@ -327,7 +327,7 @@ export default function PairingPanel({ kind = 'quartz' }) {
           : 0;
 
   return (
-    <div style={{ display: 'grid', gap: 22 }}>
+    <div style={{ display: 'grid', gap: 22, gridTemplateColumns: 'minmax(0, 1fr)' }}>
       {/* ── Which bot this page pairs into ── */}
       <div
         style={{
@@ -337,7 +337,7 @@ export default function PairingPanel({ kind = 'quartz' }) {
         }}
       >
         <BotMark name={config.name} size={44} />
-        <div style={{ minWidth: 0, flex: 1 }}>
+        <div style={{ minWidth: 0, flex: '1 1 220px' }}>
           <p style={{ margin: 0, fontWeight: 700, color: 'var(--ink)' }}>{config.name}</p>
           <p style={{ margin: '2px 0 0', fontSize: 13, color: 'var(--muted)' }}>
             {kind === 'mzazi'
@@ -348,7 +348,7 @@ export default function PairingPanel({ kind = 'quartz' }) {
         {(mine || (singleBot ? bots[0] : null)) && (() => {
           const b = mine || bots[0];
           return (
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: 12.5, fontWeight: 600, color: b.online ? 'var(--good)' : 'var(--dim)' }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, marginLeft: 'auto', fontSize: 12.5, fontWeight: 600, color: b.online ? 'var(--good)' : 'var(--dim)' }}>
               <span className={`dot ${b.online ? 'dot-online' : 'dot-offline'}`} aria-hidden="true" />
               {b.online ? 'Online' : b.known ? 'Offline' : 'Never seen'}
             </span>
