@@ -1329,7 +1329,10 @@ select.input {
   left: auto;
   bottom: auto;
   width: min(310px, calc(100vw - 24px));
-  max-height: min(68vh, 500px);
+  /* Tall enough for the whole menu in one view: the shrunken rows below bring
+     the list to roughly 560px, so this ceiling is only a safety net for very
+     short (landscape) viewports rather than a scroll box in portrait. */
+  max-height: calc(100dvh - var(--nav-h) - 20px);
   z-index: 95;
   background: var(--surface);
   border: 1px solid var(--line);
@@ -1343,6 +1346,19 @@ select.input {
 @keyframes drawerPop {
   from { opacity: 0; transform: translateY(-6px) scale(0.96); }
   to   { opacity: 1; transform: none; }
+}
+
+/* Inside the popup the rows are denser than the wide-screen sidebar: twelve
+   destinations and the account actions have to sit in one card without a
+   scrollbar, so each row gives up 10px of height and a point of type. */
+.drawer .side-link {
+  min-height: 32px;
+  padding: 6px 10px;
+  font-size: 13.5px;
+  border-radius: var(--r-sm);
+}
+.drawer .side-group-label {
+  padding: 8px 10px 3px;
 }
 
 /* Toast */
