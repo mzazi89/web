@@ -5,6 +5,8 @@ import PwaProvider from '../components/PwaProvider';
 import AdSenseScript from '../components/AdSenseScript';
 import { ThemeProvider, THEME_BOOT_SCRIPT } from '../components/ui/ThemeProvider';
 import { ToastProvider } from '../components/ui/Toast';
+import { ClerkProvider } from '@clerk/nextjs';
+import { clerkEnabled, clerkPublishableKey } from '../lib/clerk';
 import './globals.css';
 
 export const metadata = {
@@ -105,5 +107,15 @@ export default function RootLayout({ children }) {
         </ThemeProvider>
       </body>
     </html>
+  );
+
+  // Clerk is opt-in: without both keys the tree renders exactly as before and
+  // the existing JWT login stays in charge.
+  if (!clerkEnabled) return tree;
+
+  return (
+    <ClerkProvider publishableKey={clerkPublishableKey} appearance={undefined}>
+      {tree}
+    </ClerkProvider>
   );
 }
