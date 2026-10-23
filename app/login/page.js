@@ -5,13 +5,6 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Logo from '@/components/Logo';
 import { AppBackground, Button, Field, Input, Alert, ThemeToggle, Icons } from '@/components/ui';
-import dynamic from 'next/dynamic';
-import { clerkEnabledClient } from '@/lib/clerk';
-
-// Clerk's widgets are browser-only. Rendering them during SSR would run
-// useAuth outside the provider, which fails the request — so they are loaded
-// after hydration, where the provider is guaranteed to exist.
-const ClerkAuthPanel = dynamic(() => import('@/components/ClerkAuthPanel'), { ssr: false });
 
 // MZAZI TECH — sign in.
 // Deliberately minimal: brand, welcome, two fields, one button, one link.
@@ -64,32 +57,6 @@ export default function LoginPage() {
       setLoading(false);
     }
   };
-
-  // Clerk takes over the credential step when it is configured. The page keeps
-  // its own frame (brand, background, theme toggle) so nothing about the layout
-  // shifts; only the form inside is replaced.
-  if (clerkEnabledClient) {
-    return (
-      <AppBackground variant="auth" style={{ minHeight: 'calc(100vh - var(--nav-h))', display: 'flex', flexDirection: 'column' }}>
-        <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '14px 16px' }}>
-          <ThemeToggle />
-        </div>
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 20px 40px' }}>
-          <div style={{ width: '100%', maxWidth: 420 }} className="anim-fade-up">
-            <div style={{ textAlign: 'center', marginBottom: 20 }}>
-              <Link href="/" aria-label="MZAZI TECH home" style={{ textDecoration: 'none', display: 'inline-block' }}>
-                <Logo size={44} />
-              </Link>
-              <h1 className="headline" style={{ fontSize: 'clamp(1.6rem, 5vw, 2rem)', marginTop: 18, marginBottom: 0 }}>
-                Welcome back
-              </h1>
-            </div>
-            <ClerkAuthPanel mode="sign-in" />
-          </div>
-        </div>
-      </AppBackground>
-    );
-  }
 
   return (
     <AppBackground variant="auth" style={{ minHeight: 'calc(100vh - var(--nav-h))', display: 'flex', flexDirection: 'column' }}>
