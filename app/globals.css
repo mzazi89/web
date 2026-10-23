@@ -1374,18 +1374,20 @@ select.input {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+/* One destination per line, flowing straight down. Rows are 26px rather than
+   the sidebar's 42px so all fifteen still fit in the card without scrolling. */
 .drawer-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 2px 4px;
-  padding: 6px 8px;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1px;
+  padding: 5px 7px;
 }
 .drawer .drawer-link {
   display: flex;
   align-items: center;
   min-height: 26px;
-  padding: 3px 6px;
-  font-size: 12px;
+  padding: 3px 9px;
+  font-size: 12.5px;
   line-height: 1.15;
   border-radius: var(--r-sm);
   white-space: nowrap;
