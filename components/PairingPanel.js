@@ -29,11 +29,13 @@ import { fmtKes } from '@/lib/currency';
 
 const WIZARD_STEPS = ['Enter number', 'Get pairing code', 'On your phone', 'Enter the code'];
 
-// Which bot each page is about. `match` is the fragment every profile name for
-// that bot contains — 'QUARTZ XD', 'QUARTZ XD 2' … all match 'QUARTZ'.
+// Which bot each page is about. `ids` are the profile ids that bot actually
+// heartbeats under — authoritative, and the only thing that stays true when an
+// operator renames a bot. `match` is the name fragment used as a fallback for
+// installs whose ids were re-keyed.
 const BOTS = {
-  quartz: { name: 'QUARTZ XD', match: 'QUARTZ' },
-  mzazi: { name: 'MZAZI XMD', match: 'MZAZI' },
+  quartz: { name: 'QUARTZ XD', ids: ['quartz', 'main'], match: 'QUARTZ' },
+  mzazi: { name: 'MZAZI XMD', ids: ['xmd'], match: 'MZAZI' },
 };
 
 function PairStatus({ phase, connected }) {
@@ -84,16 +86,33 @@ export default function PairingPanel({ kind = 'quartz' }) {
   const [notice, setNotice] = useState(null); // { kind, text }
   const [confirm, setConfirm] = useState(null); // { device, action }
 
-  const mine = bots.find((b) => String(b.name || '').toUpperCase().includes(config.match)) || null;
+  // Id first: it is what the bot heartbeats under, so it is the one fact that
+  // cannot drift. The name fragment is only a fallback for installs whose
+  // profile ids were re-keyed.
+  const mine =
+    bots.find((b) => config.ids.includes(String(b.id || '').trim().toLowerCase())) ||
+    bots.find((b) => String(b.name || '').toUpperCase().includes(config.match)) ||
+    null;
 
-  // A single configured bot is the whole platform, so both pages must still work
-  // there: the request goes out untargeted and the server resolves it, exactly as
-  // before these pages existed. Only a genuinely different bot on a multi-bot
-  // install blocks this page — pairing a MZAZI page into QUARTZ would be a lie.
+  // A single configured bot on an install whose ids tell us nothing (a custom or
+  // legacy id) is the whole platform, so both pages still work there: the request
+  // goes out untargeted and the server resolves it, exactly as before these pages
+  // existed.
   const singleBot = botsLoaded && bots.length === 1;
-  const distinctMatch = singleBot && !mine;
+  // But a single bot whose id we DO recognise as the other bot is not an
+  // ambiguous install — it is this account running the other bot. Falling back
+  // there is what paired a MZAZI page into QUARTZ and then reported "QUARTZ XD is
+  // currently offline" on the MZAZI page: a second, unrelated failure on top of
+  // the first. Say the real thing instead.
+  const otherIds = Object.entries(BOTS)
+    .filter(([key]) => key !== kind)
+    .flatMap(([, cfg]) => cfg.ids);
+  const foreignSingle =
+    singleBot && otherIds.includes(String(bots[0].id || '').trim().toLowerCase());
+
+  const distinctMatch = singleBot && !mine && !foreignSingle;
   // A bots call that never answered leaves `botsLoaded` false — also untargeted.
-  const unavailable = botsLoaded && !mine && !singleBot;
+  const unavailable = botsLoaded && !mine && (!singleBot || foreignSingle);
   const botKey = mine ? mine.id : '';
   const botName = (id) => {
     const hit = bots.find((b) => b.id === id);
@@ -380,12 +399,24 @@ export default function PairingPanel({ kind = 'quartz' }) {
 
             {unavailable && (
               <div style={{ marginBottom: 16 }}>
-                <Alert kind="warn" title={`${config.name} is not available right now`}>
-                  No bot for {config.name} is configured on this account, so a code cannot be generated. Try the{' '}
-                  <Link className="link" href={kind === 'mzazi' ? '/pair/quartz' : '/pair/mzazi'}>
-                    {kind === 'mzazi' ? 'QUARTZ XD' : 'MZAZI XMD'} page
-                  </Link>{' '}
-                  or come back in a few minutes.
+                 <Alert kind="warn" title={`${config.name} is not available right now`}>
+                   {foreignSingle ? (
+                     <>
+                       This account is running {bots[0].name}, so a {config.name} code cannot be generated. Pair on the{' '}
+                       <Link className="link" href={kind === 'mzazi' ? '/pair/quartz' : '/pair/mzazi'}>
+                         {bots[0].name}
+                       </Link>{' '}
+                       page instead.
+                     </>
+                   ) : (
+                     <>
+                       No bot for {config.name} is configured on this account, so a code cannot be generated. Try the{' '}
+                       <Link className="link" href={kind === 'mzazi' ? '/pair/quartz' : '/pair/mzazi'}>
+                         {kind === 'mzazi' ? 'QUARTZ XD' : 'MZAZI XMD'} page
+                       </Link>{' '}
+                       or come back in a few minutes.
+                     </>
+                   )}
                 </Alert>
               </div>
             )}
