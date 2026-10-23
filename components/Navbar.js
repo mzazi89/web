@@ -259,7 +259,7 @@ export default function Navbar() {
       {/* ── Mobile drawer ── */}
       {drawerOpen && (
         <>
-          <div className="overlay" onClick={() => setDrawerOpen(false)} aria-hidden="true" style={{ zIndex: 94 }} />
+          <div className="overlay overlay-soft" onClick={() => setDrawerOpen(false)} aria-hidden="true" style={{ zIndex: 94 }} />
           <div className="drawer" role="dialog" aria-modal="true" aria-label="Navigation">
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', borderBottom: '1px solid var(--line)' }}>
               <Link href="/" style={{ textDecoration: 'none' }} onClick={() => setDrawerOpen(false)}>

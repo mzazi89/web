@@ -1251,6 +1251,15 @@ select.input {
   animation: fadeUp 0.18s var(--ease) both;
 }
 
+/* Dismiss layer behind the navigation popup. Modals keep the full scrim above;
+   a menu card is small, so it only needs enough tint to read as "tap here to
+   close" while the page it covers stays visible. */
+.overlay-soft {
+  background: rgba(10, 12, 24, 0.26);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
 .modal {
   position: relative;
   width: 100%;
@@ -1309,20 +1318,32 @@ select.input {
   .modal-host { padding-bottom: env(safe-area-inset-bottom, 0px); }
 }
 
-/* Mobile navigation drawer */
+/* Mobile navigation drawer — a small card that pops out beneath the header
+   button, not a full-height panel. It floats clear of the page edges so the
+   page behind it stays visible, and once the menu is taller than the card it
+   scrolls inside itself instead of growing to fill the screen. */
 .drawer {
   position: fixed;
-  inset: 0 0 0 auto;
-  width: min(320px, 86vw);
+  top: calc(var(--nav-h) + 8px);
+  right: 12px;
+  left: auto;
+  bottom: auto;
+  width: min(310px, calc(100vw - 24px));
+  max-height: min(68vh, 500px);
   z-index: 95;
   background: var(--surface);
-  border-left: 1px solid var(--line);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
   box-shadow: var(--shadow-lg);
   overflow-y: auto;
   overscroll-behavior: contain;
-  animation: slideInRight 0.24s var(--ease) both;
+  transform-origin: top right;
+  animation: drawerPop 0.18s var(--ease) both;
 }
-@keyframes slideInRight { from { transform: translateX(16px); opacity: 0.4; } to { transform: none; opacity: 1; } }
+@keyframes drawerPop {
+  from { opacity: 0; transform: translateY(-6px) scale(0.96); }
+  to   { opacity: 1; transform: none; }
+}
 
 /* Toast */
 .toast-host {
