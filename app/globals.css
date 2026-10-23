@@ -167,7 +167,7 @@
   --r-pill: 999px;
 
   /* ── Layout ─────────────────────────────────────────────────────────── */
-  --nav-h: 60px;
+  --nav-h: 68px;
   --sidebar-w: 264px;
 
   /* ── Motion ─────────────────────────────────────────────────────────── */
@@ -1639,4 +1639,26 @@ select.input {
 @media print {
   .no-print, .app-header, .skip-link { display: none !important; }
   body { background: #fff; color: #000; }
+}
+
+
+/* ── Brand lockup ───────────────────────────────────────────────────────────
+   The mark scales from the `size` prop; the wordmark is capped against the
+   viewport so the two-weight lockup never pushes the nav actions off screen. */
+.mz-wordmark {
+  font-size: min(var(--mz-word, 20px), 5.2vw);
+}
+
+.mz-brand {
+  transition: transform 180ms ease;
+}
+
+a:hover > .mz-brand,
+a:focus-visible > .mz-brand {
+  transform: translateY(-1px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mz-brand { transition: none; }
+  a:hover > .mz-brand, a:focus-visible > .mz-brand { transform: none; }
 }
