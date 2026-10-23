@@ -261,66 +261,59 @@ export default function Navbar() {
         <>
           <div className="overlay overlay-soft" onClick={() => setDrawerOpen(false)} aria-hidden="true" style={{ zIndex: 94 }} />
           <div className="drawer" role="dialog" aria-modal="true" aria-label="Navigation">
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '9px 10px 9px 12px', borderBottom: '1px solid var(--line)' }}>
-              <Link href="/" style={{ textDecoration: 'none' }} onClick={() => setDrawerOpen(false)}>
-                <Logo size={22} withText />
-              </Link>
-              <button type="button" className="icon-btn" onClick={() => setDrawerOpen(false)} aria-label="Close navigation menu" style={{ width: 30, height: 30 }}>
-                <Icons.X size={16} />
-              </button>
-            </div>
-
-            <div style={{ padding: 10 }}>
-              {ready && user && (
-                <div className="card" style={{ padding: 9, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 9 }}>
-                  <Avatar name={displayName} size={32} />
-                  <div style={{ minWidth: 0, flex: 1 }}>
-                    <p style={{ margin: 0, fontWeight: 700, fontSize: 13, color: 'var(--ink)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {displayName}
-                    </p>
-                    <p style={{ margin: '1px 0 0', fontSize: 11.5, color: 'var(--muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {user.email}
-                    </p>
-                  </div>
+            {/* One line carries identity, balance and the close control: the
+                logo row the desktop sidebar needs would only cost height here. */}
+            <div className="drawer-head">
+              {ready && user ? (
+                <div className="drawer-user">
+                  <Avatar name={displayName} size={24} />
+                  <span className="drawer-user-name">{displayName}</span>
                   {wallet !== null && (
                     <span className="tag tag-green tnum" style={{ flex: '0 0 auto' }}>{fmtKes(wallet)}</span>
                   )}
                 </div>
+              ) : (
+                <Link href="/" style={{ textDecoration: 'none' }} onClick={() => setDrawerOpen(false)}>
+                  <Logo size={20} withText />
+                </Link>
               )}
+              <button type="button" className="icon-btn" onClick={() => setDrawerOpen(false)} aria-label="Close navigation menu" style={{ width: 28, height: 28, flex: '0 0 auto' }}>
+                <Icons.X size={15} />
+              </button>
+            </div>
 
-              <nav aria-label="Main" style={{ display: 'grid', gap: 0 }}>
-                {PRIMARY.map((l) => {
-                  const active = isActive(pathname, l.href);
-                  return (
-                    <Link key={l.href} href={l.href} className={`side-link ${active ? 'is-active' : ''}`}
-                      aria-current={active ? 'page' : undefined}>
-                      {l.label}
-                    </Link>
-                  );
-                })}
-              </nav>
+            {/* Three columns keep all fifteen destinations inside a card about a
+                quarter of the screen tall, so the menu never needs scrolling. */}
+            <nav aria-label="Main" className="drawer-grid">
+              {[...PRIMARY, ...MORE].map((l) => {
+                const active = isActive(pathname, l.href);
+                return (
+                  <Link
+                    key={l.href}
+                    href={l.href}
+                    className={`side-link drawer-link ${active ? 'is-active' : ''}`}
+                    aria-current={active ? 'page' : undefined}
+                    title={l.label}
+                  >
+                    {l.label}
+                  </Link>
+                );
+              })}
+            </nav>
 
-              <p className="side-group-label" style={{ padding: '8px 10px 3px' }}>More</p>
-              <nav aria-label="More" style={{ display: 'grid', gap: 0 }}>
-                {MORE.map((l) => (
-                  <Link key={l.href} href={l.href} className="side-link">{l.label}</Link>
-                ))}
-              </nav>
-
-              <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--line)' }}>
-                {ready && user ? (
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 6 }}>
-                    <Button href="/wallet" variant="ghost" size="sm" block>Wallet</Button>
-                    <Button href="/account" variant="ghost" size="sm" block>Account</Button>
-                    <Button variant="danger" size="sm" block onClick={logout}>Sign out</Button>
-                  </div>
-                ) : (
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
-                    <Button href="/signup" variant="primary" size="sm" block>Get Started</Button>
-                    <Button href="/login" variant="ghost" size="sm" block>Login</Button>
-                  </div>
-                )}
-              </div>
+            <div className="drawer-foot">
+              {ready && user ? (
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 5 }}>
+                  <Button href="/wallet" variant="ghost" size="sm" block>Wallet</Button>
+                  <Button href="/account" variant="ghost" size="sm" block>Account</Button>
+                  <Button variant="danger" size="sm" block onClick={logout}>Sign out</Button>
+                </div>
+              ) : (
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 5 }}>
+                  <Button href="/signup" variant="primary" size="sm" block>Get Started</Button>
+                  <Button href="/login" variant="ghost" size="sm" block>Login</Button>
+                </div>
+              )}
             </div>
           </div>
         </>

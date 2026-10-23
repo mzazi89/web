@@ -1348,17 +1348,53 @@ select.input {
   to   { opacity: 1; transform: none; }
 }
 
-/* Inside the popup the rows are denser than the wide-screen sidebar: twelve
-   destinations and the account actions have to sit in one card without a
-   scrollbar, so each row gives up 10px of height and a point of type. */
-.drawer .side-link {
-  min-height: 32px;
-  padding: 6px 10px;
-  font-size: 13.5px;
-  border-radius: var(--r-sm);
+/* The popup is a compact card, roughly a quarter of the screen: identity and
+   close on one line, the fifteen destinations in three columns, actions in one
+   row. Nothing is hidden behind a scroll. */
+.drawer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 7px 8px 7px 10px;
+  border-bottom: 1px solid var(--line);
 }
-.drawer .side-group-label {
-  padding: 8px 10px 3px;
+.drawer-user {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  flex: 1;
+}
+.drawer-user-name {
+  font-weight: 700;
+  font-size: 12.5px;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.drawer-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2px 4px;
+  padding: 6px 8px;
+}
+.drawer .drawer-link {
+  display: flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 3px 6px;
+  font-size: 12px;
+  line-height: 1.15;
+  border-radius: var(--r-sm);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.drawer-foot {
+  padding: 6px 8px 8px;
+  border-top: 1px solid var(--line);
 }
 
 /* Toast */
