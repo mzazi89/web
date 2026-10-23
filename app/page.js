@@ -25,6 +25,7 @@ const STATS = [
 const BOTS = [
   {
     id: 'quartz',
+    href: '/pair/quartz',
     name: 'QUARTZ XD',
     tagline: 'Powerful WhatsApp automation.',
     desc: 'The everyday bot. Group management, downloads, stickers, polls and 100+ commands — ready the moment you pair.',
@@ -33,6 +34,7 @@ const BOTS = [
   },
   {
     id: 'mzazi',
+    href: '/pair/mzazi',
     name: 'MZAZI XMD',
     tagline: 'Advanced automation tools.',
     desc: 'For heavier workloads. Everything in QUARTZ XD plus automation workflows, scheduled tasks and multi-group broadcasting.',
@@ -236,8 +238,9 @@ export default function Home() {
                   ))}
                 </ul>
 
-                <Link href="/signup" className="btn btn-dark btn-block" style={{ marginTop: 'auto' }}>
-                  Use {bot.name}
+                <Link href={bot.href} className="btn btn-dark btn-block" style={{ marginTop: 'auto' }}>
+                  Pair {bot.name}
+                  <Icons.ArrowRight size={16} />
                 </Link>
               </Card>
             ))}

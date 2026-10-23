@@ -31,7 +31,11 @@ const PRIMARY = [
 ];
 
 const MORE = [
-  { href: '/whatsapp-bot', label: 'WhatsApp Bot', desc: 'Connect a number & see bot features' },
+  // Pairing is two destinations, not a chooser inside one page — one entry per
+  // bot so the link a visitor taps already decides which bot they get.
+  { href: '/pair/quartz',  label: 'Pair QUARTZ XD', desc: 'Connect a number to QUARTZ XD' },
+  { href: '/pair/mzazi',   label: 'Pair MZAZI XMD', desc: 'Connect a number to MZAZI XMD' },
+  { href: '/whatsapp-bot', label: 'WhatsApp Bot', desc: 'Bot features, commands & guides' },
   { href: '/products',     label: 'Panels',       desc: 'Pterodactyl game panel hosting' },
   { href: '/vps',          label: 'VPS',          desc: 'Virtual private servers' },
   { href: '/temp-number',  label: 'Temp Number',  desc: 'Temporary numbers for verification' },

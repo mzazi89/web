@@ -292,7 +292,7 @@ export default function DashboardPage() {
                 icon={<Icons.WhatsApp size={26} />}
                 title="No devices connected yet."
                 description="Connect your first WhatsApp number to get started."
-                action={<Button size="sm" href="/whatsapp-bot" icon={<Icons.WhatsApp size={15} />}>Connect WhatsApp</Button>}
+                action={<Button size="sm" href="/pair" icon={<Icons.WhatsApp size={15} />}>Connect WhatsApp</Button>}
               />
             ) : (
               <div style={{ display: 'grid', gap: 10 }}>
@@ -545,7 +545,7 @@ export default function DashboardPage() {
                 <div style={{ display: 'grid', gap: 4 }}>
                   {[
                     { label: 'Deploy panel', href: '/products', icon: <Icons.Dashboard size={16} /> },
-                    { label: 'WhatsApp bot', href: '/whatsapp-bot', icon: <Icons.WhatsApp size={16} /> },
+                    { label: 'Pair a bot', href: '/pair', icon: <Icons.WhatsApp size={16} /> },
                     { label: 'MZAZI API', href: '/api', icon: <Icons.Command size={16} /> },
                     { label: 'Help & support', href: '/help', icon: <Icons.Help size={16} /> },
                     { label: 'Contact support', href: '/contact', icon: <Icons.Send size={16} /> },

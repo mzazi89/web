@@ -2,15 +2,30 @@
 
 // MZAZI TECH — WhatsApp bot.
 //
-// Documents the bot (how to pair, which bot to use, the commands) and hosts the
-// interactive PairingPanel. This page makes no API calls of its own — the panel
-// owns the pairing/devices/bots/plan endpoints.
+// Documents the bot (how to pair, which bot to use, the commands) and points at
+// the two pairing routes. It makes no API calls of its own — pairing happens in
+// /pair/quartz and /pair/mzazi, which own the pair/devices/bots/plan endpoints.
 
 import Link from 'next/link';
 import {
-  AppBackground, PageHeader, Button, Card, CardHeader, Badge, Icons,
+  AppBackground, PageHeader, Button, Card, CardHeader, Badge, BotMark, Icons,
 } from '@/components/ui';
-import PairingPanel from './PairingPanel';
+
+// Pairing itself lives on two dedicated routes — /pair/quartz and /pair/mzazi —
+// so the bot is decided by the page a visitor is on rather than by a dropdown
+// inside a wizard. This page documents the bots and links to both.
+const PAIR_PAGES = [
+  {
+    href: '/pair/quartz',
+    name: 'QUARTZ XD',
+    desc: 'Everyday automation — group tools, downloads, stickers and 100+ commands.',
+  },
+  {
+    href: '/pair/mzazi',
+    name: 'MZAZI XMD',
+    desc: 'Advanced automation — workflows, scheduled tasks and multi-group broadcast.',
+  },
+];
 
 const BOTS = [
   { handle: 'mzazitechquartzbot', name: 'QUARTZ XD', desc: 'Recommended — start here', recommended: true },
@@ -98,6 +113,7 @@ export default function WhatsAppBotPage() {
           actions={
             <>
               <Button href="#pair" variant="ghost" icon={<Icons.Zap size={16} />}>Pair now</Button>
+              <Button href="/devices" variant="ghost" icon={<Icons.Phone size={16} />}>Devices</Button>
               <Button href="https://t.me/mzazitechquartzbot" icon={<Icons.Send size={16} />}>Open bot</Button>
             </>
           }
@@ -106,7 +122,34 @@ export default function WhatsAppBotPage() {
 
         {/* ── Pair online ── */}
         <section id="pair" className="scroll-x" style={{ marginBottom: 28, scrollMarginTop: 90 }}>
-          <PairingPanel />
+          <Card className="anim-fade-up">
+            <CardHeader
+              title="Pair a number"
+              description="Each bot has its own pairing page — pick the bot you want and enter your number there."
+              icon={<Icons.WhatsApp size={18} />}
+            />
+            <div className="grid-2-responsive">
+              {PAIR_PAGES.map((p) => (
+                <div
+                  key={p.href}
+                  style={{
+                    display: 'flex', flexDirection: 'column', gap: 12,
+                    padding: 16, background: 'var(--surface-2)',
+                    border: '1px solid var(--line)', borderRadius: 'var(--r-md)',
+                  }}
+                >
+                  <BotMark name={p.name} size={46} />
+                  <div style={{ minWidth: 0 }}>
+                    <p style={{ margin: 0, fontWeight: 700, color: 'var(--ink)' }}>{p.name}</p>
+                    <p style={{ margin: '4px 0 0', fontSize: 13.5, color: 'var(--muted)', lineHeight: 1.6 }}>{p.desc}</p>
+                  </div>
+                  <Button href={p.href} variant="dark" size="sm" block icon={<Icons.Zap size={15} />} style={{ marginTop: 'auto' }}>
+                    Pair {p.name}
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </Card>
         </section>
 
         {/* ── How it works ── */}

@@ -22,6 +22,8 @@ const COLUMNS = [
   {
     title: 'Products',
     links: [
+      { label: 'Pair QUARTZ XD', href: '/pair/quartz' },
+      { label: 'Pair MZAZI XMD', href: '/pair/mzazi' },
       { label: 'WhatsApp Automation', href: '/whatsapp-bot' },
       { label: 'Pterodactyl Panels', href: '/products' },
       { label: 'VPS Servers', href: '/vps' },

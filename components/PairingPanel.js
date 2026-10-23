@@ -1,17 +1,22 @@
 'use client';
 
-// MZAZI TECH — interactive WhatsApp pairing panel for /whatsapp-bot.
+// MZAZI TECH — interactive WhatsApp pairing panel.
 //
-// Four-step wizard: enter the number → get a code → instructions on the phone →
-// read/copy the code while we watch for the session to come online.
+// One panel, one bot. The bot is decided by the page that renders it
+// (`kind="quartz"` → QUARTZ XD, `kind="mzazi"` → MZAZI XMD), so a visitor who is
+// on /pair/quartz can never accidentally queue a request for the other bot.
 //
 // The pairing itself is DB-mediated and unchanged:
 //   POST /api/pair            → queues the request, returns { requestId }
 //   GET  /api/pair?requestId= → polled for { status, result:{ code } }
-//   GET  /api/pair/bots       → selectable bots (only shown when >1)
+//   GET  /api/pair/bots       → bots with live state (used to resolve this one)
 //   GET  /api/pair/devices    → plan, allowance, devices
 //   POST /api/pair/unlink     → { number, action, bot }
 //   POST /api/pair/plan       → { plan }
+//
+// Bot ids come from the database (`settings.bot_profiles`), not from this file,
+// so the page matches on the NAME it is about and sends whatever id that bot
+// actually has. A renamed or re-keyed profile keeps working.
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
@@ -23,6 +28,13 @@ import {
 import { fmtKes } from '@/lib/currency';
 
 const WIZARD_STEPS = ['Enter number', 'Get pairing code', 'On your phone', 'Enter the code'];
+
+// Which bot each page is about. `match` is the fragment every profile name for
+// that bot contains — 'QUARTZ XD', 'QUARTZ XD 2' … all match 'QUARTZ'.
+const BOTS = {
+  quartz: { name: 'QUARTZ XD', match: 'QUARTZ' },
+  mzazi: { name: 'MZAZI XMD', match: 'MZAZI' },
+};
 
 function PairStatus({ phase, connected }) {
   if (phase === 'requesting') return <StatusIndicator status="warn" label="Generating pairing code…" pulse className="anim-pulse" />;
@@ -47,13 +59,15 @@ function PairStatus({ phase, connected }) {
   return null;
 }
 
-export default function PairingPanel() {
+export default function PairingPanel({ kind = 'quartz' }) {
+  const config = BOTS[kind] || BOTS.quartz;
+
   const [authed, setAuthed] = useState(null); // null | true | false
   const [data, setData] = useState(null);     // { plan, maxDevices, endDate, devices, plans }
 
-  // which bot
+  // the bot this page pairs into
   const [bots, setBots] = useState([]);
-  const [botId, setBotId] = useState('');
+  const [botsLoaded, setBotsLoaded] = useState(false);
 
   // pairing wizard
   const [pairNumber, setPairNumber] = useState('');
@@ -70,10 +84,21 @@ export default function PairingPanel() {
   const [notice, setNotice] = useState(null); // { kind, text }
   const [confirm, setConfirm] = useState(null); // { device, action }
 
-  const selectedBot = bots.find((b) => b.id === botId) || bots[0] || null;
-  const botKey = selectedBot ? selectedBot.id : '';
-  const multipleBots = bots.length > 1;
-  const botName = (id) => (id && bots.find((b) => b.id === id) ? bots.find((b) => b.id === id).name : id);
+  const mine = bots.find((b) => String(b.name || '').toUpperCase().includes(config.match)) || null;
+
+  // A single configured bot is the whole platform, so both pages must still work
+  // there: the request goes out untargeted and the server resolves it, exactly as
+  // before these pages existed. Only a genuinely different bot on a multi-bot
+  // install blocks this page — pairing a MZAZI page into QUARTZ would be a lie.
+  const singleBot = botsLoaded && bots.length === 1;
+  const distinctMatch = singleBot && !mine;
+  // A bots call that never answered leaves `botsLoaded` false — also untargeted.
+  const unavailable = botsLoaded && !mine && !singleBot;
+  const botKey = mine ? mine.id : '';
+  const botName = (id) => {
+    const hit = bots.find((b) => b.id === id);
+    return hit ? hit.name : id;
+  };
 
   useEffect(() => {
     fetch('/api/auth/me')
@@ -91,11 +116,9 @@ export default function PairingPanel() {
       const res = await fetch('/api/pair/bots', { cache: 'no-store' });
       if (!res.ok) return;
       const d = await res.json();
-      if (d && Array.isArray(d.bots) && d.bots.length) {
-        setBots(d.bots);
-        setBotId((prev) => (d.bots.some((b) => b.id === prev) ? prev : d.bots[0].id));
-      }
-    } catch { /* selector is optional */ }
+      if (d && Array.isArray(d.bots)) setBots(d.bots);
+    } catch { /* the page still pairs untargeted when there is one bot */ }
+    finally { setBotsLoaded(true); }
   };
 
   const loadDevices = async () => {
@@ -164,6 +187,11 @@ export default function PairingPanel() {
       setPairError('Enter a valid phone number, e.g. 254785016388.');
       return;
     }
+    if (unavailable) {
+      setPairPhase('error');
+      setPairError(`${config.name} is not available right now. Please try again later.`);
+      return;
+    }
     setPairPhase('requesting');
     setPairError('');
     setPairCode('');
@@ -173,8 +201,8 @@ export default function PairingPanel() {
       const res = await fetch('/api/pair', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        // bot is omitted when there is only one — an untargeted row stays
-        // claimable by any bot, which is what this posted before.
+        // bot is omitted only when the bots call never answered — an untargeted
+        // row stays claimable by any bot, which is what this posted before.
         body: JSON.stringify({ number: digits, bot: botKey || undefined }),
       });
       const d = await res.json();
@@ -265,7 +293,7 @@ export default function PairingPanel() {
         <EmptyState
           icon={<Icons.Shield size={26} />}
           title="Sign in to pair from the website"
-          description="Create a free account to get your pairing code right here — no Telegram needed."
+          description={`Create a free account to pair a number with ${config.name} right here — no Telegram needed.`}
           action={<Button href="/login">Sign in</Button>}
           secondaryAction={<Button href="/signup" variant="ghost">Create account</Button>}
         />
@@ -290,7 +318,6 @@ export default function PairingPanel() {
   const plan = data?.plan || 'FREE';
   const limitReached = !unlimited && devices.length >= maxDevices;
   const stepsPct = unlimited ? 0 : Math.min(100, Math.round((devices.length / Math.max(1, maxDevices)) * 100));
-  const busyPair = pairPhase === 'requesting' || pairPhase === 'waiting';
   const connected = !!requestedNumber && devices.some((d) => String(d.number) === String(requestedNumber));
 
   const stepIndex =
@@ -301,11 +328,39 @@ export default function PairingPanel() {
 
   return (
     <div style={{ display: 'grid', gap: 22 }}>
+      {/* ── Which bot this page pairs into ── */}
+      <div
+        style={{
+          display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap',
+          padding: '14px 16px', background: 'var(--surface-2)',
+          border: '1px solid var(--line)', borderRadius: 'var(--r-md)',
+        }}
+      >
+        <BotMark name={config.name} size={44} />
+        <div style={{ minWidth: 0, flex: 1 }}>
+          <p style={{ margin: 0, fontWeight: 700, color: 'var(--ink)' }}>{config.name}</p>
+          <p style={{ margin: '2px 0 0', fontSize: 13, color: 'var(--muted)' }}>
+            {kind === 'mzazi'
+              ? 'Advanced automation — workflows, scheduled tasks and multi-group broadcast.'
+              : 'Everyday automation — group tools, downloads, stickers and 100+ commands.'}
+          </p>
+        </div>
+        {(mine || (singleBot ? bots[0] : null)) && (() => {
+          const b = mine || bots[0];
+          return (
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: 12.5, fontWeight: 600, color: b.online ? 'var(--good)' : 'var(--dim)' }}>
+              <span className={`dot ${b.online ? 'dot-online' : 'dot-offline'}`} aria-hidden="true" />
+              {b.online ? 'Online' : b.known ? 'Offline' : 'Never seen'}
+            </span>
+          );
+        })()}
+      </div>
+
       {/* ── Pairing wizard ── */}
       <Card className="anim-fade-up">
         <CardHeader
-          title="Pair a new number"
-          description="Enter the WhatsApp number you want the bot to run on — your pairing code appears here in seconds."
+          title={`Pair a new number with ${config.name}`}
+          description="Enter the WhatsApp number you want this bot to run on — your pairing code appears here in seconds."
           icon={<Icons.WhatsApp size={18} />}
           action={<PairStatus phase={pairPhase} connected={connected} />}
         />
@@ -315,30 +370,23 @@ export default function PairingPanel() {
         {/* STEP 1 — number */}
         {(pairPhase === 'idle' || pairPhase === 'error') && (
           <div>
-            {multipleBots && (
+            {distinctMatch && (
               <div style={{ marginBottom: 16 }}>
-                <p className="label" style={{ marginBottom: 8 }}>Bot</p>
-                <div className="grid-2-responsive" style={{ gap: 10 }}>
-                  {bots.map((b) => {
-                    const active = selectedBot ? selectedBot.id === b.id : false;
-                    return (
-                      <button
-                        key={b.id}
-                        type="button"
-                        onClick={() => setBotId(b.id)}
-                        aria-pressed={active}
-                        className={`option-card ${active ? 'is-selected' : ''}`}
-                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, width: '100%', textAlign: 'left', cursor: 'pointer' }}
-                      >
-                        <BotMark name={b.name} compact />
-                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12.5, color: b.online ? 'var(--good)' : 'var(--dim)', fontWeight: 600 }}>
-                          <span className={`dot ${b.online ? 'dot-online' : 'dot-offline'}`} aria-hidden="true" />
-                          {b.online ? 'Online' : b.known ? 'Offline' : 'Never seen'}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
+                <Alert kind="info" title={`Only ${bots[0].name} is configured right now`}>
+                  There is no separate {config.name} bot on this account, so the number you enter is paired to {bots[0].name}.
+                </Alert>
+              </div>
+            )}
+
+            {unavailable && (
+              <div style={{ marginBottom: 16 }}>
+                <Alert kind="warn" title={`${config.name} is not available right now`}>
+                  No bot for {config.name} is configured on this account, so a code cannot be generated. Try the{' '}
+                  <Link className="link" href={kind === 'mzazi' ? '/pair/quartz' : '/pair/mzazi'}>
+                    {kind === 'mzazi' ? 'QUARTZ XD' : 'MZAZI XMD'} page
+                  </Link>{' '}
+                  or come back in a few minutes.
+                </Alert>
               </div>
             )}
 
@@ -364,7 +412,7 @@ export default function PairingPanel() {
             )}
 
             <div style={{ marginTop: 16 }}>
-              <Button onClick={startPair} block disabled={!pairNumber.trim()} icon={<Icons.Zap size={16} />}>
+              <Button onClick={startPair} block disabled={!pairNumber.trim() || unavailable} icon={<Icons.Zap size={16} />}>
                 Get pairing code
               </Button>
             </div>
@@ -376,7 +424,7 @@ export default function PairingPanel() {
           <div style={{ textAlign: 'center', padding: '18px 0' }} role="status" aria-live="polite">
             <span className="spinner" style={{ margin: '0 auto 14px' }} />
             <p style={{ margin: 0, fontWeight: 700, color: 'var(--ink)' }} className="anim-pulse">Generating pairing code…</p>
-            <p style={{ margin: '6px 0 0', color: 'var(--muted)', fontSize: 13.5 }}>Asking {selectedBot?.name || 'the bot'} for a fresh code.</p>
+            <p style={{ margin: '6px 0 0', color: 'var(--muted)', fontSize: 13.5 }}>Asking {config.name} for a fresh code.</p>
           </div>
         )}
 
@@ -398,7 +446,7 @@ export default function PairingPanel() {
             </ol>
             <div style={{ marginTop: 16 }}>
               <Alert kind="info">
-                Keep this page open — we’re waiting for the code{selectedBot?.name ? ` from ${selectedBot.name}` : ''}. Nothing is frozen; you can leave it.
+                Keep this page open — we’re waiting for the code from {config.name}. Nothing is frozen; you can leave it.
               </Alert>
             </div>
             <div style={{ marginTop: 14 }}>
@@ -439,7 +487,7 @@ export default function PairingPanel() {
             <div style={{ marginTop: 16 }}>
               <Alert kind={connected ? 'success' : 'info'} title={connected ? 'Your number is connected' : 'Now enter the code on your phone'}>
                 {connected
-                  ? 'WhatsApp accepted the code — this number is now linked and the bot is running on it.'
+                  ? `WhatsApp accepted the code — this number is now linked and ${config.name} is running on it.`
                   : 'On the phone: WhatsApp → Settings → Linked Devices → Link a Device → Link with phone number, then type the code above. We’ll switch this to “Connected” automatically.'}
               </Alert>
             </div>
@@ -541,7 +589,7 @@ export default function PairingPanel() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                     <p className="mono" style={{ margin: 0, fontWeight: 700, color: 'var(--ink)' }}>{d.number}</p>
                     <Badge tone="good" dot>Active</Badge>
-                    {multipleBots && d.bot && <Badge tone="blue">{botName(d.bot)}</Badge>}
+                    {d.bot && <Badge tone="blue">{botName(d.bot)}</Badge>}
                   </div>
                   <p className="mono" style={{ margin: '4px 0 0', fontSize: 12.5, color: 'var(--dim)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                     {d.connectedAt ? `linked ${new Date(d.connectedAt).toLocaleDateString()}` : 'linked'}

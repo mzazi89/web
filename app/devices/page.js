@@ -112,8 +112,8 @@ export default function DevicesPage() {
   const full = !unlimited && devices.length >= maxDevices;
 
   const reconnect = (device) => {
-    setNotice({ kind: 'info', text: `Re-pair ${device.number} from the WhatsApp bot page to bring it back online.` });
-    router.push('/whatsapp-bot');
+    setNotice({ kind: 'info', text: `Re-pair ${device.number} from its pairing page to bring it back online.` });
+    router.push('/pair');
   };
 
   return (
@@ -123,7 +123,7 @@ export default function DevicesPage() {
           title="Connected devices"
           description="Every WhatsApp number your account is running, and how many slots your plan allows."
           icon={<Icons.Phone size={20} />}
-          actions={<Button href="/whatsapp-bot" icon={<Icons.Plus size={16} />}>Connect WhatsApp</Button>}
+          actions={<Button href="/pair" icon={<Icons.Plus size={16} />}>Connect WhatsApp</Button>}
           breadcrumb={['Dashboard', 'Devices']}
         />
 
@@ -202,7 +202,7 @@ export default function DevicesPage() {
                     icon={<Icons.WhatsApp size={26} />}
                     title="No WhatsApp devices connected yet."
                     description="Connect your first number to get started."
-                    action={<Button href="/whatsapp-bot" icon={<Icons.WhatsApp size={16} />}>Connect WhatsApp</Button>}
+                    action={<Button href="/pair" icon={<Icons.WhatsApp size={16} />}>Connect WhatsApp</Button>}
                   />
                 </Card>
               ) : (
@@ -247,7 +247,7 @@ export default function DevicesPage() {
                 ))}
               </ol>
               <div style={{ marginTop: 18 }}>
-                <Button href="/whatsapp-bot" variant="dark" icon={<Icons.WhatsApp size={16} />}>
+                <Button href="/pair" variant="dark" icon={<Icons.WhatsApp size={16} />}>
                   Open the pairing wizard
                 </Button>
               </div>

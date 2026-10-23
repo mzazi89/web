@@ -255,7 +255,7 @@ function SubscriptionInner() {
               />
               <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                 <Button href="/devices" variant="dark" icon={<Icons.Phone size={16} />}>View my devices</Button>
-                <Button href="/whatsapp-bot" variant="ghost" icon={<Icons.WhatsApp size={16} />}>Connect a number</Button>
+                <Button href="/pair" variant="ghost" icon={<Icons.WhatsApp size={16} />}>Connect a number</Button>
               </div>
             </Card>
           </>
