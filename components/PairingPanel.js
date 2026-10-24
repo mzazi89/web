@@ -247,6 +247,31 @@ export default function PairingPanel({ kind = 'quartz' }) {
     setRequestedNumber('');
   };
 
+  const handleUnpairAndRetry = async () => {
+    const number = requestedNumber;
+    if (!number) return;
+    setPairPhase('requesting');
+    setPairError('');
+    try {
+      const res = await fetch('/api/pair/unlink', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ number, action: 'unlink', bot: botKey || undefined }),
+      });
+      if (!res.ok) {
+        const d = await res.json();
+        setPairPhase('error');
+        setPairError(humaniseError(d.error || 'Failed to unpair. Please try again.'));
+        return;
+      }
+      // Give the bot a moment to process the unlink
+      setTimeout(startPair, 2500);
+    } catch (e) {
+      setPairPhase('error');
+      setPairError(humaniseError(e));
+    }
+  };
+
   const copyCode = async () => {
     try {
       await navigator.clipboard.writeText(pairCode);
@@ -439,10 +464,15 @@ export default function PairingPanel({ kind = 'quartz' }) {
             {pairPhase === 'error' && (
               <div style={{ marginTop: 14 }}>
                 <Alert kind="error" title="We couldn’t start pairing">{pairError}</Alert>
-                <div style={{ marginTop: 12 }}>
+                <div style={{ marginTop: 12, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                   <Button size="sm" variant="ghost" onClick={resetPair} icon={<Icons.Refresh size={15} />}>
                     Try again
                   </Button>
+                  {pairError.includes('already linked') && (
+                    <Button size="sm" variant="dark" onClick={handleUnpairAndRetry} icon={<Icons.Trash size={15} />}>
+                      Unpair and try again
+                    </Button>
+                  )}
                 </div>
               </div>
             )}

@@ -203,6 +203,9 @@ export function humaniseError(err, fallback = 'Something went wrong. Please try 
   if (s.includes('timeout') || s.includes('timed out')) {
     return 'That took too long. Please try again.';
   }
+  if (s.includes('already paired') || s.includes('already registered')) {
+    return 'This number is already linked to a bot. You must unpair it first to link it again.';
+  }
   if (s.includes('prisma') || s.includes('sql') || s.includes('postgres') || s.includes('syntaxerror')) {
     return fallback;   // never surface database internals
   }
