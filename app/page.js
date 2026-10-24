@@ -2,343 +2,75 @@ import Link from 'next/link';
 import Logo from '@/components/Logo';
 import { AppBackground, BotMark, CanvasArt, Card, CardHeader, Badge, Icons } from '@/components/ui';
 
-// MZAZI TECH — landing page.
-//
-// Answers three questions before the fold: what is this, what do I do, what
-// happens next. Hero stays deliberately sparse — the product cards and feature
-// list carry the detail lower down.
-
 export const metadata = {
   title: 'MZAZI TECH — WhatsApp automation made simple',
-  description:
-    'Connect your WhatsApp, choose your bot (QUARTZ XD or MZAZI XMD) and start automating. Instant pairing codes, one dashboard for every device.',
+  description: 'Connect your WhatsApp, choose your bot (QUARTZ XD or MZAZI XMD) and start automating. Instant pairing codes, one dashboard for every device.',
   alternates: { canonical: 'https://www.mzazi.shop' },
 };
-
-const STATS = [
-  { value: '2 min', label: 'To connect a number' },
-  { value: '24/7', label: 'Bot uptime' },
-  { value: 'Fast', label: 'Pairing codes' },
-  { value: 'KES', label: 'Local wallet & Paystack' },
-];
-
-const BOTS = [
-  {
-    id: 'quartz',
-    href: '/pair/quartz',
-    name: 'QUARTZ XD',
-    tagline: 'Powerful WhatsApp automation.',
-    desc: 'The everyday bot. Group management, downloads, stickers, polls and 100+ commands — ready the moment you pair.',
-    points: ['100+ built-in commands', 'Group & admin tools', 'Media downloads'],
-    tone: 'brand',
-  },
-  {
-    id: 'mzazi',
-    href: '/pair/mzazi',
-    name: 'MZAZI XMD',
-    tagline: 'Advanced automation tools.',
-    desc: 'For heavier workloads. Everything in QUARTZ XD plus automation workflows, scheduled tasks and multi-group broadcasting.',
-    points: ['Everything in QUARTZ XD', 'Scheduled & automated tasks', 'Multi-group broadcast'],
-    tone: 'blue',
-  },
-];
-
-const STEPS = [
-  {
-    n: '01',
-    title: 'Connect your WhatsApp',
-    desc: 'Enter your number and we generate a pairing code. No QR scanning, no re-installing WhatsApp.',
-    icon: <Icons.WhatsApp size={20} />,
-  },
-  {
-    n: '02',
-    title: 'Choose your bot',
-    desc: 'Pick QUARTZ XD for everyday automation or MZAZI XMD for advanced workflows.',
-    icon: <Icons.Bot size={20} />,
-  },
-  {
-    n: '03',
-    title: 'Start automating',
-    desc: 'Your bot comes online immediately. Manage every device, plan and payment from one dashboard.',
-    icon: <Icons.Zap size={20} />,
-  },
-];
-
-const FEATURES = [
-  {
-    title: 'One dashboard for every number',
-    desc: 'See every connected WhatsApp number, which bot is serving it, and whether it is live — in one place.',
-    icon: <Icons.Phone size={19} />,
-    href: '/devices',
-    cta: 'Connected Devices',
-  },
-  {
-    title: 'Simple, affordable plans',
-    desc: 'Start free with one number. Scale to 5, 10, 20 or unlimited devices for a flat monthly fee.',
-    icon: <Icons.CreditCard size={19} />,
-    href: '/subscription',
-    cta: 'See plans',
-  },
-  {
-    title: 'Pay your way',
-    desc: 'Top up your wallet and pay with Paystack — mobile money or card. Every receipt is saved to your account.',
-    icon: <Icons.Wallet size={19} />,
-    href: '/payments',
-    cta: 'Payments',
-  },
-  {
-    title: 'Help when you need it',
-    desc: 'Step-by-step guides for pairing, device limits and billing — plus real humans on WhatsApp and Telegram.',
-    icon: <Icons.Help size={19} />,
-    href: '/help',
-    cta: 'Help centre',
-  },
-];
 
 export default function Home() {
   return (
     <AppBackground>
-      {/* ───────────────────────── Hero ───────────────────────── */}
-      <section>
-        <div className="container-site" style={{ paddingTop: 56, paddingBottom: 48 }}>
-          <div style={{ maxWidth: 760, margin: '0 auto', textAlign: 'center' }}>
-            <p className="eyebrow center anim-fade-up" style={{ justifyContent: 'center' }}>
-              WhatsApp automation
-            </p>
-
-            <h1 className="headline anim-fade-up d1" style={{ marginTop: 18 }}>
-              Powerful WhatsApp
-              <br />
-              automation <span className="accent">made simple</span>.
-            </h1>
-
-            <p className="lede anim-fade-up d2" style={{ marginTop: 18, maxWidth: 620, marginLeft: 'auto', marginRight: 'auto' }}>
-              Connect your WhatsApp. Choose your bot. Start automating.
-            </p>
-
-            <div
-              className="anim-fade-up d3"
-              style={{ marginTop: 26, display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}
-            >
-              <Link href="/signup" className="btn btn-primary btn-lg">
-                Get Started
-                <Icons.ArrowRight size={17} />
-              </Link>
-              <Link href="/login" className="btn btn-ghost btn-lg">
-                Login
-              </Link>
-            </div>
-
-            <p style={{ marginTop: 16, fontSize: 13.5, color: 'var(--dim)', display: 'inline-flex', alignItems: 'center', gap: 7 }}>
-              <Icons.CheckCircle size={14} />
-              Free to start — no card required
-            </p>
-          </div>
-        </div>
-
-        {/* Canvas hero. No photograph: the mesh is drawn at runtime, so it is
-            sharp at any size and costs no request — and because it reads its
-            colours from the design tokens it repaints with the theme. */}
-        <div
-          className="anim-fade-up d4"
-          style={{ marginTop: 44, maxWidth: 880, marginLeft: 'auto', marginRight: 'auto' }}
-        >
-          <CanvasArt
-            kind="mesh"
-            ratio="16-9"
-            label="One MZAZI hub linked to many automations"
-          />
-        </div>
-      </section>
-
-      {/* ───────────────────────── Photo showcase ───────────────────────── */}
-      <section className="section" style={{ paddingTop: 0 }}>
-        <div className="container-site">
-          <div className="grid-2-responsive" style={{ alignItems: 'center', gap: 30 }}>
-            <div>
-              <p className="eyebrow">The phone you already have</p>
-              <h2 className="section-title" style={{ marginTop: 14 }}>
-                Your WhatsApp, running itself.
-              </h2>
-              <p className="lede" style={{ marginTop: 12 }}>
-                No new SIM and no second handset. Link your number once with a pairing code,
-                and your bot handles the rest from then on.
-              </p>
-
-              <ul style={{ listStyle: 'none', margin: '22px 0 0', padding: 0, display: 'grid', gap: 11 }}>
-                {[
-                  'Link any number with a pairing code — no QR scanning',
-                  'Keep using WhatsApp normally on the same phone',
-                  'Manage every linked number from one dashboard',
-                ].map((t) => (
-                  <li key={t} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', fontSize: 14.5, color: 'var(--ink-2)' }}>
-                    <span style={{ color: 'var(--good)', marginTop: 1, flex: '0 0 auto' }} aria-hidden="true">
-                      <Icons.CheckCircle size={17} />
-                    </span>
-                    {t}
-                  </li>
-                ))}
-              </ul>
-
-              <div style={{ marginTop: 26, display: 'flex', gap: 11, flexWrap: 'wrap' }}>
-                <Link href="/signup" className="btn btn-primary">
-                  Connect your number
-                  <Icons.ArrowRight size={17} />
-                </Link>
-                <Link href="/devices" className="btn btn-ghost">See connected devices</Link>
-              </div>
-            </div>
-
-<CanvasArt
-              kind="pairing"
-              ratio="4-3"
-              label="A handset showing the eight-character pairing code"
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* ───────────────────────── Bot profiles ───────────────────────── */}
-      <section className="section" style={{ paddingTop: 0 }}>
-        <div className="container-site">
-          <p className="eyebrow">Choose your bot</p>
-          <h2 className="section-title" style={{ marginTop: 14 }}>
-            Two bots. One account.
-          </h2>
-          <p className="lede" style={{ marginTop: 10, maxWidth: 560 }}>
-            Both bots run on the same platform, so you can connect a number to either one and manage
-            them side by side.
+      {/* ───────────────────────── HERO ───────────────────────── */}
+      <section className="section" style={{ paddingBottom: 0 }}>
+        <div className="container-site text-center">
+          <Badge tone="brand" icon={<Icons.Sparkles size={12} />}>New: Instant Pairing</Badge>
+          <h1 className="headline anim-fade-up d1" style={{ marginTop: 18 }}>
+            WhatsApp automation <br />
+            <span className="gradient-text">made simple</span>.
+          </h1>
+          <p className="lede anim-fade-up d2" style={{ marginTop: 18, maxWidth: 580, marginInline: 'auto' }}>
+            Connect your number in 2 minutes. No QR codes, no extra phones. Just pure automation.
           </p>
-
-          <div className="grid-2-responsive" style={{ marginTop: 28 }}>
-            {BOTS.map((bot) => (
-              <Card key={bot.id} accent={bot.tone === 'brand'} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                  <BotMark name={bot.name} size={54} />
-                  <div style={{ minWidth: 0 }}>
-                    <h3 style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 700 }}>
-                      {bot.name}
-                    </h3>
-                    <p style={{ margin: '3px 0 0', fontSize: 14, color: 'var(--brand)', fontWeight: 600 }}>
-                      {bot.tagline}
-                    </p>
-                  </div>
-                </div>
-
-                <p style={{ margin: 0, fontSize: 14.5, color: 'var(--muted)', lineHeight: 1.65 }}>{bot.desc}</p>
-
-                <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 8 }}>
-                  {bot.points.map((p) => (
-                    <li key={p} style={{ display: 'flex', gap: 9, alignItems: 'flex-start', fontSize: 14, color: 'var(--ink-2)' }}>
-                      <span style={{ color: 'var(--good)', marginTop: 1, flex: '0 0 auto' }} aria-hidden="true">
-                        <Icons.Check size={15} />
-                      </span>
-                      {p}
-                    </li>
-                  ))}
-                </ul>
-
-                <Link href={bot.href} className="btn btn-dark btn-block" style={{ marginTop: 'auto' }}>
-                  Pair {bot.name}
-                  <Icons.ArrowRight size={16} />
-                </Link>
-              </Card>
-            ))}
+          <div className="anim-fade-up d3" style={{ marginTop: 28, display: 'flex', gap: 12, justifyContent: 'center' }}>
+            <Link href="/signup" className="btn btn-primary btn-lg">Get Started Free</Link>
+            <Link href="/login" className="btn btn-ghost btn-lg">Login</Link>
+          </div>
+          
+          <div className="anim-fade-up d4" style={{ marginTop: 56, maxWidth: 840, marginInline: 'auto' }}>
+            <CanvasArt kind="mesh" ratio="21-9" />
           </div>
         </div>
       </section>
 
-      {/* ───────────────────────── Stats ───────────────────────── */}
-      <section style={{ borderTop: '1px solid var(--line)', borderBottom: '1px solid var(--line)', background: 'var(--surface)' }}>
-        <div className="container-site">
-          <dl
-            className="grid grid-cols-2 lg:grid-cols-4"
-            style={{ margin: 0, padding: '28px 0', gap: 20 }}
-          >
-            {STATS.map((s) => (
-              <div key={s.label} style={{ textAlign: 'center' }}>
-                <dd className="stat-num" style={{ margin: 0 }}>{s.value}</dd>
-                <dt className="stat-label">{s.label}</dt>
-              </div>
-            ))}
-          </dl>
-        </div>
-      </section>
-
-      {/* ───────────────────────── How it works ───────────────────────── */}
+      {/* ───────────────────────── THE BOTS ───────────────────────── */}
       <section className="section">
         <div className="container-site">
-          <p className="eyebrow">How it works</p>
-          <h2 className="section-title" style={{ marginTop: 14 }}>
-            Connected in three steps.
-          </h2>
-
-          <div
-            className="grid-2-responsive"
-            style={{ marginTop: 28, alignItems: 'center', gap: 30 }}
-          >
-<CanvasArt
-              kind="flow"
-              ratio="4-3"
-              label="Three stages: link your number, choose a bot, automate the replies"
-            />
-            <ol
-              className="grid-cards"
-              style={{ listStyle: 'none', margin: 0, padding: 0, gridTemplateColumns: '1fr' }}
-            >
-            {STEPS.map((s) => (
-              <li key={s.n}>
-                <Card style={{ height: '100%', display: 'flex', flexDirection: 'column', gap: 12 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <span
-                      aria-hidden="true"
-                      style={{
-                        width: 40, height: 40, flex: '0 0 40px',
-                        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                        borderRadius: 'var(--r-md)',
-                        background: 'linear-gradient(135deg, var(--brand-tint), var(--pink-tint) 55%, var(--blue-tint))',
-                        color: 'var(--brand)',
-                      }}
-                    >
-                      {s.icon}
-                    </span>
-                    <span className="mono" style={{ fontSize: 13, color: 'var(--dim)', fontWeight: 700 }}>STEP {s.n}</span>
-                  </div>
-                  <h3 style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 700 }}>{s.title}</h3>
-                  <p style={{ margin: 0, fontSize: 14.5, color: 'var(--muted)', lineHeight: 1.65 }}>{s.desc}</p>
-                </Card>
-              </li>
-            ))}
-            </ol>
+          <div className="text-center" style={{ marginBottom: 32 }}>
+            <h2 className="section-title">Choose Your Bot</h2>
+            <p className="lede" style={{ marginInline: 'auto', maxWidth: 480 }}>
+              Two powerful engines for different workloads.
+            </p>
           </div>
-        </div>
-      </section>
 
-      {/* ───────────────────────── Features ───────────────────────── */}
-      <section className="section" style={{ paddingTop: 0 }}>
-        <div className="container-site">
-          <p className="eyebrow">Everything in one place</p>
-          <h2 className="section-title" style={{ marginTop: 14 }}>
-            One account for the whole platform.
-          </h2>
-
-          <div className="grid-2-responsive" style={{ marginTop: 28 }}>
-            {FEATURES.map((f) => (
-              <Card key={f.title} hover style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                <CardHeader
-                  title={f.title}
-                  description={f.desc}
-                  icon={f.icon}
-                />
-                <Link
-                  href={f.href}
-                  style={{
-                    marginTop: 'auto', display: 'inline-flex', alignItems: 'center', gap: 6,
-                    fontSize: 14, fontWeight: 700, color: 'var(--brand)', textDecoration: 'none',
-                  }}
-                >
-                  {f.cta}
-                  <Icons.ArrowRight size={15} />
+          <div className="grid-2-responsive">
+            {[
+              {
+                id: 'quartz',
+                name: 'QUARTZ XD',
+                tagline: 'The Everyday Assistant',
+                desc: 'Group tools, media downloads, and 100+ commands.',
+                tone: 'brand',
+              },
+              {
+                id: 'mzazi',
+                name: 'MZAZI XMD',
+                tagline: 'Advanced Workflows',
+                desc: 'Scheduled tasks, broadcasting, and heavy automation.',
+                tone: 'blue',
+              }
+            ].map(bot => (
+              <Card key={bot.id} accent={bot.tone === 'brand'} hover>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                  <BotMark name={bot.name} size={48} />
+                  <div>
+                    <h3 style={{ margin: 0, fontSize: 18, fontWeight: 700 }}>{bot.name}</h3>
+                    <p style={{ margin: 0, fontSize: 14, color: 'var(--brand)', fontWeight: 600 }}>{bot.tagline}</p>
+                  </div>
+                </div>
+                <p style={{ marginTop: 14, fontSize: 14.5, color: 'var(--muted)' }}>{bot.desc}</p>
+                <Link href={`/pair/${bot.id}`} className="btn btn-dark btn-block" style={{ marginTop: 18 }}>
+                  Pair {bot.name} <Icons.ArrowRight size={15} />
                 </Link>
               </Card>
             ))}
@@ -346,70 +78,37 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ───────────────────────── Pricing teaser ───────────────────────── */}
-      <section className="section" style={{ paddingTop: 0 }}>
+      {/* ───────────────────────── HOW IT WORKS ───────────────────────── */}
+      <section className="section" style={{ background: 'var(--surface)', borderBlock: '1px solid var(--line)' }}>
         <div className="container-site">
-          <Card
-            accent
-            style={{
-              display: 'grid', gap: 22, padding: 28,
-              background: 'linear-gradient(135deg, var(--surface), var(--surface-2))',
-            }}
-          >
-            <div className="grid-2-responsive" style={{ gap: 28, alignItems: 'center' }}>
-              <div>
-                <Badge tone="brand" icon={<Icons.Sparkles size={12} />}>Plans</Badge>
-                <h2 className="section-title" style={{ marginTop: 12 }}>
-                  Free to start. Scale when you need to.
-                </h2>
-                <p className="lede" style={{ marginTop: 10, maxWidth: 520 }}>
-                  Begin with one number at no cost. Move up to 5, 10, 20 or unlimited devices —
-                  paid plans start at KES 100 per 30 days, paid from your wallet.
-                </p>
-
-                <div style={{ marginTop: 20, display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                  {['1 device', '5 devices', '10 devices', '20 devices', 'Unlimited'].map((t) => (
-                    <span key={t} className="tag">{t}</span>
-                  ))}
+          <div className="grid-3-responsive text-center" style={{ gap: 40 }}>
+            {[
+              { n: '01', title: 'Connect', desc: 'Enter number & get code', icon: <Icons.Phone /> },
+              { n: '02', title: 'Choose', desc: 'Select your bot profile', icon: <Icons.Bot /> },
+              { n: '03', title: 'Automate', desc: 'Your bot is now live!', icon: <Icons.Zap /> },
+            ].map(s => (
+              <div key={s.n} style={{ display: 'grid', gap: 12 }}>
+                <div style={{ width: 48, height: 48, marginInline: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--brand-tint)', color: 'var(--brand)', borderRadius: '50%' }}>
+                  {s.icon}
                 </div>
-
-                <div style={{ marginTop: 20, display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-                  <Link href="/subscription" className="btn btn-primary">
-                    View plans
-                    <Icons.ArrowRight size={17} />
-                  </Link>
-                  <Link href="/devices" className="btn btn-ghost">
-                    See connected devices
-                  </Link>
-                </div>
+                <h3 style={{ fontSize: 16, fontWeight: 700 }}>{s.title}</h3>
+                <p style={{ fontSize: 14, color: 'var(--dim)' }}>{s.desc}</p>
               </div>
-
-              <CanvasArt
-                kind="scale"
-                ratio="4-3"
-                label="Plan rings climbing from one device to unlimited"
-              />
-            </div>
-          </Card>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* ───────────────────────── Closing CTA ───────────────────────── */}
-      <section className="section" style={{ paddingTop: 0 }}>
-        <div className="container-site" style={{ textAlign: 'center' }}>
-          <Logo size={46} />
-          <h2 className="headline" style={{ marginTop: 20, fontSize: 'clamp(1.7rem, 4.4vw, 2.6rem)' }}>
-            Ready to automate your WhatsApp?
-          </h2>
-          <p className="lede" style={{ marginTop: 14, maxWidth: 480, marginLeft: 'auto', marginRight: 'auto' }}>
-            Create an account, connect a number and have your bot running in about two minutes.
+      {/* ───────────────────────── FINAL CTA ───────────────────────── */}
+      <section className="section text-center">
+        <div className="container-site">
+          <Logo size={40} style={{ marginInline: 'auto' }} />
+          <h2 className="headline" style={{ marginTop: 20, fontSize: '2rem' }}>Ready to start?</h2>
+          <p className="lede" style={{ marginTop: 12, marginInline: 'auto', maxWidth: 400 }}>
+            No card required. Free to start. Up and running in minutes.
           </p>
-          <div style={{ marginTop: 24, display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link href="/signup" className="btn btn-primary btn-lg">
-              Get Started
-              <Icons.ArrowRight size={17} />
-            </Link>
-            <Link href="/contact" className="btn btn-ghost btn-lg">Talk to us</Link>
+          <div style={{ marginTop: 24 }}>
+            <Link href="/signup" className="btn btn-primary btn-lg">Get Started Free</Link>
           </div>
         </div>
       </section>
