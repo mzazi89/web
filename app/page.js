@@ -79,7 +79,7 @@ export default function Home() {
             {[
               { icon: <Icons.Shield size={28} />, title: 'Secure', desc: 'Encrypted sessions and private database storage.' },
               { icon: <Icons.Zap size={28} />, title: 'Instant', desc: 'Pair via code in under 15 seconds. No QR needed.' },
-              { icon: <Icons.Activity size={28} />, title: 'Reliable', desc: '99.9% uptime with professional cloud hosting.' },
+              { icon: <Icons.Zap size={28} />, title: 'Reliable', desc: '99.9% uptime with professional cloud hosting.' },
             ].map((f, i) => (
               <div key={i} className="anim-fade-up" style={{ animationDelay: `${i * 100}ms` }}>
                 <div style={{ marginInline: 'auto', width: 56, height: 56, display: 'grid', placeItems: 'center', background: 'var(--brand-tint)', color: 'var(--brand)', borderRadius: '50%', marginBottom: 16 }}>
