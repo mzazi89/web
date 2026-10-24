@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Logo from '@/components/Logo';
 import { AppBackground, Button, Field, Input, Alert, ThemeToggle, Icons } from '@/components/ui';
+import { safeNext, authHref } from '@/lib/nextPath';
 
 // MZAZI TECH — sign in.
 // Deliberately minimal: brand, welcome, two fields, one button, one link.
@@ -18,12 +19,21 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  // Already signed in? Skip straight to the dashboard.
+  // Where to land after signing in. Set from ?next=, which is how a visitor who
+  // hit a sign-in wall on /devices gets back to /devices instead of the
+  // dashboard. Reads window rather than useSearchParams so this page stays a
+  // plain static client route.
+  const [next, setNext] = useState('/dashboard');
+  useEffect(() => {
+    setNext(safeNext(new URLSearchParams(window.location.search).get('next')));
+  }, []);
+
+  // Already signed in? Skip straight to where they were headed.
   useEffect(() => {
     fetch('/api/auth/me', { cache: 'no-store' })
-      .then((r) => { if (r.ok) router.replace('/dashboard'); })
+      .then((r) => { if (r.ok) router.replace(next); })
       .catch(() => {});
-  }, [router]);
+  }, [router, next]);
 
   // Returned from a password reset?
   useEffect(() => {
@@ -46,7 +56,7 @@ export default function LoginPage() {
       });
       const data = await response.json().catch(() => ({}));
       if (response.ok) {
-        router.push('/dashboard');
+        router.push(next);
         router.refresh();
       } else {
         setError(data.error || 'That email and password do not match. Please try again.');
@@ -133,7 +143,7 @@ export default function LoginPage() {
 
           <p style={{ marginTop: 22, textAlign: 'center', fontSize: 14.5, color: 'var(--muted)' }}>
             No account?{' '}
-            <Link href="/signup" style={{ fontWeight: 700, color: 'var(--brand)', textDecoration: 'none' }}>
+            <Link href={authHref(next, { signup: true })} style={{ fontWeight: 700, color: 'var(--brand)', textDecoration: 'none' }}>
               Create one free
             </Link>
           </p>

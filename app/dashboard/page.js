@@ -30,6 +30,8 @@ import {
   humaniseError, planLabel, planTone, Icons,
 } from '@/components/ui';
 import Portal from '@/components/ui/Portal';
+import SignInGate from '@/components/SignInGate';
+import { authHref } from '@/lib/nextPath';
 import { fmtKes } from '@/lib/currency';
 
 const TABS = [
@@ -42,6 +44,7 @@ const TABS = [
 export default function DashboardPage() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [guest, setGuest] = useState(false); // signed out — page is readable, data is not
   const [authError, setAuthError] = useState('');
   const [panels, setPanels] = useState([]);
   const [vpsServers, setVpsServers] = useState([]);
@@ -78,7 +81,8 @@ export default function DashboardPage() {
         setUser(data.user);
         await Promise.all([fetchPanels(), fetchVps(), fetchWallet(), fetchApiStats(), fetchReferral()]);
       } else {
-        router.push('/login');
+        // Readable without an account; the dashboard data is not.
+        setGuest(true);
       }
     } catch (e) {
       setAuthError(humaniseError(e, 'We could not load your dashboard. Please try again.'));
@@ -193,6 +197,20 @@ export default function DashboardPage() {
       setUnlinking(null);
     }
   };
+
+  if (guest) {
+    return (
+      <AppBackground variant="dashboard">
+        <div className="container-site" style={{ paddingTop: 28, paddingBottom: 90, maxWidth: 1100 }}>
+          <SignInGate
+            next="/dashboard"
+            title="Sign in to see your dashboard"
+            description="Your devices, balance, servers and API usage all live behind this door. Sign in and we will bring you straight back."
+          />
+        </div>
+      </AppBackground>
+    );
+  }
 
   if (loading) {
     return (

@@ -20,6 +20,8 @@ import {
   ToastProvider, useToast, Icons,
 } from '@/components/ui';
 import { fmtKes } from '@/lib/currency';
+import SignInGate from '@/components/SignInGate';
+import { authHref } from '@/lib/nextPath';
 
 const BLURBS = {
   PLAN_5: 'For a small team or a first serious setup.',
@@ -72,13 +74,13 @@ function SubscriptionInner() {
     if (!silent) setState('loading');
     try {
       const me = await fetch('/api/auth/me');
-      if (!me.ok) { router.push('/login'); return; }
+      if (!me.ok) { setState('guest'); return; }
 
       const [dres, bres] = await Promise.all([
         fetch('/api/pair/devices', { cache: 'no-store' }),
         fetch('/api/wallet/balance'),
       ]);
-      if (dres.status === 401) { router.push('/login'); return; }
+      if (dres.status === 401) { setState('guest'); return; }
       if (!dres.ok) throw new Error('Plan request failed');
       setData(await dres.json());
       if (bres.ok) {
@@ -158,6 +160,15 @@ function SubscriptionInner() {
           actions={<Button href="/devices" variant="ghost" icon={<Icons.Phone size={16} />}>My devices</Button>}
           breadcrumb={['Dashboard', 'Subscription']}
         />
+
+        {state === 'guest' && (
+          <SignInGate
+            next="/subscription"
+            icon={<Icons.Sparkles size={26} />}
+            title="Sign in to manage your subscription"
+            description="Your plan, renewal date and device allowance are tied to your account. Sign in and we will bring you straight back."
+          />
+        )}
 
         {state === 'loading' && <SkeletonCards count={4} height={300} />}
 

@@ -3,6 +3,7 @@ import { useState, useEffect, Fragment } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { fmtKes } from '@/lib/currency';
+import { authHref } from '@/lib/nextPath';
 
 function fmtCpu(v)  { const n = parseInt(v); return n === 0 ? 'Unlimited CPU'  : `${n}% CPU`; }
 function fmtRam(v)  { const n = parseInt(v); return n === 0 ? 'Unlimited RAM'  : n >= 1024 ? `${n / 1024} GB RAM`  : `${n} MB RAM`; }
@@ -44,7 +45,7 @@ export default function ProductsPage() {
   };
 
   const handleSelectPkg = async (p) => {
-    if (!user) { router.push('/login'); return; }
+    if (!user) { router.push(authHref('/products')); return; }
     setPkg(p); setStep('configure'); setError(''); setPanelError('');
     setLN(true);
     try {
@@ -198,7 +199,7 @@ export default function ProductsPage() {
               <div className="mb-6 px-4 py-3 text-sm flex flex-col sm:flex-row items-start sm:items-center gap-3"
                 style={{ background: 'var(--brand-a06)', border: '1px solid var(--brand-a25)' }}>
                 <span style={{ color: 'var(--brand)' }}>You need to be logged in to deploy a panel.</span>
-                <Link href="/login" className="link flex-shrink-0" style={{ fontSize: 13 }}>Log in →</Link>
+                <Link href={authHref('/products')} className="link flex-shrink-0" style={{ fontSize: 13 }}>Log in →</Link>
               </div>
             )}
             {packages.length === 0 ? (

@@ -19,6 +19,8 @@ import {
   EmptyState, ErrorState, Alert, SkeletonText, Field, Input, humaniseError, Icons,
 } from '@/components/ui';
 import { fmtKes } from '@/lib/currency';
+import SignInGate from '@/components/SignInGate';
+import { authHref } from '@/lib/nextPath';
 
 // ─── Receipt printer (unchanged behaviour) ──────────────────────────────────
 function downloadReceipt(t, userEmail, balance) {
@@ -227,6 +229,7 @@ function WalletInner() {
   const [balance, setBalance] = useState(0);
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [guest, setGuest] = useState(false); // signed out — page readable, balance is not
   const [loadError, setLoadError] = useState('');
   const [voucherCode, setVoucherCode] = useState('');
   const [redeemingVoucher, setRedeemingVoucher] = useState(false);
@@ -267,12 +270,14 @@ function WalletInner() {
   const checkAuth = async () => {
     try {
       const res = await fetch('/api/auth/me');
-      if (!res.ok) { router.push('/login'); return; }
+      if (!res.ok) { setGuest(true); return; }
       const data = await res.json();
       setUser(data.user);
       await fetchWallet();
     } catch {
-      router.push('/login');
+      // A network failure is not the same as being signed out, but the page is
+      // still readable either way — the retry lives on the panel.
+      setGuest(true);
     } finally {
       setLoading(false);
     }
@@ -281,7 +286,7 @@ function WalletInner() {
   const fetchWallet = async () => {
     try {
       const res = await fetch('/api/wallet/balance');
-      if (res.status === 401) { router.push('/login'); return; }
+      if (res.status === 401) { setGuest(true); return; }
       if (!res.ok) throw new Error('Wallet request failed');
       const data = await res.json();
       setBalance(data.balance || 0);
@@ -467,6 +472,21 @@ function WalletInner() {
   const offerAmt = parseFloat(depositAmount) || 0;
   const offerBonus = offerActive && offerAmt > 0 ? Math.round(offerAmt * (offerMult - 1) * 100) / 100 : 0;
   const offerTotal = Math.round((offerAmt + offerBonus) * 100) / 100;
+
+  if (guest) {
+    return (
+      <AppBackground variant="dashboard">
+        <div className="container-site" style={{ paddingTop: 26, paddingBottom: 90, maxWidth: 900 }}>
+          <SignInGate
+            next="/wallet"
+            icon={<Icons.Wallet size={26} />}
+            title="Sign in to open your wallet"
+            description="Balances, top-ups and payment history are private to your account. Sign in and we will bring you straight back."
+          />
+        </div>
+      </AppBackground>
+    );
+  }
 
   if (loading) {
     return (

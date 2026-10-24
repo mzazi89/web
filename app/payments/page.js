@@ -13,6 +13,8 @@ import {
   EmptyState, ErrorState, Skeleton, humaniseError, Icons,
 } from '@/components/ui';
 import { fmtKes } from '@/lib/currency';
+import SignInGate from '@/components/SignInGate';
+import { authHref } from '@/lib/nextPath';
 
 function moneyTone(type) {
   return type === 'deposit' ? 'good' : 'bad';
@@ -29,9 +31,9 @@ export default function PaymentsPage() {
     setState('loading');
     try {
       const me = await fetch('/api/auth/me');
-      if (!me.ok) { router.push('/login'); return; }
+      if (!me.ok) { setState('guest'); return; }
       const res = await fetch('/api/wallet/balance');
-      if (res.status === 401) { router.push('/login'); return; }
+      if (res.status === 401) { setState('guest'); return; }
       if (!res.ok) throw new Error('Wallet request failed');
       const d = await res.json();
       setBalance(d.balance || 0);
@@ -57,6 +59,15 @@ export default function PaymentsPage() {
           actions={<Button href="/wallet" icon={<Icons.Plus size={16} />}>Add money</Button>}
           breadcrumb={['Dashboard', 'Payments']}
         />
+
+        {state === 'guest' && (
+          <SignInGate
+            next="/payments"
+            icon={<Icons.CreditCard size={26} />}
+            title="Sign in to see your payments"
+            description="Receipts and payment history belong to the account that made them. Sign in and we will bring you straight back."
+          />
+        )}
 
         {state === 'loading' && (
           <div className="grid-2-responsive" style={{ marginBottom: 22 }} aria-hidden="true">

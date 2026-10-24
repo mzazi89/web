@@ -20,6 +20,8 @@ import {
   planLabel, humaniseError, Icons,
 } from '@/components/ui';
 import Link from 'next/link';
+import SignInGate from '@/components/SignInGate';
+import { authHref } from '@/lib/nextPath';
 
 const HOW_TO = [
   { title: 'Open the pairing wizard', body: 'Go to the WhatsApp bot page and enter the number you want to connect — include the country code, e.g. 254712345678.' },
@@ -43,10 +45,12 @@ export default function DevicesPage() {
     if (!silent) setState('loading');
     try {
       const me = await fetch('/api/auth/me');
-      if (!me.ok) { router.push('/login'); return; }
+      // Not signed in is a page state, not a redirect: the page belongs to
+      // nobody until they sign in, so show its header and a sign-in panel.
+      if (!me.ok) { setState('guest'); return; }
 
       const res = await fetch('/api/pair/devices', { cache: 'no-store' });
-      if (res.status === 401) { router.push('/login'); return; }
+      if (res.status === 401) { setState('guest'); return; }
       if (!res.ok) throw new Error('Device request failed');
       setData(await res.json());
       setState('ready');
@@ -71,6 +75,7 @@ export default function DevicesPage() {
 
   const runAction = async () => {
     if (!confirm) return;
+    if (state === 'guest') { router.push(authHref('/devices')); return; }
     const { device, action } = confirm;
     setConfirmBusy(true);
     setNotice(null);
@@ -123,9 +128,25 @@ export default function DevicesPage() {
           title="Connected devices"
           description="Every WhatsApp number your account is running, and how many slots your plan allows."
           icon={<Icons.Phone size={20} />}
-          actions={<Button href="/pair" icon={<Icons.Plus size={16} />}>Connect WhatsApp</Button>}
+          actions={
+            <Button
+              href={state === 'guest' ? authHref('/pair') : '/pair'}
+              icon={<Icons.Plus size={16} />}
+            >
+              Connect WhatsApp
+            </Button>
+          }
           breadcrumb={['Dashboard', 'Devices']}
         />
+
+        {state === 'guest' && (
+          <SignInGate
+            next="/devices"
+            icon={<Icons.Phone size={26} />}
+            title="Sign in to see your devices"
+            description="Every number your account runs, and how many slots your plan allows, lives here. Sign in and we will bring you straight back."
+          />
+        )}
 
         {state === 'loading' && <SkeletonCards count={3} height={210} />}
 

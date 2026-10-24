@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Logo from '@/components/Logo';
 import { AppBackground, Button, Field, Input, Select, Alert, ThemeToggle, Icons } from '@/components/ui';
+import { safeNext, authHref } from '@/lib/nextPath';
 
 // MZAZI TECH — create an account.
 // Same endpoint, same payload, same redirects as v1. Grouped into two clearly
@@ -28,6 +29,13 @@ export default function SignupPage() {
     securityQuestion: '',
     securityAnswer: '',
   });
+  // Carried through from a sign-in wall so the new account lands where the
+  // visitor was going. Read once, on mount, from the query string.
+  const nextRef = useRef('/dashboard');
+  useEffect(() => {
+    nextRef.current = safeNext(new URLSearchParams(window.location.search).get('next'));
+  }, []);
+
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
@@ -81,7 +89,7 @@ export default function SignupPage() {
       const data = await response.json().catch(() => ({}));
       if (response.ok) {
         setSuccess('Account created. Taking you to sign in…');
-        setTimeout(() => router.push('/login'), 1500);
+        setTimeout(() => router.push(authHref(nextRef.current)), 1500);
       } else {
         setError(data.error || 'We could not create your account. Please try again.');
       }
@@ -194,7 +202,7 @@ export default function SignupPage() {
 
           <p style={{ marginTop: 22, textAlign: 'center', fontSize: 14.5, color: 'var(--muted)' }}>
             Already have an account?{' '}
-            <Link href="/login" style={{ fontWeight: 700, color: 'var(--brand)', textDecoration: 'none' }}>
+            <Link href={authHref(nextRef.current)} style={{ fontWeight: 700, color: 'var(--brand)', textDecoration: 'none' }}>
               Sign in
             </Link>
           </p>

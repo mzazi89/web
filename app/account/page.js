@@ -22,6 +22,8 @@ import {
   Icons,
 } from '@/components/ui';
 import { fmtKes } from '@/lib/currency';
+import SignInGate from '@/components/SignInGate';
+import { authHref } from '@/lib/nextPath';
 import Link from 'next/link';
 
 const QUESTIONS = [
@@ -50,7 +52,7 @@ export default function AccountPage() {
     setState('loading');
     try {
       const me = await fetch('/api/auth/me');
-      if (!me.ok) { router.push('/login'); return; }
+      if (!me.ok) { setState('guest'); return; }
       const md = await me.json();
       setUser(md.user);
 
@@ -128,6 +130,15 @@ export default function AccountPage() {
           icon={<Icons.User size={20} />}
           breadcrumb={['Dashboard', 'Account']}
         />
+
+        {state === 'guest' && (
+          <SignInGate
+            next="/account"
+            icon={<Icons.User size={26} />}
+            title="Sign in to open your account"
+            description="Profile, security question and sign-in details live here. Sign in and we will bring you straight back."
+          />
+        )}
 
         {state === 'loading' && (
           <Card><SkeletonText lines={5} /></Card>
