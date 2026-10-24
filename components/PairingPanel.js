@@ -203,7 +203,7 @@ export default function PairingPanel({ kind = 'quartz' }) {
     const digits = pairNumber.replace(/\D/g, '');
     if (digits.length < 10 || digits.length > 15) {
       setPairPhase('error');
-      setPairError('Enter a valid phone number, e.g. 254785016388.');
+      setPairError('Enter a valid phone number, e.g. 254785016388 (country code first).');
       return;
     }
     if (unavailable) {
@@ -439,6 +439,11 @@ export default function PairingPanel({ kind = 'quartz' }) {
             {pairPhase === 'error' && (
               <div style={{ marginTop: 14 }}>
                 <Alert kind="error" title="We couldn’t start pairing">{pairError}</Alert>
+                <div style={{ marginTop: 12 }}>
+                  <Button size="sm" variant="ghost" onClick={resetPair} icon={<Icons.Refresh size={15} />}>
+                    Try again
+                  </Button>
+                </div>
               </div>
             )}
 
