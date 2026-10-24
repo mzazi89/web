@@ -256,7 +256,7 @@ export default function PairingPanel({ kind = 'quartz' }) {
       const res = await fetch('/api/pair/unlink', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ number, action: 'unlink', bot: botKey || undefined }),
+        body: JSON.stringify({ number, action: 'delete', bot: botKey || undefined }),
       });
       if (!res.ok) {
         const d = await res.json();
