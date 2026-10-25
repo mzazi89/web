@@ -99,18 +99,31 @@ export default function CommunityPage() {
         {!joined ? (
           /* ── JOIN SCREEN ── */
           <div className="flex-1 flex items-center justify-center anim-fade-up">
-            <Card accent hover style={{ padding: 60, textAlign: 'center', maxWidth: 600, background: 'var(--surface)' }}>
-              <div style={{ width: 80, height: 80, marginInline: 'auto', display: 'grid', placeItems: 'center', background: 'var(--brand-tint)', color: 'var(--brand)', borderRadius: '50%', marginBottom: 24 }}>
+            <Card accent hover style={{ padding: 60, textAlign: 'center', maxWidth: 620, background: 'var(--surface)' }}>
+              <div style={{ width: 80, height: 80, marginInline: 'auto', display: 'grid', placeItems: 'center', background: 'var(--brand-tint)', color: 'var(--brand)', borderRadius: '50%', marginBottom: 24, boxShadow: '0 0 40px var(--brand-tint)' }}>
                 <Icons.Users size={40} />
               </div>
-              <Badge tone="brand" style={{ marginBottom: 16 }}>Early Access</Badge>
-              <h1 style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: 20 }}>MZAZI TECH <br /> <span className="gradient-text">Inner Circle</span>.</h1>
-              <p className="lede mb-10" style={{ color: 'var(--muted)' }}>
-                Join our exclusive community waitlist. Get early access to new automation tools, 
-                private betas, and direct mentorship from Dominic.
+              <Badge tone="brand" style={{ marginBottom: 16 }}>Limited Access</Badge>
+              <h1 style={{ fontSize: 'clamp(2rem, 5vw, 2.5rem)', fontWeight: 900, marginBottom: 20 }}>MZAZI TECH <br /> <span className="gradient-text">Inner Circle</span>.</h1>
+              <p className="lede mb-10" style={{ color: 'var(--muted)', fontSize: '1.1rem' }}>
+                Join our exclusive community waitlist. Get early access to high-speed automation tools, 
+                private betas, and direct mentorship from <strong>Dominic Mokua Kerubo</strong>.
               </p>
-              <Button onClick={handleJoin} className="btn-lg w-full" style={{ paddingBlock: 20, fontSize: '1.25rem' }}>
-                Join the Waitlist & Chat
+              
+              <div style={{ marginBottom: 32, display: 'flex', justifyContent: 'center', gap: 20, borderBlock: '1px solid var(--line-soft)', paddingBlock: 16 }}>
+                <div>
+                  <div style={{ fontWeight: 800, fontSize: '1.2rem', color: 'var(--brand)' }}>492+</div>
+                  <div style={{ fontSize: 12, color: 'var(--dim)', textTransform: 'uppercase' }}>Members</div>
+                </div>
+                <div style={{ width: 1, background: 'var(--line-soft)' }} />
+                <div>
+                  <div style={{ fontWeight: 800, fontSize: '1.2rem', color: 'var(--good)' }}>Live</div>
+                  <div style={{ fontSize: 12, color: 'var(--dim)', textTransform: 'uppercase' }}>Mentorship</div>
+                </div>
+              </div>
+
+              <Button onClick={handleJoin} className="btn-lg w-full" style={{ paddingBlock: 22, fontSize: '1.25rem', boxShadow: 'var(--shadow-lg)' }}>
+                Enter Inner Circle
               </Button>
               <p style={{ marginTop: 24, fontSize: 13, color: 'var(--dim)' }}>
                 By joining, you agree to receive community updates and early access invites.

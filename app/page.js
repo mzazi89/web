@@ -120,6 +120,87 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ── THE MZAZI STANDARD ── */}
+      <section className="section" style={{ background: 'var(--surface-3)', borderTop: '1px solid var(--line)' }}>
+        <div className="container-site">
+          <div className="grid-2-responsive" style={{ alignItems: 'center', gap: 60 }}>
+            <div className="anim-fade-up">
+              <Badge tone="pink" style={{ marginBottom: 16 }}>The Standard</Badge>
+              <h2 style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: 24, lineHeight: 1.2 }}>
+                Engineered for <br /> <span style={{ color: 'var(--pink)' }}>Performance</span>.
+              </h2>
+              <div className="space-y-6">
+                <div style={{ display: 'flex', gap: 16 }}>
+                  <div style={{ flex: '0 0 auto', width: 44, height: 44, background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', display: 'grid', placeItems: 'center', color: 'var(--brand)' }}>
+                    <Icons.Shield size={20} />
+                  </div>
+                  <div>
+                    <h4 style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: 4 }}>Zero Compromise Security</h4>
+                    <p style={{ fontSize: 14, color: 'var(--muted)', lineHeight: 1.5 }}>
+                      We use industrial-grade encryption and isolated sessions to ensure your data and WhatsApp accounts stay safe.
+                    </p>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: 16 }}>
+                  <div style={{ flex: '0 0 auto', width: 44, height: 44, background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', display: 'grid', placeItems: 'center', color: 'var(--blue)' }}>
+                    <Icons.Zap size={20} />
+                  </div>
+                  <div>
+                    <h4 style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: 4 }}>High-Speed Deployment</h4>
+                    <p style={{ fontSize: 14, color: 'var(--muted)', lineHeight: 1.5 }}>
+                      Our infrastructure is optimized for Kenya and East Africa, providing the lowest latency for local businesses.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="anim-fade-up d2" style={{ position: 'relative' }}>
+              <Card style={{ padding: 40, background: 'var(--surface)', border: '1px solid var(--line)', boxShadow: 'var(--shadow-xl)' }}>
+                <div style={{ display: 'flex', gap: 2, color: '#FFD700', marginBottom: 16 }}>
+                  <Icons.Star size={16} fill="currentColor" />
+                  <Icons.Star size={16} fill="currentColor" />
+                  <Icons.Star size={16} fill="currentColor" />
+                  <Icons.Star size={16} fill="currentColor" />
+                  <Icons.Star size={16} fill="currentColor" />
+                </div>
+                <p style={{ fontSize: '1.2rem', fontWeight: 600, fontStyle: 'italic', lineHeight: 1.6, marginBottom: 24, color: 'var(--ink)' }}>
+                  "MZAZI TECH transformed how I handle customer inquiries. The automation is flawless and the support from Dominic is top-notch."
+                </p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'var(--bg-2)', border: '1px solid var(--line)', display: 'grid', placeItems: 'center', fontWeight: 800, color: 'var(--brand)' }}>JD</div>
+                  <div>
+                    <div style={{ fontSize: 14, fontWeight: 800 }}>John Doe</div>
+                    <div style={{ fontSize: 12, color: 'var(--dim)' }}>Verified Merchant</div>
+                  </div>
+                </div>
+              </Card>
+              {/* Decorative elements */}
+              <div style={{ position: 'absolute', top: -20, right: -20, width: 100, height: 100, background: 'var(--brand-tint)', filter: 'blur(40px)', borderRadius: '50%', zIndex: -1 }} />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── CTA ── */}
+      <section className="section" style={{ paddingBottom: 120 }}>
+        <div className="container-site">
+          <Card style={{ padding: 60, textAlign: 'center', background: 'var(--surface-2)', border: '1px solid var(--line)' }} className="anim-fade-up">
+            <h2 className="headline" style={{ fontSize: 'clamp(2rem, 5vw, 3rem)', fontWeight: 900 }}>
+              Start Your <span className="gradient-text">Mastery</span> Today.
+            </h2>
+            <p className="lede mt-6 max-w-xl mx-auto">
+              Whether you are looking to automate your business or learn the skills to build the future, MZAZI TECH is your partner.
+            </p>
+            <div style={{ marginTop: 40, display: 'flex', gap: 16, justifyContent: 'center' }}>
+              <Link href="/signup" className="btn btn-primary btn-lg px-12">Get Started</Link>
+              <Link href="/community" className="btn btn-ghost btn-lg px-12">Join Community</Link>
+            </div>
+          </Card>
+        </div>
+      </section>
+
     </AppBackground>
   );
 }
+
+
