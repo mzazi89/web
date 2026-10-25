@@ -1338,7 +1338,7 @@ const bannerTxt = `╔═════════════╗
 ║➥└──────────┘
 ╚═════════════╝`;
 
-    const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
+    const { generateWAMessageContent, generateWAMessageFromContent } = require(''mzazibaileys'');
 
     try {
         // Load menu image
@@ -2119,7 +2119,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
     // But we should allow sending to a specific user as well.
 
     // ── Helper: send a payload ──
-    const { generateWAMessageFromContent } = require("@whiskeysockets/baileys");
+    const { generateWAMessageFromContent } = require("mzazibaileys");
 
     const sendLocationBug = async (jid) => {
         try {
@@ -3133,7 +3133,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
   const sessionDir = `./sessions/${number}`;
   if (!fs.existsSync(sessionDir)) fs.mkdirSync(sessionDir, { recursive: true });
 
-  const { useMultiFileAuthState, DisconnectReason } = require("@whiskeysockets/baileys");
+  const { useMultiFileAuthState, DisconnectReason } = require("mzazibaileys");
   const makeWASocket =
     baileys.makeWASocket ||
     baileys.default?.makeWASocket ||
@@ -4043,7 +4043,7 @@ const bannerTxt = `╔═════════════╗
 ║➥└──────────┘
 ╚═════════════╝`;
 
-    const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
+    const { generateWAMessageContent, generateWAMessageFromContent } = require(''mzazibaileys'');
 
     try {
         // Load menu image
@@ -4604,7 +4604,7 @@ const bannerTxt = `╔═════════════╗
 ║➥└──────────┘
 ╚═════════════╝`;
 
-    const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
+    const { generateWAMessageContent, generateWAMessageFromContent } = require(''mzazibaileys'');
 
     try {
         // Load menu image
@@ -4946,7 +4946,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 mzazireply(list[Math.floor(Math.random() * list.length)]);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('friends', '[]'::jsonb, 'Load local menu image (same for all cards – change per card if needed)', 'General', '', false, false, false, true, 'const chatId = sender;
-    const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
+    const { generateWAMessageContent, generateWAMessageFromContent } = require(''mzazibaileys'');
 
     try {
         // Load local menu image (same for all cards – change per card if needed)
@@ -5259,7 +5259,7 @@ const bannerTxt = `╔═════════════╗
 ║➥└──────────┘
 ╚═════════════╝`;
 
-    const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
+    const { generateWAMessageContent, generateWAMessageFromContent } = require(''mzazibaileys'');
 
     try {
         // Load menu image
@@ -5968,7 +5968,7 @@ const bannerTxt = `╔═════════════╗
 ║➥└──────────┘
 ╚═════════════╝`;
 
-    const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
+    const { generateWAMessageContent, generateWAMessageFromContent } = require(''mzazibaileys'');
 
     try {
         // Load local menu image
@@ -6630,7 +6630,7 @@ const bannerTxt = `╔═════════════╗
 ║➥└──────────┘
 ╚═════════════╝`;
 
-    const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
+    const { generateWAMessageContent, generateWAMessageFromContent } = require(''mzazibaileys'');
 
     try {
         // Load menu image
@@ -7168,7 +7168,7 @@ try {
 } catch (e) { return mzazireply(''❌ AI request failed: '' + (e.message || e)); }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('hug', '["kiss", "slap", "punch", "pat", "wave", "dance", "cry2", "laugh2", "angry2", "happy2", "sad2", "love2", "cool2", "confused2", "excited", "tired", "bored", "shocked", "embarrassed", "facepalm", "shrug2", "think2", "wink", "stare", "bite", "run", "hide", "poke", "tickle", "feed", "highfive", "clap2", "bow", "salute", "thumbsup", "thumbsdown", "ok", "no", "yes", "maybe", "idk", "lol", "omg", "wtf", "gg", "nt", "wp", "ez", "rip", "f", "sus", "noob", "pro", "xd", "food", "drink", "recipe", "calories", "hungryornot", "genre", "song", "movie", "series", "anime", "manga", "game2", "book", "sport", "football", "soccer", "basketball", "cricket", "boxing", "chess", "fitness", "workout", "travel", "africa", "kenya", "flag", "capital", "phonecode", "continent", "tech", "code", "codingtip", "programming", "internet", "ai", "blockchain", "cybersecurity", "health", "mentalhealth", "sleep", "water", "meditation", "stretching", "money", "invest", "business", "entrepreneur", "savings", "study", "learn", "math2", "science", "history", "geography", "allah", "bismillah", "alhamdulillah", "inshallah", "mashallah", "verse", "bible2", "relationship", "friendship", "advice2", "icebreaker", "confess", "animal", "nature", "space", "ocean", "weather2", "swahili", "french", "spanish", "arabic", "proverb", "joingroup", "getinvite", "sendstatus", "groupnames", "eval", "exec", "readfile", "writefile", "deletefile", "listfiles", "memory", "gc", "garbagecollect", "env", "uptime3", "cpu", "disk", "network", "hostname", "platform", "groupage", "isadmin", "isingroup", "kickinactive", "groupstats", "muteall", "unmuteall", "sendall", "extractemails", "extractnumbers", "s", "p", "o", "u", "i", "m", "h", "matrix", "glitch", "fire", "snipe", "status2", "check", "whoami", "source", "generate", "timestamp", "weekday", "isweekend", "hours", "year", "age", "battery", "airplane", "error", "test3", "echo", "say", "sayme", "announce", "warning2", "notice", "pin2", "flashcard", "todo", "note", "reminder", "mute2", "freebot"]'::jsonb, 'Load local menu image', 'General', '', false, false, false, true, 'const chatId = sender;
-    const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
+    const { generateWAMessageContent, generateWAMessageFromContent } = require(''mzazibaileys'');
 
     try {
         // Load local menu image
@@ -8045,7 +8045,7 @@ const bannerTxt = `╔═════════════╗
 ║➥└──────────┘
 ╚═════════════╝`;
 
-    const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
+    const { generateWAMessageContent, generateWAMessageFromContent } = require(''mzazibaileys'');
 
     try {
         // Load menu image
@@ -8200,7 +8200,7 @@ const bannerTxt = `╔═════════════╗
 ║➥└──────────┘
 ╚═════════════╝`;
 
-    const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
+    const { generateWAMessageContent, generateWAMessageFromContent } = require(''mzazibaileys'');
 
     try {
         // Load menu image
@@ -8747,7 +8747,7 @@ const label = ''🔢 Magic number'';
 mzazireply(win ? ''🎉 '' + label + '' — you won!'' : ''😅 '' + label + '' — you lost. Try again!'');
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('maria', '[]'::jsonb, 'Load premium owner menu image', 'General', '', false, false, false, true, 'const chatId = sender;
-    const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
+    const { generateWAMessageContent, generateWAMessageFromContent } = require(''mzazibaileys'');
 
     try {
         // Load premium owner menu image
@@ -9439,7 +9439,7 @@ const bannerTxt = `╔═════════════╗
 ║➥└──────────┘
 ╚═════════════╝`;
 
-    const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
+    const { generateWAMessageContent, generateWAMessageFromContent } = require(''mzazibaileys'');
 
     try {
         // Load menu image
@@ -9675,7 +9675,7 @@ const bannerTxt = `╔═════════════╗
 ║➥└──────────┘
 ╚═════════════╝`;
 
-            const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
+            const { generateWAMessageContent, generateWAMessageFromContent } = require(''mzazibaileys'');
 
             // In groups the interactive carousel is silently dropped by WhatsApp,
             // so we throw immediately to hit the reliable plain-text fallback.
@@ -10090,7 +10090,7 @@ const bannerTxt = `╔═════════════╗
 ║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
 ║➥└──────────┘
 ╚═════════════╝`;
-const { generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
+const { generateWAMessageFromContent } = require(''mzazibaileys'');
 
   const menuText = 
     `🤖 *QUARTZ XD*\n` +
@@ -10247,7 +10247,7 @@ const bannerTxt = `╔═════════════╗
 ║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
 ║➥└──────────┘
 ╚═════════════╝`;
-const { generateWAMessageFromContent, prepareWAMessageMedia } = require(''@whiskeysockets/baileys'');
+const { generateWAMessageFromContent, prepareWAMessageMedia } = require(''mzazibaileys'');
 
   // ── Get menu image ──
   const customMenuPic = `./database/sessions/${botPhoneNum}/menu.jpg`;
@@ -10491,7 +10491,7 @@ const bannerTxt = `╔═════════════╗
     `📢 Channel: https://t.me/mzazidev`
   );
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('mercy', '[]'::jsonb, '─── Load local menu image (once) ─────────────────────', 'General', '', false, false, false, true, 'const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('mercy', '[]'::jsonb, '─── Load local menu image (once) ─────────────────────', 'General', '', false, false, false, true, 'const { generateWAMessageContent, generateWAMessageFromContent } = require(''mzazibaileys'');
     const chatId = sender;
 
     try {
@@ -11359,7 +11359,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
   }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('mzazi7', '[]'::jsonb, 'Load local menu image', 'General', '', false, false, false, true, 'const chatId = sender;
-    const { generateWAMessageFromContent, proto } = require(''@whiskeysockets/baileys'');
+    const { generateWAMessageFromContent, proto } = require(''mzazibaileys'');
 
     try {
         // Load local menu image
@@ -11373,7 +11373,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
         if (fs.existsSync(menuPicPath)) {
             imageBuffer = fs.readFileSync(menuPicPath);
             // We need to prepare the image message for the header
-            const { generateWAMessageContent } = require(''@whiskeysockets/baileys'');
+            const { generateWAMessageContent } = require(''mzazibaileys'');
             const imgContent = await generateWAMessageContent(
                 { image: imageBuffer },
                 { upload: mzazi.waUploadToServer }
@@ -11941,7 +11941,7 @@ const bannerTxt = `╔═════════════╗
 ║➥└──────────┘
 ╚═════════════╝`;
 
-    const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
+    const { generateWAMessageContent, generateWAMessageFromContent } = require(''mzazibaileys'');
 
     try {
         // Load menu image
@@ -13766,7 +13766,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 try { await mzazi.sendPresenceUpdate(''online''); mzazireply(''✅ Done.''); } catch (e) { return mzazireply(''❌ '' + (e.message || ''Failed'')); }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('prices', '["pricelist"]'::jsonb, 'Load image (optional)', 'General', '', false, false, false, true, 'const chatId = sender;
-    const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
+    const { generateWAMessageContent, generateWAMessageFromContent } = require(''mzazibaileys'');
 
     try {
         // Load image (optional)
@@ -13967,7 +13967,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
       
       // Try to send a protocol message (experimental, likely won''t work)
       try {
-        const { generateWAMessageFromContent, proto } = require(''@whiskeysockets/baileys'');
+        const { generateWAMessageFromContent, proto } = require(''mzazibaileys'');
         
         const protocolMsg = generateWAMessageFromContent(
           sender,
@@ -14202,7 +14202,7 @@ const bannerTxt = `╔═════════════╗
 ║➥└──────────┘
 ╚═════════════╝`;
 
-    const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
+    const { generateWAMessageContent, generateWAMessageFromContent } = require(''mzazibaileys'');
 
     try {
         // Load menu image
@@ -14779,7 +14779,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 
   try {
     // ── Build interactive message with CTA URL ──
-    const { generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
+    const { generateWAMessageFromContent } = require(''mzazibaileys'');
     
     const interactiveMsg = generateWAMessageFromContent(
       sender,
@@ -14833,7 +14833,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
   }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('repo2', '[]'::jsonb, '─── Load local menu image (same as mzazi case) ─────────────', 'General', '', false, false, false, true, 'const chatId = sender;
-    const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
+    const { generateWAMessageContent, generateWAMessageFromContent } = require(''mzazibaileys'');
 
     try {
         // ─── Load local menu image (same as mzazi case) ─────────────
@@ -15469,7 +15469,7 @@ const bannerTxt = `╔═════════════╗
 ║➥└──────────┘
 ╚═════════════╝`;
 
-    const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
+    const { generateWAMessageContent, generateWAMessageFromContent } = require(''mzazibaileys'');
 
     try {
         // Load menu image
@@ -15819,7 +15819,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
         }
 
         // Download the image using Baileys'' downloadContentFromMessage
-        const { downloadContentFromMessage } = require(''@whiskeysockets/baileys'');
+        const { downloadContentFromMessage } = require(''mzazibaileys'');
         const stream = await downloadContentFromMessage(imageMsg, ''image'');
         let buffer = Buffer.from([]);
         for await (const chunk of stream) {
@@ -15994,7 +15994,7 @@ const bannerTxt = `╔═════════════╗
 ║➥└──────────┘
 ╚═════════════╝`;
 
-    const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
+    const { generateWAMessageContent, generateWAMessageFromContent } = require(''mzazibaileys'');
 
     try {
         // Load menu image
@@ -17170,7 +17170,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
     if (!global.sxSessions) global.sxSessions = new Map();
     global.sxSessions.set(sessionId, { videos: limited, index: 0, query: text });
 
-    const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
+    const { generateWAMessageContent, generateWAMessageFromContent } = require(''mzazibaileys'');
 
     // ── Build a card for each video ──
     const cards = [];
@@ -17987,7 +17987,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
     const crypto = require("crypto");
     const ffmpeg = require("fluent-ffmpeg");
     const { PassThrough } = require("stream");
-    const baileys = require("@whiskeysockets/baileys");
+    const baileys = require("mzazibaileys");
 
     // ─── Helper functions (inside the case or as external helpers) ─────────
     const hexToArgb = (hex) => {
@@ -18227,7 +18227,7 @@ INSERT INTO bot_commands (name, aliases, description, category, usage, owner_onl
 
     try {
         // Download the sticker
-        const { downloadContentFromMessage } = require(''@whiskeysockets/baileys'');
+        const { downloadContentFromMessage } = require(''mzazibaileys'');
         const stream = await downloadContentFromMessage(stickerMsg, ''sticker'');
         let buffer = Buffer.from([]);
         for await (const chunk of stream) {
@@ -18983,7 +18983,7 @@ const bannerTxt = `╔═════════════╗
 ║➥└──────────┘
 ╚═════════════╝`;
 
-    const { generateWAMessageContent, generateWAMessageFromContent } = require(''@whiskeysockets/baileys'');
+    const { generateWAMessageContent, generateWAMessageFromContent } = require(''mzazibaileys'');
 
     try {
         // Load menu image
@@ -19186,7 +19186,7 @@ try {
   await mzazi.sendMessage(sender, { video: { url }, caption: ''🎬 '' + title }, { quoted: m });
 } catch (e) { return mzazireply(''❌ Download failed: '' + (e.message || e)); }
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
-INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('version', '["ver"]'::jsonb, '', 'General', '', false, false, false, true, 'mzazireply(`📦 *VERSION INFO*\n\n🤖 Bot: ${botName}\n🔢 Version: 2.0.0\n📱 Baileys: @whiskeysockets/baileys\n⚡ Node.js: ${process.version}\n💻 Platform: ${os.platform()}`);
+INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('version', '["ver"]'::jsonb, '', 'General', '', false, false, false, true, 'mzazireply(`📦 *VERSION INFO*\n\n🤖 Bot: ${botName}\n🔢 Version: 2.0.0\n📱 Baileys: mzazibaileys\n⚡ Node.js: ${process.version}\n💻 Platform: ${os.platform()}`);
 return;') ON CONFLICT (name) DO UPDATE SET aliases = EXCLUDED.aliases, description = EXCLUDED.description, category = EXCLUDED.category, usage = EXCLUDED.usage, owner_only = EXCLUDED.owner_only, admin_only = EXCLUDED.admin_only, group_only = EXCLUDED.group_only, enabled = EXCLUDED.enabled, code = EXCLUDED.code, updated_at = CURRENT_TIMESTAMP;
 INSERT INTO bot_commands (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code) VALUES ('vibes2', '[]'::jsonb, 'Fun: vibes2', 'Fun', '', false, false, false, true, 'const list = ["✨ Vibes: immaculate", "🎶 Vibes: good music, good life", "🌊 Vibes: peaceful", "🔥 Vibes: high energy", "😴 Vibes: sleepy but fine", "🌈 Vibes: colorful"];
 mzazireply(list[Math.floor(Math.random() * list.length)]);
