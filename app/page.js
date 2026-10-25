@@ -24,8 +24,8 @@ export default function Home() {
             <span className="gradient-text">of Technology</span>.
           </h1>
           <p className="lede anim-fade-up d2" style={{ marginTop: 24, maxWidth: 620, marginInline: 'auto', fontSize: '1.25rem', color: 'var(--muted)' }}>
-            More than just bots. We create seamless digital experiences through web development, 
-            automation, and expert-led tech education.
+            We specialize in professional WhatsApp automation, high-performance web solutions, and 
+            expert tech education. Built in Kenya, scaling globally.
           </p>
           <div className="anim-fade-up d3" style={{ marginTop: 40, display: 'flex', gap: 16, justifyContent: 'center' }}>
             <Link href="/signup" className="btn btn-primary btn-lg" style={{ paddingInline: 40 }}>Get Started</Link>

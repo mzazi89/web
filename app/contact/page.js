@@ -1,22 +1,22 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { Icons, Button, Card, Badge } from '@/components/ui';
+import { Icons, Button, Card, Badge, AppBackground } from '@/components/ui';
 
 const channels = [
   {
-    icon: <Icons.Telegram size={20} />,
-    color: 'var(--blue)', title: 'Telegram', desc: 'Replies within minutes.',
+    icon: <Icons.Telegram size={24} />,
+    color: 'var(--blue)', title: 'Telegram Support', desc: 'Real-time help and community updates. Replies within minutes.',
     action: 'Open Telegram', href: 'https://t.me/mzazitech',
   },
   {
-    icon: <Icons.WhatsApp size={20} />,
-    color: 'var(--good)', title: 'WhatsApp', desc: 'Chat with support team.',
+    icon: <Icons.WhatsApp size={24} />,
+    color: 'var(--good)', title: 'Direct WhatsApp', desc: 'Personal chat with our developer team for urgent technical help.',
     action: 'Chat on WhatsApp', href: 'https://wa.me/254108595201',
   },
   {
-    icon: <Icons.Mail size={20} />,
-    color: 'var(--brand)', title: 'Email', desc: 'Billing & formal inquiries.',
+    icon: <Icons.Mail size={24} />,
+    color: 'var(--brand)', title: 'Email Inquiries', desc: 'For billing, partnerships, and formal enterprise requests.',
     action: 'Send Email', href: 'mailto:mzazitechinc@gmail.com',
   },
 ];
@@ -33,7 +33,7 @@ function PenGlyph() {
 
 function LockGlyph() {
   return (
-    <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--brand)' }}>
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--brand)', marginBottom: 20 }}>
       <rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
     </svg>
   );
@@ -176,62 +176,69 @@ export default function ContactPage() {
   };
 
   return (
-    <div style={{ backgroundColor: 'var(--page-tint)', minHeight: '100vh' }}>
-
+    <AppBackground
+      image="https://clouddisk.alibaba.com/sa/download?filePath=saFile/fd244ee4a8e5dee7857d39520eb37a5d.jpg&fileSuffix=jpg&userId=4500117644369"
+      imageOpacity={0.5}
+      scrim={0.4}
+      orbs
+    >
       {/* ── Hero ── */}
-      <section className="relative overflow-hidden" style={{ paddingTop: 64, paddingBottom: 40 }}>
-        <div className="container-site relative">
+      <section className="relative overflow-hidden" style={{ paddingTop: 80, paddingBottom: 60 }}>
+        <div className="container-site relative anim-fade-up">
           <div className="max-w-3xl">
-            <span className="tag tag-amber"><span className="dot anim-pulse" /> 24/7 support available</span>
-            <h1 className="headline mt-6" style={{ fontSize: 'clamp(2rem, 4.4vw, 3.2rem)' }}>
-              Talk to a human<span className="accent">.</span>
+            <Badge tone="brand" icon={<Icons.Zap size={12} />} style={{ marginBottom: 16 }}>24/7 Global Support</Badge>
+            <h1 className="headline" style={{ fontSize: 'clamp(2.5rem, 6vw, 4rem)', fontWeight: 900, lineHeight: 1.1 }}>
+              Talk to a <span className="gradient-text">Human</span>.
             </h1>
-            <p className="lede mt-5 max-w-xl">
-              Reach out through any channel or message us directly below. Reply within two hours, around the clock.
+            <p className="lede mt-6 max-w-xl" style={{ fontSize: '1.2rem', color: 'var(--muted)' }}>
+              Got a question? We reply within two hours, around the clock. Choose a channel below or send a message directly.
             </p>
           </div>
 
           {/* Quick channels */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16 anim-fade-up d2">
             {channels.map(c => (
-              <a key={c.title} href={c.href} target="_blank" rel="noopener noreferrer"
-                className="glow-card card-pad flex items-start gap-4" style={{ textDecoration: 'none', padding: '22px' }}>
-                <div className="w-10 h-10 flex items-center justify-center flex-shrink-0"
-                  style={{ background: `${c.color}14`, color: c.color, border: `1px solid ${c.color}35`, borderRadius: 3 }}>
-                  {c.icon}
-                </div>
-                <div className="min-w-0">
-                  <p className="display font-bold text-base mb-0.5" style={{ color: 'var(--ink)' }}>{c.title}</p>
-                  <p className="text-xs mb-3" style={{ color: 'var(--muted)' }}>{c.desc}</p>
-                  <span className="mono text-[10px] uppercase tracking-[0.12em]" style={{ color: c.color }}>
-                    {c.action} →
-                  </span>
-                </div>
-              </a>
+              <Card key={c.title} hover accent={c.title === 'Telegram Support'} style={{ padding: 0 }}>
+                <a href={c.href} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', padding: '32px', display: 'flex', flexDirection: 'column', height: '100%' }}>
+                  <div className="w-12 h-12 flex items-center justify-center flex-shrink-0"
+                    style={{ background: `${c.color}14`, color: c.color, border: `1px solid ${c.color}35`, borderRadius: 'var(--r-md)', marginBottom: 20 }}>
+                    {c.icon}
+                  </div>
+                  <div className="flex-1">
+                    <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--ink)', marginBottom: 8 }}>{c.title}</h3>
+                    <p style={{ fontSize: 14, color: 'var(--muted)', lineHeight: 1.6, marginBottom: 20 }}>{c.desc}</p>
+                  </div>
+                  <div style={{ fontWeight: 800, fontSize: 13, color: c.color, display: 'flex', alignItems: 'center', gap: 6 }}>
+                    {c.action} <Icons.ArrowRight size={14} />
+                  </div>
+                </a>
+              </Card>
             ))}
           </div>
         </div>
       </section>
 
       {/* ── Chat Section ── */}
-      <section className="section" style={{ paddingTop: 24, paddingBottom: 110 }}>
-        <div className="container-site max-w-6xl">
+      <section className="section" style={{ paddingTop: 20, paddingBottom: 140 }}>
+        <div className="container-site max-w-6xl anim-fade-up d3">
           {authLoading ? (
-            <div className="flex items-center justify-center py-16">
+            <div className="flex items-center justify-center py-24">
               <div className="spinner" />
             </div>
           ) : !user ? (
-            <div className="card card-pad text-center py-14">
+            <Card accent style={{ padding: '80px 40px', textAlign: 'center' }}>
               <LockGlyph />
-              <p className="display font-bold text-xl mt-5 mb-1" style={{ color: 'var(--ink)' }}>Login to send inquiries</p>
-              <p className="text-sm mb-7" style={{ color: 'var(--muted)' }}>Log in to chat with our support team directly from here.</p>
-              <div className="flex justify-center gap-3">
-                <Link href="/login" className="btn btn-primary" style={{ textDecoration: 'none' }}>Log in</Link>
-                <Link href="/signup" className="btn btn-ghost" style={{ textDecoration: 'none' }}>Sign up</Link>
+              <h2 style={{ fontSize: '2rem', fontWeight: 900, marginBottom: 12 }}>Login to Message Us</h2>
+              <p className="lede mb-10 mx-auto" style={{ maxWidth: 450 }}>
+                Log in to chat with our support team directly. We track all your inquiries here for easy follow-up.
+              </p>
+              <div className="flex justify-center gap-4">
+                <Link href="/login" className="btn btn-primary btn-lg px-12">Log in</Link>
+                <Link href="/signup" className="btn btn-ghost btn-lg px-12">Create Account</Link>
               </div>
-            </div>
+            </Card>
           ) : (
-            <div className="card overflow-hidden" style={{ background: 'var(--surface)' }}>
+            <div className="card overflow-hidden" style={{ background: 'var(--surface)', border: '1px solid var(--line)' }}>
 
               {/* ─────────── MOBILE layout ─────────── */}
               <div className="block md:hidden" style={{ height: 'calc(100dvh - 280px)', minHeight: '480px', display: 'flex', flexDirection: 'column' }}>
@@ -350,7 +357,7 @@ export default function ContactPage() {
           )}
         </div>
       </section>
-    </div>
+    </AppBackground>
   );
 }
 
