@@ -42,7 +42,7 @@ export default function AppBackground({
           <div
             aria-hidden="true"
             style={{
-              position: 'absolute', inset: 0, zIndex: -4,
+              position: 'fixed', inset: 0, zIndex: -4,
               backgroundImage: `url("${image}")`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
@@ -53,7 +53,7 @@ export default function AppBackground({
           <div
             aria-hidden="true"
             style={{
-              position: 'absolute', inset: 0, zIndex: -3,
+              position: 'fixed', inset: 0, zIndex: -3,
               background: 'var(--bg)',
               opacity: scrim,
             }}

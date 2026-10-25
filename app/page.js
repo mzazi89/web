@@ -11,7 +11,8 @@ export default function Home() {
   return (
     <AppBackground 
       image="https://clouddisk.alibaba.com/sa/download?filePath=saFile/0612387aa62af8104ffb6679b7b95a19.png&fileSuffix=png&userId=4500117644369"
-      imageOpacity={0.65}
+      imageOpacity={0.8}
+      scrim={0.25}
       orbs
     >
       {/* ── HERO ── */}
