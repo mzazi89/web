@@ -31,9 +31,9 @@ export const metadata = {
 export default function AboutPage() {
   return (
     <AppBackground 
-      image="https://clouddisk.alibaba.com/sa/download?filePath=saFile/fd244ee4a8e5dee7857d39520eb37a5d.jpg&fileSuffix=jpg&userId=4500117644369"
-      imageOpacity={0.6}
-      scrim={0.4}
+      image="https://clouddisk.alibaba.com/sa/download?filePath=saFile/0612387aa62af8104ffb6679b7b95a19.png&fileSuffix=png&userId=4500117644369"
+      imageOpacity={0.4}
+      scrim={0.65}
       orbs
     >
       {/* ── HERO ── */}
