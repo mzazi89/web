@@ -9,7 +9,11 @@ export const metadata = {
 
 export default function Home() {
   return (
-    <AppBackground>
+    <AppBackground 
+      image="https://clouddisk.alibaba.com/sa/download?filePath=saFile/0612387aa62af8104ffb6679b7b95a19.png&fileSuffix=png&userId=4500117644369"
+      imageOpacity={0.65}
+      orbs
+    >
       {/* ── HERO ── */}
       <section className="section text-center" style={{ paddingTop: 100, paddingBottom: 80 }}>
         <div className="container-site">
