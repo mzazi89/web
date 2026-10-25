@@ -10,18 +10,18 @@ import './globals.css';
 export const metadata = {
   metadataBase: new URL('https://www.mzazi.shop'),
   title: {
-    default: 'MZAZI TECH — WhatsApp automation made simple',
+    default: 'MZAZI TECH — Innovative Solutions & Automation',
     template: '%s · MZAZI TECH',
   },
   description:
-    'Connect your WhatsApp, choose your bot and start automating. QUARTZ XD and MZAZI XMD with instant pairing codes, device management, subscriptions and quick Paystack payments.',
+    'Mzazi Tech offers professional WhatsApp automation, custom web development, and tech education. Founded by Dominic Mokua Kerubo.',
   keywords:
-    'whatsapp automation, whatsapp bot, QUARTZ XD, MZAZI XMD, whatsapp pairing code, mzazi tech, bot subscription',
+    'tech solutions, web development, whatsapp automation, whatsapp bot, mzazi tech, tech education, nairobi tech',
   applicationName: 'MZAZI TECH',
   openGraph: {
-    title: 'MZAZI TECH — WhatsApp automation made simple',
+    title: 'MZAZI TECH — Innovative Solutions & Automation',
     description:
-      'Connect your WhatsApp. Choose your bot. Start automating. QUARTZ XD and MZAZI XMD — pairing in under a minute.',
+      'Professional WhatsApp automation, custom web development, and tech education. Built for the modern digital era.',
     type: 'website',
     locale: 'en_US',
     url: 'https://www.mzazi.shop',
@@ -30,8 +30,8 @@ export const metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'MZAZI TECH — WhatsApp automation made simple',
-    description: 'Connect your WhatsApp. Choose your bot. Start automating.',
+    title: 'MZAZI TECH — Innovative Solutions & Automation',
+    description: 'Professional automation and web development solutions.',
   },
   manifest: '/manifest.webmanifest',
   appleWebApp: {
