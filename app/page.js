@@ -193,7 +193,7 @@ export default function Home() {
             </p>
             <div style={{ marginTop: 40, display: 'flex', gap: 16, justifyContent: 'center' }}>
               <Link href="/signup" className="btn btn-primary btn-lg px-12">Get Started</Link>
-              <Link href="/community" className="btn btn-ghost btn-lg px-12">Join Community</Link>
+              <Link href="/community" className="btn btn-ghost btn-lg px-12">Explore Community</Link>
             </div>
           </Card>
         </div>
