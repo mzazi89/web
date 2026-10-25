@@ -29,6 +29,7 @@ const COLUMNS = [
   {
     title: 'Company',
     links: [
+      { label: 'Community', href: '/community' },
       { label: 'About Dominic', href: '/about' },
       { label: 'Contact Support', href: '/contact' },
       { label: 'Privacy Policy', href: '/privacy' },

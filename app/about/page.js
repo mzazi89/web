@@ -187,7 +187,7 @@ export default function AboutPage() {
                   Stay tuned for our official launch. We are building a community where curiosity is 
                   rewarded with the tools to build something real.
                 </p>
-                <Link href="/contact" className="btn btn-primary w-full">Join the Waitlist</Link>
+                <Link href="/community" className="btn btn-primary w-full">Join the Waitlist Chat</Link>
               </Card>
             </div>
           </div>

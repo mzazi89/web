@@ -25,6 +25,7 @@ const PRIMARY = [
   { href: '/',             label: 'Home' },
   { href: '/dashboard',    label: 'Dashboard' },
   { href: '/devices',      label: 'Devices' },
+  { href: '/community',    label: 'Community' },
   { href: '/about',        label: 'About' },
 ];
 
