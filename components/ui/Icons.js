@@ -79,6 +79,7 @@ export const Wifi = (p) => <Svg {...p}><path d="M4 9.5a12 12 0 0 1 16 0M7 13a8 8
 export const WifiOff = (p) => <Svg {...p}><path d="M3 3l18 18M9.5 12.6a4.5 4.5 0 0 0 1.5.4M12 19.5h.01M6.5 11.4A8 8 0 0 1 9 10M4 7.8A12 12 0 0 1 7.5 6M20 7.8a12 12 0 0 0-4-1.9" /></Svg>;
 export const Zap = (p) => <Svg {...p}><path d="M13.5 2 4.5 13.5H11l-.5 8.5 9-11.5H13l.5-8.5Z" /></Svg>;
 export const Sparkles = (p) => <Svg {...p}><path d="M12 3.5 13.6 8l4.4 1.6L13.6 11 12 15.5 10.4 11 6 9.6 10.4 8 12 3.5ZM18.5 15l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7.7-2Z" /></Svg>;
+export const Star = (p) => <Svg {...p}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></Svg>;
 export const Image = (p) => <Svg {...p}><rect x="3" y="4" width="18" height="16" rx="2.5" /><circle cx="8.5" cy="9.5" r="1.6" /><path d="m4 17 4.5-4.5 4 4L15.5 13 20 17.5" /></Svg>;
 export const Eye = (p) => <Svg {...p}><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z" /><circle cx="12" cy="12" r="3" /></Svg>;
 export const Download = (p) => <Svg {...p}><path d="M12 3v12M7.5 10.5 12 15l4.5-4.5M4 20h16" /></Svg>;
