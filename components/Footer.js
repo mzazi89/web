@@ -9,30 +9,30 @@ import { Icons } from './ui';
 
 const COLUMNS = [
   {
-    title: 'Account',
+    title: 'Platform',
     links: [
       { label: 'Dashboard', href: '/dashboard' },
       { label: 'Devices', href: '/devices' },
-      { label: 'Wallet', href: '/wallet' },
-      { label: 'Support', href: '/help' },
+      { label: 'Pair MZAZI XMD', href: '/pair/mzazi' },
+      { label: 'Pair QUARTZ XD', href: '/pair/quartz' },
     ],
   },
   {
     title: 'Solutions',
     links: [
-      { label: 'WhatsApp Bots', href: '/whatsapp-bot' },
       { label: 'Hosting', href: '/products' },
       { label: 'VPS Servers', href: '/vps' },
-      { label: 'API', href: '/api' },
+      { label: 'Developer API', href: '/api/docs' },
+      { label: 'Bot Guides', href: '/whatsapp-bot' },
     ],
   },
   {
     title: 'Company',
     links: [
-      { label: 'About', href: '/about' },
-      { label: 'Contact', href: '/contact' },
-      { label: 'Privacy', href: '/privacy' },
-      { label: 'Terms', href: '/terms' },
+      { label: 'About Dominic', href: '/about' },
+      { label: 'Contact Support', href: '/contact' },
+      { label: 'Privacy Policy', href: '/privacy' },
+      { label: 'Terms of Service', href: '/terms' },
     ],
   },
 ];
@@ -41,20 +41,16 @@ export default function Footer() {
   return (
     <footer className="site-footer" style={{ background: 'var(--bg-2)', borderTop: '1px solid var(--line)', position: 'relative', zIndex: 1 }}>
       <div className="container-site">
-        <div className="grid grid-cols-2 lg:grid-cols-10 gap-8 lg:gap-10" style={{ paddingTop: 32, paddingBottom: 24 }}>
+        <div className="grid grid-cols-2 lg:grid-cols-10 gap-6 lg:gap-8" style={{ paddingTop: 24, paddingBottom: 20 }}>
           {/* Brand */}
           <div className="col-span-2 lg:col-span-4">
             <Link href="/" style={{ textDecoration: 'none' }} aria-label="MZAZI TECH home">
-              <Logo size={32} withText />
+              <Logo size={28} withText />
             </Link>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 7, marginTop: 12 }}>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: 13, fontWeight: 600, color: 'var(--good)' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginTop: 10 }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: 12.5, fontWeight: 600, color: 'var(--good)' }}>
                 <span className="dot dot-online anim-pulse" aria-hidden="true" />
-                Systems Online
-              </span>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: 13, color: 'var(--dim)' }}>
-                <Icons.Shield size={13} />
-                Secure Payments
+                Systems Active
               </span>
             </div>
           </div>

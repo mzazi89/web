@@ -25,25 +25,18 @@ const PRIMARY = [
   { href: '/',             label: 'Home' },
   { href: '/dashboard',    label: 'Dashboard' },
   { href: '/devices',      label: 'Devices' },
-  { href: '/subscription', label: 'Subscription' },
-  { href: '/payments',     label: 'Payments' },
-  { href: '/help',         label: 'Help' },
+  { href: '/about',        label: 'About' },
 ];
 
 const MORE = [
-  // Pairing is two destinations, not a chooser inside one page — one entry per
-  // bot so the link a visitor taps already decides which bot they get.
-  { href: '/pair/quartz',  label: 'Pair QUARTZ XD', desc: 'Connect a number to QUARTZ XD' },
-  { href: '/pair/mzazi',   label: 'Pair MZAZI XMD', desc: 'Connect a number to MZAZI XMD' },
-  { href: '/whatsapp-bot', label: 'WhatsApp Bot', desc: 'Bot features, commands & guides' },
-  { href: '/products',     label: 'Panels',       desc: 'Pterodactyl game panel hosting' },
-  { href: '/vps',          label: 'VPS',          desc: 'Virtual private servers' },
-  { href: '/temp-number',  label: 'Temp Number',  desc: 'Temporary numbers for verification' },
-  { href: '/api/docs',     label: 'API Docs',     desc: 'Developer API reference' },
-  { href: '/ludo',         label: 'Ludo',         desc: 'Play with friends' },
-  { href: '/testimonials', label: 'Reviews',      desc: 'What customers say' },
-  { href: '/about',        label: 'About',        desc: 'Who we are' },
-  { href: '/contact',      label: 'Contact',      desc: 'Reach the team' },
+  { href: '/subscription', label: 'Billing',      desc: 'Plans & payments' },
+  { href: '/help',         label: 'Support',      desc: 'Help center' },
+  { href: '/pair/mzazi',   label: 'Pair MZAZI XMD', desc: 'Modern WhatsApp automation' },
+  { href: '/pair/quartz',  label: 'Pair QUARTZ XD', desc: 'Powerful group management' },
+  { href: '/whatsapp-bot', label: 'Bot Guides',    desc: 'Features & commands' },
+  { href: '/products',     label: 'Panel Hosting', desc: 'Pterodactyl hosting' },
+  { href: '/vps',          label: 'VPS Servers',   desc: 'Scalable cloud infrastructure' },
+  { href: '/contact',      label: 'Contact',      desc: 'Talk to a human' },
 ];
 
 function isActive(pathname, href) {

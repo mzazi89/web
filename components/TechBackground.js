@@ -5,9 +5,9 @@
 
 export default function TechBackground() {
   return (
-    <div className="fixed inset-0 z-0 overflow-hidden bg-[#04060D]">
+    <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
       {/* Subtle depth gradient */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,#0A1229_0%,transparent_70%)] opacity-60" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,#0A1229_0%,transparent_70%)] opacity-40" />
       
       {/* High-performance grid overlay */}
       <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-[0.15] [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]" />

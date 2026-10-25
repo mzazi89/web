@@ -39,12 +39,11 @@ export default function AboutPage() {
           <div className="max-w-3xl">
             <p className="eyebrow">About us</p>
             <h1 className="headline mt-5" style={{ fontSize: 'clamp(2.1rem, 5vw, 3.6rem)' }}>
-              We power the world&apos;s digital infrastructure<span className="accent">.</span>
+              From Curiosity to <span className="gradient-text">Mastery</span><span className="accent">.</span>
             </h1>
             <p className="lede mt-6 max-w-2xl">
-              MZAZI TECH INC is a global tech company specializing in game server hosting, WhatsApp
-              automation, public APIs, and digital infrastructure solutions. We believe powerful
-              technology should be affordable and accessible to everyone, everywhere.
+              MZAZI TECH was born from the belief that failure is just the first step toward perfection. 
+              We empower creators and businesses with professional automation and modern digital tools.
             </p>
           </div>
 
@@ -64,36 +63,35 @@ export default function AboutPage() {
       <section className="section" style={{ background: 'var(--tint-hairline)' }}>
         <div className="container-site grid lg:grid-cols-12 gap-12">
           <div className="lg:col-span-5">
-            <p className="eyebrow">Mission</p>
+            <p className="eyebrow">The Founder</p>
             <h2 className="section-title text-3xl mt-4" style={{ color: 'var(--ink)' }}>
-              Infrastructure for everyone
+              Dominic Mokua Kerubo
               <span className="bar" />
             </h2>
             <blockquote className="border-l-2 pl-6 py-2 mt-8" style={{ borderColor: 'var(--brand)' }}>
               <p className="display text-xl font-semibold leading-snug" style={{ color: 'var(--ink)' }}>
-                “Power your digital world.”
+                “Success isn&apos;t just about code; it&apos;s about the persistence to keep trying until you reach perfection.”
               </p>
               <footer className="mono text-[10px] uppercase tracking-[0.18em] mt-3" style={{ color: 'var(--dim)' }}>
-                The Mzazi motto
+                Founder, Mzazi Tech
               </footer>
             </blockquote>
           </div>
           <div className="lg:col-span-7 space-y-6">
             <p className="lede">
-              To democratize access to powerful cloud infrastructure for businesses and individuals
-              worldwide. We offer enterprise-level Pterodactyl panel hosting at prices anyone can
-              afford — starting from just KES 50/month.
+              In 2024, as a BCOM student at the Cooperative University of Kenya, Dominic Mokua Kerubo 
+              embarked on a journey to bridge the gap between complex technology and everyday accessibility.
             </p>
             <p className="text-sm leading-relaxed" style={{ color: 'var(--muted)' }}>
-              From small WhatsApp bots to large-scale game servers and Pterodactyl panels for
-              WhatsApp bots, we provide the infrastructure backbone so you can focus on what
-              matters — building your product.
+              Starting with simple bot scripts and experimental web designs, Dominic faced the typical 
+              challenges of self-taught developers. Instead of stopping at "good enough," he pushed 
+              for mastery, refining his skills in WhatsApp automation, full-stack development, and 
+              system architecture.
             </p>
             <p className="text-sm leading-relaxed" style={{ color: 'var(--muted)' }}>
-              We also run <strong style={{ color: 'var(--ink)' }}>MZAZI API</strong> — a developer
-              platform with 200+ live endpoints for downloads, AI, search, tools and more, powered
-              by multiple upstream providers and secured with API-key authentication and usage
-              analytics.
+              Today, Mzazi Tech is more than a service provider—it&apos;s a hub for innovation and 
+              education. We don&apos;t just build bots and websites; we mentor the next wave of 
+              tech talent to turn their curiosity into professional expertise.
             </p>
           </div>
         </div>

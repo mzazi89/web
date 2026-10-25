@@ -64,6 +64,13 @@ export default function Home() {
               </div>
               <h3 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: 4 }}>Dominic Mokua Kerubo</h3>
               <p style={{ color: 'var(--brand)', fontWeight: 700, fontSize: 14, marginBottom: 16 }}>Founder & Lead Developer</p>
+              
+              <div style={{ display: 'flex', gap: 6, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 20 }}>
+                <Badge tone="brand" size="sm">Fullstack</Badge>
+                <Badge tone="blue" size="sm">Automation</Badge>
+                <Badge tone="good" size="sm">Mentorship</Badge>
+              </div>
+
               <p style={{ fontSize: 14, color: 'var(--muted)', lineHeight: 1.5 }}>
                 "Success isn't just about code; it's about the persistence to keep trying until you reach perfection."
               </p>
@@ -113,18 +120,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── FOOTER ── */}
-      <footer className="section text-center" style={{ borderTop: '1px solid var(--line)', paddingBlock: 60 }}>
-        <div className="container-site">
-          <Logo size={32} style={{ marginInline: 'auto', opacity: 0.7 }} />
-          <p style={{ marginTop: 16, fontSize: 14, color: 'var(--muted)' }}>
-            Empowering innovation since 2024.
-          </p>
-          <p style={{ marginTop: 8, fontSize: 12, color: 'var(--dim)' }}>
-            © {new Date().getFullYear()} Mzazi Tech. All rights reserved.
-          </p>
-        </div>
-      </footer>
     </AppBackground>
   );
 }

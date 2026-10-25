@@ -44,6 +44,12 @@ export const Phone = (p) => <Svg {...p}><rect x="6" y="2" width="12" height="20"
 export const Bot = (p) => <Svg {...p}><rect x="4" y="8" width="16" height="12" rx="3" /><path d="M12 8V4M8.5 14h.01M15.5 14h.01M9 20v1.5M15 20v1.5" /></Svg>;
 export const CreditCard = (p) => <Svg {...p}><rect x="2" y="5" width="20" height="14" rx="3" /><path d="M2 10h20M6 15h4" /></Svg>;
 export const Wallet = (p) => <Svg {...p}><path d="M20 8V6.5A2.5 2.5 0 0 0 17.5 4H5.5A2.5 2.5 0 0 0 3 6.5v11A2.5 2.5 0 0 0 5.5 20h12A2.5 2.5 0 0 0 20 17.5V16" /><path d="M21 12h-5a2 2 0 0 0 0 4h5v-4Z" /></Svg>;
+export const Mail = (p) => <Svg {...p}><rect x="2" y="4" width="20" height="16" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" /></Svg>;
+export const Telegram = (p) => (
+  <Svg {...p} filled>
+    <path d="m20.665 3.717-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42 10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701h-.002l.002.001-.314 4.692c.46 0 .663-.211.921-.46l2.211-2.15 4.599 3.397c.848.467 1.457.227 1.668-.785l3.019-14.228c.309-1.239-.473-1.8-1.282-1.435Z" />
+  </Svg>
+);
 export const Users = (p) => <Svg {...p}><path d="M16 20v-1.5a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4V20" /><circle cx="9" cy="7" r="3.4" /><path d="M22 20v-1.5a4 4 0 0 0-3-3.87M16.5 3.9a4 4 0 0 1 0 6.2" /></Svg>;
 export const Command = (p) => <Svg {...p}><path d="M15 6a3 3 0 1 1 3 3h-3V6ZM9 6a3 3 0 1 0-3 3h3V6Zm6 12a3 3 0 1 1 3-3v3h-3Zm-6 0a3 3 0 1 0-3-3v3h3Zm0-9h6v6H9V9Z" /></Svg>;
 export const Send = (p) => <Svg {...p}><path d="m21 3-9.5 9.5M21 3l-6.5 18-4-8.5L2 8.5 21 3Z" /></Svg>;
