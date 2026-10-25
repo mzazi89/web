@@ -4,48 +4,87 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { AppBackground, Card, Badge, Icons, Button } from '@/components/ui';
 
-// ── MOCK DATA ──
-const GROUP_MESSAGES = [
-  { id: 1, sender: 'Dominic (Founder)', text: 'Welcome everyone to the MZAZI TECH Early Access group! 🚀', time: '09:00 AM', isSystem: false, isAdmin: true },
-  { id: 2, sender: 'System', text: 'Dominic Mokua Kerubo added you to the group', time: '10:00 AM', isSystem: true },
-  { id: 3, sender: 'Alex', text: 'Excited to be here! When is the next bot update?', time: '10:05 AM', isSystem: false },
-  { id: 4, sender: 'Dominic (Founder)', text: 'Next week! We are adding support for automated Pterodactyl node management.', time: '10:07 AM', isSystem: false, isAdmin: true },
-  { id: 5, sender: 'Sarah', text: 'The new MZAZI XMD pairing flow is so smooth. Loving the "Unpair" feature.', time: '10:15 AM', isSystem: false },
-  { id: 6, sender: 'Dominic (Founder)', text: 'Thanks Sarah! We worked hard on that to fix the DB conflict issues.', time: '10:16 AM', isSystem: false, isAdmin: true },
-];
-
 export default function CommunityPage() {
   const [joined, setJoined] = useState(false);
-  const [messages, setMessages] = useState(GROUP_MESSAGES);
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState(null);
   const chatEndRef = useRef(null);
+  const lastIdRef = useRef(0);
+  const audioRef = useRef(null);
+
+  useEffect(() => {
+    fetch('/api/auth/me')
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d?.user) setUser(d.user); });
+  }, []);
 
   useEffect(() => {
     if (joined) {
-      chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      loadMessages();
+      const interval = setInterval(loadMessages, 3000);
+      return () => clearInterval(interval);
     }
-  }, [joined, messages]);
+  }, [joined]);
+
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  const loadMessages = async () => {
+    try {
+      const r = await fetch(`/api/community/messages?lastId=${lastIdRef.current}`);
+      if (r.ok) {
+        const d = await r.json();
+        if (d.messages?.length > 0) {
+          const newMessages = d.messages;
+          const lastMsg = newMessages[newMessages.length - 1];
+          
+          // Play notification if someone else sent a message
+          if (lastIdRef.current > 0) {
+            const hasOtherMsg = newMessages.some(m => m.user_id !== user?.id);
+            if (hasOtherMsg && audioRef.current) {
+              audioRef.current.play().catch(() => {});
+            }
+          }
+
+          setMessages(prev => [...prev, ...newMessages]);
+          lastIdRef.current = lastMsg.id;
+        }
+      }
+    } catch (err) {}
+  };
 
   const handleJoin = () => {
+    if (!user) {
+      window.location.href = '/login?redirect=/community';
+      return;
+    }
     setJoined(true);
   };
 
-  const handleSend = (e) => {
+  const handleSend = async (e) => {
     e.preventDefault();
-    if (!input.trim()) return;
+    if (!input.trim() || loading) return;
 
-    const newMsg = {
-      id: Date.now(),
-      sender: 'You',
-      text: input,
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      isSystem: false,
-      isMe: true
-    };
-
-    setMessages([...messages, newMsg]);
-    setInput('');
+    setLoading(true);
+    try {
+      const res = await fetch('/api/community/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: input.trim() }),
+      });
+      if (res.ok) {
+        setInput('');
+        loadMessages();
+      }
+    } finally {
+      setLoading(false);
+    }
   };
+
+  const fmtTime = (ts) => new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
   return (
     <AppBackground
@@ -54,6 +93,7 @@ export default function CommunityPage() {
       scrim={0.65}
       orbs
     >
+      <audio ref={audioRef} src="https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3" preload="auto" />
       <div className="container-site" style={{ paddingTop: 100, paddingBottom: 100, minHeight: 'calc(100vh - 100px)', display: 'flex', flexDirection: 'column' }}>
         
         {!joined ? (
@@ -124,48 +164,38 @@ export default function CommunityPage() {
               flexDirection: 'column',
               gap: 12
             }}>
+              {messages.length === 0 && (
+                <div style={{ display: 'flex', justifySelf: 'center', marginInline: 'auto', marginTop: 40 }}>
+                  <span style={{ fontSize: 12, color: 'var(--dim)', background: 'var(--surface-2)', padding: '6px 16px', borderRadius: '20px' }}>
+                    Welcome to the Community! Start the conversation.
+                  </span>
+                </div>
+              )}
               {messages.map((msg) => {
-                if (msg.isSystem) {
-                  return (
-                    <div key={msg.id} style={{ display: 'flex', justifySelf: 'center', marginInline: 'auto' }}>
-                      <span style={{ 
-                        fontSize: 11, 
-                        fontWeight: 700, 
-                        textTransform: 'uppercase', 
-                        letterSpacing: '0.05em',
-                        background: 'var(--surface-3)', 
-                        padding: '4px 12px', 
-                        borderRadius: 'r-pill', 
-                        color: 'var(--dim)',
-                        border: '1px solid var(--line-soft)'
-                      }}>
-                        {msg.text}
-                      </span>
-                    </div>
-                  );
-                }
+                const isMe = msg.user_id === user?.id;
+                const isAdmin = msg.role === 'admin';
 
                 return (
                   <div key={msg.id} style={{ 
                     display: 'flex', 
                     flexDirection: 'column', 
-                    alignSelf: msg.isMe ? 'flex-end' : 'flex-start',
+                    alignSelf: isMe ? 'flex-end' : 'flex-start',
                     maxWidth: '85%'
                   }}>
-                    {!msg.isMe && (
-                      <span style={{ fontSize: 12, fontWeight: 800, color: msg.isAdmin ? 'var(--brand)' : 'var(--blue)', marginLeft: 4, marginBottom: 2 }}>
-                        {msg.sender}
+                    {!isMe && (
+                      <span style={{ fontSize: 12, fontWeight: 800, color: isAdmin ? 'var(--brand)' : 'var(--blue)', marginLeft: 4, marginBottom: 2 }}>
+                        {msg.user_name}
                       </span>
                     )}
                     <div style={{ 
-                      background: msg.isMe ? 'var(--brand)' : 'var(--surface)', 
-                      color: msg.isMe ? '#FFF' : 'var(--ink)',
+                      background: isMe ? 'var(--brand)' : 'var(--surface)', 
+                      color: isMe ? '#FFF' : 'var(--ink)',
                       padding: '8px 12px',
-                      borderRadius: msg.isMe ? '12px 0 12px 12px' : '0 12px 12px 12px',
+                      borderRadius: isMe ? '12px 0 12px 12px' : '0 12px 12px 12px',
                       boxShadow: 'var(--shadow-sm)',
                       position: 'relative'
                     }}>
-                      <p style={{ fontSize: 14.5, lineHeight: 1.5 }}>{msg.text}</p>
+                      <p style={{ fontSize: 14.5, lineHeight: 1.5 }}>{msg.message}</p>
                       <div style={{ 
                         fontSize: 10, 
                         opacity: 0.7, 
@@ -177,8 +207,8 @@ export default function CommunityPage() {
                         justifyContent: 'flex-end',
                         gap: 4
                       }}>
-                        {msg.time}
-                        {msg.isMe && <span>✓✓</span>}
+                        {fmtTime(msg.created_at)}
+                        {isMe && <span>✓✓</span>}
                       </div>
                     </div>
                   </div>
