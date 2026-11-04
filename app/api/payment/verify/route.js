@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import https from 'https';
 import { neon } from '@neondatabase/serverless';
 import { creditReferralCommission } from '@/lib/api/referral';
+import { pteroConfig } from '@/lib/ptero';
 
 // Add this line to force dynamic rendering
 export const dynamic = 'force-dynamic';
@@ -41,7 +42,11 @@ export async function GET(request) {
       
       const username = `user_${metadata.user_id}_${Date.now()}`;
       const password = Math.random().toString(36).slice(-10) + Math.random().toString(36).slice(-10);
-      const panelLink = `https://panel.mzazitech.com`;
+      // Was hardcoded to panel.mzazitech.com, a domain that no longer resolves —
+      // every customer received a password for a panel that did not exist. The
+      // URL now comes from the same resolution the rest of the app uses
+      // (admin Panels screen → settings → PTERODACTYL_URL).
+      const panelLink = (await pteroConfig()).url;
       
       const credentials = JSON.stringify({
         username,
