@@ -1,3 +1,4 @@
+import { dbTime } from '@/lib/dbTime';
 import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
@@ -25,7 +26,7 @@ export async function GET() {
     const now = new Date();
     const enriched = panels.map(p => ({
       ...p,
-      is_expired: p.expires_at ? new Date(p.expires_at) < now : false,
+      is_expired: p.expires_at ? dbTime(p.expires_at) < now : false,
       expires_at: p.expires_at || null,
     }));
 

@@ -1,3 +1,4 @@
+import { dbTime } from '@/lib/dbTime';
 // MZAZI API — GET /api/vps/status?reference=…
 // Polled by the /vps page after a mobile-money charge. Verifies with Paystack
 // and, on success, fulfills the order (assigns the VPS instance) via the
@@ -37,7 +38,7 @@ export async function GET(request) {
     }
 
     // Still pending/processing — did the 180s mobile-money window lapse?
-    const created = new Date(order.created_at).getTime();
+    const created = dbTime(order.created_at);
     if (Date.now() - created > CHARGE_TTL_MS) {
       await markVpsOrderFailed(reference, 'Payment prompt expired');
       return NextResponse.json({ status: 'failed', error: 'Payment window expired — please try again.' });

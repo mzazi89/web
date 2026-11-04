@@ -1,3 +1,4 @@
+import { dbTime } from '@/lib/dbTime';
 import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
@@ -48,7 +49,7 @@ export async function GET(request) {
     }
 
     // Mobile-money prompts expire after 180 seconds (network-provider limit).
-    const ageMs = Date.now() - new Date(tx.created_at).getTime();
+    const ageMs = Date.now() - dbTime(tx.created_at);
 
     const result = await verifyAndCreditWalletDeposit(reference, { expectedUserId: decoded.userId });
 
