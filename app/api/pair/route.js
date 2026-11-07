@@ -70,16 +70,41 @@ export async function POST(request) {
       );
     }
 
-    // one pairing request at a time per account
+    // One pairing request at a time per account — but only while it is still
+    // plausible that it is going somewhere. This used to match any pending or
+    // claimed row forever: a request the bot never picked up (it was down, or it
+    // restarted between the claim and the reply) then answered "you already have
+    // a pairing request in progress" on every later attempt, and the account
+    // could not pair again at all — from the site or from the bot — because
+    // nothing in the UI could clear the row.
+    //
+    // A `pending` row is dead after two minutes (the bot polls every 15s). A
+    // `claimed` one is kept for five, long enough for WhatsApp to produce the
+    // code and for the user to type it in; a code older than that has expired
+    // anyway.
     const pending = await sql`
       SELECT id FROM bot_control
       WHERE action = 'pair' AND status IN ('pending', 'claimed')
         AND payload->>'accountId' = ${String(user.userId)}
+        AND (
+          (status = 'pending' AND created_at > NOW() - INTERVAL '2 minutes')
+          OR (status = 'claimed' AND COALESCE(claimed_at, created_at) > NOW() - INTERVAL '5 minutes')
+        )
       ORDER BY id DESC LIMIT 1
     `;
     if (pending.length) {
       return NextResponse.json({ error: 'You already have a pairing request in progress.' }, { status: 409 });
     }
+
+    // Retire whatever is left for this account so it cannot block this attempt
+    // or the next one. Nothing will read these rows: the poll endpoint the page
+    // uses has already been abandoned by the user.
+    await sql`
+      UPDATE bot_control
+      SET status = 'expired', result = 'Timed out — the bot never finished this request'
+      WHERE action = 'pair' AND status IN ('pending', 'claimed')
+        AND payload->>'accountId' = ${String(user.userId)}
+    `;
 
     // bot_id only when the caller named one. An untargeted row stays claimable
     // by any bot, which is exactly the row this endpoint wrote before bots were
@@ -117,10 +142,14 @@ export async function GET(request) {
     if (r.status === 'done' && r.result) {
       try { result = JSON.parse(r.result); } catch { result = { raw: r.result }; }
     }
+    // An `expired` row is a request that will never be answered. Reported as a
+    // failure so the page stops waiting for a code instead of polling a dead
+    // row for the full two minutes and then saying the bot was slow.
+    const status = r.status === 'expired' ? 'failed' : r.status;
     return NextResponse.json({
-      status: r.status,
+      status,
       result,
-      error: r.status === 'failed' ? r.result : null,
+      error: status === 'failed' ? (r.result || 'Pairing timed out. Please try again.') : null,
     });
   } catch (e) {
     console.error('Pair GET error:', e.message);
