@@ -71,7 +71,42 @@ export async function POST(request) {
       VALUES (${controlAction}, ${JSON.stringify(payload)}::jsonb, 'pending', ${resolved.named ? bot.id : ''})
       RETURNING id
     `;
-    return NextResponse.json({ requestId: rows[0].id, number, action, bot: bot.id });
+
+    // ── Clear the number here and now ───────────────────────────────────────
+    // Queuing alone meant the device stayed in the list until the bot polled
+    // (≤15s) and then again until its heartbeat dropped the number: a removal
+    // the user could watch fail. None of it needs the bot. The row this writes
+    // is exactly the row the bot writes when it applies the request, so it is
+    // written now, in the request that asked for it — the list is correct the
+    // moment the response is. The bot still does the part only it can do
+    // (logout, wipe the session folder); if it is offline the database is
+    // already right and the request waits for it in bot_control.
+    //
+    // Failure here is not fatal: the queued request still runs.
+    let cleared = false;
+    if (account) {
+      try {
+        if (action === 'delete') {
+          await sql`
+            DELETE FROM "WhatsAppSession"
+            WHERE "phoneNumber" = ${number}
+              AND ("userId" = ${account.id} OR "userId" IS NULL)
+          `;
+        } else {
+          await sql`
+            UPDATE "WhatsAppSession"
+            SET status = 'INACTIVE', "updatedAt" = CURRENT_TIMESTAMP
+            WHERE "phoneNumber" = ${number}
+              AND ("userId" = ${account.id} OR "userId" IS NULL)
+          `;
+        }
+        cleared = true;
+      } catch (e) {
+        console.warn('[pair][unlink] could not clear the session row:', e.message);
+      }
+    }
+
+    return NextResponse.json({ requestId: rows[0].id, number, action, bot: bot.id, cleared });
   } catch (e) {
     console.error('Pair manage error:', e.message);
     return NextResponse.json({ error: 'Failed to start the action. Try again.' }, { status: 500 });

@@ -296,10 +296,16 @@ export default function PairingPanel({ kind = 'quartz' }) {
       const d = await res.json();
       setConfirm(null);
       if (!res.ok) { setNotice({ kind: 'error', text: humaniseError(d.error || 'We could not start that action.') }); setBusyNum(null); return; }
-      const label = { unlink: 'Logging out', delete: 'Deleting' }[action] || 'Processing';
-      setNotice({ kind: 'success', text: `${label} ${number}… the list refreshes in a few seconds.` });
-      // the bot picks it up within ~15s — refresh after that
-      setTimeout(() => { setBusyNum(null); loadDevices(); }, 14000);
+      // The row is cleared before the API answers, so the device has already
+      // left the list — show that now instead of after the bot's ~15s poll.
+      setData((d) => (
+        d ? { ...d, devices: (d.devices || []).filter((x) => x.number !== number) } : d
+      ));
+      const label = { unlink: 'Logged out', delete: 'Deleted' }[action] || 'Removed';
+      setNotice({ kind: 'success', text: `${label} ${number}.` });
+      setBusyNum(null);
+      loadDevices();
+      setTimeout(loadDevices, 4000);
     } catch (e) {
       setConfirm(null);
       setNotice({ kind: 'error', text: humaniseError(e) });

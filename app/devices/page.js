@@ -92,17 +92,24 @@ export default function DevicesPage() {
         setConfirmBusy(false);
         return;
       }
+      // `/api/pair/unlink` clears the row before it answers, so the number is
+      // already gone from the database — take it off the screen in the same
+      // tick instead of leaving it there for the bot's ~15s poll. The re-read
+      // is only a reconciliation (another tab, or a bot that was offline).
       setNotice({
         kind: 'success',
         text: action === 'delete'
-          ? `Deleting ${device.number} — it disappears from this list in a few seconds.`
-          : `Logging out ${device.number} — it disappears from this list in a few seconds.`,
+          ? `${device.number} deleted.`
+          : `${device.number} logged out.`,
       });
       setConfirm(null);
       setConfirmBusy(false);
-      setBusyNumber(device.number);
-      // The bot picks the request up within ~15s.
-      setTimeout(() => { setBusyNumber(null); load(true); }, 15000);
+      setBusyNumber(null);
+      setData((d) => (
+        d ? { ...d, devices: (d.devices || []).filter((x) => x.number !== device.number) } : d
+      ));
+      load(true);
+      setTimeout(() => load(true), 4000);
     } catch (e) {
       setNotice({ kind: 'error', text: humaniseError(e) });
       setConfirm(null);

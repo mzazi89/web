@@ -189,8 +189,15 @@ export default function DashboardPage() {
       const data = await res.json();
       setDeviceToUnlink(null);
       if (!res.ok) { setDevNotice(humaniseError(data.error || 'We could not unlink that device.')); setUnlinking(null); return; }
-      setDevNotice(`Unlinking ${number}…`);
-      setTimeout(() => { setUnlinking(null); fetchDevices(); }, 14000); // the bot picks it up within ~15s
+      // The row is cleared before the API answers, so the device is already
+      // gone — drop it here rather than waiting out the bot's ~15s poll.
+      setDevices((d) => (
+        d ? { ...d, devices: (d.devices || []).filter((x) => x.number !== number) } : d
+      ));
+      setDevNotice(`${number} logged out.`);
+      setUnlinking(null);
+      fetchDevices();
+      setTimeout(fetchDevices, 4000);
     } catch (e) {
       setDeviceToUnlink(null);
       setDevNotice(humaniseError(e));
