@@ -122,9 +122,9 @@ export default function Modal({
                 </span>
               )}
               <div style={{ minWidth: 0 }}>
-                <h2 style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 700 }}>{title}</h2>
+                <h2 style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: 15.5, fontWeight: 700 }}>{title}</h2>
                 {description && (
-                  <p style={{ margin: '5px 0 0', fontSize: 14, color: 'var(--muted)', lineHeight: 1.55 }}>{description}</p>
+                  <p style={{ margin: '5px 0 0', fontSize: 13.5, color: 'var(--muted)', lineHeight: 1.55 }}>{description}</p>
                 )}
               </div>
             </div>

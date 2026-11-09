@@ -15,7 +15,7 @@ function Stars({ value, size = 18 }) {
 function TestimonialCard({ t }) {
   const initials = t.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
   return (
-    <div className="card card-pad flex flex-col" style={{ padding: '24px 22px', background: 'var(--surface)' }}>
+    <div className="card card-pad flex flex-col" style={{ padding: '17px 16px', background: 'var(--surface)' }}>
       <div className="flex items-center gap-3 mb-5">
         <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0"
           style={{ background: 'var(--brand-a12)', border: '1px solid var(--brand-a45)', color: 'var(--brand)' }}>
@@ -80,10 +80,10 @@ export default function TestimonialsPage() {
     <div style={{ backgroundColor: 'var(--page-tint)' }}>
       {/* Hero + rating summary */}
       <section className="relative overflow-hidden">
-        <div className="container-site relative py-20 sm:py-28">
+        <div className="container-site relative py-6 sm:py-6">
           <div className="max-w-3xl">
             <Link href="/" className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: 'var(--muted)', textDecoration: 'none' }}>← Back to home</Link>
-            <p className="eyebrow mt-8">Customer voices</p>
+            <p className="eyebrow mt-5">Customer voices</p>
             <h1 className="headline mt-4" style={{ fontSize: 'clamp(2rem, 4.4vw, 3.2rem)' }}>
               What customers say<span className="accent">.</span>
             </h1>
@@ -92,7 +92,7 @@ export default function TestimonialsPage() {
             </p>
           </div>
 
-          <div className="card card-pad mt-12 inline-flex flex-wrap items-center gap-x-8 gap-y-3">
+          <div className="card card-pad mt-4 inline-flex flex-wrap items-center gap-x-8 gap-y-3">
             <div className="flex items-center gap-3">
               <span className="stat-num" style={{ color: 'var(--brand)' }}>{avg !== null ? avg : '—'}</span>
               <div>
@@ -112,12 +112,12 @@ export default function TestimonialsPage() {
       </section>
 
       {/* Reviews grid */}
-      <section className="section" style={{ paddingTop: 24 }}>
+      <section className="section" style={{ paddingTop: 17 }}>
         <div className="container-site max-w-5xl">
           {loading ? (
-            <p className="text-center text-sm py-10" style={{ color: 'var(--muted)' }}>Loading reviews…</p>
+            <p className="text-center text-sm py-6" style={{ color: 'var(--muted)' }}>Loading reviews…</p>
           ) : items.length === 0 ? (
-            <div className="card card-pad text-center py-14">
+            <div className="card card-pad text-center py-6">
               <p className="text-sm" style={{ color: 'var(--ink-2)' }}>No reviews yet — be the first to review us!</p>
             </div>
           ) : (
@@ -126,7 +126,7 @@ export default function TestimonialsPage() {
                 {items.map(t => <TestimonialCard key={t.id} t={t} />)}
               </div>
               {offset + 6 < total && (
-                <div className="text-center mt-10">
+                <div className="text-center mt-4">
                   <button onClick={() => load(offset + 6, true)} className="btn btn-ghost" style={{ cursor: 'pointer' }}>
                     Load more reviews
                   </button>
@@ -138,12 +138,12 @@ export default function TestimonialsPage() {
       </section>
 
       {/* Submit form */}
-      <section className="section" style={{ paddingBottom: 110 }}>
+      <section className="section" style={{ paddingBottom: 24 }}>
         <div className="container-site max-w-xl">
           <div className="card card-pad" style={{ borderColor: 'var(--brand-a35)' }}>
             <p className="eyebrow">Share yours</p>
-            <h2 className="section-title text-2xl mt-3 mb-2" style={{ color: 'var(--ink)' }}>Leave a review</h2>
-            <p className="text-sm mb-6" style={{ color: 'var(--muted)' }}>
+            <h2 className="section-title text-lg mt-3 mb-2" style={{ color: 'var(--ink)' }}>Leave a review</h2>
+            <p className="text-sm mb-4" style={{ color: 'var(--muted)' }}>
               Tell others about your experience. Reviews appear after a quick approval.
             </p>
 
@@ -153,7 +153,7 @@ export default function TestimonialsPage() {
               </p>
             )}
 
-            <form onSubmit={submit} className="space-y-5">
+            <form onSubmit={submit} className="space-y-3">
               <div>
                 <label className="label">Your name</label>
                 <input

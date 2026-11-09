@@ -28,7 +28,7 @@ function ContributorCard({ c }) {
   return (
     <div
       className="card card-pad text-center transition-all duration-300 hover:-translate-y-1"
-      style={{ padding: '32px 26px', background: 'var(--surface)' }}
+      style={{ padding: '23px 19px', background: 'var(--surface)' }}
     >
       {/* Avatar */}
       <div style={{ position: 'relative', display: 'inline-block', marginBottom: '18px' }}>
@@ -65,11 +65,11 @@ function ContributorCard({ c }) {
 
 export default function Contributors() {
   return (
-    <section className="section" style={{ paddingTop: 88, paddingBottom: 88 }}>
+    <section className="section" style={{ paddingTop: 24, paddingBottom: 24 }}>
       <div className="container-site max-w-5xl">
         <div className="text-center mb-14">
-          <span className="tag tag-amber mb-6">Project contributors</span>
-          <h2 className="section-title text-3xl sm:text-4xl mt-4" style={{ color: 'var(--ink)' }}>
+          <span className="tag tag-amber mb-4">Project contributors</span>
+          <h2 className="section-title text-lg sm:text-lg mt-4" style={{ color: 'var(--ink)' }}>
             Built by visionaries<span className="bar" style={{ margin: '14px auto 0' }} />
           </h2>
           <p className="text-sm mt-5 max-w-md mx-auto" style={{ color: 'var(--muted)' }}>

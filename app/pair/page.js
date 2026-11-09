@@ -36,7 +36,7 @@ const BOTS = [
 export default function PairIndexPage() {
   return (
     <AppBackground variant="dashboard">
-      <div className="container-site" style={{ paddingTop: 26, paddingBottom: 90, maxWidth: 1000 }}>
+      <div className="container-site" style={{ paddingTop: 19, paddingBottom: 24, maxWidth: 1000 }}>
         <PageHeader
           title="Pair a bot"
           description="Pick the bot you want to pair your number with — the next page takes your number and gives you the code."
@@ -50,20 +50,20 @@ export default function PairIndexPage() {
               <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
                 <BotMark name={bot.name} size={52} />
                 <div style={{ minWidth: 0 }}>
-                  <h2 style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 700 }}>
+                  <h2 style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: 15.5, fontWeight: 700 }}>
                     {bot.name}
                   </h2>
-                  <p style={{ margin: '3px 0 0', fontSize: 14, color: 'var(--brand)', fontWeight: 600 }}>
+                  <p style={{ margin: '3px 0 0', fontSize: 13.5, color: 'var(--brand)', fontWeight: 600 }}>
                     {bot.tagline}
                   </p>
                 </div>
               </div>
 
-              <p style={{ margin: 0, fontSize: 14.5, color: 'var(--muted)', lineHeight: 1.65 }}>{bot.desc}</p>
+              <p style={{ margin: 0, fontSize: 13.5, color: 'var(--muted)', lineHeight: 1.65 }}>{bot.desc}</p>
 
               <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 8 }}>
                 {bot.points.map((p) => (
-                  <li key={p} style={{ display: 'flex', gap: 9, alignItems: 'flex-start', fontSize: 14, color: 'var(--ink-2)' }}>
+                  <li key={p} style={{ display: 'flex', gap: 9, alignItems: 'flex-start', fontSize: 13.5, color: 'var(--ink-2)' }}>
                     <span style={{ color: 'var(--good)', marginTop: 1, flex: '0 0 auto' }} aria-hidden="true">
                       <Icons.Check size={15} />
                     </span>
@@ -80,7 +80,7 @@ export default function PairIndexPage() {
           ))}
         </div>
 
-        <p style={{ margin: '22px 0 0', fontSize: 13.5, color: 'var(--dim)' }}>
+        <p style={{ margin: '16px 0 0', fontSize: 12.5, color: 'var(--dim)' }}>
           Already connected? <Link className="link" href="/devices">Manage your devices</Link>. One bot per number — pair a second
           number on the other bot if you need both.
         </p>

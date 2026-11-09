@@ -51,7 +51,7 @@ export default function PaymentsPage() {
 
   return (
     <AppBackground variant="dashboard">
-      <div className="container-site" style={{ paddingTop: 26, paddingBottom: 90, maxWidth: 1100 }}>
+      <div className="container-site" style={{ paddingTop: 19, paddingBottom: 24, maxWidth: 1100 }}>
         <PageHeader
           title="Payments & receipts"
           description="Wallet top-ups and plan purchases in one place, with a receipt for each completed payment."
@@ -70,7 +70,7 @@ export default function PaymentsPage() {
         )}
 
         {state === 'loading' && (
-          <div className="grid-2-responsive" style={{ marginBottom: 22 }} aria-hidden="true">
+          <div className="grid-2-responsive" style={{ marginBottom: 16 }} aria-hidden="true">
             <span className="skeleton" style={{ height: 96, borderRadius: 'var(--r-lg)' }} />
             <span className="skeleton" style={{ height: 96, borderRadius: 'var(--r-lg)' }} />
           </div>
@@ -84,12 +84,12 @@ export default function PaymentsPage() {
 
         {state === 'ready' && (
           <>
-            <div className="grid-2-responsive anim-fade-up" style={{ marginBottom: 22 }}>
+            <div className="grid-2-responsive anim-fade-up" style={{ marginBottom: 16 }}>
               <StatCard label="Wallet balance" value={fmtKes(balance)} hint="Available to spend" icon={<Icons.Wallet size={19} />} tone="brand" />
               <StatCard label="Top-ups recorded" value={deposits.length} hint="In the latest transactions" icon={<Icons.Download size={19} />} tone="good" />
             </div>
 
-            <Card style={{ marginBottom: 22 }}>
+            <Card style={{ marginBottom: 16 }}>
               <CardHeader
                 title="What appears here"
                 description="When you add money to your wallet, or pay for a WhatsApp bot plan, the transaction is recorded and shown below. Plan purchases are debits; top-ups are deposits."

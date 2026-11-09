@@ -17,7 +17,7 @@ function TestimonialCard({ testimonial }) {
         background: 'var(--surface)',
         border: '1px solid var(--line)',
         borderRadius: 6,
-        padding: '26px',
+        padding: '19px',
         display: 'flex',
         flexDirection: 'column',
         gap: '14px',
@@ -26,7 +26,7 @@ function TestimonialCard({ testimonial }) {
       onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.borderColor = 'var(--brand-a45)'; e.currentTarget.style.boxShadow = '0 12px 32px rgba(0,0,0,0.35)'; }}
       onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'var(--line)'; e.currentTarget.style.boxShadow = 'none'; }}
     >
-      <div className="mono text-2xl" style={{ color: 'var(--brand)', lineHeight: 1, opacity: 0.6 }}>"</div>
+      <div className="mono text-lg" style={{ color: 'var(--brand)', lineHeight: 1, opacity: 0.6 }}>"</div>
       <p className="text-sm leading-relaxed flex-1" style={{ color: 'var(--ink-2)' }}>{testimonial.message}</p>
       <StarRating value={testimonial.rating} readonly />
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', paddingTop: '8px', borderTop: '1px solid var(--line-soft)' }}>
@@ -78,9 +78,9 @@ function TestimonialForm({ onSubmitted }) {
         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--good)', margin: '0 auto' }}>
           <circle cx="12" cy="12" r="10" /><path d="m8.5 12.5 2.5 2.5 5-6" />
         </svg>
-        <h3 className="display font-bold text-xl mt-4 mb-2" style={{ color: 'var(--ink)' }}>Thank you!</h3>
+        <h3 className="display font-bold text-lg mt-4 mb-2" style={{ color: 'var(--ink)' }}>Thank you!</h3>
         <p className="text-sm" style={{ color: 'var(--muted)' }}>Your testimonial has been submitted successfully. It will appear after a quick approval.</p>
-        <button onClick={() => setSuccess(false)} className="btn btn-ghost mt-6" style={{ cursor: 'pointer' }}>
+        <button onClick={() => setSuccess(false)} className="btn btn-ghost mt-4" style={{ cursor: 'pointer' }}>
           Add another
         </button>
       </div>
@@ -90,7 +90,7 @@ function TestimonialForm({ onSubmitted }) {
   return (
     <form onSubmit={handleSubmit} className="card card-pad" style={{ background: 'var(--surface)' }}>
       <p className="eyebrow">Your voice</p>
-      <h3 className="section-title text-xl mt-3 mb-6" style={{ color: 'var(--ink)' }}>Share your experience</h3>
+      <h3 className="section-title text-lg mt-3 mb-4" style={{ color: 'var(--ink)' }}>Share your experience</h3>
 
       {error && (
         <div className="px-4 py-3 text-sm mb-5" style={{ background: 'var(--bad-a08)', border: '1px solid var(--bad-a35)', color: 'var(--bad)' }}>
@@ -98,7 +98,7 @@ function TestimonialForm({ onSubmitted }) {
         </div>
       )}
 
-      <div className="space-y-5">
+      <div className="space-y-3">
         <div>
           <label className="label">Your name *</label>
           <input type="text" placeholder="e.g. John Kamau" value={form.name} required
@@ -178,10 +178,10 @@ export default function Testimonials() {
 
         {/* Header */}
         <div className="text-center mb-14">
-          <span className="tag tag-amber mb-6">
+          <span className="tag tag-amber mb-4">
             ★ {avgRating ? `${avgRating} avg rating · ` : ''}{total} {total === 1 ? 'review' : 'reviews'}
           </span>
-          <h2 className="section-title text-3xl sm:text-4xl mt-4" style={{ color: 'var(--ink)' }}>
+          <h2 className="section-title text-lg sm:text-lg mt-4" style={{ color: 'var(--ink)' }}>
             What our clients say<span className="bar" style={{ margin: '14px auto 0' }} />
           </h2>
           <p className="text-sm mt-5 max-w-md mx-auto" style={{ color: 'var(--muted)' }}>
@@ -196,20 +196,20 @@ export default function Testimonials() {
 
         {/* Cards */}
         {loading ? (
-          <div style={{ textAlign: 'center', color: 'var(--muted)', padding: '40px 0' }}>Loading testimonials…</div>
+          <div style={{ textAlign: 'center', color: 'var(--muted)', padding: '24px 0' }}>Loading testimonials…</div>
         ) : testimonials.length === 0 ? (
-          <div className="card card-pad text-center mb-10" style={{ color: 'var(--muted)' }}>
+          <div className="card card-pad text-center mb-4" style={{ color: 'var(--muted)' }}>
             <p className="text-sm">No testimonials yet — be the first to share your experience!</p>
           </div>
         ) : (
           <>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '16px', marginBottom: '28px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '16px', marginBottom: '20px' }}>
               {testimonials.map(t => <TestimonialCard key={t.id} testimonial={t} />)}
             </div>
 
             {/* See More */}
             {hasMore && (
-              <div style={{ textAlign: 'center', marginBottom: '48px' }}>
+              <div style={{ textAlign: 'center', marginBottom: '24px' }}>
                 <button
                   onClick={handleLoadMore}
                   disabled={loadingMore}
@@ -224,7 +224,7 @@ export default function Testimonials() {
         )}
 
         {/* Submit form */}
-        <div style={{ maxWidth: '600px', margin: '32px auto 0' }}>
+        <div style={{ maxWidth: '600px', margin: '23px auto 0' }}>
           <TestimonialForm onSubmitted={handleNewTestimonial} />
         </div>
       </div>

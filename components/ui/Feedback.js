@@ -40,7 +40,7 @@ export function LoadingState({ message = 'Loading…', minHeight = 240 }) {
         minHeight,
         display: 'flex', flexDirection: 'column',
         alignItems: 'center', justifyContent: 'center',
-        gap: 14, color: 'var(--muted)', fontSize: 14.5,
+        gap: 14, color: 'var(--muted)', fontSize: 13.5,
       }}
     >
       <span className="spinner" />
@@ -80,15 +80,15 @@ export function SkeletonCards({ count = 3, height = 96 }) {
  */
 export function EmptyState({ icon, title, description, action, secondaryAction, compact = false }) {
   return (
-    <div className="empty" style={compact ? { padding: '26px 18px' } : undefined}>
+    <div className="empty" style={compact ? { padding: '19px 18px' } : undefined}>
       <div className="empty-icon" aria-hidden="true">
         {icon || <Info size={26} />}
       </div>
-      <p style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 17, color: 'var(--ink)' }}>
+      <p style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 15, color: 'var(--ink)' }}>
         {title}
       </p>
       {description && (
-        <p style={{ margin: 0, color: 'var(--muted)', fontSize: 14.5, maxWidth: 380, lineHeight: 1.6 }}>
+        <p style={{ margin: 0, color: 'var(--muted)', fontSize: 13.5, maxWidth: 380, lineHeight: 1.6 }}>
           {description}
         </p>
       )}
@@ -124,16 +124,16 @@ export function ErrorState({
         minHeight,
         display: 'flex', flexDirection: 'column',
         alignItems: 'center', justifyContent: 'center',
-        gap: 12, textAlign: 'center', padding: '26px 18px',
+        gap: 12, textAlign: 'center', padding: '19px 18px',
       }}
     >
       <div className="empty-icon" style={{ background: 'var(--bad-tint)', color: 'var(--bad)' }} aria-hidden="true">
         <AlertCircle size={26} />
       </div>
-      <p style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 17, color: 'var(--ink)' }}>
+      <p style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 15, color: 'var(--ink)' }}>
         {title}
       </p>
-      <p style={{ margin: 0, color: 'var(--muted)', fontSize: 14.5, maxWidth: 420, lineHeight: 1.6 }}>{message}</p>
+      <p style={{ margin: 0, color: 'var(--muted)', fontSize: 13.5, maxWidth: 420, lineHeight: 1.6 }}>{message}</p>
 
       {onRetry && (
         <Button variant="ghost" size="sm" onClick={onRetry} icon={<Refresh size={15} />}>
@@ -143,13 +143,13 @@ export function ErrorState({
 
       {technical && (
         <details style={{ marginTop: 6, width: '100%', maxWidth: 520, textAlign: 'left' }}>
-          <summary style={{ cursor: 'pointer', fontSize: 12.5, color: 'var(--dim)', fontWeight: 600 }}>
+          <summary style={{ cursor: 'pointer', fontSize: 12, color: 'var(--dim)', fontWeight: 600 }}>
             View technical details
           </summary>
           <pre
             className="mono"
             style={{
-              marginTop: 8, padding: 12, fontSize: 13, lineHeight: 1.5,
+              marginTop: 8, padding: 12, fontSize: 12.5, lineHeight: 1.5,
               background: 'var(--surface-2)', border: '1px solid var(--line)',
               borderRadius: 'var(--r-sm)', overflowX: 'auto', color: 'var(--muted)', whiteSpace: 'pre-wrap',
             }}

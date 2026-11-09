@@ -162,8 +162,8 @@ export default function Navbar() {
                     {MORE.map((l) => (
                       <Link key={l.href} href={l.href} className="menu-item" role="menuitem" style={{ alignItems: 'flex-start' }}>
                         <span style={{ display: 'block', minWidth: 0 }}>
-                          <span style={{ display: 'block', fontWeight: 700, color: 'var(--ink)', fontSize: 14 }}>{l.label}</span>
-                          <span style={{ display: 'block', fontSize: 12.5, color: 'var(--muted)', marginTop: 1 }}>{l.desc}</span>
+                          <span style={{ display: 'block', fontWeight: 700, color: 'var(--ink)', fontSize: 13.5 }}>{l.label}</span>
+                          <span style={{ display: 'block', fontSize: 12, color: 'var(--muted)', marginTop: 1 }}>{l.desc}</span>
                         </span>
                       </Link>
                     ))}
@@ -202,7 +202,7 @@ export default function Navbar() {
                       }}
                     >
                       <Avatar name={displayName} size={28} />
-                      <span style={{ fontSize: 13.5, fontWeight: 600, color: 'var(--ink)', maxWidth: 110, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <span style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--ink)', maxWidth: 110, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {user.firstname || 'Account'}
                       </span>
                       <Icons.ChevronDown size={14} />
@@ -211,10 +211,10 @@ export default function Navbar() {
                     {accountOpen && (
                       <div className="menu" role="menu" style={{ position: 'absolute', top: 'calc(100% + 8px)', right: 0, width: 240, zIndex: 60 }}>
                         <div style={{ padding: '10px 12px 12px', borderBottom: '1px solid var(--line-soft)', marginBottom: 6 }}>
-                          <p style={{ margin: 0, fontWeight: 700, fontSize: 13, color: 'var(--ink)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          <p style={{ margin: 0, fontWeight: 700, fontSize: 12.5, color: 'var(--ink)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                             {displayName}
                           </p>
-                          <p style={{ margin: '1px 0 0', fontSize: 11.5, color: 'var(--muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          <p style={{ margin: '1px 0 0', fontSize: 11, color: 'var(--muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                             {user.email}
                           </p>
                         </div>

@@ -64,7 +64,7 @@ export default function DeviceCard({
         </span>
 
         <div style={{ minWidth: 0, flex: 1 }}>
-          <p style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: 16.5, fontWeight: 700, letterSpacing: '-0.01em' }}>
+          <p style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 700, letterSpacing: '-0.01em' }}>
             {formatPhone(number)}
           </p>
           <div style={{ marginTop: 5 }}>
@@ -77,11 +77,11 @@ export default function DeviceCard({
         </div>
       </div>
 
-      <dl style={{ margin: 0, display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '7px 12px', fontSize: 13.5 }}>
+      <dl style={{ margin: 0, display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '7px 12px', fontSize: 12.5 }}>
         <dt style={{ color: 'var(--muted)' }}>Bot</dt>
         <dd style={{ margin: 0, justifySelf: 'end' }}>
           {resolving ? (
-            <span style={{ color: 'var(--dim)', fontSize: 13.5 }}>Checking…</span>
+            <span style={{ color: 'var(--dim)', fontSize: 12.5 }}>Checking…</span>
           ) : (
             <BotMark name={botName} image={botImage} compact />
           )}

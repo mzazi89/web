@@ -159,7 +159,7 @@ function VpsInner() {
   return (
     <div className="page-shell">
       {/* ── Page header ── */}
-      <div className="mb-8">
+      <div className="mb-5">
         <p className="eyebrow">MZAZI TECH · VPS</p>
         <h1 className="display mt-2" style={{ color: 'var(--ink)' }}>VPS Servers</h1>
         <p className="lede mt-3" style={{ maxWidth: 620 }}>
@@ -169,7 +169,7 @@ function VpsInner() {
       </div>
 
       {notice && (
-        <div className={`mb-6 px-4 py-3 text-sm`} style={{ borderRadius: 8, background: notice.type === 'success' ? 'var(--good-a08)' : 'var(--bad-a08)', border: `1px solid ${notice.type === 'success' ? 'var(--good-a35)' : 'var(--bad-a35)'}`, color: notice.type === 'success' ? 'var(--good)' : 'var(--bad)' }}>
+        <div className={`mb-4 px-4 py-3 text-sm`} style={{ borderRadius: 8, background: notice.type === 'success' ? 'var(--good-a08)' : 'var(--bad-a08)', border: `1px solid ${notice.type === 'success' ? 'var(--good-a35)' : 'var(--bad-a35)'}`, color: notice.type === 'success' ? 'var(--good)' : 'var(--bad)' }}>
           {notice.text}
         </div>
       )}
@@ -177,11 +177,11 @@ function VpsInner() {
       {loading ? (
         <div className="min-h-[30vh] flex items-center justify-center"><div className="spinner" /></div>
       ) : packages.length === 0 ? (
-        <div className="card p-8 text-center">
+        <div className="card p-5 text-center">
           <p className="text-sm" style={{ color: 'var(--muted)' }}>No VPS packages available right now — check back soon.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
           {packages.map((p) => (
             <div key={p.id} className="card p-6 flex flex-col">
               <div className="flex items-start justify-between gap-3">
@@ -224,9 +224,9 @@ function VpsInner() {
 
       {/* ── Revealed credentials (callback / after success) ── */}
       {vps && (
-        <div className="card mt-8 p-6" style={{ border: '1px solid var(--good-a35)' }}>
+        <div className="card mt-5 p-6" style={{ border: '1px solid var(--good-a35)' }}>
           <div className="flex items-center gap-3 mb-4">
-            <span style={{ fontSize: 22 }}>🖥️</span>
+            <span style={{ fontSize: 17 }}>🖥️</span>
             <div>
               <h2 className="text-base font-bold" style={{ color: 'var(--ink)' }}>Your VPS is live</h2>
               <p className="mono text-[10px] uppercase tracking-wider mt-0.5" style={{ color: 'var(--dim)' }}>{vps.package_name} · {vps.host}</p>
@@ -245,18 +245,18 @@ function VpsInner() {
             ].filter((f) => f.v).map((f) => (
               <div key={f.k} className="px-3.5 py-2.5 flex items-center justify-between gap-3" style={{ background: 'var(--good-a04)', border: '1px solid var(--good-a15)', borderRadius: 9 }}>
                 <div className="flex items-center gap-2.5 min-w-0">
-                  <span style={{ fontSize: 15, flexShrink: 0 }}>{f.icon}</span>
+                  <span style={{ fontSize: 14, flexShrink: 0 }}>{f.icon}</span>
                   <div className="min-w-0">
                     <div className="mono text-[9px] tracking-[0.14em]" style={{ color: 'var(--dim)' }}>{f.k}</div>
                     <div className="mt-0.5 mono text-[13px] truncate" style={{ color: 'var(--ink)' }}>{f.v}</div>
                   </div>
                 </div>
                 {f.k === 'PASSWORD' ? (
-                  <button onClick={() => setShowPass(!showPass)} className="btn" style={{ fontSize: 12, padding: '4px 9px', flexShrink: 0 }} title="Show / hide">
+                  <button onClick={() => setShowPass(!showPass)} className="btn" style={{ fontSize: 11.5, padding: '4px 9px', flexShrink: 0 }} title="Show / hide">
                     {showPass ? 'Hide' : 'Show'}
                   </button>
                 ) : f.copy ? (
-                  <button onClick={() => copyText(f.raw || f.v)} className="btn" style={{ fontSize: 12, padding: '4px 9px', flexShrink: 0 }} title="Copy">Copy</button>
+                  <button onClick={() => copyText(f.raw || f.v)} className="btn" style={{ fontSize: 11.5, padding: '4px 9px', flexShrink: 0 }} title="Copy">Copy</button>
                 ) : null}
               </div>
             ))}
@@ -277,13 +277,13 @@ function VpsInner() {
               {/* header */}
               <div className="flex items-start justify-between mb-4">
                 <div>
-                  <p className="eyebrow" style={{ fontSize: 12 }}>Checkout</p>
+                  <p className="eyebrow" style={{ fontSize: 11.5 }}>Checkout</p>
                   <h3 className="text-base font-bold mt-1" style={{ color: 'var(--ink)' }}>{pkg.name}</h3>
                   <p className="mono text-[10px] uppercase tracking-wider mt-0.5" style={{ color: 'var(--dim)' }}>
                     {fmtKes(pkg.price)} · credentials revealed after payment
                   </p>
                 </div>
-                <button onClick={() => !paying && closeModal()} className="btn" style={{ fontSize: 14, padding: '2px 8px', background: 'transparent', borderColor: 'transparent', color: 'var(--muted)' }}>✕</button>
+                <button onClick={() => !paying && closeModal()} className="btn" style={{ fontSize: 13.5, padding: '2px 8px', background: 'transparent', borderColor: 'transparent', color: 'var(--muted)' }}>✕</button>
               </div>
 
               {step === 'method' && (
@@ -294,12 +294,12 @@ function VpsInner() {
                       <button key={m.id} onClick={() => setMethod(m.id)}
                         className="flex items-center gap-3 px-3.5 py-3 text-left w-full"
                         style={{ borderRadius: 10, border: `1.5px solid ${method === m.id ? 'var(--brand)' : 'rgba(233,231,226,0.12)'}`, background: method === m.id ? 'var(--brand-a06)' : 'transparent', cursor: 'pointer', transition: 'all 0.15s' }}>
-                        <span style={{ fontSize: 20 }}>{m.icon}</span>
+                        <span style={{ fontSize: 16 }}>{m.icon}</span>
                         <span className="flex-1">
                           <span className="block text-sm font-semibold" style={{ color: 'var(--ink)' }}>{m.label}</span>
                           <span className="block text-[11px]" style={{ color: 'var(--muted)' }}>{m.hint}</span>
                         </span>
-                        <span style={{ color: method === m.id ? 'var(--brand)' : 'var(--line)', fontSize: 16 }}>●</span>
+                        <span style={{ color: method === m.id ? 'var(--brand)' : 'var(--line)', fontSize: 14.5 }}>●</span>
                       </button>
                     ))}
                   </div>
@@ -346,7 +346,7 @@ function VpsInner() {
                     ⏱ {mm(Math.floor(secondsLeft / 60))}:{mm(secondsLeft % 60)}
                   </p>
                   {error && <p className="text-xs mt-3" style={{ color: 'var(--bad)' }}>{error}</p>}
-                  <button onClick={() => { setRef(null); setStep('method'); setError(''); }} className="btn mt-5" style={{ fontSize: 13 }}>← Cancel</button>
+                  <button onClick={() => { setRef(null); setStep('method'); setError(''); }} className="btn mt-5" style={{ fontSize: 12.5 }}>← Cancel</button>
                 </div>
               )}
             </div>

@@ -90,7 +90,7 @@ export default function HelpPage() {
 
   return (
     <AppBackground variant="dashboard">
-      <div className="container-site" style={{ paddingTop: 26, paddingBottom: 90, maxWidth: 900 }}>
+      <div className="container-site" style={{ paddingTop: 19, paddingBottom: 24, maxWidth: 900 }}>
         <PageHeader
           title="Help & support"
           description="Quick answers about pairing, device limits and billing — and a direct line to our team."
@@ -104,7 +104,7 @@ export default function HelpPage() {
         />
 
         {/* ── FAQ ── */}
-        <Card className="anim-fade-up" style={{ marginBottom: 22 }}>
+        <Card className="anim-fade-up" style={{ marginBottom: 16 }}>
           <CardHeader
             title="Frequently asked questions"
             description="Tap a question to expand it."
@@ -120,14 +120,14 @@ export default function HelpPage() {
                 <summary
                   style={{
                     cursor: 'pointer', fontWeight: 700, color: 'var(--ink)',
-                    fontSize: 14.5, listStyle: 'none', display: 'flex',
+                    fontSize: 13.5, listStyle: 'none', display: 'flex',
                     alignItems: 'center', gap: 10, minHeight: 24,
                   }}
                 >
                   <Icons.ChevronRight size={15} />
                   {item.q}
                 </summary>
-                <p style={{ margin: '10px 0 2px 25px', color: 'var(--muted)', fontSize: 14, lineHeight: 1.7 }}>
+                <p style={{ margin: '10px 0 2px 18px', color: 'var(--muted)', fontSize: 13.5, lineHeight: 1.7 }}>
                   {item.a}
                 </p>
               </details>
@@ -136,7 +136,7 @@ export default function HelpPage() {
         </Card>
 
         {/* ── Support form ── */}
-        <Card className="anim-fade-up d1" style={{ marginBottom: 22 }}>
+        <Card className="anim-fade-up d1" style={{ marginBottom: 16 }}>
           <CardHeader
             title="Still stuck? Send us a message"
             description="Tell us what happened and we’ll reply within about 2 hours."

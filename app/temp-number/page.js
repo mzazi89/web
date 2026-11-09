@@ -104,11 +104,11 @@ export default function TempNumberPage() {
 
   return (
     <div style={{ backgroundColor: 'var(--page-tint)', minHeight: '70vh' }}>
-      <section className="relative overflow-hidden" style={{ paddingTop: 64, paddingBottom: 40 }}>
+      <section className="relative overflow-hidden" style={{ paddingTop: 24, paddingBottom: 24 }}>
         <div className="container-site relative">
           <div className="max-w-3xl">
             <Link href="/api" className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: 'var(--muted)', textDecoration: 'none' }}>← Back to API</Link>
-            <p className="eyebrow mt-8">SMS inbox</p>
+            <p className="eyebrow mt-5">SMS inbox</p>
             <h1 className="headline mt-4" style={{ fontSize: 'clamp(2rem, 4.4vw, 3.2rem)' }}>
               Temporary phone numbers<span className="accent">.</span>
             </h1>
@@ -119,10 +119,10 @@ export default function TempNumberPage() {
         </div>
       </section>
 
-      <section className="section" style={{ paddingTop: 24, paddingBottom: 110 }}>
+      <section className="section" style={{ paddingTop: 17, paddingBottom: 24 }}>
         <div className="container-site max-w-6xl">
           {/* Setup */}
-          <div className="card card-pad mb-6 grid grid-cols-1 lg:grid-cols-12 gap-4 items-end">
+          <div className="card card-pad mb-4 grid grid-cols-1 lg:grid-cols-12 gap-4 items-end">
             <div className="lg:col-span-4">
               <label className="label">Provider</label>
               <select value={provider} onChange={e => { setProvider(e.target.value); setNumbers(null); setSelected(null); setMessages(null); }} className="input">
@@ -145,7 +145,7 @@ export default function TempNumberPage() {
           </div>
 
           {status && (
-            <div className="mb-6 px-4 py-3 text-sm" style={{
+            <div className="mb-4 px-4 py-3 text-sm" style={{
               background: status.type === 'success' ? 'var(--good-a06)' : 'var(--bad-a08)',
               border: `1px solid ${status.type === 'success' ? 'var(--good-a35)' : 'var(--bad-a35)'}`,
               color: status.type === 'success' ? 'var(--good)' : 'var(--bad)',
@@ -155,7 +155,7 @@ export default function TempNumberPage() {
           )}
 
           {/* Numbers + inbox */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* Numbers */}
             <div className="card overflow-hidden">
               <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid var(--line-soft)' }}>
@@ -165,13 +165,13 @@ export default function TempNumberPage() {
 
               <div className="p-4">
                 {loadingNumbers ? (
-                  <p className="text-sm py-10 text-center" style={{ color: 'var(--muted)' }}>Loading numbers…</p>
+                  <p className="text-sm py-6 text-center" style={{ color: 'var(--muted)' }}>Loading numbers…</p>
                 ) : numbers === null ? (
-                  <p className="text-sm py-10 text-center" style={{ color: 'var(--muted)' }}>
+                  <p className="text-sm py-6 text-center" style={{ color: 'var(--muted)' }}>
                     Click <strong style={{ color: 'var(--brand)' }}>Get numbers</strong> to see available virtual numbers.
                   </p>
                 ) : numbers.length === 0 ? (
-                  <div className="py-10 text-center">
+                  <div className="py-6 text-center">
                     <InboxIcon />
                     <p className="text-sm mt-4" style={{ color: 'var(--muted)' }}>
                       No numbers available from this provider right now. Try another provider.
@@ -222,11 +222,11 @@ export default function TempNumberPage() {
 
               <div className="p-4">
                 {!selected ? (
-                  <p className="text-sm py-10 text-center" style={{ color: 'var(--muted)' }}>Select a number to read its messages.</p>
+                  <p className="text-sm py-6 text-center" style={{ color: 'var(--muted)' }}>Select a number to read its messages.</p>
                 ) : (
                   <>
                     <div className="flex flex-wrap gap-3 mb-4">
-                      <button onClick={() => fetchMessages()} disabled={loadingMsgs} className="btn btn-primary" style={{ padding: '11px 18px', fontSize: 12.5, opacity: loadingMsgs ? 0.6 : 1, cursor: loadingMsgs ? 'not-allowed' : 'pointer' }}>
+                      <button onClick={() => fetchMessages()} disabled={loadingMsgs} className="btn btn-primary" style={{ padding: '11px 18px', fontSize: 12, opacity: loadingMsgs ? 0.6 : 1, cursor: loadingMsgs ? 'not-allowed' : 'pointer' }}>
                         {loadingMsgs ? 'Checking…' : 'Check messages'}
                       </button>
                       <label className="flex items-center gap-2 text-xs cursor-pointer" style={{ color: 'var(--ink-2)' }}>
@@ -236,11 +236,11 @@ export default function TempNumberPage() {
                     </div>
 
                     {loadingMsgs ? (
-                      <p className="text-sm py-8 text-center" style={{ color: 'var(--muted)' }}>Checking inbox…</p>
+                      <p className="text-sm py-6 text-center" style={{ color: 'var(--muted)' }}>Checking inbox…</p>
                     ) : messages === null ? (
-                      <p className="text-sm py-8 text-center" style={{ color: 'var(--muted)' }}>Press Check messages to read SMS for this number.</p>
+                      <p className="text-sm py-6 text-center" style={{ color: 'var(--muted)' }}>Press Check messages to read SMS for this number.</p>
                     ) : messages.length === 0 ? (
-                      <div className="py-10 text-center">
+                      <div className="py-6 text-center">
                         <InboxIcon />
                         <p className="text-sm mt-4" style={{ color: 'var(--muted)' }}>
                           No messages yet. Send an SMS to this number — {auto ? 'we&apos;re watching for it automatically.' : 'then press refresh.'}
@@ -268,11 +268,11 @@ export default function TempNumberPage() {
           </div>
 
           {/* How it works */}
-          <div className="card card-pad mt-6">
-            <div className="grid lg:grid-cols-12 gap-8">
+          <div className="card card-pad mt-4">
+            <div className="grid lg:grid-cols-12 gap-4">
               <div className="lg:col-span-4">
                 <p className="eyebrow">Workflow</p>
-                <h2 className="section-title text-xl mt-3" style={{ color: 'var(--ink)' }}>How it works<span className="bar" /></h2>
+                <h2 className="section-title text-lg mt-3" style={{ color: 'var(--ink)' }}>How it works<span className="bar" /></h2>
               </div>
               <div className="lg:col-span-8">
                 <div className="space-y-4">
@@ -281,13 +281,13 @@ export default function TempNumberPage() {
                     { n: '02', text: <>Select a number and click <strong style={{ color: 'var(--ink)' }}>Check messages</strong> to read its SMS. Turn on auto-refresh to watch for new messages.</> },
                     { n: '03', text: <>Use the number anywhere for verification — OTPs and SMS land right here on this page.</> },
                   ].map(s => (
-                    <div key={s.n} className="flex gap-5">
+                    <div key={s.n} className="flex gap-4">
                       <span className="mono text-[11px] font-semibold flex-shrink-0" style={{ color: 'var(--brand)', paddingTop: 2 }}>/{s.n}</span>
                       <p className="text-sm leading-relaxed" style={{ color: 'var(--muted)' }}>{s.text}</p>
                     </div>
                   ))}
                 </div>
-                <p className="mono text-[10px] uppercase tracking-[0.12em] mt-6" style={{ color: 'var(--dim)' }}>
+                <p className="mono text-[10px] uppercase tracking-[0.12em] mt-4" style={{ color: 'var(--dim)' }}>
                   Powered by the MZAZI API TempNumber endpoints. Availability and providers vary by region and time.
                 </p>
               </div>

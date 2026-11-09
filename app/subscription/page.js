@@ -152,7 +152,7 @@ function SubscriptionInner() {
 
   return (
     <AppBackground variant="dashboard">
-      <div className="container-site" style={{ paddingTop: 26, paddingBottom: 90, maxWidth: 1120 }}>
+      <div className="container-site" style={{ paddingTop: 19, paddingBottom: 24, maxWidth: 1120 }}>
         <PageHeader
           title="Subscription"
           description="Your WhatsApp bot plan — how many numbers it covers, when it renews, and how to move up."
@@ -181,16 +181,16 @@ function SubscriptionInner() {
         {state === 'ready' && (
           <>
             {/* ── Current plan ── */}
-            <Card accent className="anim-fade-up" style={{ marginBottom: 22 }}>
+            <Card accent className="anim-fade-up" style={{ marginBottom: 16 }}>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <div style={{ minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-                    <h2 style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: '1.4rem', fontWeight: 700 }}>
+                    <h2 style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: '1.15rem', fontWeight: 700 }}>
                       {planLabel(currentKey)}
                     </h2>
                     <Badge tone="brand">Current plan</Badge>
                   </div>
-                  <p style={{ margin: '8px 0 0', color: 'var(--muted)', fontSize: 14 }}>
+                  <p style={{ margin: '8px 0 0', color: 'var(--muted)', fontSize: 13.5 }}>
                     {data?.maxDevices >= 999 ? 'Unlimited devices' : `${data?.maxDevices ?? 1} device${(data?.maxDevices ?? 1) === 1 ? '' : 's'} allowed`}
                     {' · '}
                     {endDate ? `expires ${new Date(endDate).toLocaleDateString()}` : 'Never expires'}
@@ -201,7 +201,7 @@ function SubscriptionInner() {
             </Card>
 
             {/* ── Wallet + feedback ── */}
-            <div className="grid-2-responsive" style={{ marginBottom: 22 }}>
+            <div className="grid-2-responsive" style={{ marginBottom: 16 }}>
               <StatCard
                 label="Wallet balance"
                 value={balance === null ? '—' : fmtKes(balance)}
@@ -210,7 +210,7 @@ function SubscriptionInner() {
                 tone="brand"
               />
               <Card style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 10 }}>
-                <p style={{ margin: 0, fontSize: 13.5, color: 'var(--muted)' }}>
+                <p style={{ margin: 0, fontSize: 12.5, color: 'var(--muted)' }}>
                   Not sure the balance covers a plan? Add money first — you only pay when you upgrade.
                 </p>
                 <Button href="/wallet" variant="ghost" icon={<Icons.Plus size={16} />}>Add money</Button>
@@ -218,7 +218,7 @@ function SubscriptionInner() {
             </div>
 
             {after && (
-              <div style={{ marginBottom: 22 }} role="status" aria-live="polite">
+              <div style={{ marginBottom: 16 }} role="status" aria-live="polite">
                 <Alert kind={after.kind} title={after.title}>
                   {after.text}
                   {after.topUp && (
@@ -231,7 +231,7 @@ function SubscriptionInner() {
             )}
 
             {/* ── Plan grid ── */}
-            <h2 className="section-title" style={{ fontSize: '1.2rem', margin: '0 0 16px' }}>Choose your plan</h2>
+            <h2 className="section-title" style={{ fontSize: '1rem', margin: '0 0 16px' }}>Choose your plan</h2>
             <div className="grid-cards">
               {cards.map((card) => {
                 const current = card.key === currentKey;
@@ -248,7 +248,7 @@ function SubscriptionInner() {
                       onSelect={() => selectCard(card)}
                     />
                     {low && (
-                      <p style={{ margin: '8px 2px 0', fontSize: 12.5, color: 'var(--warn)', fontWeight: 600 }}>
+                      <p style={{ margin: '8px 2px 0', fontSize: 12, color: 'var(--warn)', fontWeight: 600 }}>
                         Your balance ({fmtKes(balance)}) is below this plan — top up first.
                       </p>
                     )}
@@ -258,7 +258,7 @@ function SubscriptionInner() {
             </div>
 
             {/* ── Explainer ── */}
-            <Card style={{ marginTop: 26 }}>
+            <Card style={{ marginTop: 19 }}>
               <CardHeader
                 title="Need more devices?"
                 description="Every plan is measured in WhatsApp numbers, not seats. Upgrading applies instantly and the extra slots are usable right away."

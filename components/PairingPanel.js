@@ -44,7 +44,7 @@ function PairStatus({ phase, connected }) {
   if (phase === 'done') {
     if (connected) {
       return (
-        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: 13.5, fontWeight: 700, color: 'var(--good)' }} role="status" aria-live="polite">
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: 12.5, fontWeight: 700, color: 'var(--good)' }} role="status" aria-live="polite">
           <Icons.CheckCircle size={16} /> Connected
         </span>
       );
@@ -53,7 +53,7 @@ function PairStatus({ phase, connected }) {
   }
   if (phase === 'error') {
     return (
-      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: 13.5, fontWeight: 700, color: 'var(--bad)' }} role="status" aria-live="polite">
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: 12.5, fontWeight: 700, color: 'var(--bad)' }} role="status" aria-live="polite">
         <Icons.AlertCircle size={16} /> Failed
       </span>
     );
@@ -377,7 +377,7 @@ export default function PairingPanel({ kind = 'quartz' }) {
           : 0;
 
   return (
-    <div style={{ display: 'grid', gap: 22, gridTemplateColumns: 'minmax(0, 1fr)' }}>
+    <div style={{ display: 'grid', gap: 16, gridTemplateColumns: 'minmax(0, 1fr)' }}>
       {/* ── Which bot this page pairs into ── */}
       <div
         style={{
@@ -389,7 +389,7 @@ export default function PairingPanel({ kind = 'quartz' }) {
         <BotMark name={config.name} size={44} />
         <div style={{ minWidth: 0, flex: '1 1 220px' }}>
           <p style={{ margin: 0, fontWeight: 700, color: 'var(--ink)' }}>{config.name}</p>
-          <p style={{ margin: '2px 0 0', fontSize: 13, color: 'var(--muted)' }}>
+          <p style={{ margin: '2px 0 0', fontSize: 12.5, color: 'var(--muted)' }}>
             {kind === 'mzazi'
               ? 'Advanced automation — workflows, scheduled tasks and multi-group broadcast.'
               : 'Everyday automation — group tools, downloads, stickers and 100+ commands.'}
@@ -398,7 +398,7 @@ export default function PairingPanel({ kind = 'quartz' }) {
         {(mine || (singleBot ? bots[0] : null)) && (() => {
           const b = mine || bots[0];
           return (
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, marginLeft: 'auto', fontSize: 12.5, fontWeight: 600, color: b.online ? 'var(--good)' : 'var(--dim)' }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, marginLeft: 'auto', fontSize: 12, fontWeight: 600, color: b.online ? 'var(--good)' : 'var(--dim)' }}>
               <span className={`dot ${b.online ? 'dot-online' : 'dot-offline'}`} aria-hidden="true" />
               {b.online ? 'Online' : b.known ? 'Offline' : 'Never seen'}
             </span>
@@ -496,7 +496,7 @@ export default function PairingPanel({ kind = 'quartz' }) {
           <div style={{ textAlign: 'center', padding: '18px 0' }} role="status" aria-live="polite">
             <span className="spinner" style={{ margin: '0 auto 14px' }} />
             <p style={{ margin: 0, fontWeight: 700, color: 'var(--ink)' }} className="anim-pulse">Generating pairing code…</p>
-            <p style={{ margin: '6px 0 0', color: 'var(--muted)', fontSize: 13.5 }}>Asking {config.name} for a fresh code.</p>
+            <p style={{ margin: '6px 0 0', color: 'var(--muted)', fontSize: 12.5 }}>Asking {config.name} for a fresh code.</p>
           </div>
         )}
 
@@ -512,7 +512,7 @@ export default function PairingPanel({ kind = 'quartz' }) {
               ].map((s, i) => (
                 <li key={s} style={{ display: 'flex', gap: 12 }}>
                   <span className="step-num" aria-hidden="true" style={{ background: 'var(--brand-tint)', color: 'var(--brand)' }}>{i + 1}</span>
-                  <span style={{ fontSize: 14, color: 'var(--ink-2)', lineHeight: 1.6 }}>{s}</span>
+                  <span style={{ fontSize: 13.5, color: 'var(--ink-2)', lineHeight: 1.6 }}>{s}</span>
                 </li>
               ))}
             </ol>
@@ -550,7 +550,7 @@ export default function PairingPanel({ kind = 'quartz' }) {
                 </Button>
               </div>
               {copied && (
-                <p style={{ margin: '8px 0 0', fontSize: 12.5, color: 'var(--good)' }} role="status" aria-live="polite">
+                <p style={{ margin: '8px 0 0', fontSize: 12, color: 'var(--good)' }} role="status" aria-live="polite">
                   Copied to your clipboard.
                 </p>
               )}
@@ -581,7 +581,7 @@ export default function PairingPanel({ kind = 'quartz' }) {
           action={<Badge tone="brand">{planLabel(plan)}</Badge>}
         />
         {!unlimited && <ProgressBar value={stepsPct} />}
-        <p style={{ margin: '10px 0 0', fontSize: 13.5, color: 'var(--muted)' }}>
+        <p style={{ margin: '10px 0 0', fontSize: 12.5, color: 'var(--muted)' }}>
           {data?.endDate ? `Plan expires ${new Date(data.endDate).toLocaleDateString()}.` : 'Free plan — never expires.'}
         </p>
 
@@ -602,10 +602,10 @@ export default function PairingPanel({ kind = 'quartz' }) {
                   <p style={{ margin: 0, fontWeight: 700, color: 'var(--ink)' }}>{planLabel(p.key)}</p>
                   {isCurrent && <Badge tone="brand">Current</Badge>}
                 </div>
-                <p className="stat-num tnum" style={{ margin: 0, fontSize: '1.3rem', color: isCurrent ? 'var(--brand)' : 'var(--good)' }}>
+                <p className="stat-num tnum" style={{ margin: 0, fontSize: '1.05rem', color: isCurrent ? 'var(--brand)' : 'var(--good)' }}>
                   {fmtKes(p.priceKsh)}
                 </p>
-                <p style={{ margin: 0, fontSize: 13, color: 'var(--dim)' }}>
+                <p style={{ margin: 0, fontSize: 12.5, color: 'var(--dim)' }}>
                   {p.maxDevices >= 999 ? 'Unlimited devices' : `${p.maxDevices} devices`} · {p.days} days
                 </p>
                 {isCurrent ? (
@@ -620,7 +620,7 @@ export default function PairingPanel({ kind = 'quartz' }) {
           })}
         </div>
 
-        <p style={{ margin: '14px 0 0', fontSize: 13.5, color: 'var(--muted)' }}>
+        <p style={{ margin: '14px 0 0', fontSize: 12.5, color: 'var(--muted)' }}>
           Paid from your wallet balance. Need more funds?{' '}
           <Link className="link" href="/wallet">Deposit now</Link>
         </p>
@@ -663,7 +663,7 @@ export default function PairingPanel({ kind = 'quartz' }) {
                     <Badge tone="good" dot>Active</Badge>
                     {d.bot && <Badge tone="blue">{botName(d.bot)}</Badge>}
                   </div>
-                  <p className="mono" style={{ margin: '4px 0 0', fontSize: 12.5, color: 'var(--dim)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                  <p className="mono" style={{ margin: '4px 0 0', fontSize: 12, color: 'var(--dim)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                     {d.connectedAt ? `linked ${new Date(d.connectedAt).toLocaleDateString()}` : 'linked'}
                   </p>
                 </div>

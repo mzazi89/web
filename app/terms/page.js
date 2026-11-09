@@ -40,11 +40,11 @@ export const metadata = {
 export default function TermsPage() {
   return (
     <div style={{ backgroundColor: 'var(--page-tint)', minHeight: '70vh' }}>
-      <section className="relative overflow-hidden" style={{ paddingTop: 64, paddingBottom: 40 }}>
+      <section className="relative overflow-hidden" style={{ paddingTop: 24, paddingBottom: 24 }}>
         <div className="container-site relative">
           <div className="max-w-3xl">
             <Link href="/" className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: 'var(--muted)', textDecoration: 'none' }}>← Back to home</Link>
-            <p className="eyebrow mt-8">Legal</p>
+            <p className="eyebrow mt-5">Legal</p>
             <h1 className="headline mt-4" style={{ fontSize: 'clamp(2rem, 4.4vw, 3.2rem)' }}>
               Terms of service<span className="accent">.</span>
             </h1>
@@ -55,9 +55,9 @@ export default function TermsPage() {
         </div>
       </section>
 
-      <section className="section" style={{ paddingTop: 24, paddingBottom: 110 }}>
+      <section className="section" style={{ paddingTop: 17, paddingBottom: 24 }}>
         <div className="container-site max-w-6xl">
-          <div className="grid lg:grid-cols-12 gap-10">
+          <div className="grid lg:grid-cols-12 gap-4">
             {/* TOC */}
             <aside className="lg:col-span-3">
               <div className="card p-5 lg:sticky lg:top-32">
@@ -77,11 +77,11 @@ export default function TermsPage() {
             {/* Body */}
             <div className="lg:col-span-9">
               {SECTIONS.map((s, i) => (
-                <section key={s.id} id={s.id} className="scroll-mt-32" style={{ padding: '26px 8px', borderTop: i === 0 ? 'none' : '1px solid var(--line-soft)' }}>
+                <section key={s.id} id={s.id} className="scroll-mt-32" style={{ padding: '19px 8px', borderTop: i === 0 ? 'none' : '1px solid var(--line-soft)' }}>
                   <div className="grid sm:grid-cols-12 gap-4">
                     <span className="mono text-[11px] sm:col-span-2" style={{ color: 'var(--brand)', paddingTop: 3 }}>{String(i + 1).padStart(2, '0')}</span>
                     <div className="sm:col-span-10">
-                      <h2 className="section-title text-xl mb-3" style={{ color: 'var(--ink)' }}>{s.title.replace(/^\d+\.\s/, '')}</h2>
+                      <h2 className="section-title text-lg mb-3" style={{ color: 'var(--ink)' }}>{s.title.replace(/^\d+\.\s/, '')}</h2>
                       <div className="text-sm leading-relaxed space-y-3" style={{ color: 'var(--ink-2)' }}>{s.body}</div>
                     </div>
                   </div>

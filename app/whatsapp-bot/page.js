@@ -107,7 +107,7 @@ function TelegramButton({ bot }) {
 export default function WhatsAppBotPage() {
   return (
     <AppBackground variant="dashboard">
-      <div className="container-site" style={{ paddingTop: 26, paddingBottom: 90, maxWidth: 1000 }}>
+      <div className="container-site" style={{ paddingTop: 19, paddingBottom: 24, maxWidth: 1000 }}>
         <PageHeader
           title="WhatsApp bot"
           description="Link your number through our Telegram bots, or pair directly here — no technical skills, one code and you’re online."
@@ -123,7 +123,7 @@ export default function WhatsAppBotPage() {
         />
 
         {/* ── Pair online ── */}
-        <section id="pair" className="scroll-x" style={{ marginBottom: 28, scrollMarginTop: 90 }}>
+        <section id="pair" className="scroll-x" style={{ marginBottom: 20, scrollMarginTop: 90 }}>
           <Card className="anim-fade-up">
             <CardHeader
               title="Pair a number"
@@ -143,7 +143,7 @@ export default function WhatsAppBotPage() {
                   <BotMark name={p.name} size={46} />
                   <div style={{ minWidth: 0 }}>
                     <p style={{ margin: 0, fontWeight: 700, color: 'var(--ink)' }}>{p.name}</p>
-                    <p style={{ margin: '4px 0 0', fontSize: 13.5, color: 'var(--muted)', lineHeight: 1.6 }}>{p.desc}</p>
+                    <p style={{ margin: '4px 0 0', fontSize: 12.5, color: 'var(--muted)', lineHeight: 1.6 }}>{p.desc}</p>
                   </div>
                   <Button href={p.href} variant="dark" size="sm" block icon={<Icons.Zap size={15} />} style={{ marginTop: 'auto' }}>
                     Pair {p.name}
@@ -155,7 +155,7 @@ export default function WhatsAppBotPage() {
         </section>
 
         {/* ── How it works ── */}
-        <Card className="anim-fade-up" style={{ marginBottom: 22 }}>
+        <Card className="anim-fade-up" style={{ marginBottom: 16 }}>
           <CardHeader
             title="How it works"
             description="Four steps, about two minutes."
@@ -166,8 +166,8 @@ export default function WhatsAppBotPage() {
               <div key={s.step} style={{ display: 'flex', gap: 14, padding: '14px 0', borderBottom: '1px solid var(--line-soft)' }}>
                 <span className="mono" style={{ color: 'var(--brand)', fontWeight: 700, flex: '0 0 auto' }}>/{s.step}</span>
                 <div style={{ minWidth: 0 }}>
-                  <h3 style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 700, color: 'var(--ink)' }}>{s.title}</h3>
-                  <p style={{ margin: '6px 0 0', fontSize: 13.5, color: 'var(--muted)', lineHeight: 1.65 }}>{s.desc}</p>
+                  <h3 style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: 14.5, fontWeight: 700, color: 'var(--ink)' }}>{s.title}</h3>
+                  <p style={{ margin: '6px 0 0', fontSize: 12.5, color: 'var(--muted)', lineHeight: 1.65 }}>{s.desc}</p>
                   {s.code && (
                     <div style={{ marginTop: 10 }}>
                       <span className="mono" style={{ display: 'inline-block', padding: '8px 12px', background: 'var(--surface-2)', border: '1px solid var(--line)', borderRadius: 'var(--r-sm)', color: 'var(--brand)', fontWeight: 600, wordBreak: 'break-all' }}>
@@ -187,13 +187,13 @@ export default function WhatsAppBotPage() {
         </Card>
 
         {/* ── Which bot ── */}
-        <Card id="bots" className="anim-fade-up d1" style={{ marginBottom: 22, scrollMarginTop: 90 }}>
+        <Card id="bots" className="anim-fade-up d1" style={{ marginBottom: 16, scrollMarginTop: 90 }}>
           <CardHeader
             title="Which bot should I use?"
             description="We run several bots so you can connect different WhatsApp numbers. One bot = one number."
             icon={<Icons.Bot size={18} />}
           />
-          <p style={{ margin: '0 0 14px', fontSize: 13.5, color: 'var(--muted)', lineHeight: 1.7 }}>
+          <p style={{ margin: '0 0 14px', fontSize: 12.5, color: 'var(--muted)', lineHeight: 1.7 }}>
             Start with <strong style={{ color: 'var(--brand)' }}>{BOTS[0].name}</strong>. Once you send{' '}
             <code className="mono" style={{ color: 'var(--brand)' }}>/pair</code> to a bot, keep using that same bot for that number.
           </p>
@@ -208,21 +208,21 @@ export default function WhatsAppBotPage() {
               </div>
             ))}
           </div>
-          <p style={{ margin: '14px 0 0', fontSize: 12.5, color: 'var(--dim)' }}>One bot = one WhatsApp number. Keep using the same bot.</p>
+          <p style={{ margin: '14px 0 0', fontSize: 12, color: 'var(--dim)' }}>One bot = one WhatsApp number. Keep using the same bot.</p>
         </Card>
 
         {/* ── Command reference ── */}
-        <Card className="anim-fade-up d2" style={{ marginBottom: 22 }}>
+        <Card className="anim-fade-up d2" style={{ marginBottom: 16 }}>
           <CardHeader title="Quick command reference" icon={<Icons.Command size={18} />} />
           <div className="grid-2-responsive">
             {COMMANDS.map((c) => (
               <div key={c.cmd} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, padding: '12px 14px', background: 'var(--surface-2)', border: '1px solid var(--line-soft)', borderRadius: 'var(--r-sm)' }}>
                 <code className="mono" style={{ fontWeight: 700, color: 'var(--brand)', wordBreak: 'break-all' }}>{c.cmd}</code>
-                <span style={{ fontSize: 12.5, color: 'var(--muted)', textAlign: 'right' }}>{c.desc}</span>
+                <span style={{ fontSize: 12, color: 'var(--muted)', textAlign: 'right' }}>{c.desc}</span>
               </div>
             ))}
           </div>
-          <p style={{ margin: '16px 0 0', fontSize: 13, color: 'var(--dim)', lineHeight: 1.7 }}>
+          <p style={{ margin: '16px 0 0', fontSize: 12.5, color: 'var(--dim)', lineHeight: 1.7 }}>
             International format: country code + number without leading 0 or + — KE 254712345678 · NG 2348012345678 · US 14155552671
           </p>
         </Card>
@@ -236,7 +236,7 @@ export default function WhatsAppBotPage() {
                 <span style={{ color: 'var(--good)', marginTop: 2, flex: '0 0 auto' }} aria-hidden="true"><Icons.Check size={16} /></span>
                 <div>
                   <p style={{ margin: 0, fontWeight: 700, color: 'var(--ink)' }}>{f.title}</p>
-                  <p style={{ margin: '3px 0 0', fontSize: 13.5, color: 'var(--muted)', lineHeight: 1.6 }}>{f.desc}</p>
+                  <p style={{ margin: '3px 0 0', fontSize: 12.5, color: 'var(--muted)', lineHeight: 1.6 }}>{f.desc}</p>
                 </div>
               </div>
             ))}
@@ -248,7 +248,7 @@ export default function WhatsAppBotPage() {
           </div>
         </Card>
 
-        <p style={{ margin: '22px 0 0', fontSize: 13.5, color: 'var(--dim)' }}>
+        <p style={{ margin: '16px 0 0', fontSize: 12.5, color: 'var(--dim)' }}>
           Prefer reading first? See the <Link className="link" href="/help">Help page</Link> or <Link className="link" href="/contact">contact us</Link>.
         </p>
       </div>

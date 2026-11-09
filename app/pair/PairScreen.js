@@ -30,7 +30,7 @@ export default function PairScreen({ kind = 'quartz' }) {
 
   return (
     <AppBackground variant="dashboard">
-      <div className="container-site" style={{ paddingTop: 26, paddingBottom: 90, maxWidth: 1000 }}>
+      <div className="container-site" style={{ paddingTop: 19, paddingBottom: 24, maxWidth: 1000 }}>
         <PageHeader
           title={m.title}
           description={m.description}
@@ -46,7 +46,7 @@ export default function PairScreen({ kind = 'quartz' }) {
           breadcrumb={['Dashboard', 'Pair', m.name]}
         />
 
-        <div style={{ marginBottom: 22 }}>
+        <div style={{ marginBottom: 16 }}>
           <PairingPanel kind={kind} />
         </div>
 
@@ -58,7 +58,7 @@ export default function PairScreen({ kind = 'quartz' }) {
           <BotMark name={m.otherName} size={40} />
           <div style={{ minWidth: 0, flex: 1 }}>
             <p style={{ margin: 0, fontWeight: 700, color: 'var(--ink)' }}>Not sure this is the right bot?</p>
-            <p style={{ margin: '3px 0 0', fontSize: 13.5, color: 'var(--muted)' }}>
+            <p style={{ margin: '3px 0 0', fontSize: 12.5, color: 'var(--muted)' }}>
               {kind === 'quartz'
                 ? 'MZAZI XMD adds automation workflows, scheduled tasks and multi-group broadcasting on top of QUARTZ XD.'
                 : 'QUARTZ XD is the lighter everyday bot — 100+ commands, group tools and media downloads.'}

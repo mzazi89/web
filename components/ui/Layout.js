@@ -18,7 +18,7 @@ export function PageHeader({ title, description, icon, actions, breadcrumb, clas
       <div style={{ minWidth: 0 }}>
         {breadcrumb && (
           <nav aria-label="Breadcrumb" style={{ marginBottom: 6 }}>
-            <ol style={{ display: 'flex', alignItems: 'center', gap: 4, listStyle: 'none', margin: 0, padding: 0, fontSize: 12.5, color: 'var(--dim)', flexWrap: 'wrap' }}>
+            <ol style={{ display: 'flex', alignItems: 'center', gap: 4, listStyle: 'none', margin: 0, padding: 0, fontSize: 12, color: 'var(--dim)', flexWrap: 'wrap' }}>
               {breadcrumb.map((b, i) => (
                 <li key={i} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                   {i > 0 && <ChevronRight size={13} />}
@@ -48,7 +48,7 @@ export function PageHeader({ title, description, icon, actions, breadcrumb, clas
           </h1>
         </div>
         {description && (
-          <p style={{ margin: '7px 0 0', color: 'var(--muted)', fontSize: 14.5, lineHeight: 1.6, maxWidth: 720 }}>
+          <p style={{ margin: '7px 0 0', color: 'var(--muted)', fontSize: 13.5, lineHeight: 1.6, maxWidth: 720 }}>
             {description}
           </p>
         )}
@@ -139,7 +139,7 @@ export function SearchInput({ value, onChange, placeholder = 'Search…', id = '
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        style={{ paddingLeft: 38 }}
+        style={{ paddingLeft: 24 }}
         aria-label={placeholder}
         {...rest}
       />
@@ -179,8 +179,8 @@ export function Toggle({ checked, onChange, label, id, description, disabled = f
       </button>
       {(label || description) && (
         <div style={{ minWidth: 0 }}>
-          {label && <label htmlFor={id} style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)', cursor: 'pointer' }}>{label}</label>}
-          {description && <p style={{ margin: '2px 0 0', fontSize: 12.5, color: 'var(--muted)' }}>{description}</p>}
+          {label && <label htmlFor={id} style={{ fontSize: 13.5, fontWeight: 600, color: 'var(--ink)', cursor: 'pointer' }}>{label}</label>}
+          {description && <p style={{ margin: '2px 0 0', fontSize: 12, color: 'var(--muted)' }}>{description}</p>}
         </div>
       )}
     </div>
@@ -213,7 +213,7 @@ export function ProgressBar({ value = 0, label, className = '' }) {
   return (
     <div className={className}>
       {label && (
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12.5, color: 'var(--muted)', marginBottom: 6, fontWeight: 600 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: 'var(--muted)', marginBottom: 6, fontWeight: 600 }}>
           <span>{label}</span><span className="tnum">{pct}%</span>
         </div>
       )}

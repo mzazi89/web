@@ -31,7 +31,7 @@ export default function SignInGate({
           </Button>
         }
       />
-      <p style={{ margin: '4px 0 0', textAlign: 'center', fontSize: 13, color: 'var(--dim)' }}>
+      <p style={{ margin: '4px 0 0', textAlign: 'center', fontSize: 12.5, color: 'var(--dim)' }}>
         <Link className="link" href="/whatsapp-bot">
           Or keep reading about how pairing works
         </Link>

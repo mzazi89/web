@@ -92,6 +92,18 @@ module.exports = {
         mono: ['IBM Plex Mono', 'ui-monospace', 'monospace'],
       },
 
+      fontSize: {
+        xs: ['0.6875rem', { lineHeight: '1.05rem' }],
+        sm: ['0.75rem', { lineHeight: '1.1rem' }],
+        base: ['0.8125rem', { lineHeight: '1.25rem' }],
+        lg: ['0.875rem', { lineHeight: '1.35rem' }],
+        xl: ['1rem', { lineHeight: '1.45rem' }],
+        '2xl': ['1.125rem', { lineHeight: '1.5rem' }],
+        '3xl': ['1.35rem', { lineHeight: '1.6rem' }],
+        '4xl': ['1.55rem', { lineHeight: '1.85rem' }],
+        '5xl': ['1.85rem', { lineHeight: '2.15rem' }],
+      },
+
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',

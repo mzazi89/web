@@ -208,7 +208,7 @@ export default function DashboardPage() {
   if (guest) {
     return (
       <AppBackground variant="dashboard">
-        <div className="container-site" style={{ paddingTop: 28, paddingBottom: 90, maxWidth: 1100 }}>
+        <div className="container-site" style={{ paddingTop: 20, paddingBottom: 24, maxWidth: 1100 }}>
           <SignInGate
             next="/dashboard"
             title="Sign in to see your dashboard"
@@ -222,7 +222,7 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <AppBackground variant="dashboard">
-        <div className="container-site" style={{ paddingTop: 28, paddingBottom: 90, maxWidth: 1100 }}>
+        <div className="container-site" style={{ paddingTop: 20, paddingBottom: 24, maxWidth: 1100 }}>
           <SkeletonText lines={2} />
           <div style={{ height: 20 }} />
           <SkeletonCards count={4} height={110} />
@@ -257,7 +257,7 @@ export default function DashboardPage() {
 
   return (
     <AppBackground variant="dashboard">
-      <div className="container-site" style={{ paddingTop: 26, paddingBottom: 90, maxWidth: 1100 }}>
+      <div className="container-site" style={{ paddingTop: 19, paddingBottom: 24, maxWidth: 1100 }}>
         <PageHeader
           title={<>Welcome back, {firstName} <span aria-hidden="true">👋</span></>}
           description={user?.email ? `Signed in as ${user.email}` : 'Your account at a glance.'}
@@ -280,20 +280,20 @@ export default function DashboardPage() {
         )}
 
         {/* ── Primary answer ── */}
-        <div className="grid-cards anim-fade-up" style={{ marginBottom: 22 }}>
+        <div className="grid-cards anim-fade-up" style={{ marginBottom: 16 }}>
           {facts.map((f) => (
             <StatCard key={f.label} label={f.label} value={f.value} hint={f.hint} icon={f.icon} tone={f.tone} />
           ))}
         </div>
 
         {/* ── Three actions ── */}
-        <div className="anim-fade-up d1" style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 22 }}>
+        <div className="anim-fade-up d1" style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 16 }}>
           <Button href="/devices" icon={<Icons.WhatsApp size={16} />}>Connect WhatsApp</Button>
           <Button href="/devices" variant="dark" icon={<Icons.Phone size={16} />}>Manage devices</Button>
           <Button href="/subscription" variant="ghost" icon={<Icons.Sparkles size={16} />}>Upgrade plan</Button>
         </div>
 
-        <div className="grid-2-responsive anim-fade-up d2" style={{ marginBottom: 26 }}>
+        <div className="grid-2-responsive anim-fade-up d2" style={{ marginBottom: 19 }}>
           {/* ── Devices preview ── */}
           <Card>
             <CardHeader
@@ -336,7 +336,7 @@ export default function DashboardPage() {
                   </div>
                 ))}
                 {deviceList.length > 3 && (
-                  <p style={{ margin: 0, fontSize: 12.5, color: 'var(--dim)' }}>+{deviceList.length - 3} more on the devices page.</p>
+                  <p style={{ margin: 0, fontSize: 12, color: 'var(--dim)' }}>+{deviceList.length - 3} more on the devices page.</p>
                 )}
               </div>
             )}
@@ -363,10 +363,10 @@ export default function DashboardPage() {
                 {transactions.slice(0, 5).map((t) => (
                   <div key={t.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
                     <div style={{ minWidth: 0 }}>
-                      <p style={{ margin: 0, fontSize: 13.5, color: 'var(--ink-2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <p style={{ margin: 0, fontSize: 12.5, color: 'var(--ink-2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {t.description || t.type}
                       </p>
-                      <p className="mono" style={{ margin: '2px 0 0', fontSize: 12.5, color: 'var(--dim)' }}>{new Date(t.created_at).toLocaleDateString()}</p>
+                      <p className="mono" style={{ margin: '2px 0 0', fontSize: 12, color: 'var(--dim)' }}>{new Date(t.created_at).toLocaleDateString()}</p>
                     </div>
                     <span className="mono tnum" style={{ flexShrink: 0, fontWeight: 700, color: t.type === 'deposit' ? 'var(--good)' : 'var(--bad)' }}>
                       {t.type === 'deposit' ? '+' : '−'}{fmtKes(t.amount)}
@@ -418,11 +418,11 @@ export default function DashboardPage() {
                     <div key={p.id} style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', background: 'var(--surface-2)', border: '1px solid var(--line-soft)', borderRadius: 'var(--r-md)' }}>
                       <div style={{ minWidth: 0 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                          <span className="mono" style={{ fontSize: 12.5, color: 'var(--dim)' }}>#{p.id}</span>
+                          <span className="mono" style={{ fontSize: 12, color: 'var(--dim)' }}>#{p.id}</span>
                           <span style={{ fontWeight: 700, color: 'var(--ink)' }}>{p.ptero_username || `Panel #${p.id}`}</span>
                           <Badge tone={p.status === 'active' ? 'good' : 'neutral'} dot>{p.status}</Badge>
                         </div>
-                        <p className="mono" style={{ margin: '4px 0 0', fontSize: 12.5, color: 'var(--dim)' }}>
+                        <p className="mono" style={{ margin: '4px 0 0', fontSize: 12, color: 'var(--dim)' }}>
                           {p.package_name} · {fmtKes(p.package_price || 0)}
                           {p.expires_at && (
                             <span style={{ marginLeft: 8, color: p.is_expired ? 'var(--bad)' : 'var(--muted)' }}>
@@ -463,10 +463,10 @@ export default function DashboardPage() {
                           <span style={{ fontWeight: 700, color: 'var(--ink)' }}>{s.package_name}</span>
                           <Badge tone="good" dot>Active</Badge>
                         </div>
-                        <p className="mono" style={{ margin: '6px 0 0', fontSize: 12.5, color: 'var(--dim)' }}>
+                        <p className="mono" style={{ margin: '6px 0 0', fontSize: 12, color: 'var(--dim)' }}>
                           {[s.hostname, s.region, s.instance_os || s.pkg_os, s.cpu || s.pkg_cpu, s.droplet_id ? `ID ${s.droplet_id}` : ''].filter(Boolean).join(' · ') || `${s.ram} · ${s.cpu}`}
                         </p>
-                        <div className="mono" style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 8, fontSize: 13 }}>
+                        <div className="mono" style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 8, fontSize: 12.5 }}>
                           <span style={{ color: 'var(--ink-2)' }}>{s.username}@{s.host} -p {s.port || 22}</span>
                           <span style={{ color: 'var(--muted)' }}>Pass: {reveal ? <strong style={{ color: 'var(--brand)' }}>{s.password}</strong> : '••••••••'}</span>
                         </div>
@@ -498,21 +498,21 @@ export default function DashboardPage() {
               />
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 12, marginBottom: 16 }}>
                 <div>
-                  <p className="stat-num tnum" style={{ margin: 0, fontSize: '1.35rem' }}>{apiStats ? apiStats.keys : '—'}</p>
+                  <p className="stat-num tnum" style={{ margin: 0, fontSize: '1.1rem' }}>{apiStats ? apiStats.keys : '—'}</p>
                   <p className="stat-label">API keys</p>
                 </div>
                 <div>
-                  <p className="stat-num tnum" style={{ margin: 0, fontSize: '1.35rem' }}>{apiStats ? apiStats.requests.toLocaleString() : '—'}</p>
+                  <p className="stat-num tnum" style={{ margin: 0, fontSize: '1.1rem' }}>{apiStats ? apiStats.requests.toLocaleString() : '—'}</p>
                   <p className="stat-label">Total requests</p>
                 </div>
                 {apiStats?.usage && (
                   <>
                     <div>
-                      <p className="stat-num tnum" style={{ margin: 0, fontSize: '1.35rem' }}>{apiStats.usage.requests_today.toLocaleString()}</p>
+                      <p className="stat-num tnum" style={{ margin: 0, fontSize: '1.1rem' }}>{apiStats.usage.requests_today.toLocaleString()}</p>
                       <p className="stat-label">Requests today</p>
                     </div>
                     <div>
-                      <p className="stat-num tnum" style={{ margin: 0, fontSize: '1.35rem', color: 'var(--good)' }}>
+                      <p className="stat-num tnum" style={{ margin: 0, fontSize: '1.1rem', color: 'var(--good)' }}>
                         {apiStats.usage.avg_response_ms !== null ? `${Number(apiStats.usage.avg_response_ms).toFixed(0)}ms` : '—'}
                       </p>
                       <p className="stat-label">Avg response</p>
@@ -526,7 +526,7 @@ export default function DashboardPage() {
               </div>
             </Card>
 
-            <div style={{ display: 'grid', gap: 22, alignContent: 'start' }}>
+            <div style={{ display: 'grid', gap: 16, alignContent: 'start' }}>
               {referral && (
                 <Card>
                   <CardHeader
@@ -537,16 +537,16 @@ export default function DashboardPage() {
                   />
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 12, marginBottom: 14 }}>
                     <div>
-                      <p className="stat-num tnum" style={{ margin: 0, fontSize: '1.35rem', color: 'var(--good)' }}>{referral.referred_count}</p>
+                      <p className="stat-num tnum" style={{ margin: 0, fontSize: '1.1rem', color: 'var(--good)' }}>{referral.referred_count}</p>
                       <p className="stat-label">Referred</p>
                     </div>
                     <div>
-                      <p className="stat-num tnum" style={{ margin: 0, fontSize: '1.35rem', color: 'var(--brand)' }}>{fmtKes(referral.total_earned)}</p>
+                      <p className="stat-num tnum" style={{ margin: 0, fontSize: '1.1rem', color: 'var(--brand)' }}>{fmtKes(referral.total_earned)}</p>
                       <p className="stat-label">Earned</p>
                     </div>
                   </div>
                   <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
-                    <code className="mono truncate-1" style={{ flex: 1, padding: '10px 12px', background: 'var(--surface-2)', border: '1px solid var(--line-soft)', borderRadius: 'var(--r-sm)', color: 'var(--ink-2)', fontSize: 12.5 }}>
+                    <code className="mono truncate-1" style={{ flex: 1, padding: '10px 12px', background: 'var(--surface-2)', border: '1px solid var(--line-soft)', borderRadius: 'var(--r-sm)', color: 'var(--ink-2)', fontSize: 12 }}>
                       {referral.link}
                     </code>
                     <Button
@@ -559,7 +559,7 @@ export default function DashboardPage() {
                       {copied ? 'Copied' : 'Copy'}
                     </Button>
                   </div>
-                  <p className="mono" style={{ margin: 0, fontSize: 12.5, color: 'var(--dim)' }}>
+                  <p className="mono" style={{ margin: 0, fontSize: 12, color: 'var(--dim)' }}>
                     Your code: <span style={{ color: 'var(--brand)' }}>{referral.code}</span>
                   </p>
                 </Card>
@@ -765,7 +765,7 @@ function AddServerModal({ onClose, onDone }) {
 
           {step === 'choice' && (
             <div>
-              <p style={{ margin: '0 0 12px', fontSize: 13.5, color: 'var(--muted)' }}>
+              <p style={{ margin: '0 0 12px', fontSize: 12.5, color: 'var(--muted)' }}>
                 Username: <strong style={{ color: 'var(--ink)' }}>{username}</strong>
               </p>
               <div style={{ display: 'grid', gap: 10 }}>
@@ -782,11 +782,11 @@ function AddServerModal({ onClose, onDone }) {
 
           {step === 'packages' && (
             <div>
-              <p style={{ margin: '0 0 12px', fontSize: 13.5, color: 'var(--muted)' }}>Choose a package (full price):</p>
+              <p style={{ margin: '0 0 12px', fontSize: 12.5, color: 'var(--muted)' }}>Choose a package (full price):</p>
               <div style={{ display: 'grid', gap: 8, maxHeight: 220, overflow: 'auto' }}>
-                {pkgs.length === 0 && <p style={{ margin: 0, fontSize: 13.5, color: 'var(--dim)' }}>Loading packages…</p>}
+                {pkgs.length === 0 && <p style={{ margin: 0, fontSize: 12.5, color: 'var(--dim)' }}>Loading packages…</p>}
                 {pkgs.map((p) => (
-                  <label key={p.id} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, color: 'var(--ink)', cursor: 'pointer' }}>
+                  <label key={p.id} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13.5, color: 'var(--ink)', cursor: 'pointer' }}>
                     <input type="radio" name="addpkg" checked={String(pkgId) === String(p.id)} onChange={() => setPkgId(p.id)} style={{ accentColor: 'var(--brand)' }} />
                     {p.name} — {fmtKes(p.price)}
                   </label>
@@ -799,7 +799,7 @@ function AddServerModal({ onClose, onDone }) {
 
           {step === 'confirm' && (
             <form onSubmit={submit}>
-              <p style={{ margin: '0 0 16px', fontSize: 14, color: 'var(--ink)' }}>
+              <p style={{ margin: '0 0 16px', fontSize: 13.5, color: 'var(--ink)' }}>
                 Add a <strong>{mode === 'similar' ? 'similar server (same specs, 30% of your first server’s price)' : 'different server (full package price)'}</strong> to username{' '}
                 <strong style={{ color: 'var(--brand)' }}>{username}</strong>? The amount is deducted from your wallet.
               </p>

@@ -129,11 +129,11 @@ export default function ProductsPage() {
   const stepIndex = { select: 0, configure: 1, confirm: 2, creating: 2, done: 3 }[step] ?? 0;
 
   return (
-    <div className="py-10 sm:py-14">
+    <div className="py-6 sm:py-6">
       <div className="container-site max-w-6xl">
 
         {/* ── Page header ── */}
-        <div className="mb-10">
+        <div className="mb-4">
           <p className="eyebrow">Pterodactyl hosting</p>
           <h1 className="headline mt-4" style={{ fontSize: 'clamp(1.9rem, 4vw, 3rem)' }}>
             Deploy a panel<span className="accent">.</span>
@@ -155,7 +155,7 @@ export default function ProductsPage() {
 
         {/* ── Step indicator ── */}
         {step !== 'select' && (
-          <div className="flex items-center mb-10 overflow-x-auto pb-1">
+          <div className="flex items-center mb-4 overflow-x-auto pb-1">
             {STEPS.map((s, i) => (
               <Fragment key={s}>
                 <div className="flex items-center gap-2.5 flex-shrink-0">
@@ -184,10 +184,10 @@ export default function ProductsPage() {
 
         {/* ── Error ── */}
         {error && (
-          <div className="mb-6 px-4 py-3 text-sm flex flex-wrap items-center gap-2" style={{ background: 'var(--bad-a08)', border: '1px solid var(--bad-a35)', color: 'var(--bad)' }}>
+          <div className="mb-4 px-4 py-3 text-sm flex flex-wrap items-center gap-2" style={{ background: 'var(--bad-a08)', border: '1px solid var(--bad-a35)', color: 'var(--bad)' }}>
             {error}
             {error.includes('Insufficient') && (
-              <Link href="/wallet" className="link" style={{ fontSize: 13 }}>Top up wallet →</Link>
+              <Link href="/wallet" className="link" style={{ fontSize: 12.5 }}>Top up wallet →</Link>
             )}
           </div>
         )}
@@ -196,21 +196,21 @@ export default function ProductsPage() {
         {step === 'select' && (
           <>
             {!user && (
-              <div className="mb-6 px-4 py-3 text-sm flex flex-col sm:flex-row items-start sm:items-center gap-3"
+              <div className="mb-4 px-4 py-3 text-sm flex flex-col sm:flex-row items-start sm:items-center gap-3"
                 style={{ background: 'var(--brand-a06)', border: '1px solid var(--brand-a25)' }}>
                 <span style={{ color: 'var(--brand)' }}>You need to be logged in to deploy a panel.</span>
-                <Link href={authHref('/products')} className="link flex-shrink-0" style={{ fontSize: 13 }}>Log in →</Link>
+                <Link href={authHref('/products')} className="link flex-shrink-0" style={{ fontSize: 12.5 }}>Log in →</Link>
               </div>
             )}
             {packages.length === 0 ? (
-              <div className="text-center py-16" style={{ color: 'var(--dim)' }}>No packages available at the moment. Please check back soon.</div>
+              <div className="text-center py-6" style={{ color: 'var(--dim)' }}>No packages available at the moment. Please check back soon.</div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
                 {packages.map(p => (
                   <div key={p.id}
                     className="card flex flex-col transition-all duration-300 hover:-translate-y-1 cursor-pointer relative"
                     style={{
-                      padding: '24px 22px',
+                      padding: '17px 16px',
                       background: p.popular ? 'var(--surface)' : 'var(--surface)',
                       border: p.popular ? '1px solid var(--brand)' : '1px solid var(--line)',
                     }}
@@ -223,11 +223,11 @@ export default function ProductsPage() {
                     )}
                     <p className="display font-bold text-base mb-1" style={{ color: 'var(--ink)' }}>{p.name}</p>
                     <div className="flex items-baseline gap-1.5 mb-3">
-                      <span className="stat-num" style={{ fontSize: '1.8rem', color: p.popular ? 'var(--brand)' : 'var(--ink)' }}>{fmtKes(p.price)}</span>
+                      <span className="stat-num" style={{ fontSize: '1.4rem', color: p.popular ? 'var(--brand)' : 'var(--ink)' }}>{fmtKes(p.price)}</span>
                       <span className="mono text-[10px] uppercase tracking-[0.1em]" style={{ color: 'var(--dim)' }}>/mo</span>
                     </div>
                     <p className="text-xs leading-relaxed mb-4" style={{ color: 'var(--muted)' }}>{p.description}</p>
-                    <ul className="space-y-1.5 mb-6 flex-1">
+                    <ul className="space-y-1.5 mb-4 flex-1">
                       {[fmtCpu(p.cpu), fmtRam(p.ram), fmtDisk(p.disk), ...(p.expires_after_hours ? [`Auto-removed after ${p.expires_after_hours}h`] : [])].map(spec => (
                         <li key={spec} className="mono flex items-center gap-2 text-[11px]" style={{ color: 'var(--ink-2)' }}>
                           <span style={{ color: p.accent || 'var(--brand)' }}>—</span>
@@ -238,7 +238,7 @@ export default function ProductsPage() {
                     <button
                       className="btn w-full"
                       style={{
-                        padding: '10px 0', fontSize: 12.5,
+                        padding: '10px 0', fontSize: 12,
                         background: p.popular ? 'var(--brand)' : 'transparent',
                         color: p.popular ? 'var(--on-brand)' : 'var(--ink-2)',
                         border: p.popular ? '1px solid var(--brand)' : '1px solid var(--line)',
@@ -255,12 +255,12 @@ export default function ProductsPage() {
 
         {/* ════ STEP: configure ════ */}
         {step === 'configure' && pkg && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             {/* Form */}
-            <div className="lg:col-span-2 card p-6 sm:p-8">
+            <div className="lg:col-span-2 card p-6 sm:p-5">
               <p className="eyebrow">Step 02</p>
-              <h2 className="display text-xl font-bold mt-3 mb-6" style={{ color: 'var(--ink)' }}>Configure your server</h2>
-              <form onSubmit={handleConfirm} className="space-y-5">
+              <h2 className="display text-lg font-bold mt-3 mb-4" style={{ color: 'var(--ink)' }}>Configure your server</h2>
+              <form onSubmit={handleConfirm} className="space-y-3">
                 {/* Name row */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {[
@@ -355,7 +355,7 @@ export default function ProductsPage() {
                     <p className="display font-bold" style={{ color: 'var(--ink)' }}>{pkg.name} plan</p>
                     <p className="mono text-[10px] uppercase tracking-[0.12em] mt-0.5" style={{ color: 'var(--dim)' }}>Monthly subscription</p>
                   </div>
-                  <p className="stat-num" style={{ fontSize: '1.4rem', color: 'var(--brand)' }}>{fmtKes(pkg.price)}</p>
+                  <p className="stat-num" style={{ fontSize: '1.15rem', color: 'var(--brand)' }}>{fmtKes(pkg.price)}</p>
                 </div>
                 <div className="space-y-1.5">
                   {[fmtCpu(pkg.cpu), fmtRam(pkg.ram), fmtDisk(pkg.disk)].map(s => (
@@ -382,9 +382,9 @@ export default function ProductsPage() {
 
         {/* ════ STEP: confirm ════ */}
         {step === 'confirm' && pkg && (
-          <div className="max-w-lg mx-auto card p-6 sm:p-8">
+          <div className="max-w-lg mx-auto card p-6 sm:p-5">
             <p className="eyebrow">Step 03</p>
-            <h2 className="display text-xl font-bold mt-3 mb-6" style={{ color: 'var(--ink)' }}>Confirm order</h2>
+            <h2 className="display text-lg font-bold mt-3 mb-4" style={{ color: 'var(--ink)' }}>Confirm order</h2>
             {[
               { label: 'Plan',      value: `${pkg.name} — ${fmtKes(pkg.price)}/mo` },
               { label: 'Resources', value: `${fmtCpu(pkg.cpu)} · ${fmtRam(pkg.ram)} · ${fmtDisk(pkg.disk)}` },
@@ -400,9 +400,9 @@ export default function ProductsPage() {
             ))}
             <div className="flex justify-between py-3.5 text-base" style={{ borderBottom: '1px solid var(--line-soft)' }}>
               <span className="mono text-[10px] uppercase tracking-[0.12em]" style={{ color: 'var(--dim)', paddingTop: 4 }}>Total charge</span>
-              <span className="stat-num" style={{ fontSize: '1.3rem', color: 'var(--brand)' }}>{fmtKes(pkg.price)}</span>
+              <span className="stat-num" style={{ fontSize: '1.05rem', color: 'var(--brand)' }}>{fmtKes(pkg.price)}</span>
             </div>
-            <p className="text-xs mt-4 mb-6" style={{ color: 'var(--dim)' }}>
+            <p className="text-xs mt-4 mb-4" style={{ color: 'var(--dim)' }}>
               {fmtKes(pkg.price)} will be deducted from your wallet. Balance after: {fmtKes(Math.max(0, balance - pkg.price))}
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
@@ -414,8 +414,8 @@ export default function ProductsPage() {
 
         {/* ════ STEP: creating ════ */}
         {step === 'creating' && (
-          <div className="text-center py-16 sm:py-24">
-            <div className="spinner mx-auto mb-6" />
+          <div className="text-center py-6 sm:py-6">
+            <div className="spinner mx-auto mb-4" />
             <p className="display font-bold text-lg mb-2" style={{ color: 'var(--ink)' }}>Deploying your panel…</p>
             <p className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: 'var(--dim)' }}>About 30 seconds — please wait</p>
           </div>
@@ -424,8 +424,8 @@ export default function ProductsPage() {
         {/* ════ STEP: done ════ */}
         {step === 'done' && result && (
           <div className="max-w-lg mx-auto">
-            <div className="card p-6 sm:p-8" style={{ borderColor: 'var(--good-a45)' }}>
-              <div className="mb-6">
+            <div className="card p-6 sm:p-5" style={{ borderColor: 'var(--good-a45)' }}>
+              <div className="mb-4">
                 <p className="eyebrow">Step 04 — done</p>
                 <h2 className="headline mt-3" style={{ fontSize: 'clamp(1.6rem, 3vw, 2.1rem)' }}>Panel deployed<span className="accent">.</span></h2>
                 <p className="text-sm mt-2" style={{ color: 'var(--muted)' }}>

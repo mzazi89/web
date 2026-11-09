@@ -71,7 +71,7 @@ export default function Logo({ size = 34, withText = false }) {
             style={{
               fontWeight: 600,
               letterSpacing: '0.16em',
-              fontSize: '0.82em',
+              fontSize: '0.78em',
               background: 'linear-gradient(90deg, #60A5FA 0%, #818CF8 100%)',
               WebkitBackgroundClip: 'text',
               backgroundClip: 'text',

@@ -130,7 +130,7 @@ export default function DevicesPage() {
 
   return (
     <AppBackground variant="dashboard">
-      <div className="container-site" style={{ paddingTop: 26, paddingBottom: 90, maxWidth: 1100 }}>
+      <div className="container-site" style={{ paddingTop: 19, paddingBottom: 24, maxWidth: 1100 }}>
         <PageHeader
           title="Connected devices"
           description="Every WhatsApp number your account is running, and how many slots your plan allows."
@@ -176,7 +176,7 @@ export default function DevicesPage() {
                   <p className="stat-label" style={{ margin: 0 }}>Devices connected</p>
                   <p className="stat-num tnum" style={{ margin: '4px 0 0' }}>
                     {devices.length}
-                    <span style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--muted)' }}>
+                    <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--muted)' }}>
                       {' '}of {unlimited ? 'Unlimited' : maxDevices}
                     </span>
                   </p>
@@ -191,7 +191,7 @@ export default function DevicesPage() {
               )}
 
               {data?.endDate && (
-                <p style={{ margin: '12px 0 0', fontSize: 13.5, color: 'var(--muted)' }}>
+                <p style={{ margin: '12px 0 0', fontSize: 12.5, color: 'var(--muted)' }}>
                   Plan renews / expires on {new Date(data.endDate).toLocaleDateString()}
                 </p>
               )}
@@ -216,9 +216,9 @@ export default function DevicesPage() {
             )}
 
             {/* ── Device list ── */}
-            <div style={{ marginTop: 26 }}>
+            <div style={{ marginTop: 19 }}>
               <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 12, marginBottom: 14 }}>
-                <h2 className="section-title" style={{ fontSize: '1.15rem', margin: 0 }}>Your numbers</h2>
+                <h2 className="section-title" style={{ fontSize: '0.95rem', margin: 0 }}>Your numbers</h2>
                 <Button variant="ghost" size="sm" onClick={() => load(true)} icon={<Icons.Refresh size={15} />}>
                   Refresh
                 </Button>
@@ -251,7 +251,7 @@ export default function DevicesPage() {
             </div>
 
             {/* ── How to connect ── */}
-            <Card style={{ marginTop: 26 }}>
+            <Card style={{ marginTop: 19 }}>
               <CardHeader
                 title="How to connect a number"
                 description="Four steps, about two minutes. No QR code, no technical setup."
@@ -269,7 +269,7 @@ export default function DevicesPage() {
                     </span>
                     <div style={{ minWidth: 0 }}>
                       <p style={{ margin: 0, fontWeight: 700, color: 'var(--ink)' }}>{s.title}</p>
-                      <p style={{ margin: '2px 0 0', fontSize: 13.5, color: 'var(--muted)', lineHeight: 1.6 }}>{s.body}</p>
+                      <p style={{ margin: '2px 0 0', fontSize: 12.5, color: 'var(--muted)', lineHeight: 1.6 }}>{s.body}</p>
                     </div>
                   </li>
                 ))}

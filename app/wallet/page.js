@@ -40,7 +40,7 @@ function downloadReceipt(t, userEmail, balance) {
   <title>Mzazi Tech Receipt #${t.id}</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Mono:wght@400;600&display=swap');
-    * { margin:0; padding:0; box-sizing:border-box; }
+    * { margin: 0; padding: 0; box-sizing:border-box; }
     body { background:#04060D; display:flex; justify-content:center; align-items:flex-start; padding:clamp(12px, 4vw, 30px); font-family:'Space Grotesk',sans-serif; }
     .receipt {
       background:#fff;
@@ -70,7 +70,7 @@ function downloadReceipt(t, userEmail, balance) {
       background:#1D4ED8;
       color:#fff;
       text-align:center;
-      padding:28px 24px 20px;
+      padding: 20px 24px 20px;
     }
     .logo { font-size:20px; font-weight:700; letter-spacing:0.5px; margin-bottom:4px; }
     .logo span { color:#FDE047; }
@@ -78,7 +78,7 @@ function downloadReceipt(t, userEmail, balance) {
     .status-badge {
       display:inline-block;
       margin-top:14px;
-      padding:4px 16px;
+      padding: 4px 16px;
       border-radius:2px;
       font-family:'IBM Plex Mono',monospace;
       font-size: 12.5px;
@@ -89,19 +89,19 @@ function downloadReceipt(t, userEmail, balance) {
       color:${t.status === 'success' ? '#047857' : '#1D4ED8'};
       border:1px solid ${t.status === 'success' ? 'rgba(4,120,87,0.45)' : 'rgba(124,58,237,0.45)'};
     }
-    .body { padding:24px; }
-    .amount-section { text-align:center; padding:20px 0 24px; border-bottom:1px dashed #CBD5E5; }
+    .body { padding: 17px; }
+    .amount-section { text-align:center; padding: 20px 0 24px; border-bottom:1px dashed #CBD5E5; }
     .amount-label { font-family:'IBM Plex Mono',monospace; font-size: 12.5px; color:#4E5B76; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:6px; }
     .amount { font-size:38px; font-weight:700; color:${color}; letter-spacing:-1px; }
     .currency { font-size:16px; font-weight:500; }
-    .rows { padding:20px 0; border-bottom:1px dashed #CBD5E5; }
-    .row { display:flex; justify-content:space-between; align-items:flex-start; padding:7px 0; font-size:13px; }
+    .rows { padding: 20px 0; border-bottom:1px dashed #CBD5E5; }
+    .row { display:flex; justify-content:space-between; align-items:flex-start; padding: 7px 0; font-size:13px; }
     .row-label { color:#4E5B76; font-size: 12.5px; font-family:'IBM Plex Mono',monospace; text-transform:uppercase; letter-spacing:0.6px; }
     .row-value { color:#04060D; font-weight:600; text-align:right; max-width:200px; word-break:break-all; }
     .ref { font-family:'IBM Plex Mono',monospace; font-size: 12.5px; color:#2563EB; }
     .warranty {
-      margin:16px 0 0;
-      padding:12px 14px;
+      margin: 16px 0 0;
+      padding: 12px 14px;
       background:#04060D;
       border-radius:2px;
       border-left:3px solid #1D4ED8;
@@ -110,7 +110,7 @@ function downloadReceipt(t, userEmail, balance) {
       line-height:1.6;
     }
     .warranty strong { display:block; margin-bottom:2px; font-size:12px; color:#FFFFFF; }
-    .footer { text-align:center; padding:16px 24px 20px; }
+    .footer { text-align:center; padding: 16px 24px 20px; }
     .footer p { font-size: 12.5px; color:#4E5B76; line-height:1.7; }
     .footer a { color:#2563EB; text-decoration:none; }
     .barcode {
@@ -122,7 +122,7 @@ function downloadReceipt(t, userEmail, balance) {
       word-break:break-all;
     }
     @media print {
-      body { background:#fff; padding:0; }
+      body { background:#fff; padding: 0; }
       .receipt { box-shadow:none; }
     }
   </style>
@@ -476,7 +476,7 @@ function WalletInner() {
   if (guest) {
     return (
       <AppBackground variant="dashboard">
-        <div className="container-site" style={{ paddingTop: 26, paddingBottom: 90, maxWidth: 900 }}>
+        <div className="container-site" style={{ paddingTop: 19, paddingBottom: 24, maxWidth: 900 }}>
           <SignInGate
             next="/wallet"
             icon={<Icons.Wallet size={26} />}
@@ -491,7 +491,7 @@ function WalletInner() {
   if (loading) {
     return (
       <AppBackground variant="dashboard">
-        <div className="container-site" style={{ paddingTop: 26, paddingBottom: 90, maxWidth: 900 }}>
+        <div className="container-site" style={{ paddingTop: 19, paddingBottom: 24, maxWidth: 900 }}>
           <SkeletonText lines={2} />
           <div style={{ height: 140 }} />
           <SkeletonText lines={4} />
@@ -502,7 +502,7 @@ function WalletInner() {
 
   return (
     <AppBackground variant="dashboard">
-      <div className="container-site" style={{ paddingTop: 26, paddingBottom: 90, maxWidth: 900 }}>
+      <div className="container-site" style={{ paddingTop: 19, paddingBottom: 24, maxWidth: 900 }}>
         <PageHeader
           title="Payments & wallet"
           description="Add money, redeem vouchers, and use your balance to pay for WhatsApp bot plans."
@@ -537,7 +537,7 @@ function WalletInner() {
         <Card accent className="anim-fade-up" style={{ marginBottom: 20 }}>
           <p className="stat-label" style={{ margin: 0 }}>Available balance</p>
           <p className="stat-num tnum" style={{ margin: '6px 0 0', color: 'var(--brand)' }}>{fmtKes(balance)}</p>
-          {user && <p style={{ margin: '8px 0 0', fontSize: 12.5, color: 'var(--dim)' }}>Account: {user.email}</p>}
+          {user && <p style={{ margin: '8px 0 0', fontSize: 12, color: 'var(--dim)' }}>Account: {user.email}</p>}
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 16 }}>
             <Button onClick={openDeposit} icon={<Icons.Plus size={16} />}>Add money</Button>
             <Button variant="ghost" href="/subscription" icon={<Icons.Sparkles size={16} />}>Spend on a plan</Button>
@@ -554,7 +554,7 @@ function WalletInner() {
                 style={{
                   width: 54, height: 54, flex: '0 0 54px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                   borderRadius: '50%', background: 'var(--brand-tint)', color: 'var(--brand)',
-                  fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 20,
+                  fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 16,
                 }}
               >
                 ×{offerMult}
@@ -564,7 +564,7 @@ function WalletInner() {
                 <p style={{ margin: '6px 0 0', fontWeight: 700, color: 'var(--ink)' }}>
                   {offer.adText || `Deposit & get ${offerMult}× your money`}
                 </p>
-                <p style={{ margin: '4px 0 0', fontSize: 13.5, color: 'var(--muted)' }}>
+                <p style={{ margin: '4px 0 0', fontSize: 12.5, color: 'var(--muted)' }}>
                   Any top-up is {offerMult}× — you get {offerMult - 1}× extra credited the moment payment is confirmed.
                 </p>
               </div>
@@ -605,7 +605,7 @@ function WalletInner() {
                   <td data-label="Amount" className="mono tnum" style={{ color: t.type === 'deposit' ? 'var(--good)' : 'var(--bad)', fontWeight: 700, whiteSpace: 'nowrap' }}>
                     {t.type === 'deposit' ? '+' : '−'}{fmtKes(t.amount)}
                     {t.type === 'deposit' && Number(t.bonus_amount) > 0 && (
-                      <span style={{ display: 'block', fontWeight: 400, color: 'var(--brand)', fontSize: 12.5, marginTop: 2 }}>
+                      <span style={{ display: 'block', fontWeight: 400, color: 'var(--brand)', fontSize: 12, marginTop: 2 }}>
                         +{fmtKes(t.bonus_amount)} bonus
                       </span>
                     )}
@@ -623,7 +623,7 @@ function WalletInner() {
         </Card>
 
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: 'space-between', alignItems: 'center', marginTop: 20 }}>
-          <p style={{ margin: 0, fontSize: 12.5, color: 'var(--muted)' }}>
+          <p style={{ margin: 0, fontSize: 12, color: 'var(--muted)' }}>
             Need a full history or a panel issue fixed?&nbsp;
             <a className="link" href="https://t.me/mzazitech" target="_blank" rel="noopener noreferrer">Contact support on Telegram →</a>
           </p>
@@ -662,12 +662,12 @@ function WalletInner() {
                 <MethodIcon m={m} />
                 <span style={{ flex: 1, minWidth: 0 }}>
                   <span style={{ display: 'block', fontWeight: 700, color: 'var(--ink)' }}>{m.name}</span>
-                  <span style={{ display: 'block', fontSize: 12.5, color: 'var(--muted)' }}>{m.desc}</span>
+                  <span style={{ display: 'block', fontSize: 12, color: 'var(--muted)' }}>{m.desc}</span>
                 </span>
                 <Icons.ChevronRight size={16} />
               </button>
             ))}
-            <p style={{ margin: '4px 0 0', fontSize: 13, color: 'var(--dim)', lineHeight: 1.6 }}>
+            <p style={{ margin: '4px 0 0', fontSize: 12.5, color: 'var(--dim)', lineHeight: 1.6 }}>
               Deposits are processed securely by Paystack. Your wallet is credited only after the payment is confirmed.
             </p>
           </div>
@@ -727,7 +727,7 @@ function WalletInner() {
                   inputMode="tel"
                 />
                 {phone.length >= 9 && (
-                  <p className="mono" style={{ margin: '6px 0 0', fontSize: 13, color: phoneNorm?.ok ? 'var(--good)' : 'var(--bad)' }}>
+                  <p className="mono" style={{ margin: '6px 0 0', fontSize: 12.5, color: phoneNorm?.ok ? 'var(--good)' : 'var(--bad)' }}>
                     {phoneNorm?.ok ? `Will send to → ${phoneNorm.phone}` : phoneNorm?.error || ''}
                   </p>
                 )}
@@ -767,7 +767,7 @@ function WalletInner() {
                 ['You’ll receive', fmtKes(offerActive && offerAmt > 0 ? offerTotal : offerAmt)],
               ].map(([k, v]) => (
                 <div key={k} style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
-                  <dt style={{ color: 'var(--muted)', fontSize: 13.5 }}>{k}</dt>
+                  <dt style={{ color: 'var(--muted)', fontSize: 12.5 }}>{k}</dt>
                   <dd className="mono tnum" style={{ margin: 0, fontWeight: 700, color: 'var(--ink)' }}>{v}</dd>
                 </div>
               ))}
@@ -784,10 +784,10 @@ function WalletInner() {
           <div style={{ textAlign: 'center', padding: '10px 0' }} role="status" aria-live="polite">
             <span className="spinner" style={{ margin: '0 auto 16px' }} />
             <p style={{ margin: 0, fontWeight: 700, color: 'var(--ink)' }}>Payment request sent to your phone.</p>
-            <p style={{ margin: '8px 0 0', color: 'var(--muted)', fontSize: 14 }}>
+            <p style={{ margin: '8px 0 0', color: 'var(--muted)', fontSize: 13.5 }}>
               Check your {METHOD_LABELS[method]} phone and complete the authorization. We’re watching for confirmation — nothing is frozen.
             </p>
-            <p className="mono" style={{ margin: '16px 0 0', fontSize: 12.5, color: 'var(--dim)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+            <p className="mono" style={{ margin: '16px 0 0', fontSize: 12, color: 'var(--dim)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
               Processing payment…
             </p>
             <div style={{ marginTop: 18 }}>
@@ -801,7 +801,7 @@ function WalletInner() {
           <div style={{ textAlign: 'center', padding: '10px 0' }} role="status" aria-live="polite">
             <span className="spinner" style={{ margin: '0 auto 16px' }} />
             <p style={{ margin: 0, fontWeight: 700, color: 'var(--ink)' }}>Redirecting to secure checkout…</p>
-            <p style={{ margin: '8px 0 0', color: 'var(--muted)', fontSize: 14 }}>
+            <p style={{ margin: '8px 0 0', color: 'var(--muted)', fontSize: 13.5 }}>
               Complete the payment on the secure page. You’ll be brought straight back here.
             </p>
           </div>
@@ -811,12 +811,12 @@ function WalletInner() {
         {step === 'success' && (
           <div style={{ textAlign: 'center', padding: '10px 0' }} role="status" aria-live="polite">
             <span style={{ display: 'inline-flex', color: 'var(--good)' }} aria-hidden="true"><Icons.CheckCircle size={52} /></span>
-            <h3 style={{ margin: '14px 0 0', fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 700, color: 'var(--ink)' }}>
+            <h3 style={{ margin: '14px 0 0', fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 700, color: 'var(--ink)' }}>
               ✓ Payment successful
             </h3>
             <p style={{ margin: '6px 0 0', color: 'var(--ink-2)' }}>Your payment was received.</p>
             <p className="stat-num tnum" style={{ margin: '14px 0 0', color: 'var(--good)' }}>{fmtKes(creditedAmount)}</p>
-            <p style={{ margin: '8px 0 0', fontSize: 13.5, color: 'var(--muted)' }}>
+            <p style={{ margin: '8px 0 0', fontSize: 12.5, color: 'var(--muted)' }}>
               New balance: <strong style={{ color: 'var(--brand)' }}>{fmtKes(balance)}</strong>
             </p>
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center', marginTop: 18 }}>
@@ -830,11 +830,11 @@ function WalletInner() {
         {step === 'failed' && (
           <div style={{ textAlign: 'center', padding: '10px 0' }} role="alert">
             <span style={{ display: 'inline-flex', color: 'var(--bad)' }} aria-hidden="true"><Icons.AlertCircle size={52} /></span>
-            <h3 style={{ margin: '14px 0 0', fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 700, color: 'var(--ink)' }}>
+            <h3 style={{ margin: '14px 0 0', fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 700, color: 'var(--ink)' }}>
               ✕ Payment failed
             </h3>
             <p style={{ margin: '6px 0 0', color: 'var(--ink-2)' }}>Your payment was not completed.</p>
-            {failureMsg && <p style={{ margin: '8px 0 0', fontSize: 13.5, color: 'var(--muted)' }}>{failureMsg}</p>}
+            {failureMsg && <p style={{ margin: '8px 0 0', fontSize: 12.5, color: 'var(--muted)' }}>{failureMsg}</p>}
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center', marginTop: 18 }}>
               <Button onClick={() => setStep('form')}>Try again</Button>
               <Button variant="ghost" onClick={backToMethods}>Change method</Button>
@@ -886,7 +886,7 @@ export default function WalletPage() {
   return (
     <Suspense fallback={
       <AppBackground variant="dashboard">
-        <div className="container-site" style={{ paddingTop: 26, paddingBottom: 90, maxWidth: 900 }}>
+        <div className="container-site" style={{ paddingTop: 19, paddingBottom: 24, maxWidth: 900 }}>
           <SkeletonText lines={4} />
         </div>
       </AppBackground>

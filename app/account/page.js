@@ -123,7 +123,7 @@ export default function AccountPage() {
 
   return (
     <AppBackground variant="dashboard">
-      <div className="container-site" style={{ paddingTop: 26, paddingBottom: 90, maxWidth: 1000 }}>
+      <div className="container-site" style={{ paddingTop: 19, paddingBottom: 24, maxWidth: 1000 }}>
         <PageHeader
           title="Account"
           description="Your profile, security and appearance settings."
@@ -152,25 +152,25 @@ export default function AccountPage() {
 
         {state === 'ready' && (
           <div className="grid-2-responsive">
-            <div style={{ display: 'grid', gap: 22 }}>
+            <div style={{ display: 'grid', gap: 16 }}>
               {/* ── Profile ── */}
               <Card className="anim-fade-up">
                 <CardHeader title="Profile" description="Shown on your account and receipts." icon={<Icons.User size={18} />} />
                 <dl style={{ margin: 0, display: 'grid', gap: 14 }}>
                   <div>
                     <dt className="stat-label" style={{ marginBottom: 3 }}>Name</dt>
-                    <dd style={{ margin: 0, fontSize: 15.5, fontWeight: 600, color: 'var(--ink)' }}>{displayName}</dd>
+                    <dd style={{ margin: 0, fontSize: 14.5, fontWeight: 600, color: 'var(--ink)' }}>{displayName}</dd>
                   </div>
                   <div>
                     <dt className="stat-label" style={{ marginBottom: 3 }}>Email</dt>
-                    <dd style={{ margin: 0, fontSize: 15, color: 'var(--ink-2)', wordBreak: 'break-word' }}>{user?.email || '—'}</dd>
+                    <dd style={{ margin: 0, fontSize: 14, color: 'var(--ink-2)', wordBreak: 'break-word' }}>{user?.email || '—'}</dd>
                   </div>
                   <div>
                     <dt className="stat-label" style={{ marginBottom: 3 }}>Member since</dt>
-                    <dd style={{ margin: 0, fontSize: 15, color: 'var(--ink-2)' }}>{memberSince || '—'}</dd>
+                    <dd style={{ margin: 0, fontSize: 14, color: 'var(--ink-2)' }}>{memberSince || '—'}</dd>
                   </div>
                 </dl>
-                <p style={{ margin: '16px 0 0', fontSize: 12.5, color: 'var(--dim)', lineHeight: 1.6 }}>
+                <p style={{ margin: '16px 0 0', fontSize: 12, color: 'var(--dim)', lineHeight: 1.6 }}>
                   Your name and email can’t be edited here yet. To change them, message support from the{' '}
                   <Link className="link" href="/help">Help page</Link>.
                 </p>
@@ -228,12 +228,12 @@ export default function AccountPage() {
               </Card>
             </div>
 
-            <div style={{ display: 'grid', gap: 22, alignContent: 'start' }}>
+            <div style={{ display: 'grid', gap: 16, alignContent: 'start' }}>
               {/* ── Appearance ── */}
               <Card className="anim-fade-up d1">
                 <CardHeader title="Appearance" description="Choose how the site looks to you." icon={<Icons.Sun size={18} />} />
                 <ThemeToggle variant="segmented" />
-                <p style={{ margin: '12px 0 0', fontSize: 12.5, color: 'var(--dim)' }}>
+                <p style={{ margin: '12px 0 0', fontSize: 12, color: 'var(--dim)' }}>
                   “System” follows your device’s light/dark setting.
                 </p>
               </Card>
@@ -255,11 +255,11 @@ export default function AccountPage() {
                 <CardHeader title="Plan" description="Your WhatsApp bot subscription." icon={<Icons.Sparkles size={18} />} />
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
                   <Badge tone={planTone(plan?.plan)}>{planLabel(plan?.plan)}</Badge>
-                  <span style={{ fontSize: 13.5, color: 'var(--muted)' }}>
+                  <span style={{ fontSize: 12.5, color: 'var(--muted)' }}>
                     {plan?.maxDevices >= 999 ? 'Unlimited devices' : `${plan?.maxDevices ?? 1} device${(plan?.maxDevices ?? 1) === 1 ? '' : 's'}`}
                   </span>
                 </div>
-                <p style={{ margin: '10px 0 0', fontSize: 13.5, color: 'var(--muted)' }}>
+                <p style={{ margin: '10px 0 0', fontSize: 12.5, color: 'var(--muted)' }}>
                   {plan?.endDate ? `Expires ${new Date(plan.endDate).toLocaleDateString()}` : 'Never expires'}
                 </p>
                 <div style={{ marginTop: 14 }}>

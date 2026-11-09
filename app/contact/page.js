@@ -183,32 +183,32 @@ export default function ContactPage() {
       orbs
     >
       {/* ── Hero ── */}
-      <section className="relative overflow-hidden" style={{ paddingTop: 80, paddingBottom: 60 }}>
+      <section className="relative overflow-hidden" style={{ paddingTop: 24, paddingBottom: 24 }}>
         <div className="container-site relative anim-fade-up">
           <div className="max-w-3xl">
             <Badge tone="brand" icon={<Icons.Zap size={12} />} style={{ marginBottom: 16 }}>24/7 Global Support</Badge>
             <h1 className="headline" style={{ fontSize: 'clamp(2.5rem, 6vw, 4rem)', fontWeight: 900, lineHeight: 1.1 }}>
               Talk to a <span className="gradient-text">Human</span>.
             </h1>
-            <p className="lede mt-6 max-w-xl" style={{ fontSize: '1.2rem', color: 'var(--muted)' }}>
+            <p className="lede mt-4 max-w-xl" style={{ fontSize: '1rem', color: 'var(--muted)' }}>
               Got a question? We reply within two hours, around the clock. Choose a channel below or send a message directly.
             </p>
           </div>
 
           {/* Quick channels */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16 anim-fade-up d2">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5 anim-fade-up d2">
             {channels.map(c => (
               <Card key={c.title} hover accent={c.title === 'Telegram Support'} style={{ padding: 0 }}>
-                <a href={c.href} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', padding: '32px', display: 'flex', flexDirection: 'column', height: '100%' }}>
+                <a href={c.href} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', padding: '23px', display: 'flex', flexDirection: 'column', height: '100%' }}>
                   <div className="w-12 h-12 flex items-center justify-center flex-shrink-0"
                     style={{ background: `${c.color}14`, color: c.color, border: `1px solid ${c.color}35`, borderRadius: 'var(--r-md)', marginBottom: 20 }}>
                     {c.icon}
                   </div>
                   <div className="flex-1">
-                    <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--ink)', marginBottom: 8 }}>{c.title}</h3>
-                    <p style={{ fontSize: 14, color: 'var(--muted)', lineHeight: 1.6, marginBottom: 20 }}>{c.desc}</p>
+                    <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--ink)', marginBottom: 8 }}>{c.title}</h3>
+                    <p style={{ fontSize: 13.5, color: 'var(--muted)', lineHeight: 1.6, marginBottom: 20 }}>{c.desc}</p>
                   </div>
-                  <div style={{ fontWeight: 800, fontSize: 13, color: c.color, display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <div style={{ fontWeight: 800, fontSize: 12.5, color: c.color, display: 'flex', alignItems: 'center', gap: 6 }}>
                     {c.action} <Icons.ArrowRight size={14} />
                   </div>
                 </a>
@@ -219,22 +219,22 @@ export default function ContactPage() {
       </section>
 
       {/* ── Chat Section ── */}
-      <section className="section" style={{ paddingTop: 20, paddingBottom: 140 }}>
+      <section className="section" style={{ paddingTop: 20, paddingBottom: 24 }}>
         <div className="container-site max-w-6xl anim-fade-up d3">
           {authLoading ? (
-            <div className="flex items-center justify-center py-24">
+            <div className="flex items-center justify-center py-6">
               <div className="spinner" />
             </div>
           ) : !user ? (
-            <Card accent style={{ padding: '80px 40px', textAlign: 'center' }}>
+            <Card accent style={{ padding: '24px 24px', textAlign: 'center' }}>
               <LockGlyph />
-              <h2 style={{ fontSize: '2rem', fontWeight: 900, marginBottom: 12 }}>Login to Message Us</h2>
-              <p className="lede mb-10 mx-auto" style={{ maxWidth: 450 }}>
+              <h2 style={{ fontSize: '1.45rem', fontWeight: 900, marginBottom: 12 }}>Login to Message Us</h2>
+              <p className="lede mb-4 mx-auto" style={{ maxWidth: 450 }}>
                 Log in to chat with our support team directly. We track all your inquiries here for easy follow-up.
               </p>
               <div className="flex justify-center gap-4">
-                <Link href="/login" className="btn btn-primary btn-lg px-12">Log in</Link>
-                <Link href="/signup" className="btn btn-ghost btn-lg px-12">Create Account</Link>
+                <Link href="/login" className="btn btn-primary btn-lg px-6">Log in</Link>
+                <Link href="/signup" className="btn btn-ghost btn-lg px-6">Create Account</Link>
               </div>
             </Card>
           ) : (
@@ -261,7 +261,7 @@ export default function ContactPage() {
                           <p className="text-sm font-semibold" style={{ color: 'var(--ink)' }}>No conversations yet</p>
                           <p className="text-xs" style={{ color: 'var(--dim)' }}>Start a new conversation to contact support.</p>
                           <button onClick={openCompose}
-                            className="btn btn-primary mt-2" style={{ padding: '11px 18px', fontSize: 12.5, cursor: 'pointer' }}>
+                            className="btn btn-primary mt-2" style={{ padding: '11px 18px', fontSize: 12, cursor: 'pointer' }}>
                             Start chat
                           </button>
                         </div>
@@ -342,7 +342,7 @@ export default function ContactPage() {
                     <div className="flex flex-col items-center justify-center h-full gap-4">
                       <div className="text-center">
                         <p className="display font-bold text-lg mb-1" style={{ color: 'var(--ink)' }}>Your support chats</p>
-                        <p className="text-sm mb-6" style={{ color: 'var(--muted)' }}>Select a conversation or start a new one.</p>
+                        <p className="text-sm mb-4" style={{ color: 'var(--muted)' }}>Select a conversation or start a new one.</p>
                         <button onClick={openCompose}
                           className="btn btn-primary" style={{ cursor: 'pointer' }}>
                           <PenGlyph /> New inquiry
@@ -530,7 +530,7 @@ function ChatWindow({ thread, messages, msgLoading, newMsg, setNewMsg, sending, 
             />
             <button type="submit" disabled={sending || !newMsg.trim()}
               className="btn btn-primary flex-shrink-0"
-              style={{ padding: '11px 16px', fontSize: 12.5, cursor: sending || !newMsg.trim() ? 'not-allowed' : 'pointer' }}>
+              style={{ padding: '11px 16px', fontSize: 12, cursor: sending || !newMsg.trim() ? 'not-allowed' : 'pointer' }}>
               {sending
                 ? <span className="spinner" style={{ width: 14, height: 14, borderWidth: 2, display: 'block' }} />
                 : <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" style={{ display: 'block' }}><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>

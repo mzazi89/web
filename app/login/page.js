@@ -74,16 +74,16 @@ export default function LoginPage() {
         <ThemeToggle />
       </div>
 
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 20px 48px' }}>
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 20px 24px' }}>
         <div style={{ width: '100%', maxWidth: 400 }} className="anim-fade-up">
-          <div style={{ textAlign: 'center', marginBottom: 26 }}>
+          <div style={{ textAlign: 'center', marginBottom: 19 }}>
             <Link href="/" aria-label="MZAZI TECH home" style={{ textDecoration: 'none', display: 'inline-block' }}>
               <Logo size={44} />
             </Link>
             <h1 className="headline" style={{ fontSize: 'clamp(1.6rem, 5vw, 2rem)', marginTop: 20, marginBottom: 0 }}>
               Welcome back
             </h1>
-            <p style={{ margin: '8px 0 0', fontSize: 14.5, color: 'var(--muted)' }}>
+            <p style={{ margin: '8px 0 0', fontSize: 13.5, color: 'var(--muted)' }}>
               Sign in to manage your bots, devices and payments.
             </p>
           </div>
@@ -122,7 +122,7 @@ export default function LoginPage() {
               </Field>
 
               <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: -6, marginBottom: 18 }}>
-                <Link href="/forgot-password" style={{ fontSize: 13.5, fontWeight: 600, color: 'var(--brand)', textDecoration: 'none' }}>
+                <Link href="/forgot-password" style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--brand)', textDecoration: 'none' }}>
                   Forgot password?
                 </Link>
               </div>
@@ -141,14 +141,14 @@ export default function LoginPage() {
             </form>
           </div>
 
-          <p style={{ marginTop: 22, textAlign: 'center', fontSize: 14.5, color: 'var(--muted)' }}>
+          <p style={{ marginTop: 16, textAlign: 'center', fontSize: 13.5, color: 'var(--muted)' }}>
             No account?{' '}
             <Link href={authHref(next, { signup: true })} style={{ fontWeight: 700, color: 'var(--brand)', textDecoration: 'none' }}>
               Create one free
             </Link>
           </p>
 
-          <p style={{ marginTop: 16, textAlign: 'center', fontSize: 12.5, color: 'var(--dim)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+          <p style={{ marginTop: 16, textAlign: 'center', fontSize: 12, color: 'var(--dim)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
             <Icons.Shield size={13} />
             Secured connection · your details are never shared
           </p>

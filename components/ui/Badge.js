@@ -49,7 +49,7 @@ export function StatusIndicator({ status = 'neutral', label, pulse = false, clas
   return (
     <span
       className={className}
-      style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: 13.5, fontWeight: 600, color: 'var(--ink-2)', ...style }}
+      style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: 12.5, fontWeight: 600, color: 'var(--ink-2)', ...style }}
     >
       <span
         className={`dot ${dotCls} ${pulse ? 'anim-pulse' : ''}`}

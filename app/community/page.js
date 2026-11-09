@@ -87,7 +87,7 @@ export default function CommunityPage() {
       orbs
     >
       <audio ref={audioRef} src="https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3" preload="auto" />
-      <div className="container-site" style={{ paddingTop: 100, paddingBottom: 100, minHeight: 'calc(100vh - 100px)', display: 'flex', flexDirection: 'column' }}>
+      <div className="container-site" style={{ paddingTop: 24, paddingBottom: 24, minHeight: 'calc(100vh - 100px)', display: 'flex', flexDirection: 'column' }}>
         
         {/* ── WHATSAPP UI SCREEN ── */}
         <div className="flex-1 flex flex-col anim-fade-up" style={{ maxWidth: 800, marginInline: 'auto', width: '100%', height: '700px', maxHeight: '80vh' }}>
@@ -111,11 +111,11 @@ export default function CommunityPage() {
               <Icons.Zap size={24} />
             </div>
             <div className="flex-1 min-w-0">
-              <h3 style={{ fontSize: 16, fontWeight: 800, color: 'var(--ink)', marginBottom: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
+              <h3 style={{ fontSize: 14.5, fontWeight: 800, color: 'var(--ink)', marginBottom: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
                 MZAZI TECH — Community
                 <Icons.CheckCircle size={14} style={{ color: 'var(--brand)' }} />
               </h3>
-              <p style={{ fontSize: 12, color: 'var(--good)', fontWeight: 600 }}>Dominic, Sarah, Alex, +492 others</p>
+              <p style={{ fontSize: 11.5, color: 'var(--good)', fontWeight: 600 }}>Dominic, Sarah, Alex, +492 others</p>
             </div>
             <div style={{ color: 'var(--muted)' }}>
               <Icons.MoreVertical size={20} />
@@ -136,8 +136,8 @@ export default function CommunityPage() {
             gap: 12
           }}>
             {messages.length === 0 && (
-              <div style={{ display: 'flex', justifySelf: 'center', marginInline: 'auto', marginTop: 40 }}>
-                <span style={{ fontSize: 12, color: 'var(--dim)', background: 'var(--surface-2)', padding: '6px 16px', borderRadius: '20px' }}>
+              <div style={{ display: 'flex', justifySelf: 'center', marginInline: 'auto', marginTop: 24 }}>
+                <span style={{ fontSize: 11.5, color: 'var(--dim)', background: 'var(--surface-2)', padding: '6px 16px', borderRadius: '20px' }}>
                   Welcome to the Community! Start the conversation.
                 </span>
               </div>
@@ -154,7 +154,7 @@ export default function CommunityPage() {
                   maxWidth: '85%'
                 }}>
                   {!isMe && (
-                    <span style={{ fontSize: 12, fontWeight: 800, color: isAdmin ? 'var(--brand)' : 'var(--blue)', marginLeft: 4, marginBottom: 2 }}>
+                    <span style={{ fontSize: 11.5, fontWeight: 800, color: isAdmin ? 'var(--brand)' : 'var(--blue)', marginLeft: 4, marginBottom: 2 }}>
                       {msg.user_name}
                     </span>
                   )}
@@ -166,9 +166,9 @@ export default function CommunityPage() {
                     boxShadow: 'var(--shadow-sm)',
                     position: 'relative'
                   }}>
-                    <p style={{ fontSize: 14.5, lineHeight: 1.5 }}>{msg.message}</p>
+                    <p style={{ fontSize: 13.5, lineHeight: 1.5 }}>{msg.message}</p>
                     <div style={{ 
-                      fontSize: 10, 
+                      fontSize: 10.5, 
                       opacity: 0.7, 
                       textAlign: 'right', 
                       marginTop: 4,
@@ -215,7 +215,7 @@ export default function CommunityPage() {
                 padding: '10px 20px',
                 color: 'var(--ink)',
                 outline: 'none',
-                fontSize: 14.5
+                fontSize: 13.5
               }}
             />
             <button 
@@ -238,7 +238,7 @@ export default function CommunityPage() {
             </button>
           </form>
           
-          <p style={{ textAlign: 'center', marginTop: 16, fontSize: 12, color: 'var(--dim)', fontWeight: 600 }}>
+          <p style={{ textAlign: 'center', marginTop: 16, fontSize: 11.5, color: 'var(--dim)', fontWeight: 600 }}>
             End-to-end encrypted. Standard MZAZI TECH security applies.
           </p>
         </div>

@@ -362,9 +362,9 @@ export default function LudoPage() {
   // ── Setup screen ──
   if (screen === 'setup') {
     return (
-      <div className="py-10 sm:py-14">
+      <div className="py-6 sm:py-6">
         <div className="container-site max-w-3xl">
-          <div className="text-center mb-10">
+          <div className="text-center mb-4">
             <p className="eyebrow">Arcade</p>
             <h1 className="headline mt-3" style={{ fontSize: 'clamp(2rem, 5vw, 3rem)' }}>
               Ludo<span className="accent">.</span> Classic
@@ -376,7 +376,7 @@ export default function LudoPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Create */}
             <div className="card p-6">
               <p className="mono text-[10px] uppercase tracking-[0.18em] mb-4" style={{ color: 'var(--dim)' }}>New game</p>
@@ -434,7 +434,7 @@ export default function LudoPage() {
 
               {error && <p className="text-xs mb-3" style={{ color: 'var(--bad)' }}>{error}</p>}
 
-              <button onClick={createGame} disabled={busy} className="btn btn-primary w-full" style={{ fontSize: 13 }}>
+              <button onClick={createGame} disabled={busy} className="btn btn-primary w-full" style={{ fontSize: 12.5 }}>
                 {busy ? 'Creating…' : mode === 'local' ? 'Start local game' : 'Create room'}
               </button>
             </div>
@@ -468,9 +468,9 @@ export default function LudoPage() {
                               border: `2px solid ${selectedSeat === s ? COLORS[s] : free ? `${COLORS[s]}88` : 'var(--line)'}`,
                               opacity: free ? 1 : 0.4, transition: 'all .2s', position: 'relative',
                             }}>
-                            {!free && <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, color: 'var(--dim)' }}>✕</span>}
+                            {!free && <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14.5, color: 'var(--dim)' }}>✕</span>}
                             {free && (
-                              <span style={{ position: 'absolute', bottom: -14, left: 0, right: 0, textAlign: 'center', fontSize: 12.5, color: COLORS[s], fontWeight: 700 }}>
+                              <span style={{ position: 'absolute', bottom: -14, left: 0, right: 0, textAlign: 'center', fontSize: 12, color: COLORS[s], fontWeight: 700 }}>
                                 {COLOR_NAMES[s]}
                               </span>
                             )}
@@ -488,7 +488,7 @@ export default function LudoPage() {
               <input className="input mb-4" value={name} maxLength={20}
                 onChange={(e) => setName(e.target.value)} placeholder="Player" />
               <button onClick={joinGame} disabled={busy || joinCode.length < 4} className="btn btn-ghost w-full"
-                style={{ fontSize: 13, opacity: busy || joinCode.length < 4 ? 0.5 : 1 }}>
+                style={{ fontSize: 12.5, opacity: busy || joinCode.length < 4 ? 0.5 : 1 }}>
                 {busy ? 'Joining…' : 'Join room'}
               </button>
             </div>
@@ -502,25 +502,25 @@ export default function LudoPage() {
   if (isLobby && state) {
     const shareLink = typeof window !== 'undefined' ? `${window.location.origin}/ludo?g=${session.roomCode}` : '';
     return (
-      <div className="py-10 sm:py-14">
+      <div className="py-6 sm:py-6">
         <div className="container-site max-w-xl">
-          <div className="card p-6 sm:p-8 text-center">
+          <div className="card p-6 sm:p-5 text-center">
             <p className="eyebrow">Online room</p>
-            <p className="mono text-[10px] uppercase tracking-[0.2em] mt-6 mb-2" style={{ color: 'var(--dim)' }}>Room code</p>
-            <p className="headline mb-6" style={{ color: 'var(--brand)', fontSize: 'clamp(2.4rem, 7vw, 3.4rem)', letterSpacing: '0.25em' }}>
+            <p className="mono text-[10px] uppercase tracking-[0.2em] mt-4 mb-2" style={{ color: 'var(--dim)' }}>Room code</p>
+            <p className="headline mb-4" style={{ color: 'var(--brand)', fontSize: 'clamp(2.4rem, 7vw, 3.4rem)', letterSpacing: '0.25em' }}>
               {state.roomCode}
             </p>
 
-            <div className="mb-6 px-4 py-3 rounded" style={{ background: 'var(--bg-2)', border: '1px solid var(--line)' }}>
+            <div className="mb-4 px-4 py-3 rounded" style={{ background: 'var(--bg-2)', border: '1px solid var(--line)' }}>
               <p className="text-xs" style={{ color: 'var(--muted)', lineHeight: 1.7, wordBreak: 'break-all' }}>{shareLink}</p>
             </div>
             <button onClick={() => navigator.clipboard?.writeText(shareLink)?.catch(() => {})}
-              className="btn btn-dark mb-6" style={{ padding: '9px 16px', fontSize: 12.5 }}>
+              className="btn btn-dark mb-4" style={{ padding: '9px 16px', fontSize: 12 }}>
               Copy invite link
             </button>
 
             <p className="mono text-[10px] uppercase tracking-[0.18em] text-left mb-3" style={{ color: 'var(--dim)' }}>Players</p>
-            <div className="space-y-2 mb-6">
+            <div className="space-y-2 mb-4">
               {players.map((p) => {
                 const open = p.type === 'human' && !p.joined;
                 return (
@@ -545,7 +545,7 @@ export default function LudoPage() {
             {error && <p className="text-xs mb-3" style={{ color: 'var(--bad)' }}>{error}</p>}
 
             {canStart ? (
-              <button onClick={startGame} disabled={busy} className="btn btn-primary w-full" style={{ fontSize: 13 }}>
+              <button onClick={startGame} disabled={busy} className="btn btn-primary w-full" style={{ fontSize: 12.5 }}>
                 {busy ? 'Starting…' : 'Start game'}
               </button>
             ) : (
@@ -573,20 +573,20 @@ export default function LudoPage() {
   }
 
   return (
-    <div className="py-10 sm:py-14">
+    <div className="py-6 sm:py-6">
       <div className="container-site max-w-4xl">
 
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-4">
           <div>
             <p className="eyebrow">Arcade · {state.mode === 'online' ? `Room ${state.roomCode}` : 'Local game'}</p>
             <h1 className="headline mt-2" style={{ fontSize: 'clamp(1.7rem, 4vw, 2.3rem)' }}>Ludo<span className="accent">.</span></h1>
           </div>
-          <button onClick={clearSession} className="btn btn-ghost" style={{ padding: '9px 14px', fontSize: 12.5 }}>
+          <button onClick={clearSession} className="btn btn-ghost" style={{ padding: '9px 14px', fontSize: 12 }}>
             {finished ? 'New game' : 'Quit'}
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-[1fr_240px] gap-6 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_240px] gap-4 items-start">
           {/* Board — classic wooden Ludo look */}
           <div style={{
             padding: '16px 12px 14px', borderRadius: 16,
@@ -744,7 +744,7 @@ export default function LudoPage() {
             </p>
 
             {myTurn && state.phase === 'roll' && (
-              <button onClick={rollDice} disabled={busy} className="btn btn-primary w-full" style={{ fontSize: 13 }}>
+              <button onClick={rollDice} disabled={busy} className="btn btn-primary w-full" style={{ fontSize: 12.5 }}>
                 {busy ? 'Rolling…' : 'Roll dice'}
               </button>
             )}
@@ -802,12 +802,12 @@ export default function LudoPage() {
                 ))}
               </div>
 
-              <div className="card p-6 sm:p-8 text-center" style={{ maxWidth: 400, width: '100%', animation: 'mz-pop .45s cubic-bezier(.34,1.56,.64,1)', position: 'relative', zIndex: 1 }}>
+              <div className="card p-6 sm:p-5 text-center" style={{ maxWidth: 400, width: '100%', animation: 'mz-pop .45s cubic-bezier(.34,1.56,.64,1)', position: 'relative', zIndex: 1 }}>
                 <p className="mono text-[10px] uppercase tracking-[0.2em] mb-3" style={{ color: 'var(--dim)' }}>Game over — final rankings</p>
-                <h2 className="headline text-2xl mb-5" style={{ color: COLORS[state.winner] }}>
+                <h2 className="headline text-lg mb-5" style={{ color: COLORS[state.winner] }}>
                   {players.find((p) => p.seat === state.winner)?.name} wins! 🏆
                 </h2>
-                <div className="space-y-2 mb-6">
+                <div className="space-y-2 mb-4">
                   {state.ranks.map((seat, idx) => {
                     const p = players.find((x) => x.seat === seat);
                     return (
@@ -823,13 +823,13 @@ export default function LudoPage() {
                 </div>
                 <div className="flex gap-2.5">
                   {session?.mode === 'local' && (
-                    <button onClick={rematch} disabled={busy} className="btn btn-primary flex-1" style={{ fontSize: 13 }}>
+                    <button onClick={rematch} disabled={busy} className="btn btn-primary flex-1" style={{ fontSize: 12.5 }}>
                       {busy ? 'Starting…' : 'Rematch'}
                     </button>
                   )}
-                  <button onClick={clearSession} className="btn btn-ghost flex-1" style={{ fontSize: 13 }}>New game</button>
+                  <button onClick={clearSession} className="btn btn-ghost flex-1" style={{ fontSize: 12.5 }}>New game</button>
                 </div>
-                <Link href="/" className="btn btn-dark w-full mt-2.5" style={{ fontSize: 12.5 }}>Back to home</Link>
+                <Link href="/" className="btn btn-dark w-full mt-2.5" style={{ fontSize: 12 }}>Back to home</Link>
               </div>
             </div>
           </Portal>

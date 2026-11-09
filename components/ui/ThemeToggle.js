@@ -55,7 +55,7 @@ export default function ThemeToggle({ variant = 'button', className = '', showLa
       aria-label={`Colour theme: ${LABEL[theme]}. Switch to ${LABEL[next]}.`}
     >
       <Glyph size={17} />
-      {showLabel && <span style={{ marginLeft: 8, fontSize: 13.5, fontWeight: 600 }}>{LABEL[theme]}</span>}
+      {showLabel && <span style={{ marginLeft: 8, fontSize: 12.5, fontWeight: 600 }}>{LABEL[theme]}</span>}
     </button>
   );
 }

@@ -59,14 +59,14 @@ function PaymentCallbackContent() {
 
   return (
     <AppBackground variant="dashboard">
-      <div className="container-site" style={{ paddingTop: 56, paddingBottom: 100, maxWidth: 640 }}>
+      <div className="container-site" style={{ paddingTop: 24, paddingBottom: 24, maxWidth: 640 }}>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <Card className="anim-fade-up" style={{ width: '100%' }}>
             {/* ── Pending ── */}
             {status === 'pending' && (
               <div style={{ textAlign: 'center', padding: '12px 0' }} role="status" aria-live="polite">
                 <span className="spinner" style={{ margin: '0 auto 18px' }} />
-                <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 700, color: 'var(--ink)' }}>
+                <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 700, color: 'var(--ink)' }}>
                   Confirming your payment…
                 </h1>
                 <p style={{ margin: '10px 0 0', color: 'var(--muted)', lineHeight: 1.7 }}>
@@ -74,7 +74,7 @@ function PaymentCallbackContent() {
                     ? 'Please wait a moment while we check with the payment provider. Don’t close this page.'
                     : 'We don’t have a payment reference to check yet. If you just paid, give it a moment and refresh.'}
                 </p>
-                <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap', marginTop: 22 }}>
+                <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap', marginTop: 16 }}>
                   {reference && <Button onClick={verifyPayment} icon={<Icons.Refresh size={16} />}>Check again</Button>}
                   <Button variant="ghost" href="/wallet">Go to wallet</Button>
                 </div>
@@ -84,9 +84,9 @@ function PaymentCallbackContent() {
             {/* ── Success ── */}
             {status === 'success' && (
               <div className="anim-fade-up">
-                <div style={{ textAlign: 'center', marginBottom: 22 }}>
+                <div style={{ textAlign: 'center', marginBottom: 16 }}>
                   <span style={{ display: 'inline-flex', color: 'var(--good)' }} aria-hidden="true"><Icons.CheckCircle size={54} /></span>
-                  <h1 style={{ margin: '14px 0 0', fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 700, color: 'var(--ink)' }}>
+                  <h1 style={{ margin: '14px 0 0', fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 700, color: 'var(--ink)' }}>
                     ✓ Payment successful
                   </h1>
                   <p style={{ margin: '8px 0 0', color: 'var(--muted)' }}>Your payment was received and your order is ready.</p>
@@ -147,12 +147,12 @@ function PaymentCallbackContent() {
             {status === 'failed' && (
               <div className="anim-fade-up" style={{ textAlign: 'center', padding: '12px 0' }} role="alert">
                 <span style={{ display: 'inline-flex', color: 'var(--bad)' }} aria-hidden="true"><Icons.AlertCircle size={54} /></span>
-                <h1 style={{ margin: '14px 0 0', fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 700, color: 'var(--ink)' }}>
+                <h1 style={{ margin: '14px 0 0', fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 700, color: 'var(--ink)' }}>
                   ✕ Payment failed
                 </h1>
                 <p style={{ margin: '8px 0 0', color: 'var(--ink-2)' }}>Your payment was not completed.</p>
-                <p style={{ margin: '8px 0 0', color: 'var(--muted)', fontSize: 14 }}>{error}</p>
-                <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap', marginTop: 22 }}>
+                <p style={{ margin: '8px 0 0', color: 'var(--muted)', fontSize: 13.5 }}>{error}</p>
+                <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap', marginTop: 16 }}>
                   <Button onClick={verifyPayment} icon={<Icons.Refresh size={16} />}>Try again</Button>
                   <Button variant="ghost" href="/products">Back to products</Button>
                   <Button variant="ghost" href="/contact">Contact support</Button>
@@ -170,7 +170,7 @@ export default function PaymentCallback() {
   return (
     <Suspense fallback={
       <AppBackground variant="dashboard">
-        <div className="container-site" style={{ paddingTop: 56, paddingBottom: 100, maxWidth: 640 }}>
+        <div className="container-site" style={{ paddingTop: 24, paddingBottom: 24, maxWidth: 640 }}>
           <Card>
             <div className="empty" role="status" aria-live="polite">
               <span className="spinner" />

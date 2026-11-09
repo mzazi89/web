@@ -53,7 +53,7 @@ export function BotMark({ name = 'QUARTZ XD', image = undefined, size = 52, comp
           label={short}
           style={{ width: 30, height: 30, flex: '0 0 30px' }}
         />
-        <span style={{ fontSize: 13.5, fontWeight: 700, color: 'var(--ink)', whiteSpace: 'nowrap' }}>{name}</span>
+        <span style={{ fontSize: 12.5, fontWeight: 700, color: 'var(--ink)', whiteSpace: 'nowrap' }}>{name}</span>
       </span>
     );
   }
@@ -108,13 +108,13 @@ export default function PlanCard({
         <BotMark name="QUARTZ XD" image={image} size={48} />
         <div style={{ minWidth: 0, flex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-            <h3 style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 700 }}>
+            <h3 style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 700 }}>
               {name || planLabel(key)}
             </h3>
             {current && <Badge tone="brand">Current plan</Badge>}
             {!current && recommended && <Badge tone="blue" icon={<Sparkles size={12} />}>Popular</Badge>}
           </div>
-          <p style={{ margin: '3px 0 0', fontSize: 13.5, color: 'var(--muted)', display: 'flex', alignItems: 'center', gap: 6 }}>
+          <p style={{ margin: '3px 0 0', fontSize: 12.5, color: 'var(--muted)', display: 'flex', alignItems: 'center', gap: 6 }}>
             <Phone size={14} />
             {deviceText}
           </p>
@@ -122,24 +122,24 @@ export default function PlanCard({
       </div>
 
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 7, flexWrap: 'wrap' }}>
-        <span style={{ fontFamily: 'var(--font-display)', fontSize: 27, fontWeight: 700, letterSpacing: '-0.03em' }}>
+        <span style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 700, letterSpacing: '-0.03em' }}>
           {priceText}
         </span>
         {days ? (
-          <span style={{ fontSize: 13.5, color: 'var(--muted)' }}>/ {days} days</span>
+          <span style={{ fontSize: 12.5, color: 'var(--muted)' }}>/ {days} days</span>
         ) : (
-          <span style={{ fontSize: 13.5, color: 'var(--muted)' }}>forever</span>
+          <span style={{ fontSize: 12.5, color: 'var(--muted)' }}>forever</span>
         )}
       </div>
 
       {blurb && (
-        <p style={{ margin: 0, fontSize: 13.5, color: 'var(--muted)', lineHeight: 1.6 }}>{blurb}</p>
+        <p style={{ margin: 0, fontSize: 12.5, color: 'var(--muted)', lineHeight: 1.6 }}>{blurb}</p>
       )}
 
       {Array.isArray(plan?.features) && plan.features.length > 0 && (
         <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 7 }}>
           {plan.features.map((f) => (
-            <li key={f} style={{ display: 'flex', gap: 9, alignItems: 'flex-start', fontSize: 13.5, color: 'var(--ink-2)' }}>
+            <li key={f} style={{ display: 'flex', gap: 9, alignItems: 'flex-start', fontSize: 12.5, color: 'var(--ink-2)' }}>
               <span style={{ color: 'var(--good)', marginTop: 2, flex: '0 0 auto' }} aria-hidden="true"><Check size={15} /></span>
               <span>{f}</span>
             </li>

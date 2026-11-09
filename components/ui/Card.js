@@ -44,11 +44,11 @@ export function CardHeader({ title, description, action, icon, className = '', s
           </span>
         )}
         <div style={{ minWidth: 0 }}>
-          <h3 style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: 16.5, fontWeight: 700, color: 'var(--ink)' }}>
+          <h3 style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 700, color: 'var(--ink)' }}>
             {title}
           </h3>
           {description && (
-            <p style={{ margin: '3px 0 0', fontSize: 13.5, color: 'var(--muted)', lineHeight: 1.5 }}>{description}</p>
+            <p style={{ margin: '3px 0 0', fontSize: 12.5, color: 'var(--muted)', lineHeight: 1.5 }}>{description}</p>
           )}
         </div>
       </div>
@@ -77,7 +77,7 @@ export function StatCard({ label, value, hint, icon, tone = 'brand', loading = f
           {loading
             ? <span className="skeleton" style={{ display: 'block', width: 76, height: 26, marginTop: 8, borderRadius: 'var(--r-xs)' }} />
             : <p className="stat-num tnum" style={{ margin: '5px 0 0' }}>{value}</p>}
-          {hint && <p style={{ margin: '5px 0 0', fontSize: 12.5, color: 'var(--dim)' }}>{hint}</p>}
+          {hint && <p style={{ margin: '5px 0 0', fontSize: 12, color: 'var(--dim)' }}>{hint}</p>}
         </div>
         {icon && (
           <span

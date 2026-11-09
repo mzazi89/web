@@ -109,16 +109,16 @@ export default function SignupPage() {
         <ThemeToggle />
       </div>
 
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 20px 48px' }}>
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 20px 24px' }}>
         <div style={{ width: '100%', maxWidth: 440 }} className="anim-fade-up">
-          <div style={{ textAlign: 'center', marginBottom: 26 }}>
+          <div style={{ textAlign: 'center', marginBottom: 19 }}>
             <Link href="/" aria-label="MZAZI TECH home" style={{ textDecoration: 'none', display: 'inline-block' }}>
               <Logo size={44} />
             </Link>
             <h1 className="headline" style={{ fontSize: 'clamp(1.6rem, 5vw, 2rem)', marginTop: 20, marginBottom: 0 }}>
               Create your account
             </h1>
-            <p style={{ margin: '8px 0 0', fontSize: 14.5, color: 'var(--muted)' }}>
+            <p style={{ margin: '8px 0 0', fontSize: 13.5, color: 'var(--muted)' }}>
               Free to start — connect your first number in about two minutes.
             </p>
           </div>
@@ -166,9 +166,9 @@ export default function SignupPage() {
                   error={passwordsMismatch ? 'mismatch' : undefined} />
               </Field>
 
-              <div style={{ marginTop: 22, paddingTop: 18, borderTop: '1px solid var(--line-soft)' }}>
+              <div style={{ marginTop: 16, paddingTop: 18, borderTop: '1px solid var(--line-soft)' }}>
                 <p className="side-group-label" style={{ padding: '0 0 8px' }}>Account recovery</p>
-                <p style={{ margin: '0 0 14px', fontSize: 13.5, color: 'var(--muted)', lineHeight: 1.6 }}>
+                <p style={{ margin: '0 0 14px', fontSize: 12.5, color: 'var(--muted)', lineHeight: 1.6 }}>
                   Used only if you forget your password. Choose something only you would know.
                 </p>
 
@@ -200,7 +200,7 @@ export default function SignupPage() {
             </form>
           </div>
 
-          <p style={{ marginTop: 22, textAlign: 'center', fontSize: 14.5, color: 'var(--muted)' }}>
+          <p style={{ marginTop: 16, textAlign: 'center', fontSize: 13.5, color: 'var(--muted)' }}>
             Already have an account?{' '}
             <Link href={authHref(nextRef.current)} style={{ fontWeight: 700, color: 'var(--brand)', textDecoration: 'none' }}>
               Sign in

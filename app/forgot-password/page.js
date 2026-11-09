@@ -84,9 +84,9 @@ export default function ForgotPasswordPage() {
         <ThemeToggle />
       </div>
 
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 20px 48px' }}>
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 20px 24px' }}>
         <div style={{ width: '100%', maxWidth: 420 }} className="anim-fade-up">
-          <div style={{ textAlign: 'center', marginBottom: 24 }}>
+          <div style={{ textAlign: 'center', marginBottom: 17 }}>
             <Link href="/" aria-label="MZAZI TECH home" style={{ textDecoration: 'none', display: 'inline-block' }}>
               <Logo size={44} />
             </Link>
@@ -95,7 +95,7 @@ export default function ForgotPasswordPage() {
               {step === 2 && 'Answer your security question'}
               {step === 3 && 'Password reset'}
             </h1>
-            <p style={{ margin: '8px 0 0', fontSize: 14.5, color: 'var(--muted)' }}>
+            <p style={{ margin: '8px 0 0', fontSize: 13.5, color: 'var(--muted)' }}>
               {step === 1 && 'Enter your account email and we will look it up.'}
               {step === 2 && `Account: ${email}`}
               {step === 3 && 'You can now sign in with your new password.'}
@@ -159,12 +159,12 @@ export default function ForgotPasswordPage() {
 
             {step === 3 && (
               <div>
-                <div className="empty" style={{ padding: '18px 0 22px' }}>
+                <div className="empty" style={{ padding: '18px 0 16px' }}>
                   <div className="empty-icon" style={{ background: 'var(--good-tint)', color: 'var(--good)' }} aria-hidden="true">
                     <Icons.CheckCircle size={28} />
                   </div>
-                  <p style={{ margin: 0, fontWeight: 700, fontSize: 16, color: 'var(--ink)' }}>Your password was updated</p>
-                  <p style={{ margin: 0, fontSize: 14, color: 'var(--muted)' }}>
+                  <p style={{ margin: 0, fontWeight: 700, fontSize: 14.5, color: 'var(--ink)' }}>Your password was updated</p>
+                  <p style={{ margin: 0, fontSize: 13.5, color: 'var(--muted)' }}>
                     Sign in with your new password to continue.
                   </p>
                 </div>
@@ -174,7 +174,7 @@ export default function ForgotPasswordPage() {
           </div>
 
           {step !== 3 && (
-            <p style={{ marginTop: 22, textAlign: 'center', fontSize: 14.5, color: 'var(--muted)' }}>
+            <p style={{ marginTop: 16, textAlign: 'center', fontSize: 13.5, color: 'var(--muted)' }}>
               Remembered it?{' '}
               <Link href="/login" style={{ fontWeight: 700, color: 'var(--brand)', textDecoration: 'none' }}>Sign in</Link>
             </p>

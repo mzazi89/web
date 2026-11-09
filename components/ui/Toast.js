@@ -51,7 +51,7 @@ export function ToastProvider({ children }) {
                 type="button"
                 onClick={() => dismiss(t.id)}
                 aria-label="Dismiss notification"
-                style={{ background: 'none', border: 0, cursor: 'pointer', color: 'var(--dim)', fontSize: 16, lineHeight: 1, padding: 2 }}
+                style={{ background: 'none', border: 0, cursor: 'pointer', color: 'var(--dim)', fontSize: 14.5, lineHeight: 1, padding: 2 }}
               >
                 ×
               </button>
