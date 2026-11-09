@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Logo from '@/components/Logo';
-import { AppBackground, BotMark, Card, Badge, Icons } from '@/components/ui';
+import { AppBackground, Card, Badge, Icons } from '@/components/ui';
 
 export const metadata = {
   title: 'Mzazi Tech — Innovative Tech Solutions & Automation',
@@ -10,20 +10,17 @@ export const metadata = {
 export default function Home() {
   return (
     <AppBackground 
-      image="https://clouddisk.alibaba.com/sa/download?filePath=saFile/0612387aa62af8104ffb6679b7b95a19.png&fileSuffix=png&userId=4500117644369"
-      imageOpacity={0.8}
-      scrim={0.25}
       orbs
     >
       {/* ── HERO ── */}
       <section className="section text-center" style={{ paddingTop: 24, paddingBottom: 24 }}>
         <div className="container-site">
           <Badge tone="brand" icon={<Icons.Sparkles size={12} />}>Est. 2024</Badge>
-          <h1 className="headline anim-fade-up d1" style={{ marginTop: 17, fontSize: 'clamp(3rem, 10vw, 5rem)', fontWeight: 900, lineHeight: 1.1 }}>
+          <h1 className="headline anim-fade-up d1" style={{ marginTop: 12, fontWeight: 800, lineHeight: 1.12 }}>
             Building the Future <br />
             <span className="gradient-text">of Technology</span>.
           </h1>
-          <p className="lede anim-fade-up d2" style={{ marginTop: 17, maxWidth: 620, marginInline: 'auto', fontSize: '1rem', color: 'var(--muted)' }}>
+          <p className="lede anim-fade-up d2" style={{ marginTop: 12, maxWidth: 560, marginInline: 'auto', color: 'var(--muted)' }}>
             We specialize in professional WhatsApp automation, high-performance web solutions, and 
             expert tech education. Built in Kenya, scaling globally.
           </p>
@@ -40,7 +37,7 @@ export default function Home() {
           <div className="grid-2-responsive" style={{ alignItems: 'center', gap: 24 }}>
             <div className="anim-fade-up">
               <Badge tone="blue" style={{ marginBottom: 16 }}>Our Story</Badge>
-              <h2 style={{ fontSize: '1.6rem', fontWeight: 900, marginBottom: 17, lineHeight: 1.2 }}>
+              <h2 style={{ fontSize: '1.35rem', fontWeight: 800, marginBottom: 12, lineHeight: 1.2 }}>
                 From Curiosity <br /> to <span style={{ color: 'var(--blue)' }}>Mastery</span>.
               </h2>
               <div style={{ fontSize: '0.9rem', color: 'var(--ink-2)', lineHeight: 1.8 }}>
@@ -83,7 +80,7 @@ export default function Home() {
       <section className="section">
         <div className="container-site">
           <div style={{ textAlign: 'center', marginBottom: 24 }}>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 900 }}>What We Do</h2>
+            <h2 style={{ fontSize: '1.35rem', fontWeight: 800 }}>What We Do</h2>
             <p className="lede" style={{ marginInline: 'auto', maxWidth: 500 }}>
               Tailored digital solutions for creators, businesses, and students.
             </p>
@@ -126,7 +123,7 @@ export default function Home() {
           <div className="grid-2-responsive" style={{ alignItems: 'center', gap: 24 }}>
             <div className="anim-fade-up">
               <Badge tone="pink" style={{ marginBottom: 16 }}>The Standard</Badge>
-              <h2 style={{ fontSize: '1.6rem', fontWeight: 900, marginBottom: 17, lineHeight: 1.2 }}>
+              <h2 style={{ fontSize: '1.35rem', fontWeight: 800, marginBottom: 12, lineHeight: 1.2 }}>
                 Engineered for <br /> <span style={{ color: 'var(--pink)' }}>Performance</span>.
               </h2>
               <div className="space-y-4">
@@ -154,28 +151,16 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <div className="anim-fade-up d2" style={{ position: 'relative' }}>
-              <Card style={{ padding: 24, background: 'var(--surface)', border: '1px solid var(--line)', boxShadow: 'var(--shadow-xl)' }}>
-                <div style={{ display: 'flex', gap: 2, color: '#FFD700', marginBottom: 16 }}>
-                  <Icons.Star size={16} fill="currentColor" />
-                  <Icons.Star size={16} fill="currentColor" />
-                  <Icons.Star size={16} fill="currentColor" />
-                  <Icons.Star size={16} fill="currentColor" />
-                  <Icons.Star size={16} fill="currentColor" />
+            <div className="anim-fade-up d2">
+              <Card style={{ padding: 16, textAlign: 'center', background: 'var(--surface)' }}>
+                <div style={{ display: 'flex', gap: 2, justifyContent: 'center', color: 'var(--warn)', marginBottom: 10 }}>
+                  {[0,1,2,3,4].map(i => <Icons.Star key={i} size={14} fill="currentColor" />)}
                 </div>
-                <p style={{ fontSize: '1rem', fontWeight: 600, fontStyle: 'italic', lineHeight: 1.6, marginBottom: 17, color: 'var(--ink)' }}>
-                  "MZAZI TECH transformed how I handle customer inquiries. The automation is flawless and the support from Dominic is top-notch."
+                <p style={{ fontSize: 13, color: 'var(--ink-2)', lineHeight: 1.55, marginBottom: 12 }}>
+                  Builders, students and businesses across Kenya rate their MZAZI TECH experience — read real reviews or share your own.
                 </p>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'var(--bg-2)', border: '1px solid var(--line)', display: 'grid', placeItems: 'center', fontWeight: 800, color: 'var(--brand)' }}>JD</div>
-                  <div>
-                    <div style={{ fontSize: 13.5, fontWeight: 800 }}>John Doe</div>
-                    <div style={{ fontSize: 11.5, color: 'var(--dim)' }}>Verified Merchant</div>
-                  </div>
-                </div>
+                <Link href="/testimonials" className="btn btn-ghost btn-sm">Read reviews</Link>
               </Card>
-              {/* Decorative elements */}
-              <div style={{ position: 'absolute', top: -20, right: -20, width: 100, height: 100, background: 'var(--brand-tint)', filter: 'blur(40px)', borderRadius: '50%', zIndex: -1 }} />
             </div>
           </div>
         </div>
@@ -185,7 +170,7 @@ export default function Home() {
       <section className="section" style={{ paddingBottom: 24 }}>
         <div className="container-site">
           <Card style={{ padding: 24, textAlign: 'center', background: 'var(--surface-2)', border: '1px solid var(--line)' }} className="anim-fade-up">
-            <h2 className="headline" style={{ fontSize: 'clamp(2rem, 5vw, 3rem)', fontWeight: 900 }}>
+            <h2 className="headline" style={{ fontSize: 'clamp(1.5rem, 4.5vw, 2.1rem)', fontWeight: 800 }}>
               Start Your <span className="gradient-text">Mastery</span> Today.
             </h2>
             <p className="lede mt-4 max-w-xl mx-auto">
@@ -193,7 +178,7 @@ export default function Home() {
             </p>
             <div style={{ marginTop: 24, display: 'flex', gap: 16, justifyContent: 'center' }}>
               <Link href="/signup" className="btn btn-primary btn-lg px-6">Get Started</Link>
-              <Link href="/community" className="btn btn-ghost btn-lg px-6">Explore Community</Link>
+              <Link href="/community" className="btn btn-ghost btn-lg">Explore Community</Link>
             </div>
           </Card>
         </div>

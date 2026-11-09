@@ -177,9 +177,6 @@ export default function ContactPage() {
 
   return (
     <AppBackground
-      image="https://clouddisk.alibaba.com/sa/download?filePath=saFile/0612387aa62af8104ffb6679b7b95a19.png&fileSuffix=png&userId=4500117644369"
-      imageOpacity={0.4}
-      scrim={0.65}
       orbs
     >
       {/* ── Hero ── */}

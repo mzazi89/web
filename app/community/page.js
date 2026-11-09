@@ -81,9 +81,6 @@ export default function CommunityPage() {
 
   return (
     <AppBackground
-      image="https://clouddisk.alibaba.com/sa/download?filePath=saFile/0612387aa62af8104ffb6679b7b95a19.png&fileSuffix=png&userId=4500117644369"
-      imageOpacity={0.4}
-      scrim={0.65}
       orbs
     >
       <audio ref={audioRef} src="https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3" preload="auto" />

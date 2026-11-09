@@ -90,11 +90,12 @@ export default function RootLayout({ children }) {
         <AdSenseScript />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       </head>
-      <body className="flex flex-col min-h-screen bg-[#04060D]">
+      <body className="flex flex-col min-h-screen" style={{ background: 'var(--bg)' }}>
         <ThemeProvider>
           <ToastProvider>
             <PwaProvider>
               <TechBackground />
+              <a href="#main-content" className="skip-link">Skip to content</a>
               <Navbar />
               <main id="main-content" className="flex-grow app-content relative z-10">
                 {children}
