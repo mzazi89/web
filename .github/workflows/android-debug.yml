@@ -151,7 +151,7 @@ jobs:
             const doc = JSON.parse(fs.readFileSync(path, "utf8"));
             doc.version = process.env.VERSION_NAME;
             doc.versionCode = Number(process.env.VERSION_CODE);
-            doc.url = "https://github.com/mzazi89/web/releases/download/android-latest/mzazi-tech-debug.apk";
+            doc.url = "https://www.mzazi.shop/mzazitech.apk";
             doc.notes = "Bug fixes and performance improvements.";
             doc.publishedAt = new Date().toISOString();
             fs.writeFileSync(path, JSON.stringify(doc, null, 2) + "\n");

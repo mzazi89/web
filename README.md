@@ -26,6 +26,8 @@ The repository also builds an installable Android app — a WebView shell around
 2. Pick the newest green run and download **`mzazi-tech-debug-apk`** from *Artifacts* (a zip — unzip it), **or** grab the ready APK from **[Releases → MZAZI TECH — Android (latest)](https://github.com/mzazi89/web/releases/tag/android-latest)**.
 3. Tap the `.apk`, and allow *install unknown apps* for your browser when Android asks.
 
+Or just open **[mzazi.shop/mzazitech.apk](https://www.mzazi.shop/mzazitech.apk)** — same file, no GitHub account needed, always the latest build.
+
 Debug builds are unsigned for Play, so the warning is expected. The app needs
 Android 8.0 (API 26) or newer.
 
