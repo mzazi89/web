@@ -64,6 +64,18 @@ android {
                 storePassword = envOr("MZAZI_KEYSTORE_PASSWORD", "mzazi-android")
                 keyAlias = envOr("MZAZI_KEY_ALIAS", "mzazi")
                 keyPassword = envOr("MZAZI_KEY_PASSWORD", "mzazi-android")
+
+                // All three schemes, on purpose.
+                //
+                // AGP signs v2/v3 only when minSdk >= 24, which leaves no
+                // META-INF certificate for v1-only parsers to read. Android
+                // itself is fine with that, but third-party installers —
+                // APKMirror Installer among them — reject the file with "the
+                // parser did not find any certificates in the .apk". v1 costs a
+                // few kilobytes and removes the whole class of problem.
+                enableV1Signing = true
+                enableV2Signing = true
+                enableV3Signing = true
             }
         }
     }
