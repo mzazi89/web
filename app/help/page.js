@@ -96,8 +96,8 @@ export default function HelpPage() {
           description="Quick answers about pairing, device limits and billing — and a direct line to our team."
           icon={<Icons.Help size={20} />}
           actions={
-            <Button href="https://t.me/mzazitech" variant="ghost" icon={<Icons.Send size={16} />}>
-              Telegram support
+            <Button href="mailto:mzazitechinc@gmail.com" variant="ghost" icon={<Icons.Mail size={16} />}>
+              Email support
             </Button>
           }
           breadcrumb={['Support']}
@@ -146,7 +146,7 @@ export default function HelpPage() {
           {sent ? (
             <Alert kind="success" title="Message sent">
               Thanks — we’ve received your message and will reply by email. You can also reach us on{' '}
-              <a className="link" href="https://t.me/mzazitech" target="_blank" rel="noopener noreferrer">Telegram</a>.
+              <a className="link" href="mailto:mzazitechinc@gmail.com">mzazitechinc@gmail.com</a>.
               <div style={{ marginTop: 12 }}>
                 <Button size="sm" variant="ghost" onClick={() => setSent(false)}>Send another</Button>
               </div>
@@ -202,8 +202,8 @@ export default function HelpPage() {
         <Card className="anim-fade-up d2">
           <CardHeader title="Other ways to reach us" icon={<Icons.ExternalLink size={18} />} />
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
-            <Button href="https://t.me/mzazitech" variant="dark" icon={<Icons.Send size={16} />}>
-              Telegram — t.me/mzazitech
+            <Button href="mailto:mzazitechinc@gmail.com" variant="dark" icon={<Icons.Mail size={16} />}>
+              mzazitechinc@gmail.com
             </Button>
             <Button href="/contact" variant="ghost" icon={<Icons.Help size={16} />}>
               Contact page

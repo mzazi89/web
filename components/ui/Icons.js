@@ -121,3 +121,4 @@ export const Bell = (p) => <Svg {...p}><path d="M18 15.5V11a6 6 0 1 0-12 0v4.5L4
 export const Receipt = (p) => <Svg {...p}><path d="M6 3.5h12v17l-3-2-3 2-3-2-3 2v-17Z" /><path d="M9 8h6M9 12h6" /></Svg>;
 export const Key = (p) => <Svg {...p}><circle cx="8" cy="8" r="3.6" /><path d="m10.6 10.6 8 8M16 16l-1.6 1.6M18.2 18.2 16.6 20" /></Svg>;
 export const Cart = (p) => <Svg {...p}><path d="M3 4h2l2.4 10.4a2 2 0 0 0 2 1.6h7.2a2 2 0 0 0 2-1.55L20 7H6" /><circle cx="10" cy="20" r="1.2" /><circle cx="17.5" cy="20" r="1.2" /></Svg>;
+export const Chat = (p) => <Svg {...p}><path d="M20.5 12.4c0 4-3.8 7.2-8.5 7.2-1 0-2-.15-2.9-.42L4.5 21l1.2-4.1A6.9 6.9 0 0 1 3.5 12.4c0-4 3.8-7.2 8.5-7.2s8.5 3.2 8.5 7.2Z" /></Svg>;

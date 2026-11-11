@@ -77,7 +77,7 @@ const SOURCE_TIMEOUT_MS = 8000;
 const DC_PROMPT_MAX = 850;
 function buildDcPrompt(question, packagesTxt) {
   const questionPart = `\nUser question: ${question}`;
-  const head = `You are MZAZI AI, the assistant for MZAZI TECH (mzazi.shop): Pterodactyl panels, WhatsApp bots, APIs, temp numbers, wallet funded via Paystack in KES. Current packages: ${packagesTxt}. Support: t.me/mzazitech. Keep answers short and accurate.`;
+  const head = `You are MZAZI AI, the assistant for MZAZI TECH (mzazi.shop): Pterodactyl panels, WhatsApp bots, APIs, temp numbers, wallet funded via Paystack in KES. Current packages: ${packagesTxt}. Support: mzazitechinc@gmail.com. Keep answers short and accurate.`;
   const headBudget = Math.max(80, DC_PROMPT_MAX - questionPart.length);
   return head.slice(0, headBudget) + questionPart;
 }

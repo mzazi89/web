@@ -3,21 +3,15 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { Icons, Button, Card, Badge, AppBackground } from '@/components/ui';
 
+// One way in. Every other channel (Telegram, WhatsApp, a phone line) has been
+// retired so there is no number to leak, no handle to go stale, and one queue
+// that cannot be missed.
 const channels = [
   {
-    icon: <Icons.Telegram size={24} />,
-    color: 'var(--blue)', title: 'Telegram Support', desc: 'Real-time help and community updates. Replies within minutes.',
-    action: 'Open Telegram', href: 'https://t.me/mzazitech',
-  },
-  {
-    icon: <Icons.WhatsApp size={24} />,
-    color: 'var(--good)', title: 'Direct WhatsApp', desc: 'Personal chat with our developer team for urgent technical help.',
-    action: 'Chat on WhatsApp', href: 'https://wa.me/254108595201',
-  },
-  {
     icon: <Icons.Mail size={24} />,
-    color: 'var(--brand)', title: 'Email Inquiries', desc: 'For billing, partnerships, and formal enterprise requests.',
-    action: 'Send Email', href: 'mailto:mzazitechinc@gmail.com',
+    color: 'var(--brand)', title: 'Email',
+    desc: 'Billing, partnerships, account recovery and anything the chat cannot solve.',
+    action: 'mzazitechinc@gmail.com', href: 'mailto:mzazitechinc@gmail.com',
   },
 ];
 

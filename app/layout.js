@@ -1,6 +1,7 @@
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import MobileDock from '../components/MobileDock';
+import ChatWidget from '../components/ChatWidget';
 import TechBackground from '../components/TechBackground';
 import PwaProvider from '../components/PwaProvider';
 import AdSenseScript from '../components/AdSenseScript';
@@ -56,7 +57,13 @@ const jsonLd = {
   description:
     'WhatsApp automation platform — connect your number, choose your bot (QUARTZ XD or MZAZI XMD) and start automating.',
   foundingLocation: { '@type': 'Place', name: 'Nairobi, Kenya' },
-  sameAs: ['https://t.me/mzazitech', 'https://wa.me/254108595201'],
+  email: 'mzazitechinc@gmail.com',
+  contactPoint: {
+    '@type': 'ContactPoint',
+    contactType: 'customer support',
+    email: 'mzazitechinc@gmail.com',
+    availableLanguage: ['en'],
+  },
 };
 
 export const viewport = {
@@ -103,6 +110,7 @@ export default function RootLayout({ children }) {
               </main>
               <Footer />
               <MobileDock />
+              <ChatWidget />
             </PwaProvider>
           </ToastProvider>
         </ThemeProvider>

@@ -156,7 +156,7 @@ function downloadReceipt(t, userEmail, balance) {
   </div>
   <div class="footer">
     <p>Thank you for using Mzazi Tech Inc.<br/>
-    Support: <a href="https://t.me/mzazitech">t.me/mzazitech</a> &nbsp;|&nbsp; <a href="https://official.mzazi.shop">official.mzazi.shop</a></p>
+    Support: <a href="mailto:mzazitechinc@gmail.com">mzazitechinc@gmail.com</a></p>
     <div class="barcode">||||| ${t.reference || `TX${t.id}`} |||||</div>
   </div>
 </div>
@@ -625,7 +625,7 @@ function WalletInner() {
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: 'space-between', alignItems: 'center', marginTop: 20 }}>
           <p style={{ margin: 0, fontSize: 12, color: 'var(--muted)' }}>
             Need a full history or a panel issue fixed?&nbsp;
-            <a className="link" href="https://t.me/mzazitech" target="_blank" rel="noopener noreferrer">Contact support on Telegram →</a>
+            <a className="link" href="mailto:mzazitechinc@gmail.com">Email support →</a>
           </p>
           <Button variant="ghost" size="sm" href="/payments">Open payments page</Button>
         </div>
