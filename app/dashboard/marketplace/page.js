@@ -20,7 +20,7 @@ export default async function MarketplacePage() {
   if (!viewer) return null;
 
   const [{ panels, vps }, orders] = await Promise.all([getPackages(), getPurchases(viewer.id)]);
-  const botPlans = Object.values(PLANS).filter((p) => p.id !== 'FREE').sort((a, b) => a.price - b.price);
+  const botPlans = Object.values(PLANS).sort((a, b) => a.priceKsh - b.priceKsh);
 
   return (
     <>
@@ -57,8 +57,8 @@ export default async function MarketplacePage() {
         <div className="shelf">
           {botPlans.map((plan) => (
             <div className="shelf-card" key={plan.id}>
-              <span className="shelf-name">{plan.label || plan.id}</span>
-              <p className="shelf-price">{money(plan.price)}<small> / 30 days</small></p>
+              <span className="shelf-name">{plan.name}</span>
+              <p className="shelf-price">{money(plan.priceKsh)}<small> / 30 days</small></p>
               <p className="shelf-specs">{plan.maxDevices >= 999 ? 'Unlimited devices' : `${plan.maxDevices} devices`}</p>
               <Link href="/subscription" className="btn btn-ghost" style={{ marginTop: 'auto' }}>Choose</Link>
             </div>

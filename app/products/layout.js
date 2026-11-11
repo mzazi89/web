@@ -2,22 +2,22 @@
 // metadata lives here — Next only reads `metadata` from server modules.
 
 export const metadata = {
-  title: 'Premium Panels — Pterodactyl & hosting panels',
+  title: 'Catalogue — panels, VPS, WhatsApp bots & API',
   description:
-    'Managed Pterodactyl and hosting control panels from MZAZI TECH INC. Instant provisioning, full root access, wallet billing and 24/7 support from Nairobi.',
+    'Everything MZAZI TECH INC sells: managed Pterodactyl panels, VPS hosting, WhatsApp bot plans and the developer API. Wallet billing, instant provisioning, support from Nairobi.',
   alternates: { canonical: 'https://www.mzazi.shop/products' },
   openGraph: {
-    title: 'Premium Panels · MZAZI TECH INC',
+    title: 'The catalogue · MZAZI TECH INC',
     description:
-      'Powerful hosting management solutions — Pterodactyl and hosting panels, provisioned in minutes.',
+      'Panels, VPS, WhatsApp bots and the API — sold from one account.',
     url: 'https://www.mzazi.shop/products',
     siteName: 'MZAZI TECH INC',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Premium Panels · MZAZI TECH INC',
-    description: 'Powerful hosting management solutions, provisioned in minutes.',
+    title: 'The catalogue · MZAZI TECH INC',
+    description: 'Panels, VPS, WhatsApp bots and the API — sold from one account.',
   },
 };
 

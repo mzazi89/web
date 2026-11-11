@@ -8,73 +8,136 @@ import { Icons } from '@/components/ui';
 import { fmtKes } from '@/lib/currency';
 import { authHref } from '@/lib/nextPath';
 
-// MZAZI TECH INC — panels marketplace.
+// MZAZI TECH INC — the catalogue.
 //
-// Scope is deliberate: this page sells Pterodactyl / hosting panels and nothing
-// else. VPS, API keys and WhatsApp plans live on their own pages, so a visitor
-// here is never asked to compare unlike things.
+// One shelf for everything the company sells: panels, VPS, WhatsApp bot plans,
+// the developer API and custom builds. Data comes from /api/catalog, which reads
+// the same tables the admin panel edits, so prices cannot drift.
 //
-// Everything on the shelf comes from /api/packages (the same rows the admin
-// panel edits). There is no product copy in this file except the taxonomy.
-//
-// Checkout reuses the real provisioning path: the first unit in the cart creates
-// a panel through /api/panel/create, every further unit is an additional server
-// on that same panel account via /api/panel/add. Both debit the wallet, so the
-// cart can never quote a total the platform will not charge.
+// Only panels are cart-provisionable. VPS, bot plans and API keys each have
+// their own provisioning flow (/vps, /subscription, /api/docs) — routing to them
+// is honest; forcing them into one checkout would not be.
 
 const CART_KEY = 'mzazi.panels.cart.v1';
 
 const CATEGORIES = [
-  { id: 'all', label: 'All panels' },
-  { id: 'pterodactyl', label: 'Pterodactyl' },
-  { id: 'game', label: 'Game panels' },
-  { id: 'hosting', label: 'Hosting management' },
-  { id: 'reseller', label: 'Reseller' },
+  { id: 'all', label: 'Everything' },
+  { id: 'panel', label: 'Panels' },
+  { id: 'game', label: 'Game' },
+  { id: 'vps', label: 'VPS' },
+  { id: 'bot', label: 'Bots' },
+  { id: 'api', label: 'API' },
+  { id: 'service', label: 'Services' },
 ];
 
-const priceOf = (p) => {
-  const base = Number(p?.price || 0);
-  const pct = Number(p?.discount_percent || 0);
+const KIND_LABEL = { panel: 'Panel', vps: 'VPS', bot: 'WhatsApp bot', api: 'Developer API', service: 'Service' };
+const KIND_ICON = { panel: Icons.Server, vps: Icons.Cpu, bot: Icons.Bot, api: Icons.Code, service: Icons.Layers };
+
+const priceOf = (item) => {
+  if (item?.price == null) return null;
+  const base = Number(item.price);
+  const pct = Number(item.discount_percent || 0);
   return pct > 0 && pct < 100 ? Math.ceil(base * (1 - pct / 100)) : base;
 };
-const wasOf = (p) => Number(p?.price || 0);
 
-const ramText = (v) => { const n = Number(v) || 0; return n === 0 ? 'Unmetered' : n >= 1024 ? `${+(n / 1024).toFixed(1)} GB` : `${n} MB`; };
-const diskText = (v) => { const n = Number(v) || 0; return n === 0 ? 'Unmetered' : n >= 1024 ? `${+(n / 1024).toFixed(1)} GB` : `${n} MB`; };
-const cpuText = (v) => { const n = Number(v) || 0; return n === 0 ? 'Unmetered' : `${n}%`; };
+// Sizes arrive as numbers (packages) or free text (VPS, typed by an operator).
+const sizeText = (v) => {
+  const s = String(v ?? '').trim();
+  if (!s) return '—';
+  if (/[a-z]/i.test(s)) return s;
+  const n = Number(s);
+  if (!Number.isFinite(n)) return s;
+  if (n === 0) return 'Unmetered';
+  return n >= 1024 ? `${+(n / 1024).toFixed(1)} GB` : `${n} MB`;
+};
+const ramText = sizeText;
+const diskText = sizeText;
+const cpuText = (v) => { const s = String(v ?? '').trim(); if (!s) return '—'; if (/[a-z%]/i.test(s)) return s; const n = Number(s); return n === 0 ? 'Unmetered' : `${n}%`; };
 
-// A panel "screenshot" drawn from the package's own numbers. No stock art, no
-// fake screenshots of software the customer is not getting.
-function PanelPreview({ pkg, compact }) {
-  const bars = [38, 62, 48, 74, 58, 86, 66, 92];
+// Every card carries a preview drawn from its own data — a panel window, a
+// terminal, a chat thread, a response payload. Nothing implies software the
+// customer is not getting.
+function Preview({ item, large }) {
+  if (item.kind === 'panel') {
+    return (
+      <div className={`mkt-preview ${large ? '' : 'is-compact'}`} aria-hidden="true">
+        <div className="mkt-preview-bar">
+          <span className="mkt-dots"><i /><i /><i /></span>
+          <span className="mkt-preview-url">panel.mzazi.shop</span>
+        </div>
+        <div className="mkt-preview-body">
+          <div className="mkt-preview-side"><span /><span /><span /><span /></div>
+          <div className="mkt-preview-main">
+            <div className="mkt-preview-title">{item.name}</div>
+            <div className="mkt-preview-chips">
+              <span>{ramText(item.specs?.ram)} RAM</span>
+              <span>{cpuText(item.specs?.cpu)} CPU</span>
+              <span>{diskText(item.specs?.disk)}</span>
+            </div>
+            <div className="mkt-preview-chart">
+              {[38, 62, 48, 74, 58, 86, 66, 92].map((h, i) => <i key={i} style={{ height: `${h}%` }} />)}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (item.kind === 'vps') {
+    return (
+      <div className={`mkt-preview mkt-visual ${large ? '' : 'is-compact'}`} aria-hidden="true">
+        <div className="mkt-preview-bar">
+          <span className="mkt-dots"><i /><i /><i /></span>
+          <span className="mkt-preview-url">root@{(item.name || 'vps').toLowerCase().replace(/\s+/g, '-')}</span>
+        </div>
+        <pre className="mkt-term">{`$ df -h /
+/dev/vda1 ${diskText(item.specs?.disk)} 41%
+$ uptime · ${item.specs?.location || 'EU'}`}</pre>
+      </div>
+    );
+  }
+
+  if (item.kind === 'bot') {
+    return (
+      <div className={`mkt-preview mkt-visual ${large ? '' : 'is-compact'}`} aria-hidden="true">
+        <div className="mkt-preview-bar">
+          <span className="mkt-dots"><i /><i /><i /></span>
+          <span className="mkt-preview-url">wa.me · linked</span>
+        </div>
+        <div className="mkt-chat">
+          <span className="mkt-bubble is-in">.menu</span>
+          <span className="mkt-bubble is-out">{item.specs?.devices === 'Unlimited' ? 'Unlimited devices' : `${item.specs?.devices || 1} devices`} · ready</span>
+          <span className="mkt-bubble is-in">.pair</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (item.kind === 'api') {
+    return (
+      <div className={`mkt-preview mkt-visual ${large ? '' : 'is-compact'}`} aria-hidden="true">
+        <div className="mkt-preview-bar">
+          <span className="mkt-dots"><i /><i /><i /></span>
+          <span className="mkt-preview-url">api.mzazi.shop</span>
+        </div>
+        <pre className="mkt-term">{`GET /v1/… 200 OK
+{ "ok": true,
+  "endpoints": ${item.specs?.endpoints || 0} }`}</pre>
+      </div>
+    );
+  }
+
   return (
-    <div className={`mkt-preview ${compact ? 'is-compact' : ''}`} aria-hidden="true">
+    <div className={`mkt-preview mkt-visual ${large ? '' : 'is-compact'}`} aria-hidden="true">
       <div className="mkt-preview-bar">
         <span className="mkt-dots"><i /><i /><i /></span>
-        <span className="mkt-preview-url">panel.mzazi.shop</span>
+        <span className="mkt-preview-url">mzazi.shop</span>
       </div>
-      <div className="mkt-preview-body">
-        <div className="mkt-preview-side">
-          <span /><span /><span /><span />
-        </div>
-        <div className="mkt-preview-main">
-          <div className="mkt-preview-title">{pkg.name}</div>
-          <div className="mkt-preview-chips">
-            <span>{ramText(pkg.ram)} RAM</span>
-            <span>{cpuText(pkg.cpu)} CPU</span>
-            <span>{diskText(pkg.disk)}</span>
-          </div>
-          <div className="mkt-preview-chart">
-            {bars.map((h, i) => <i key={i} style={{ height: `${h}%` }} />)}
-          </div>
-        </div>
-      </div>
+      <div className="mkt-service-visual"><Icons.Layers size={large ? 26 : 20} /></div>
     </div>
   );
 }
 
-// Modals portal to <body>: .app-content establishes a stacking context, so an
-// overlay rendered inside it can never rise above the fixed dock on mobile.
 function Portal({ children }) {
   const [ready, setReady] = useState(false);
   useEffect(() => setReady(true), []);
@@ -96,7 +159,7 @@ function Skeleton() {
 export default function ProductsPage() {
   const router = useRouter();
 
-  const [packages, setPackages] = useState([]);
+  const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [cat, setCat] = useState('all');
@@ -110,7 +173,6 @@ export default function ProductsPage() {
   const [user, setUser] = useState(null);
   const [balance, setBalance] = useState(0);
 
-  // checkout
   const [checkout, setCheckout] = useState(false);
   const [form, setForm] = useState({ firstname: '', lastname: '', ptero_username: '', ptero_password: '', nest_id: '', egg_id: '' });
   const [nests, setNests] = useState([]);
@@ -128,11 +190,11 @@ export default function ProductsPage() {
     let alive = true;
     (async () => {
       try {
-        const [pkgRes, me] = await Promise.all([fetch('/api/packages', { cache: 'no-store' }), fetch('/api/auth/me')]);
-        const data = await pkgRes.json().catch(() => ({}));
-        if (!pkgRes.ok) throw new Error(data.error || 'The catalogue could not be loaded.');
+        const [catRes, me] = await Promise.all([fetch('/api/catalog', { cache: 'no-store' }), fetch('/api/auth/me')]);
+        const data = await catRes.json().catch(() => ({}));
+        if (!catRes.ok) throw new Error(data.error || 'The catalogue could not be loaded.');
         if (!alive) return;
-        setPackages(Array.isArray(data.packages) ? data.packages : []);
+        setItems(Array.isArray(data.items) ? data.items : []);
         if (me.ok) {
           const d = await me.json().catch(() => ({}));
           setUser(d.user || null);
@@ -151,13 +213,11 @@ export default function ProductsPage() {
     return () => { alive = false; };
   }, []);
 
-  // Cart survives reloads; ids are re-validated against the live catalogue so a
-  // deleted package never sits in a basket forever.
   useEffect(() => {
     try {
       const raw = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
-      if (Array.isArray(raw)) setCart(raw.filter((r) => r && Number(r.id)));
-    } catch { /* ignore a corrupted basket */ }
+      if (Array.isArray(raw)) setCart(raw.filter((r) => r && typeof r.id === 'string' && Number(r.qty) > 0));
+    } catch { /* ignore */ }
   }, []);
 
   useEffect(() => {
@@ -165,29 +225,31 @@ export default function ProductsPage() {
   }, [cart]);
 
   const rows = useMemo(
-    () => cart.map((r) => ({ ...packages.find((p) => p.id === r.id), id: r.id, qty: r.qty })).filter((r) => r.name),
-    [cart, packages],
+    () => cart.map((r) => ({ ...items.find((i) => i.id === r.id), id: r.id, qty: r.qty })).filter((r) => r.name),
+    [cart, items],
   );
   const units = useMemo(() => rows.flatMap((r) => Array.from({ length: r.qty }, () => r)), [rows]);
-  const total = useMemo(() => rows.reduce((s, r) => s + priceOf(r) * r.qty, 0), [rows]);
+  const total = useMemo(() => rows.reduce((s, r) => s + (priceOf(r) || 0) * r.qty, 0), [rows]);
   const count = rows.reduce((s, r) => s + r.qty, 0);
 
   const list = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return packages.filter((p) => {
-      const inCat = cat === 'all' || (p.category || 'pterodactyl') === cat;
-      const inQ = !q || `${p.name} ${p.description || ''}`.toLowerCase().includes(q);
+    return items.filter((i) => {
+      const inCat = cat === 'all'
+        || (cat === 'panel' ? i.kind === 'panel' : cat === 'game' ? i.category === 'game' : i.kind === cat);
+      const inQ = !q || `${i.name} ${i.description}`.toLowerCase().includes(q);
       return inCat && inQ;
     });
-  }, [packages, cat, query]);
+  }, [items, cat, query]);
 
-  const add = (pkg, silent) => {
+  const add = (item, silent) => {
+    if (item.kind !== 'panel') { router.push(item.href); return; }
     setCart((c) => {
-      const hit = c.find((r) => r.id === pkg.id);
-      if (hit) return c.map((r) => (r.id === pkg.id ? { ...r, qty: Math.min(5, r.qty + 1) } : r));
-      return [...c, { id: pkg.id, qty: 1 }];
+      const hit = c.find((r) => r.id === item.id);
+      if (hit) return c.map((r) => (r.id === item.id ? { ...r, qty: Math.min(5, r.qty + 1) } : r));
+      return [...c, { id: item.id, qty: 1 }];
     });
-    if (!silent) say(`${pkg.name} added to cart`);
+    if (!silent) say(`${item.name} added to cart`);
   };
 
   const setQty = (id, qty) => setCart((c) => c.map((r) => (r.id === id ? { ...r, qty: Math.max(1, Math.min(5, qty)) } : r)));
@@ -237,13 +299,12 @@ export default function ProductsPage() {
     setBusy('deploy');
     const log = [];
 
-    // 1. The first unit creates the panel account.
     try {
       const res = await fetch('/api/panel/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          package_id: units[0].id,
+          package_id: units[0].ref,
           ptero_username: form.ptero_username,
           ptero_password: form.ptero_password,
           firstname: form.firstname,
@@ -262,14 +323,12 @@ export default function ProductsPage() {
       return;
     }
 
-    // 2. Anything else is an extra server on that same panel account — the
-    //    platform's own "add server" path, which charges full package price.
     for (const unit of units.slice(1)) {
       try {
         const res = await fetch('/api/panel/add', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username: form.ptero_username, mode: 'different', package_id: unit.id }),
+          body: JSON.stringify({ username: form.ptero_username, mode: 'different', package_id: unit.ref }),
         });
         const data = await res.json().catch(() => ({}));
         if (!res.ok) throw new Error(data.error || 'Server could not be added.');
@@ -286,29 +345,18 @@ export default function ProductsPage() {
     if (w.ok) { const wd = await w.json().catch(() => ({})); setBalance(Number(wd.balance || 0)); }
   };
 
-  const closeCheckout = () => {
-    setCheckout(false);
-    setResults(null);
-    setError('');
-    setEggs([]);
-  };
+  const closeCheckout = () => { setCheckout(false); setResults(null); setError(''); setEggs([]); };
+
+  const specEntries = (item) => Object.entries(item.specs || {}).filter(([, v]) => v !== null && v !== undefined && v !== '');
 
   return (
     <div className="container-site mkt">
-      {/* ── Header ─────────────────────────────────────────────────────── */}
       <header className="mkt-head">
         <div className="mkt-brand">
           <span className="mkt-wordmark">MZAZI<b>TECH</b><i>INC</i></span>
         </div>
-
         <div className="mkt-head-actions">
-          <button
-            type="button"
-            className={`mkt-icon-btn ${searchOpen ? 'is-on' : ''}`}
-            onClick={() => setSearchOpen((v) => !v)}
-            aria-label="Search panels"
-            aria-expanded={searchOpen}
-          >
+          <button type="button" className={`mkt-icon-btn ${searchOpen ? 'is-on' : ''}`} onClick={() => setSearchOpen((v) => !v)} aria-label="Search" aria-expanded={searchOpen}>
             <Icons.Search size={16} />
           </button>
           <button type="button" className="mkt-icon-btn" onClick={() => setCartOpen(true)} aria-label={`Cart, ${count} items`}>
@@ -320,8 +368,8 @@ export default function ProductsPage() {
 
       <div className="mkt-title-row">
         <div>
-          <h1 className="mkt-title">Premium Panels</h1>
-          <p className="mkt-sub">Powerful hosting management solutions.</p>
+          <h1 className="mkt-title">The catalogue</h1>
+          <p className="mkt-sub">Panels, VPS, WhatsApp bots and the API — sold from one account.</p>
         </div>
         {user ? (
           <span className="mkt-wallet"><Icons.Wallet size={12} /> {fmtKes(balance)}</span>
@@ -333,32 +381,20 @@ export default function ProductsPage() {
       {searchOpen && (
         <div className="mkt-search">
           <Icons.Search size={14} />
-          <input
-            autoFocus
-            className="mkt-search-input"
-            placeholder="Search panels — name or spec"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            aria-label="Search panels"
-          />
+          <input autoFocus className="mkt-search-input" placeholder="Search panels, VPS, bots, API" value={query} onChange={(e) => setQuery(e.target.value)} aria-label="Search catalogue" />
           {query && <button type="button" className="mkt-clear" onClick={() => setQuery('')} aria-label="Clear search"><Icons.X size={13} /></button>}
         </div>
       )}
 
-      {/* ── Filters ────────────────────────────────────────────────────── */}
-      <div className="mkt-chips" role="tablist" aria-label="Panel categories">
+      <div className="mkt-chips" role="tablist" aria-label="Categories">
         {CATEGORIES.map((c) => {
-          const n = c.id === 'all' ? packages.length : packages.filter((p) => (p.category || 'pterodactyl') === c.id).length;
+          const n = c.id === 'all' ? items.length
+            : c.id === 'panel' ? items.filter((i) => i.kind === 'panel').length
+            : c.id === 'game' ? items.filter((i) => i.category === 'game').length
+            : items.filter((i) => i.kind === c.id).length;
           return (
-            <button
-              key={c.id}
-              role="tab"
-              aria-selected={cat === c.id}
-              className={`mkt-chip ${cat === c.id ? 'is-on' : ''}`}
-              onClick={() => setCat(c.id)}
-            >
-              {c.label}
-              {n > 0 && <span className="mkt-chip-n">{n}</span>}
+            <button key={c.id} role="tab" aria-selected={cat === c.id} className={`mkt-chip ${cat === c.id ? 'is-on' : ''}`} onClick={() => setCat(c.id)}>
+              {c.label}{n > 0 && <span className="mkt-chip-n">{n}</span>}
             </button>
           );
         })}
@@ -366,53 +402,57 @@ export default function ProductsPage() {
 
       {error && <p className="mkt-error" role="alert">{error}</p>}
 
-      {/* ── Grid ───────────────────────────────────────────────────────── */}
       {loading ? (
-        <div className="mkt-grid">{Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} />)}</div>
+        <div className="mkt-grid">{Array.from({ length: 8 }).map((_, i) => <Skeleton key={i} />)}</div>
       ) : list.length === 0 ? (
         <div className="mkt-empty">
           <span className="dash-empty-ico"><Icons.Box size={18} /></span>
-          <p className="dash-empty-title">{packages.length === 0 ? 'The shelf is empty' : 'Nothing in this category yet'}</p>
-          <p className="dash-empty-body">
-            {packages.length === 0
-              ? 'No panels are published right now. New stock is added from the admin catalogue.'
-              : 'Try another category, or clear the search to see every panel.'}
-          </p>
+          <p className="dash-empty-title">{items.length === 0 ? 'The shelf is empty' : 'Nothing in this category yet'}</p>
+          <p className="dash-empty-body">{items.length === 0 ? 'No products are published right now.' : 'Try another category, or clear the search.'}</p>
           {(cat !== 'all' || query) && (
-            <button type="button" className="btn btn-ghost" style={{ marginTop: 10 }} onClick={() => { setCat('all'); setQuery(''); }}>
-              Clear filters
-            </button>
+            <button type="button" className="btn btn-ghost" style={{ marginTop: 10 }} onClick={() => { setCat('all'); setQuery(''); }}>Clear filters</button>
           )}
         </div>
       ) : (
         <div className="mkt-grid">
-          {list.map((p) => {
-            const price = priceOf(p);
-            const off = wasOf(p) > price;
-            const popular = Number(p.popular) === 1 || p.popular === true;
+          {list.map((item) => {
+            const price = priceOf(item);
+            const off = price != null && Number(item.price) > price;
+            const direct = item.kind !== 'panel';
             return (
-              <article className="mkt-card" key={p.id}>
-                <button type="button" className="mkt-card-preview" onClick={() => setDetail(p)} aria-label={`Preview ${p.name}`}>
-                  <PanelPreview pkg={p} compact />
-                  {off && <span className="mkt-badge is-off">−{Number(p.discount_percent)}%</span>}
-                  {popular && !off && <span className="mkt-badge">Popular</span>}
+              <article className="mkt-card" key={item.id}>
+                <button type="button" className="mkt-card-preview" onClick={() => setDetail(item)} aria-label={`Preview ${item.name}`}>
+                  <Preview item={item} />
+                  {off && <span className="mkt-badge is-off">−{Number(item.discount_percent)}%</span>}
+                  {item.popular && !off && <span className="mkt-badge">Popular</span>}
                 </button>
 
                 <div className="mkt-card-body">
                   <div className="mkt-card-top">
-                    <h2 className="mkt-name">{p.name}</h2>
-                    <span className="mkt-live"><i />Available</span>
+                    <h2 className="mkt-name">{item.name}</h2>
                   </div>
-                  <p className="mkt-desc">{p.description || `${ramText(p.ram)} RAM · ${cpuText(p.cpu)} CPU · ${diskText(p.disk)} disk`}</p>
+                  <p className="mkt-desc">{item.description}</p>
 
                   <div className="mkt-price-row">
-                    <span className="mkt-price">{fmtKes(price)}<small>/mo</small></span>
-                    {off && <s className="mkt-was">{fmtKes(wasOf(p))}</s>}
+                    {price == null ? (
+                      <span className="mkt-price is-poa">On request</span>
+                    ) : price === 0 ? (
+                      <span className="mkt-price">Free<small>tier</small></span>
+                    ) : (
+                      <span className="mkt-price">{fmtKes(price)}<small>{item.kind === 'bot' ? '/30d' : '/mo'}</small></span>
+                    )}
+                    {off && <s className="mkt-was">{fmtKes(item.price)}</s>}
                   </div>
 
                   <div className="mkt-card-actions">
-                    <button type="button" className="btn btn-ghost btn-sm" onClick={() => setDetail(p)}>Details</button>
-                    <button type="button" className="btn btn-primary btn-sm" onClick={() => add(p)}>Buy now</button>
+                    <button type="button" className="btn btn-ghost btn-sm" onClick={() => setDetail(item)}>Details</button>
+                    {direct ? (
+                      <Link href={item.href} className="btn btn-primary btn-sm">
+                        {item.kind === 'api' ? 'Get key' : item.kind === 'vps' ? 'Configure' : item.kind === 'service' ? 'Talk to us' : 'Choose'}
+                      </Link>
+                    ) : (
+                      <button type="button" className="btn btn-primary btn-sm" onClick={() => add(item)}>Buy now</button>
+                    )}
                   </div>
                 </div>
               </article>
@@ -421,71 +461,96 @@ export default function ProductsPage() {
         </div>
       )}
 
-      {/* ── Details ────────────────────────────────────────────────────── */}
       {<Portal>{detail && (
         <div className="mkt-overlay" role="dialog" aria-modal="true" aria-label={`${detail.name} details`} onClick={(e) => { if (e.target === e.currentTarget) setDetail(null); }}>
           <div className="mkt-sheet mkt-detail">
             <button type="button" className="mkt-close" onClick={() => setDetail(null)} aria-label="Close"><Icons.X size={15} /></button>
 
-            <PanelPreview pkg={detail} />
+            <Preview item={detail} large />
 
             <div className="mkt-detail-head">
               <div>
-                <span className="mkt-kicker">{CATEGORIES.find((c) => c.id === (detail.category || 'pterodactyl'))?.label || 'Panel'}</span>
+                <span className="mkt-kicker">{KIND_LABEL[detail.kind]}</span>
                 <h2 className="mkt-detail-title">{detail.name}</h2>
               </div>
               <div className="mkt-detail-price">
-                <b>{fmtKes(priceOf(detail))}</b>
-                <span>per month</span>
+                {priceOf(detail) == null ? <b>On request</b> : priceOf(detail) === 0 ? <b>Free</b> : <b>{fmtKes(priceOf(detail))}</b>}
+                <span>{detail.kind === 'bot' ? 'per 30 days' : detail.kind === 'panel' ? 'per month' : detail.kind === 'api' ? 'to start' : 'scoped'}</span>
               </div>
             </div>
 
-            <p className="mkt-detail-text">
-              {detail.description || `A ${detail.name} panel on our managed Pterodactyl infrastructure.`} Provisioned with your own credentials, isolated allocations and a control panel you can hand to a team.
-            </p>
+            <p className="mkt-detail-text">{detail.description}</p>
 
-            <dl className="mkt-specs">
-              <div><dt>Memory</dt><dd>{ramText(detail.ram)}</dd></div>
-              <div><dt>CPU</dt><dd>{cpuText(detail.cpu)}</dd></div>
-              <div><dt>Disk</dt><dd>{diskText(detail.disk)}</dd></div>
-              <div><dt>Panel</dt><dd>Pterodactyl</dd></div>
-              <div><dt>Billing</dt><dd>Monthly · wallet</dd></div>
-              <div><dt>Provisioning</dt><dd>Instant</dd></div>
-            </dl>
+            {specEntries(detail).length > 0 && (
+              <dl className="mkt-specs">
+                {specEntries(detail).map(([k, v]) => (
+                  <div key={k}>
+                    <dt>{k === 'ram' ? 'Memory' : k === 'cpu' ? 'CPU' : k === 'disk' ? 'Disk' : k}</dt>
+                    <dd>{k === 'ram' ? ramText(v) : k === 'disk' ? diskText(v) : String(v)}</dd>
+                  </div>
+                ))}
+              </dl>
+            )}
 
             <div className="mkt-detail-cols">
               <div>
                 <h3 className="mkt-h3">What's included</h3>
                 <ul className="mkt-list">
-                  <li><Icons.Check size={12} /> Full Pterodactyl control panel</li>
-                  <li><Icons.Check size={12} /> Root-level file and console access</li>
-                  <li><Icons.Check size={12} /> One free allocation, extra ports on request</li>
-                  <li><Icons.Check size={12} /> Backups, databases and schedules</li>
-                  <li><Icons.Check size={12} /> Wallet billing — no card stored</li>
+                  {(detail.kind === 'panel' ? [
+                    'Full Pterodactyl control panel',
+                    'Root-level file and console access',
+                    'One free allocation, extra ports on request',
+                    'Backups, databases and schedules',
+                    'Wallet billing — no card stored',
+                  ] : detail.kind === 'bot' ? [
+                    'Your own WhatsApp number, paired in minutes',
+                    'All 1,269 commands and group tools',
+                    'Runs on our infrastructure, not your phone',
+                    'Unlink any device from the dashboard',
+                    'Wallet billing — no card stored',
+                  ] : detail.kind === 'vps' ? [
+                    'NVMe-backed KVM instance',
+                    'Full root access over SSH',
+                    'Isolated networking and instant resizes',
+                    'Kenyan billing, regional placement',
+                    'Human support from Nairobi',
+                  ] : detail.kind === 'api' ? [
+                    'One key for every endpoint',
+                    'Daily quotas enforced before the upstream call',
+                    'Full request logs with latency',
+                    'Rotate or revoke instantly',
+                    'Free tier to build against',
+                  ] : [
+                    'Scoped in writing before work starts',
+                    'Direct line to the engineer',
+                    'Handover with documentation',
+                    'Fixed-price milestones',
+                  ]).map((f) => <li key={f}><Icons.Check size={12} /> {f}</li>)}
                 </ul>
               </div>
               <div>
                 <h3 className="mkt-h3">Requirements</h3>
                 <ul className="mkt-list">
-                  <li><Icons.Check size={12} /> A MZAZI account with wallet balance</li>
-                  <li><Icons.Check size={12} /> A panel username and 8+ character password</li>
-                  <li><Icons.Check size={12} /> A supported egg (Paper, Node, Python…)</li>
+                  {(detail.kind === 'panel' ? ['A MZAZI account with wallet balance', 'A panel username and 8+ character password', 'A supported egg (Paper, Node, Python…)']
+                    : detail.kind === 'bot' ? ['A MZAZI account with wallet balance', 'A WhatsApp number you control', 'WhatsApp installed to enter the pairing code']
+                    : detail.kind === 'vps' ? ['A MZAZI account with wallet balance', 'An SSH key or root password preference', 'A hostname if you want DNS set up']
+                    : detail.kind === 'api' ? ['A MZAZI account', 'An API key from the dashboard', 'A client that can send HTTPS requests']
+                    : ['A short brief', 'Access to any systems we must integrate']).map((r) => <li key={r}><Icons.Check size={12} /> {r}</li>)}
                 </ul>
                 <h3 className="mkt-h3" style={{ marginTop: 12 }}>Support</h3>
                 <p className="mkt-detail-text" style={{ margin: 0 }}>
-                  Panel issues are handled by a human — <Link href="/help" className="link">open a ticket</Link> and we answer from Nairobi, usually within a few hours.
+                  Handled by a human — <Link href="/help" className="link">open a ticket</Link> and we answer from Nairobi, usually within a few hours.
                 </p>
               </div>
             </div>
 
-            {packages.filter((p) => p.id !== detail.id).length > 0 && (
+            {items.filter((i) => i.id !== detail.id && i.kind === detail.kind).length > 0 && (
               <div className="mkt-also">
-                <h3 className="mkt-h3">Available packages</h3>
+                <h3 className="mkt-h3">More {KIND_LABEL[detail.kind].toLowerCase()}{detail.kind === 'panel' ? 's' : ' options'}</h3>
                 <div className="mkt-also-row">
-                  {packages.filter((p) => p.id !== detail.id).slice(0, 5).map((p) => (
-                    <button key={p.id} type="button" className="mkt-also-item" onClick={() => setDetail(p)}>
-                      <span>{p.name}</span>
-                      <b>{fmtKes(priceOf(p))}</b>
+                  {items.filter((i) => i.id !== detail.id && i.kind === detail.kind).slice(0, 5).map((i) => (
+                    <button key={i.id} type="button" className="mkt-also-item" onClick={() => setDetail(i)}>
+                      <span>{i.name}</span>{priceOf(i) != null && <b>{fmtKes(priceOf(i))}</b>}
                     </button>
                   ))}
                 </div>
@@ -493,14 +558,21 @@ export default function ProductsPage() {
             )}
 
             <div className="mkt-detail-foot">
-              <button type="button" className="btn btn-ghost" onClick={() => { add(detail); setDetail(null); setCartOpen(true); }}>Add to cart</button>
-              <button type="button" className="btn btn-primary" onClick={() => { setDetail(null); add(detail, true); openCheckout(); }}>Buy now</button>
+              {detail.kind === 'panel' ? (
+                <>
+                  <button type="button" className="btn btn-ghost" onClick={() => { add(detail); setDetail(null); setCartOpen(true); }}>Add to cart</button>
+                  <button type="button" className="btn btn-primary" onClick={() => { add(detail, true); setDetail(null); openCheckout(); }}>Buy now</button>
+                </>
+              ) : (
+                <Link href={detail.href} className="btn btn-primary" style={{ flex: 1 }}>
+                  {detail.kind === 'api' ? 'Create a key' : detail.kind === 'service' ? 'Talk to us' : 'Continue'}
+                </Link>
+              )}
             </div>
           </div>
         </div>
       )}</Portal>}
 
-      {/* ── Cart ───────────────────────────────────────────────────────── */}
       {<Portal>{cartOpen && (
         <div className="mkt-overlay" role="dialog" aria-modal="true" aria-label="Cart" onClick={(e) => { if (e.target === e.currentTarget) setCartOpen(false); }}>
           <div className="mkt-sheet mkt-cart">
@@ -508,21 +580,21 @@ export default function ProductsPage() {
             <h2 className="mkt-detail-title" style={{ fontSize: 17 }}>Your cart</h2>
 
             {rows.length === 0 ? (
-              <p className="mkt-detail-text">Nothing here yet. Pick a panel and it will show up in this tray.</p>
+              <p className="mkt-detail-text">Nothing here yet. Panels can be bought in one checkout; VPS, bots and API keys open their own setup.</p>
             ) : (
               <>
                 {rows.map((r) => (
                   <div className="mkt-line" key={r.id}>
                     <div style={{ minWidth: 0 }}>
                       <p className="mkt-line-name">{r.name}</p>
-                      <p className="mkt-line-meta">{ramText(r.ram)} RAM · {cpuText(r.cpu)} CPU · {diskText(r.disk)} disk</p>
+                      <p className="mkt-line-meta">{ramText(r.specs?.ram)} RAM · {cpuText(r.specs?.cpu)} CPU · {diskText(r.specs?.disk)} disk</p>
                     </div>
                     <div className="mkt-qty" role="group" aria-label={`Quantity for ${r.name}`}>
                       <button type="button" onClick={() => setQty(r.id, r.qty - 1)} aria-label="Decrease">−</button>
                       <span>{r.qty}</span>
                       <button type="button" onClick={() => setQty(r.id, r.qty + 1)} aria-label="Increase">+</button>
                     </div>
-                    <span className="mkt-line-price">{fmtKes(priceOf(r) * r.qty)}</span>
+                    <span className="mkt-line-price">{fmtKes((priceOf(r) || 0) * r.qty)}</span>
                     <button type="button" className="mkt-remove" onClick={() => remove(r.id)} aria-label={`Remove ${r.name}`}><Icons.Trash size={13} /></button>
                   </div>
                 ))}
@@ -533,19 +605,14 @@ export default function ProductsPage() {
                   <div className="is-total"><span>Total due today</span><span>{fmtKes(total)}</span></div>
                 </div>
 
-                <button type="button" className="btn btn-primary mkt-wide" onClick={openCheckout}>
-                  Checkout · {fmtKes(total)}
-                </button>
-                <p className="mkt-fineprint">
-                  Charged from your wallet. First server creates a new panel account; extras are added to it.
-                </p>
+                <button type="button" className="btn btn-primary mkt-wide" onClick={openCheckout}>Checkout · {fmtKes(total)}</button>
+                <p className="mkt-fineprint">Charged from your wallet. First server creates a new panel account; extras are added to it.</p>
               </>
             )}
           </div>
         </div>
       )}</Portal>}
 
-      {/* ── Checkout ───────────────────────────────────────────────────── */}
       {<Portal>{checkout && (
         <div className="mkt-overlay" role="dialog" aria-modal="true" aria-label="Checkout">
           <div className="mkt-sheet mkt-detail">
@@ -575,9 +642,7 @@ export default function ProductsPage() {
             ) : (
               <form onSubmit={deploy}>
                 <h2 className="mkt-detail-title" style={{ fontSize: 17 }}>Checkout</h2>
-                <p className="mkt-detail-text">
-                  {count} server{count === 1 ? '' : 's'} · {fmtKes(total)} from your wallet ({fmtKes(balance)} available).
-                </p>
+                <p className="mkt-detail-text">{count} server{count === 1 ? '' : 's'} · {fmtKes(total)} from your wallet ({fmtKes(balance)} available).</p>
 
                 <div className="mkt-form">
                   <label className="field"><span className="field-label">First name</span><input className="input" value={form.firstname} onChange={(e) => setForm({ ...form, firstname: e.target.value })} required /></label>
@@ -603,7 +668,7 @@ export default function ProductsPage() {
                 {error && <p className="mkt-error" role="alert">{error}</p>}
 
                 <div className="mkt-summary">
-                  {rows.map((r) => <div key={r.id}><span>{r.name} × {r.qty}</span><span>{fmtKes(priceOf(r) * r.qty)}</span></div>)}
+                  {rows.map((r) => <div key={r.id}><span>{r.name} × {r.qty}</span><span>{fmtKes((priceOf(r) || 0) * r.qty)}</span></div>)}
                   <div className="is-total"><span>Total</span><span>{fmtKes(total)}</span></div>
                 </div>
 
