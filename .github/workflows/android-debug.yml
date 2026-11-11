@@ -179,13 +179,18 @@ jobs:
 
       - name: Confirm the published asset matches this build
         env:
-          VERSION_NAME: ${{ format('1.0.{0}', github.run_number) }}
+          GH_TOKEN: ${{ github.token }}
         run: |
-          ASSET=$(gh release view android-latest --repo "$GITHUB_REPOSITORY" --json assets \
-            --jq '.assets[] | select(.name=="mzazi-tech-debug.apk") | "\(.size) \(.updatedAt)"')
           LOCAL=$(stat -c %s artifacts/mzazi-tech-debug.apk)
-          echo "local=$LOCAL published=$ASSET"
-          echo "$ASSET" | grep -q "^$LOCAL " || { echo "Release asset does not match this build"; exit 1; }
+          for attempt in 1 2 3 4; do
+            REMOTE=$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/android-latest" \
+              --jq '.assets[] | select(.name=="mzazi-tech-debug.apk") | .size')
+            echo "attempt $attempt: local=$LOCAL published=$REMOTE"
+            if [ "$REMOTE" = "$LOCAL" ]; then exit 0; fi
+            sleep 5
+          done
+          echo "::error::The published APK does not match this build"
+          exit 1
 
   release:
     name: Attach APK to release (tags only)
