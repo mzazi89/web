@@ -3,47 +3,21 @@
 // MZAZI TECH — main navigation.
 //
 // Two levels, deliberately:
-//   PRIMARY — the six things a WhatsApp user actually does: Home, Dashboard,
-//             Devices, Subscription, Payments, Help.
-//   MORE    — everything else the platform offers (bot features, panels, VPS,
-//             API, Ludo …), tucked into one dropdown so the bar never becomes
-//             a menu wall.
+//   PRIMARY — the five things a WhatsApp user actually does: Home, Dashboard,
+//             Devices, Community, About.
+//   MORE    — every other destination, grouped, read from lib/nav.js.
 //
-// Every v1 route is preserved — only labels and grouping changed, so no existing
-// link or bookmark breaks. Labels use plain words ("Devices") for what the
-// backend calls sessions/numbers.
+// The lists used to live in this file; they drifted and pages went missing from
+// the menu. Now the navbar, the drawer and the footer all read one source.
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import Logo from './Logo';
 import { fmtKes } from '@/lib/currency';
+import { PRIMARY, NAV_GROUPS, isActive } from '@/lib/nav';
 import { Button, ThemeToggle, Avatar, Icons } from '@/components/ui';
 import { useToast } from '@/components/ui/Toast';
-
-const PRIMARY = [
-  { href: '/',             label: 'Home' },
-  { href: '/dashboard',    label: 'Dashboard' },
-  { href: '/devices',      label: 'Devices' },
-  { href: '/community',    label: 'Community' },
-  { href: '/about',        label: 'About' },
-];
-
-const MORE = [
-  { href: '/subscription', label: 'Billing',      desc: 'Plans & payments' },
-  { href: '/help',         label: 'Support',      desc: 'Help center' },
-  { href: '/pair/mzazi',   label: 'Pair MZAZI XMD', desc: 'Modern WhatsApp automation' },
-  { href: '/pair/quartz',  label: 'Pair QUARTZ XD', desc: 'Powerful group management' },
-  { href: '/whatsapp-bot', label: 'Bot Guides',    desc: 'Features & commands' },
-  { href: '/products',     label: 'Panel Hosting', desc: 'Pterodactyl hosting' },
-  { href: '/vps',          label: 'VPS Servers',   desc: 'Scalable cloud infrastructure' },
-  { href: '/contact',      label: 'Contact',      desc: 'Talk to a human' },
-];
-
-function isActive(pathname, href) {
-  if (href === '/') return pathname === '/';
-  return pathname === href || pathname.startsWith(`${href}/`);
-}
 
 export default function Navbar() {
   const [user, setUser] = useState(null);
@@ -158,14 +132,17 @@ export default function Navbar() {
                   <Icons.ChevronDown size={15} />
                 </button>
                 {moreOpen && (
-                  <div className="menu" role="menu" style={{ position: 'absolute', top: 'calc(100% + 8px)', left: 0, width: 290, zIndex: 60 }}>
-                    {MORE.map((l) => (
-                      <Link key={l.href} href={l.href} className="menu-item" role="menuitem" style={{ alignItems: 'flex-start' }}>
-                        <span style={{ display: 'block', minWidth: 0 }}>
-                          <span style={{ display: 'block', fontWeight: 700, color: 'var(--ink)', fontSize: 13.5 }}>{l.label}</span>
-                          <span style={{ display: 'block', fontSize: 12, color: 'var(--muted)', marginTop: 1 }}>{l.desc}</span>
-                        </span>
-                      </Link>
+                  <div className="menu nav-mega" role="menu" style={{ position: 'absolute', top: 'calc(100% + 8px)', right: 0, zIndex: 60 }}>
+                    {NAV_GROUPS.map((group) => (
+                      <div key={group.title} className="nav-group">
+                        <p className="nav-group-title">{group.title}</p>
+                        {group.links.map((l) => (
+                          <Link key={l.href} href={l.href} className="nav-item" role="menuitem">
+                            <span className="nav-item-label">{l.label}</span>
+                            <span className="nav-item-desc">{l.desc}</span>
+                          </Link>
+                        ))}
+                      </div>
                     ))}
                   </div>
                 )}
@@ -280,23 +257,28 @@ export default function Navbar() {
               </button>
             </div>
 
-            {/* Three columns keep all fifteen destinations inside a card about a
-                quarter of the screen tall, so the menu never needs scrolling. */}
-            <nav aria-label="Main" className="drawer-grid">
-              {[...PRIMARY, ...MORE].map((l) => {
-                const active = isActive(pathname, l.href);
-                return (
-                  <Link
-                    key={l.href}
-                    href={l.href}
-                    className={`side-link drawer-link ${active ? 'is-active' : ''}`}
-                    aria-current={active ? 'page' : undefined}
-                    title={l.label}
-                  >
-                    {l.label}
-                  </Link>
-                );
-              })}
+            {/* Grouped, because "all the pages" no longer fits a flat grid:
+                twenty links in one column is a phone book, not a menu. */}
+            <nav aria-label="Main" className="drawer-groups">
+              {[{ title: 'Navigate', links: PRIMARY }, ...NAV_GROUPS].map((group) => (
+                <div key={group.title} className="drawer-group">
+                  <p className="nav-group-title">{group.title}</p>
+                  {group.links.map((l) => {
+                    const active = isActive(pathname, l.href);
+                    return (
+                      <Link
+                        key={l.href}
+                        href={l.href}
+                        className={`side-link drawer-link ${active ? 'is-active' : ''}`}
+                        aria-current={active ? 'page' : undefined}
+                        title={l.label}
+                      >
+                        {l.label}
+                      </Link>
+                    );
+                  })}
+                </div>
+              ))}
             </nav>
 
             <div className="drawer-foot">

@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { AppBackground, PageHeader, Button, Icons, BotMark } from '@/components/ui';
 import PairingPanel from '@/components/PairingPanel';
 
@@ -48,6 +49,43 @@ export default function PairScreen({ kind = 'quartz' }) {
 
         <div style={{ marginBottom: 16 }}>
           <PairingPanel kind={kind} />
+        </div>
+
+        {/* The reassurance belongs at the moment of deciding, not only in the
+            policy: this is the screen where someone weighs handing over a
+            number, and the honest answer to "can they read my chats?" is the
+            one thing that tips it. */}
+        <div
+          className="card anim-fade-up d1"
+          style={{
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: 12,
+            padding: '14px 16px',
+            marginBottom: 16,
+            borderLeft: '3px solid var(--brand)',
+            background: 'var(--brand-tint)',
+          }}
+        >
+          {/* Icons take no style prop — they inherit currentColor, so the
+              colour lives on a wrapper. */}
+          <span style={{ color: 'var(--brand)', flexShrink: 0, marginTop: 2 }}>
+            <Icons.Shield size={18} />
+          </span>
+          <div style={{ minWidth: 0 }}>
+            <p style={{ margin: 0, fontWeight: 700, color: 'var(--ink)', fontSize: 13.5 }}>
+              We cannot read your conversations.
+            </p>
+            <p style={{ margin: '4px 0 0', fontSize: 12.5, lineHeight: 1.6, color: 'var(--ink-2)' }}>
+              {m.name} handles each message in memory to run the command inside it, and keeps
+              none of it — no message text, no contacts, no media. Nobody at MZAZI TECH can
+              open your chats, and removing the device in WhatsApp cuts our access instantly.
+              By pairing you accept our{' '}
+              <Link href="/terms" style={{ color: 'var(--brand)', fontWeight: 600 }}>Terms</Link>
+              {' '}and{' '}
+              <Link href="/privacy#messages" style={{ color: 'var(--brand)', fontWeight: 600 }}>Privacy Policy</Link>.
+            </p>
+          </div>
         </div>
 
         {/* ── What this bot is for ── */}
