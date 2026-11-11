@@ -92,13 +92,16 @@ jobs:
         env:
           SITE_URL: ${{ inputs.site_url || 'https://www.mzazi.shop' }}
           VERSION_NAME: ${{ inputs.version_name || format('1.0.{0}', github.run_number) }}
-          VERSION_CODE: ${{ github.run_number + 1000 }}
         run: |
+          # GitHub's expression language has no arithmetic operator, so the
+          # offset lives in shell. Exported through GITHUB_ENV for later steps.
+          VERSION_CODE=$((1000 + ${GITHUB_RUN_NUMBER}))
+          echo "VERSION_CODE=$VERSION_CODE" >> "$GITHUB_ENV"
+          echo "VERSION_NAME=$VERSION_NAME" >> "$GITHUB_ENV"
           ./gradlew --no-daemon --stacktrace assembleDebug \
             -PappUrl="$SITE_URL" \
             -PversionName="$VERSION_NAME" \
             -PappVersionCode="$VERSION_CODE"
-          echo "VERSION_NAME=$VERSION_NAME" >> "$GITHUB_ENV"
 
       # Optional, and after the APK: a failing bundle build must not cost you
       # the installable artifact you actually came for.
@@ -107,7 +110,6 @@ jobs:
         env:
           SITE_URL: ${{ inputs.site_url || 'https://www.mzazi.shop' }}
           VERSION_NAME: ${{ inputs.version_name || format('1.0.{0}', github.run_number) }}
-          VERSION_CODE: ${{ github.run_number + 1000 }}
           MZAZI_KEYSTORE_PASSWORD: ${{ secrets.MZAZI_KEYSTORE_PASSWORD }}
           MZAZI_KEY_ALIAS: ${{ secrets.MZAZI_KEY_ALIAS }}
           MZAZI_KEY_PASSWORD: ${{ secrets.MZAZI_KEY_PASSWORD }}
@@ -184,14 +186,14 @@ jobs:
       - name: Announce the version on the site
         env:
           VERSION_NAME: ${{ format('1.0.{0}', github.run_number) }}
-          VERSION_CODE: ${{ github.run_number + 1000 }}
         run: |
           node -e '
             const fs = require("fs");
             const path = "public/app-version.json";
             const doc = JSON.parse(fs.readFileSync(path, "utf8"));
             doc.version = process.env.VERSION_NAME;
-            doc.versionCode = Number(process.env.VERSION_CODE);
+            // Must match the -PappVersionCode the APK was built with.
+            doc.versionCode = 1000 + Number(process.env.GITHUB_RUN_NUMBER);
             doc.url = "https://www.mzazi.shop/mzazitech.apk";
             doc.notes = "Bug fixes and performance improvements.";
             doc.publishedAt = new Date().toISOString();
