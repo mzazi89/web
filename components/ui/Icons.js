@@ -117,3 +117,6 @@ export const Layers = (p) => <Svg {...p}><path d="m12 3 8.5 4.5L12 12 3.5 7.5 12
 export const Cpu = (p) => <Svg {...p}><rect x="6" y="6" width="12" height="12" rx="2.5" /><rect x="9.5" y="9.5" width="5" height="5" rx="1" /><path d="M9 3v3M15 3v3M9 18v3M15 18v3M3 9h3M3 15h3M18 9h3M18 15h3" /></Svg>;
 export const ArrowUpRight = (p) => <Svg {...p}><path d="M7 17 17 7M9 7h8v8" /></Svg>;
 export const Quote = (p) => <Svg {...p}><path d="M9.5 6C6.5 7.4 5 9.9 5 13.5V18h4.5v-4.5H7c0-2.2.8-3.6 2.5-4.4V6ZM19 6c-3 1.4-4.5 3.9-4.5 7.5V18H19v-4.5h-2.5c0-2.2.8-3.6 2.5-4.4V6Z" /></Svg>;
+export const Bell = (p) => <Svg {...p}><path d="M18 15.5V11a6 6 0 1 0-12 0v4.5L4.5 18h15L18 15.5Z" /><path d="M9.5 20.5a2.5 2.5 0 0 0 5 0" /></Svg>;
+export const Receipt = (p) => <Svg {...p}><path d="M6 3.5h12v17l-3-2-3 2-3-2-3 2v-17Z" /><path d="M9 8h6M9 12h6" /></Svg>;
+export const Key = (p) => <Svg {...p}><circle cx="8" cy="8" r="3.6" /><path d="m10.6 10.6 8 8M16 16l-1.6 1.6M18.2 18.2 16.6 20" /></Svg>;

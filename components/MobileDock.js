@@ -28,6 +28,8 @@ const HIDDEN = ['/login', '/signup', '/forgot-password'];
 export default function MobileDock() {
   const pathname = usePathname();
   if (HIDDEN.includes(pathname)) return null;
+  // The dashboard has its own dock; two stacked bars would eat the screen.
+  if (pathname.startsWith('/dashboard')) return null;
 
   return (
     <nav className="dock no-print" aria-label="Quick navigation">

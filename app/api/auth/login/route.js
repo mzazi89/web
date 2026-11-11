@@ -7,6 +7,7 @@ import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { neon } from '@neondatabase/serverless';
 import { ipRateLimit, clientIp } from '@/lib/ip-limiter';
+import { recordLogin } from '@/lib/dashboard/logins';
 
 export const dynamic = 'force-dynamic';
 const sql = neon(process.env.DATABASE_URL, { fetchOptions: { cache: 'no-store' } });
@@ -45,6 +46,12 @@ export async function POST(request) {
 
     const isValid = await bcrypt.compare(password, user.password);
     if (!isValid) {
+      await recordLogin({
+        userId: user.id,
+        ip: clientIp(request),
+        userAgent: request.headers.get('user-agent'),
+        status: 'failed',
+      });
       return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 });
     }
 
@@ -61,6 +68,13 @@ export async function POST(request) {
       sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60,
       path: '/',
+    });
+
+    await recordLogin({
+      userId: user.id,
+      ip: clientIp(request),
+      userAgent: request.headers.get('user-agent'),
+      status: 'success',
     });
 
     return NextResponse.json({
