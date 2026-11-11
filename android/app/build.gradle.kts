@@ -51,11 +51,19 @@ android {
         create("stable") {
             val store = rootProject.file("keystore/mzazi.p12")
             if (store.exists()) {
+                // GitHub Actions materialises an undefined secret as an empty
+                // string, not as an absent variable, so `?:` alone is not
+                // enough: CI ended up signing with a blank password and
+                // failing with "keystore password was incorrect". Blank means
+                // "not provided" here.
+                fun envOr(name: String, fallback: String): String =
+                    System.getenv(name)?.takeIf { it.isNotBlank() } ?: fallback
+
                 storeFile = store
                 storeType = "pkcs12"
-                storePassword = System.getenv("MZAZI_KEYSTORE_PASSWORD") ?: "mzazi-android"
-                keyAlias = System.getenv("MZAZI_KEY_ALIAS") ?: "mzazi"
-                keyPassword = System.getenv("MZAZI_KEY_PASSWORD") ?: "mzazi-android"
+                storePassword = envOr("MZAZI_KEYSTORE_PASSWORD", "mzazi-android")
+                keyAlias = envOr("MZAZI_KEY_ALIAS", "mzazi")
+                keyPassword = envOr("MZAZI_KEY_PASSWORD", "mzazi-android")
             }
         }
     }
