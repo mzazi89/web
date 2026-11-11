@@ -20,6 +20,11 @@ import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import shop.mzazi.app.ads.Ads
+import shop.mzazi.app.ads.AppOpenSlot
+import shop.mzazi.app.ads.BannerSlot
+import shop.mzazi.app.ads.InterstitialSlot
+import shop.mzazi.app.ads.RewardedSlot
 import shop.mzazi.app.databinding.ActivityMainBinding
 
 /**
@@ -37,6 +42,16 @@ class MainActivity : AppCompatActivity() {
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
     private lateinit var updates: UpdateChecker
     private lateinit var notifications: NotificationCenter
+    private lateinit var banner: BannerSlot
+    private lateinit var appOpen: AppOpenSlot
+
+    // Preloaded, not placed: no interstitial or rewarded unit exists yet, so
+    // these stay empty until one is added to AdUnits.
+    private val interstitial by lazy { InterstitialSlot(this) }
+    private val rewarded by lazy { RewardedSlot(this) }
+
+    /** The app-open ad is a cold-start format; once per process, not per page. */
+    private var appOpenHandled = false
 
     /** Host the shell is allowed to navigate to in-app. */
     private val startHost: String by lazy { Uri.parse(BuildConfig.START_URL).host ?: "" }
@@ -69,11 +84,24 @@ class MainActivity : AppCompatActivity() {
         notifications = NotificationCenter(this)
         notifications.ensureChannel()
         notifications.requestPermissionIfNeeded()
+
+        // Ads are the last thing to start: consent first, then the SDK, then a
+        // banner request. None of it may delay the first page paint.
+        banner = BannerSlot(this, binding.adSlot)
+        appOpen = AppOpenSlot(this)
+        Ads.start(this) { canRequestAds ->
+            if (!canRequestAds) return@start
+            banner.load()
+            appOpen.preload()
+            interstitial.preload()
+            rewarded.preload()
+        }
     }
 
     override fun onResume() {
         super.onResume()
         if (::notifications.isInitialized) notifications.start()
+        if (::banner.isInitialized) banner.resume()
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -128,6 +156,13 @@ class MainActivity : AppCompatActivity() {
 
             override fun onPageFinished(view: WebView, url: String) {
                 binding.refresh.isRefreshing = false
+                // First page only, and only once the user can see the app
+                // behind the ad: app-open ads over a blank WebView read as a
+                // broken launch.
+                if (!appOpenHandled && ::appOpen.isInitialized) {
+                    appOpenHandled = true
+                    appOpen.showIfAvailable(this@MainActivity)
+                }
             }
 
             override fun onReceivedError(
@@ -143,6 +178,8 @@ class MainActivity : AppCompatActivity() {
                 binding.errorText.text = error.description
                 binding.errorPanel.visibility = View.VISIBLE
                 binding.web.visibility = View.INVISIBLE
+                // No ads over an error screen.
+                binding.adSlot.visibility = View.GONE
             }
         }
 
@@ -238,6 +275,13 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
     }
 
+    override fun onConfigurationChanged(newConfig: android.content.res.Configuration) {
+        super.onConfigurationChanged(newConfig)
+        // The Activity handles rotation itself (android:configChanges), so the
+        // banner is not rebuilt for us; an adaptive banner cannot be resized.
+        if (::banner.isInitialized) banner.onConfigurationChanged()
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         binding.web.saveState(outState)
@@ -246,6 +290,9 @@ class MainActivity : AppCompatActivity() {
     override fun onPause() {
         // Stop polling while backgrounded; onResume starts it again.
         if (::notifications.isInitialized) notifications.stop()
+        // Stop the banner refresh timer while backgrounded: a visible-but-hidden
+        // ad still counts as an impression the advertiser is paying for.
+        if (::banner.isInitialized) banner.pause()
         // Persist the session cookie now: the process can be killed from the
         // background without another callback.
         CookieManager.getInstance().flush()
@@ -253,6 +300,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
+        if (::banner.isInitialized) banner.destroy()
         binding.web.destroy()
         updates.dispose()
         super.onDestroy()

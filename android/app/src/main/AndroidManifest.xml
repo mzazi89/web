@@ -28,5 +28,22 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- AdMob App ID. The SDK reads this at initialize() and throws
+             IllegalStateException if it is absent or malformed — which looks
+             like a crash on launch, not an ad failure. It is the *app* ID
+             (the ~ one), never an ad unit ID (the / one). -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-6827095079937073~8191042599" />
+
+        <!-- Let the SDK move part of its start-up and ad parsing work off the
+             main thread, so first-run init does not add frames to the launch. -->
+        <meta-data
+            android:name="com.google.android.gms.ads.flag.OPTIMIZE_INITIALIZATION"
+            android:value="true" />
+        <meta-data
+            android:name="com.google.android.gms.ads.flag.OPTIMIZE_AD_LOADING"
+            android:value="true" />
     </application>
 </manifest>

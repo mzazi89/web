@@ -1,0 +1,106 @@
+name: Android release bundle
+
+# Produces the signed .aab that goes to Play Console. Separate from the debug
+# workflow on purpose: the debug job runs on every android/ push and publishes
+# the sideload APK, while this one is a deliberate, manual cut of a store build.
+on:
+  workflow_dispatch:
+    inputs:
+      version_name:
+        description: 'versionName (e.g. 1.1.0)'
+        required: true
+        default: '1.1.0'
+      version_code:
+        description: 'versionCode — must increase with every Play upload'
+        required: true
+        default: '20'
+      site_url:
+        description: 'Address the app opens (https only)'
+        required: false
+        default: 'https://www.mzazi.shop'
+
+permissions:
+  contents: read
+
+jobs:
+  bundle:
+    name: bundleRelease
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+
+    defaults:
+      run:
+        working-directory: android
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle (with build cache)
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Ensure Android SDK platform 34
+        run: |
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          if [ ! -d "$ANDROID_HOME/platforms/android-34" ]; then
+            yes | "$SDKMANAGER" --licenses > /dev/null 2>&1 || true
+            "$SDKMANAGER" "platforms;android-34" "build-tools;34.0.0"
+          fi
+
+      # The keystore is committed so sideload updates keep the same certificate.
+      # Overriding the passwords through secrets is still the right move before
+      # a Play submission; the fallback keeps this workflow runnable today.
+      - name: Build release bundle
+        env:
+          SITE_URL: ${{ inputs.site_url }}
+          VERSION_NAME: ${{ inputs.version_name }}
+          VERSION_CODE: ${{ inputs.version_code }}
+          MZAZI_KEYSTORE_PASSWORD: ${{ secrets.MZAZI_KEYSTORE_PASSWORD }}
+          MZAZI_KEY_ALIAS: ${{ secrets.MZAZI_KEY_ALIAS }}
+          MZAZI_KEY_PASSWORD: ${{ secrets.MZAZI_KEY_PASSWORD }}
+        run: |
+          ./gradlew --no-daemon --stacktrace bundleRelease \
+            -PappUrl="$SITE_URL" \
+            -PversionName="$VERSION_NAME" \
+            -PappVersionCode="$VERSION_CODE"
+
+      - name: Verify the bundle
+        run: |
+          AAB=app/build/outputs/bundle/release/app-release.aab
+          test -f "$AAB" || { echo "::error::bundleRelease produced no .aab"; exit 1; }
+          ls -lh "$AAB"
+          # A Play upload is rejected if the bundle is unsigned or the version
+          # code repeats; print both so the run itself answers that question.
+          "$ANDROID_HOME"/build-tools/34.0.0/aapt2 dump badging "$AAB" \
+            | grep -E "package:|application-label:" || true
+
+      - name: Upload bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: mzazi-tech-release-aab
+          path: android/app/build/outputs/bundle/release/app-release.aab
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Job summary
+        if: always()
+        run: |
+          {
+            echo "### Android release bundle"
+            echo ""
+            echo "| Field | Value |"
+            echo "| --- | --- |"
+            echo "| versionName | \`${{ inputs.version_name }}\` |"
+            echo "| versionCode | \`${{ inputs.version_code }}\` |"
+            echo "| Address | \`${{ inputs.site_url }}\` |"
+            echo "| Status | ${{ job.status }} |"
+            echo ""
+            echo "Download **mzazi-tech-release-aab** from *Artifacts*, unzip it,"
+            echo "and upload \`app-release.aab\` to Play Console."
+          } >> "$GITHUB_STEP_SUMMARY"

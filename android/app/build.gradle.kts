@@ -64,6 +64,10 @@ android {
         debug {
             isMinifyEnabled = false
             signingConfig = signingConfigs.getByName("stable")
+
+            // Google's sample ad units, so a debug build can never bill a real
+            // advertiser or taint the production account with invalid traffic.
+            buildConfigField("boolean", "TEST_ADS", "true")
         }
         release {
             isMinifyEnabled = false
@@ -72,6 +76,9 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+
+            // The real Ad Unit IDs. Only a signed release requests them.
+            buildConfigField("boolean", "TEST_ADS", "false")
         }
     }
 
@@ -97,4 +104,12 @@ dependencies {
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
     implementation("androidx.webkit:webkit:1.11.0")
     implementation("androidx.activity:activity-ktx:1.9.0")
+
+    // Google Mobile Ads. 23.6.0 is the newest 23.x release; the 24.x line
+    // requires compileSdk 35, and this project builds against 34.
+    implementation("com.google.android.gms:play-services-ads:23.6.0")
+
+    // User Messaging Platform — the SDK Google requires for GDPR/EEA consent
+    // before any ad may be requested.
+    implementation("com.google.android.ump:user-messaging-platform:3.2.0")
 }
