@@ -162,21 +162,30 @@ jobs:
           git diff --staged --quiet || git commit -m "android: publish v${VERSION_NAME}"
           git push
 
-      - name: Update the rolling release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: android-latest
-          name: MZAZI TECH — Android (latest)
-          prerelease: true
-          make_latest: false
-          files: artifacts/mzazi-tech-debug.apk
-          body: |
-            The current build of the MZAZI TECH app — a WebView shell around
-            https://www.mzazi.shop.
+      # Replace the asset outright. The action-based upload reported success
+      # while leaving the previous APK in place, which is worse than failing:
+      # the site announced v1.0.4 and the release still served v1.0.2.
+      - name: Publish to the rolling release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view android-latest --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1 || \
+            gh release create android-latest --repo "$GITHUB_REPOSITORY" \
+              --title "MZAZI TECH — Android (latest)" \
+              --prerelease \
+              --notes "Current build of the MZAZI TECH app — a WebView shell around https://www.mzazi.shop. Tap the APK to install, and allow install unknown apps when Android asks."
+          gh release upload android-latest artifacts/mzazi-tech-debug.apk \
+            --clobber --repo "$GITHUB_REPOSITORY"
 
-            **Install:** download `mzazi-tech-debug.apk` below, tap it, and allow
-            "install unknown apps" for your browser when Android asks. Debug
-            builds are not on Play Store, so the warning is expected.
+      - name: Confirm the published asset matches this build
+        env:
+          VERSION_NAME: ${{ format('1.0.{0}', github.run_number) }}
+        run: |
+          ASSET=$(gh release view android-latest --repo "$GITHUB_REPOSITORY" --json assets \
+            --jq '.assets[] | select(.name=="mzazi-tech-debug.apk") | "\(.size) \(.updatedAt)"')
+          LOCAL=$(stat -c %s artifacts/mzazi-tech-debug.apk)
+          echo "local=$LOCAL published=$ASSET"
+          echo "$ASSET" | grep -q "^$LOCAL " || { echo "Release asset does not match this build"; exit 1; }
 
   release:
     name: Attach APK to release (tags only)
