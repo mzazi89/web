@@ -18,6 +18,14 @@ export const dynamic = 'force-dynamic';
 
 // Admin-entered VPS sizes are free text: "4gb", "8 GB", 4096. Never glue a unit
 // onto a value that already carries one.
+const fileSize = (n) => {
+  const b = Number(n) || 0;
+  if (!b) return null;
+  if (b >= 1048576) return `${(b / 1048576).toFixed(1)} MB`;
+  if (b >= 1024) return `${Math.round(b / 1024)} KB`;
+  return `${b} B`;
+};
+
 const size = (v, fallbackUnit = 'MB') => {
   const s = String(v ?? '').trim();
   if (!s) return '—';
@@ -32,7 +40,7 @@ export async function GET() {
   try {
     await ensurePanelCatalog(sql);
 
-    const [panels, vps, endpointRow] = await Promise.all([
+    const [panels, vps, files, endpointRow] = await Promise.all([
       sql`
         SELECT id, name, price, cpu, ram, disk, description, popular, accent,
                expires_after_hours, category, discount_percent
@@ -45,6 +53,13 @@ export async function GET() {
         FROM vps_packages
         WHERE active IS NOT FALSE
         ORDER BY price ASC
+      `.catch(() => []),
+      // Bot files are uploaded from the admin panel; the table may not exist yet.
+      sql`
+        SELECT id, name, variant, version, description, price, size_bytes, downloads
+        FROM bot_files
+        WHERE active = true
+        ORDER BY created_at DESC
       `.catch(() => []),
       sql`SELECT COUNT(*)::int AS n FROM endpoints WHERE is_active = true`.catch(() => [{ n: 0 }]),
     ]);
@@ -95,6 +110,27 @@ export async function GET() {
         discount_percent: 0,
         specs: { location: 'Nairobi / EU', disk: 'NVMe', access: 'root' },
         href: '/vps',
+      });
+    }
+
+    for (const f of files) {
+      const variant = f.variant === 'bugbot' ? 'BugBot' : 'Standard bot';
+      items.push({
+        id: `file-${f.id}`,
+        kind: 'file',
+        ref: f.id,
+        category: 'file',
+        name: f.name,
+        description: f.description || `${variant} package, ready to deploy.`,
+        price: Number(f.price),
+        discount_percent: 0,
+        specs: {
+          type: variant,
+          version: f.version || null,
+          size: fileSize(f.size_bytes),
+          downloads: f.downloads || 0,
+        },
+        href: `/api/files/${f.id}/download`,
       });
     }
 

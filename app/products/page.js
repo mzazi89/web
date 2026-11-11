@@ -26,12 +26,13 @@ const CATEGORIES = [
   { id: 'game', label: 'Game' },
   { id: 'vps', label: 'VPS' },
   { id: 'bot', label: 'Bots' },
+  { id: 'file', label: 'Bot files' },
   { id: 'api', label: 'API' },
   { id: 'service', label: 'Services' },
 ];
 
-const KIND_LABEL = { panel: 'Panel', vps: 'VPS', bot: 'WhatsApp bot', api: 'Developer API', service: 'Service' };
-const KIND_ICON = { panel: Icons.Server, vps: Icons.Cpu, bot: Icons.Bot, api: Icons.Code, service: Icons.Layers };
+const KIND_LABEL = { panel: 'Panel', vps: 'VPS', bot: 'WhatsApp bot', file: 'Bot file', api: 'Developer API', service: 'Service' };
+const KIND_ICON = { panel: Icons.Server, vps: Icons.Cpu, bot: Icons.Bot, file: Icons.Download, api: Icons.Code, service: Icons.Layers };
 
 const priceOf = (item) => {
   if (item?.price == null) return null;
@@ -113,6 +114,22 @@ $ uptime · ${item.specs?.location || 'EU'}`}</pre>
     );
   }
 
+  if (item.kind === 'file') {
+    const bug = String(item.specs?.type || '').toLowerCase().includes('bug');
+    return (
+      <div className={`mkt-preview mkt-visual ${large ? '' : 'is-compact'}`} aria-hidden="true">
+        <div className="mkt-preview-bar">
+          <span className="mkt-dots"><i /><i /><i /></span>
+          <span className="mkt-preview-url">{bug ? 'bugbot.zip' : 'bot.zip'}</span>
+        </div>
+        <div className="mkt-service-visual" style={{ gap: 6, flexDirection: 'column' }}>
+          <Icons.Download size={large ? 24 : 18} />
+          <span className="mkt-file-meta">{item.specs?.version ? `v${item.specs.version}` : 'package'} · {item.specs?.size || '—'}</span>
+        </div>
+      </div>
+    );
+  }
+
   if (item.kind === 'api') {
     return (
       <div className={`mkt-preview mkt-visual ${large ? '' : 'is-compact'}`} aria-hidden="true">
@@ -172,6 +189,7 @@ export default function ProductsPage() {
   const [toast, setToast] = useState('');
   const [user, setUser] = useState(null);
   const [balance, setBalance] = useState(0);
+  const [owned, setOwned] = useState(() => new Set());
 
   const [checkout, setCheckout] = useState(false);
   const [form, setForm] = useState({ firstname: '', lastname: '', ptero_username: '', ptero_password: '', nest_id: '', egg_id: '' });
@@ -202,6 +220,8 @@ export default function ProductsPage() {
             setForm((f) => ({ ...f, firstname: f.firstname || d.user.firstname || '', lastname: f.lastname || d.user.lastname || '' }));
             const w = await fetch('/api/wallet/balance');
             if (w.ok) { const wd = await w.json().catch(() => ({})); setBalance(Number(wd.balance || 0)); }
+            const own = await fetch('/api/files/mine');
+            if (own.ok) { const od = await own.json().catch(() => ({})); setOwned(new Set((od.ids || []).map(Number))); }
           }
         }
       } catch (e) {
@@ -254,6 +274,30 @@ export default function ProductsPage() {
 
   const setQty = (id, qty) => setCart((c) => c.map((r) => (r.id === id ? { ...r, qty: Math.max(1, Math.min(5, qty)) } : r)));
   const remove = (id) => setCart((c) => c.filter((r) => r.id !== id));
+
+  // Paid files settle straight from the wallet, then the browser is handed the
+  // download URL. Free files skip the purchase entirely.
+  const getFile = async (item) => {
+    if (!user) { router.push(authHref('/products')); return; }
+    const free = Number(item.price) === 0;
+    if (!free && !owned.has(Number(item.ref))) {
+      setBusy(`file-${item.id}`);
+      try {
+        const res = await fetch(`/api/files/${item.ref}/purchase`, { method: 'POST' });
+        const d = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(d.error || 'Could not complete the purchase.');
+        setOwned((set) => new Set(set).add(Number(item.ref)));
+        say('Purchased — download starting');
+        const w = await fetch('/api/wallet/balance');
+        if (w.ok) { const wd = await w.json().catch(() => ({})); setBalance(Number(wd.balance || 0)); }
+      } catch (err) {
+        setError(err.message);
+        setBusy('');
+        return;
+      } finally { setBusy(''); }
+    }
+    window.open(`/api/files/${item.ref}/download`, '_blank', 'noopener');
+  };
 
   const openCheckout = async () => {
     if (!units.length) return;
@@ -437,16 +481,20 @@ export default function ProductsPage() {
                     {price == null ? (
                       <span className="mkt-price is-poa">On request</span>
                     ) : price === 0 ? (
-                      <span className="mkt-price">Free<small>tier</small></span>
+                      <span className="mkt-price">Free<small>{item.kind === 'file' ? 'download' : 'tier'}</small></span>
                     ) : (
-                      <span className="mkt-price">{fmtKes(price)}<small>{item.kind === 'bot' ? '/30d' : '/mo'}</small></span>
+                      <span className="mkt-price">{fmtKes(price)}<small>{item.kind === 'bot' ? '/30d' : item.kind === 'file' ? ' once' : '/mo'}</small></span>
                     )}
                     {off && <s className="mkt-was">{fmtKes(item.price)}</s>}
                   </div>
 
                   <div className="mkt-card-actions">
                     <button type="button" className="btn btn-ghost btn-sm" onClick={() => setDetail(item)}>Details</button>
-                    {direct ? (
+                    {item.kind === 'file' ? (
+                      <button type="button" className="btn btn-primary btn-sm" onClick={() => getFile(item)} disabled={busy === `file-${item.id}`}>
+                        {busy === `file-${item.id}` ? '…' : Number(item.price) === 0 || owned.has(Number(item.ref)) ? 'Download' : 'Buy'}
+                      </button>
+                    ) : direct ? (
                       <Link href={item.href} className="btn btn-primary btn-sm">
                         {item.kind === 'api' ? 'Get key' : item.kind === 'vps' ? 'Configure' : item.kind === 'service' ? 'Talk to us' : 'Choose'}
                       </Link>
@@ -563,6 +611,10 @@ export default function ProductsPage() {
                   <button type="button" className="btn btn-ghost" onClick={() => { add(detail); setDetail(null); setCartOpen(true); }}>Add to cart</button>
                   <button type="button" className="btn btn-primary" onClick={() => { add(detail, true); setDetail(null); openCheckout(); }}>Buy now</button>
                 </>
+              ) : detail.kind === 'file' ? (
+                <button type="button" className="btn btn-primary" style={{ flex: 1 }} onClick={() => getFile(detail)}>
+                  {Number(detail.price) === 0 || owned.has(Number(detail.ref)) ? 'Download' : `Buy · ${fmtKes(priceOf(detail) || 0)}`}
+                </button>
               ) : (
                 <Link href={detail.href} className="btn btn-primary" style={{ flex: 1 }}>
                   {detail.kind === 'api' ? 'Create a key' : detail.kind === 'service' ? 'Talk to us' : 'Continue'}
