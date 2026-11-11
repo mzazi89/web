@@ -6,6 +6,7 @@ import { neon } from '@neondatabase/serverless';
 // this route resolves the same admin-Settings-first values as the rest of the
 // app. It used to read process.env itself, which is why a key saved in admin
 // Settings left checkout unable to reach the panel at all.
+import { effectivePrice } from '@/lib/panel-catalog';
 import { pteroConfig, pteroGet, pteroPost, pteroDelete, pickFreeAllocation, fetchEgg } from '@/lib/ptero';
 
 export const dynamic = 'force-dynamic';
@@ -42,9 +43,10 @@ export async function POST(request) {
     const walletRows = await sql`SELECT balance FROM wallet WHERE user_id = ${userId}`;
     const balance = walletRows.length > 0 ? parseFloat(walletRows[0].balance) : 0;
 
-    if (balance < parseFloat(pkg.price)) {
+    const charge = effectivePrice(pkg);
+    if (balance < charge) {
       return NextResponse.json({
-        error: `Insufficient wallet balance. You need KES ${Number(pkg.price).toLocaleString()} but have KES ${Number(balance).toFixed(2)}. Please top up your wallet.`,
+        error: `Insufficient wallet balance. You need KES ${Number(charge).toLocaleString()} but have KES ${Number(balance).toFixed(2)}. Please top up your wallet.`,
         need_topup: true,
       }, { status: 402 });
     }
@@ -164,12 +166,12 @@ export async function POST(request) {
 
     // ── Deduct from wallet ───────────────────────────────────────────────────
     await sql`
-      UPDATE wallet SET balance = balance - ${parseFloat(pkg.price)}, updated_at = NOW()
+      UPDATE wallet SET balance = balance - ${charge}, updated_at = NOW()
       WHERE user_id = ${userId}
     `;
     await sql`
       INSERT INTO wallet_transactions (user_id, type, amount, description, status)
-      VALUES (${userId}, 'deduction', ${parseFloat(pkg.price)}, ${`Panel created: ${pkg.name}`}, 'success')
+      VALUES (${userId}, 'deduction', ${charge}, ${`Panel created: ${pkg.name}`}, 'success')
     `;
 
     // ── Save panel record (with credentials stored) ───────────────────────────
@@ -185,7 +187,7 @@ export async function POST(request) {
         VALUES (
           ${userId}, ${pteroServerId}, ${pteroUserId},
           ${ptero_username}, ${ptero_password}, ${pteroEmail},
-          ${pkg.name}, ${parseFloat(pkg.price)}, ${parseInt(nest_id)}, ${parseInt(egg_id)},
+          ${pkg.name}, ${charge}, ${parseInt(nest_id)}, ${parseInt(egg_id)},
           ${expiresAt}
         )
       `;
@@ -205,7 +207,7 @@ export async function POST(request) {
         email:           pteroEmail,
         panel_url:       panelUrl,
         package:         pkg.name,
-        price:           pkg.price,
+        price:           charge,
         expires_after_hours: pkg.expires_after_hours || null,
         expires_at:      expiresAt ? expiresAt.toISOString() : null,
       },

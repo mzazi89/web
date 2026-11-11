@@ -1,11 +1,19 @@
 import { NextResponse } from 'next/server';
 import sql from '../../../lib/database';
+import { ensurePanelCatalog } from '@/lib/panel-catalog';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
-    const packages = await sql`SELECT id, name, price, cpu, ram, disk, description, popular, accent, expires_after_hours FROM packages WHERE active = true ORDER BY sort_order ASC, id ASC`;
+    await ensurePanelCatalog(sql);
+    const packages = await sql`
+      SELECT id, name, price, cpu, ram, disk, description, popular, accent,
+             expires_after_hours, category, discount_percent
+      FROM packages
+      WHERE active = true
+      ORDER BY sort_order ASC, id ASC
+    `;
     return NextResponse.json({ packages }, {
       headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate' }
     });

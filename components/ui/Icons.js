@@ -120,3 +120,4 @@ export const Quote = (p) => <Svg {...p}><path d="M9.5 6C6.5 7.4 5 9.9 5 13.5V18h
 export const Bell = (p) => <Svg {...p}><path d="M18 15.5V11a6 6 0 1 0-12 0v4.5L4.5 18h15L18 15.5Z" /><path d="M9.5 20.5a2.5 2.5 0 0 0 5 0" /></Svg>;
 export const Receipt = (p) => <Svg {...p}><path d="M6 3.5h12v17l-3-2-3 2-3-2-3 2v-17Z" /><path d="M9 8h6M9 12h6" /></Svg>;
 export const Key = (p) => <Svg {...p}><circle cx="8" cy="8" r="3.6" /><path d="m10.6 10.6 8 8M16 16l-1.6 1.6M18.2 18.2 16.6 20" /></Svg>;
+export const Cart = (p) => <Svg {...p}><path d="M3 4h2l2.4 10.4a2 2 0 0 0 2 1.6h7.2a2 2 0 0 0 2-1.55L20 7H6" /><circle cx="10" cy="20" r="1.2" /><circle cx="17.5" cy="20" r="1.2" /></Svg>;

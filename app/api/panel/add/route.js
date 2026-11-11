@@ -12,6 +12,7 @@ import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { neon } from '@neondatabase/serverless';
 import { ensureDatabase } from '@/lib/database';
+import { effectivePrice } from '@/lib/panel-catalog';
 import { pteroConfig, pteroGet, pteroPost, pickFreeAllocation, pteroErr, fetchEgg } from '@/lib/ptero';
 
 export const dynamic = 'force-dynamic';
@@ -66,7 +67,7 @@ export async function POST(request) {
         return NextResponse.json({ error: 'Invalid package' }, { status: 400 });
       }
       pkg = pkgRows[0];
-      amount = Math.ceil(Number(pkg.price));
+      amount = effectivePrice(pkg);
     }
     if (!amount || amount <= 0) {
       return NextResponse.json({ error: 'Invalid amount' }, { status: 400 });
