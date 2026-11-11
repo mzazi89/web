@@ -36,6 +36,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
     private lateinit var updates: UpdateChecker
+    private lateinit var notifications: NotificationCenter
 
     /** Host the shell is allowed to navigate to in-app. */
     private val startHost: String by lazy { Uri.parse(BuildConfig.START_URL).host ?: "" }
@@ -64,6 +65,20 @@ class MainActivity : AppCompatActivity() {
         // the site behind the prompt, not a blank window.
         updates = UpdateChecker(this)
         updates.check()
+
+        notifications = NotificationCenter(this)
+        notifications.ensureChannel()
+        notifications.requestPermissionIfNeeded()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (::notifications.isInitialized) notifications.start()
+    }
+
+    override fun onPause() {
+        if (::notifications.isInitialized) notifications.stop()
+        super.onPause()
     }
 
     @SuppressLint("SetJavaScriptEnabled")

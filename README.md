@@ -39,6 +39,11 @@ Each build is published as `1.0.<run number>`, signed with the committed key in
 launch and shows an update prompt — *You are using v1.0.4, version 1.0.5 is
 available* — with **Update** and **Skip**; skipping asks again in ten minutes.
 
+The app also asks for notification permission and raises a local notification when
+a payment settles, a service is about to expire, or an announcement is published
+in the admin portal. Delivery is while the app is open or on next launch — the
+build carries no push service.
+
 ---
 
 ## 🚀 Overview
