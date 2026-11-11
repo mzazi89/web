@@ -27,15 +27,19 @@ object AdUnits {
 
     // --- Production ------------------------------------------------------
     //
-    // The one unit that exists in the account today, created as a BANNER.
+    // Created as a BANNER.
     private const val PROD_BANNER = "ca-app-pub-6827095079937073/1497320931"
 
-    // Interstitial, rewarded and app-open inventory needs its own units. Until
-    // they are created in AdMob these stay null and the controllers refuse to
-    // load, which is the correct failure: silently reusing PROD_BANNER would
-    // produce nothing but invalid requests.
+    // Created as REWARDED. AdMob says a new unit can take up to an hour before
+    // it serves, so an empty response early on is the account warming up, not a
+    // broken integration.
+    private const val PROD_REWARDED = "ca-app-pub-6827095079937073/7906604583"
+
+    // Interstitial and app-open inventory still needs its own units. Until they
+    // exist these stay null and the controllers refuse to load, which is the
+    // correct failure: reusing another format's unit only yields invalid
+    // requests, never an ad.
     private val PROD_INTERSTITIAL: String? = null
-    private val PROD_REWARDED: String? = null
     private val PROD_APP_OPEN: String? = null
 
     // --- Google's official test units ------------------------------------

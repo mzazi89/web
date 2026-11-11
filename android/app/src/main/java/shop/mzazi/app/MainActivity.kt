@@ -21,6 +21,7 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import shop.mzazi.app.ads.Ads
+import shop.mzazi.app.ads.AdsBridge
 import shop.mzazi.app.ads.AppOpenSlot
 import shop.mzazi.app.ads.BannerSlot
 import shop.mzazi.app.ads.InterstitialSlot
@@ -45,8 +46,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var banner: BannerSlot
     private lateinit var appOpen: AppOpenSlot
 
-    // Preloaded, not placed: no interstitial or rewarded unit exists yet, so
-    // these stay empty until one is added to AdUnits.
+    // Preloaded, not placed. The interstitial has no ad unit yet; the rewarded
+    // one is triggered by the website through AdsBridge.
     private val interstitial by lazy { InterstitialSlot(this) }
     private val rewarded by lazy { RewardedSlot(this) }
 
@@ -147,6 +148,13 @@ class MainActivity : AppCompatActivity() {
         CookieManager.getInstance().setAcceptThirdPartyCookies(web, true)
 
         WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG)
+
+        // Rewarded ads are opt-in, so the site asks for them: MzaziApp.showRewarded().
+        // Added before the first load, and guarded by the host check inside.
+        web.addJavascriptInterface(
+            AdsBridge(this, web, rewarded, startHost),
+            "MzaziApp"
+        )
 
         web.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(

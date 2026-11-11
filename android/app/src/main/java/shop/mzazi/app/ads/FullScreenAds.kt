@@ -153,10 +153,20 @@ class RewardedSlot(private val activity: Activity) {
                 onFinished()
             }
         }
-        current.show(activity) { reward ->
-            onReward(reward.amount, reward.type)
+        return try {
+            current.show(activity) { reward ->
+                onReward(reward.amount, reward.type)
+            }
+            true
+        } catch (e: Exception) {
+            // show() throws if the Activity is finishing or the ad was already
+            // presented. Neither is worth a crash on a JS-triggered path.
+            Log.w(TAG, "rewarded show threw: ${e.message}")
+            ad = null
+            preload()
+            onFinished()
+            false
         }
-        return true
     }
 }
 
