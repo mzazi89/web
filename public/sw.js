@@ -22,7 +22,7 @@ self.addEventListener('fetch', (e) => {
   if (url.pathname.startsWith('/api/')) return;
 
   // Network-first for pages (always fresh), cache-first for static assets
-  if (url.pathname.startsWith('/_next/static/') || url.pathname.startsWith('/icons/') || url.pathname === '/icon' || url.pathname === '/apple-icon') {
+  if (url.pathname.startsWith('/_next/static/') || url.pathname.startsWith('/icons/') || url.pathname === '/icon.png' || url.pathname === '/apple-icon.png') {
     e.respondWith(
       caches.match(request).then(cached => {
         const network = fetch(request)

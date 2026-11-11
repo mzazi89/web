@@ -16,13 +16,13 @@ export default function manifest() {
       { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
       { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png' },
       { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
-      { src: '/icon', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+      { src: '/icon.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
     ],
     shortcuts: [
-      { name: 'Dashboard', url: '/dashboard', icons: [{ src: '/icon', sizes: '512x512' }] },
-      { name: 'Connected Devices', url: '/devices', icons: [{ src: '/icon', sizes: '512x512' }] },
-      { name: 'Subscription', url: '/subscription', icons: [{ src: '/icon', sizes: '512x512' }] },
-      { name: 'Help', url: '/help', icons: [{ src: '/icon', sizes: '512x512' }] },
+      { name: 'Dashboard', url: '/dashboard', icons: [{ src: '/icon.png', sizes: '512x512' }] },
+      { name: 'Connected Devices', url: '/devices', icons: [{ src: '/icon.png', sizes: '512x512' }] },
+      { name: 'Subscription', url: '/subscription', icons: [{ src: '/icon.png', sizes: '512x512' }] },
+      { name: 'Help', url: '/help', icons: [{ src: '/icon.png', sizes: '512x512' }] },
     ],
   };
 }

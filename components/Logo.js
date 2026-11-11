@@ -1,8 +1,8 @@
 // MZAZI TECH — brand mark.
 //
-// A geometric "M" monogram on a gradient app-icon tile, with a small live node
-// at the top right (the "automation is running" cue). Drawn as vector so it
-// stays sharp at 24px in the drawer and at 2x on retina.
+// The emblem is artwork now, not geometry: the chrome M·T monogram inside the
+// crown ring, shipped as public/brand/logo.png and clipped to a rounded tile so
+// it matches the app icon it becomes on a home screen.
 //
 // The lockup is deliberately two-weight: MZAZI in heavy ink, TECH in tracked
 // brand blue. That reads as a wordmark rather than two words in a row.
@@ -15,47 +15,25 @@ export default function Logo({ size = 34, withText = false }) {
 
   return (
     <span className="mz-brand" style={{ display: 'inline-flex', alignItems: 'center', gap }}>
-      <svg
-        width={size}
-        height={size}
-        viewBox="0 0 48 48"
-        style={{ display: 'block', flexShrink: 0, filter: 'drop-shadow(0 4px 12px rgba(37, 99, 235, .35))' }}
-        role="img"
-        aria-label="MZAZI TECH"
-      >
-        <defs>
-          <linearGradient id="mz-tile" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#3B82F6" />
-            <stop offset="55%" stopColor="#2563EB" />
-            <stop offset="100%" stopColor="#4338CA" />
-          </linearGradient>
-          <linearGradient id="mz-sheen" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.30" />
-            <stop offset="55%" stopColor="#FFFFFF" stopOpacity="0" />
-          </linearGradient>
-        </defs>
-
-        {/* Tile */}
-        <rect x="2" y="2" width="44" height="44" rx="13" fill="url(#mz-tile)" />
-        {/* Top sheen — gives the tile depth without a second colour */}
-        <rect x="2" y="2" width="44" height="44" rx="13" fill="url(#mz-sheen)" />
-        {/* Hairline rim */}
-        <rect x="2.6" y="2.6" width="42.8" height="42.8" rx="12.4" fill="none"
-          stroke="#FFFFFF" strokeOpacity="0.18" strokeWidth="1.2" />
-
-        {/* M monogram */}
-        <path
-          d="M14 33.5V16.5l10 11 10-11v17"
-          fill="none"
-          stroke="#FFFFFF"
-          strokeWidth="3.6"
-          strokeLinecap="round"
-          strokeLinejoin="round"
+      {/* WebP first (14 KB vs 72 KB), PNG fallback. A 256px source covers the
+          44px slot at 3x, so the mark stays sharp without shipping a 627px file. */}
+      <picture style={{ display: 'inline-flex', flexShrink: 0 }}>
+        <source srcSet="/brand/logo.webp" type="image/webp" />
+        <img
+          src="/brand/logo.png"
+          width={size}
+          height={size}
+          alt="MZAZI TECH"
+          decoding="async"
+          style={{
+            display: 'block',
+            flexShrink: 0,
+            objectFit: 'cover',
+            borderRadius: Math.round(size * 0.26),
+            boxShadow: '0 0 0 1px rgba(96, 165, 250, 0.18), 0 6px 16px rgba(37, 99, 235, 0.32)',
+          }}
         />
-
-        {/* Live node */}
-        <circle cx="37.5" cy="12.2" r="2.6" fill="#67E8F9" stroke="#0B1220" strokeWidth="1.6" />
-      </svg>
+      </picture>
 
       {withText && (
         <span

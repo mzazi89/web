@@ -40,8 +40,8 @@ export const metadata = {
     title: 'MZAZI TECH',
   },
   icons: {
-    icon: [{ url: '/icon', sizes: '512x512', type: 'image/png' }],
-    apple: [{ url: '/apple-icon', sizes: '180x180' }],
+    icon: [{ url: '/icon.png', sizes: '512x512', type: 'image/png' }],
+    apple: [{ url: '/apple-icon.png', sizes: '180x180', type: 'image/png' }],
   },
   robots: { index: true, follow: true, googleBot: { index: true, follow: true } },
 };
@@ -51,7 +51,7 @@ const jsonLd = {
   '@type': 'Organization',
   name: 'MZAZI TECH INC',
   url: 'https://www.mzazi.shop',
-  logo: 'https://www.mzazi.shop/icon',
+  logo: 'https://www.mzazi.shop/icon.png',
   description:
     'WhatsApp automation platform — connect your number, choose your bot (QUARTZ XD or MZAZI XMD) and start automating.',
   foundingLocation: { '@type': 'Place', name: 'Nairobi, Kenya' },

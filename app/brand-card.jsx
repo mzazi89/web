@@ -1,15 +1,24 @@
-// Shared brand artwork for generated images (icons, apple icon, OG card).
+// Shared brand artwork for generated images (OG + Twitter cards).
 // Pure JSX — rendered by next/og (Satori) into PNGs at request time.
 
-// The MZAZI bolt-in-frame mark, in 48-space coordinates (mirrors components/Logo.js)
+import { readFileSync } from 'fs';
+import path from 'path';
+
+// The MZAZI emblem, inlined as a data URI: Satori can only embed pixels it is
+// handed, not a /public path. 256px covers the 84px slot at 2x.
+const EMBLEM = `data:image/png;base64,${readFileSync(
+  path.join(process.cwd(), 'public/brand/logo-256.png')
+).toString('base64')}`;
+
 export function BoltMark({ size = 48 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden="true">
-      <rect x="2.5" y="2.5" width="43" height="43" rx="3" fill="#04060D" stroke="#60A5FA" strokeWidth="2.2" />
-      <path d="M27.2 8.5 L15.5 26.5 L22.4 26.5 L20.4 39.5 L32.8 20.8 L25.6 20.8 Z" fill="#60A5FA" />
-      <circle cx="8" cy="8" r="1.4" fill="#38BDF8" />
-      <circle cx="40" cy="40" r="1.4" fill="#38BDF8" />
-    </svg>
+    <img
+      src={EMBLEM}
+      width={size}
+      height={size}
+      style={{ borderRadius: Math.round(size * 0.26) }}
+      alt=""
+    />
   );
 }
 
