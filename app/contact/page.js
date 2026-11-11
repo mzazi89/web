@@ -182,14 +182,14 @@ export default function ContactPage() {
               Talk to a <span className="gradient-text">Human</span>.
             </h1>
             <p className="lede mt-4 max-w-xl" style={{ fontSize: '1rem', color: 'var(--muted)' }}>
-              Got a question? We reply within two hours, around the clock. Choose a channel below or send a message directly.
+              Got a question? We reply within two hours, around the clock. Send a message below, or email us directly.
             </p>
           </div>
 
           {/* Quick channels */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5 anim-fade-up d2">
             {channels.map(c => (
-              <Card key={c.title} hover accent={c.title === 'Telegram Support'} style={{ padding: 0 }}>
+              <Card key={c.title} hover accent style={{ padding: 0 }}>
                 <a href={c.href} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', padding: '23px', display: 'flex', flexDirection: 'column', height: '100%' }}>
                   <div className="w-12 h-12 flex items-center justify-center flex-shrink-0"
                     style={{ background: `${c.color}14`, color: c.color, border: `1px solid ${c.color}35`, borderRadius: 'var(--r-md)', marginBottom: 20 }}>
