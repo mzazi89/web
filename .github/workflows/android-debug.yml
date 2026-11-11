@@ -9,6 +9,10 @@ name: Android app
 #
 # A Play bundle (.aab) is produced only when you tick "Also build a Play
 # bundle" — an .aab cannot be installed on a phone, so it is never the default.
+# versionCode = run_number + 1000. The offset exists because one-off local
+# builds were cut with small codes (1.1.1 was 21); Android refuses to install a
+# lower code over a higher one, so a CI APK must start above anything built by
+# hand. Bump the offset, never lower it, if that ever happens again.
 on:
   workflow_dispatch:
     inputs:
@@ -88,7 +92,7 @@ jobs:
         env:
           SITE_URL: ${{ inputs.site_url || 'https://www.mzazi.shop' }}
           VERSION_NAME: ${{ inputs.version_name || format('1.0.{0}', github.run_number) }}
-          VERSION_CODE: ${{ github.run_number }}
+          VERSION_CODE: ${{ github.run_number + 1000 }}
         run: |
           ./gradlew --no-daemon --stacktrace assembleDebug \
             -PappUrl="$SITE_URL" \
@@ -103,7 +107,7 @@ jobs:
         env:
           SITE_URL: ${{ inputs.site_url || 'https://www.mzazi.shop' }}
           VERSION_NAME: ${{ inputs.version_name || format('1.0.{0}', github.run_number) }}
-          VERSION_CODE: ${{ github.run_number }}
+          VERSION_CODE: ${{ github.run_number + 1000 }}
           MZAZI_KEYSTORE_PASSWORD: ${{ secrets.MZAZI_KEYSTORE_PASSWORD }}
           MZAZI_KEY_ALIAS: ${{ secrets.MZAZI_KEY_ALIAS }}
           MZAZI_KEY_PASSWORD: ${{ secrets.MZAZI_KEY_PASSWORD }}
@@ -180,7 +184,7 @@ jobs:
       - name: Announce the version on the site
         env:
           VERSION_NAME: ${{ format('1.0.{0}', github.run_number) }}
-          VERSION_CODE: ${{ github.run_number }}
+          VERSION_CODE: ${{ github.run_number + 1000 }}
         run: |
           node -e '
             const fs = require("fs");
