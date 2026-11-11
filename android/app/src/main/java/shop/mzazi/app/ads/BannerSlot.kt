@@ -45,26 +45,45 @@ class BannerSlot(
 
     private val retry = Runnable { load() }
 
+    /**
+     * Called once when the banner gives up. Debug builds surface this as a
+     * toast, because "no ad appeared" is otherwise indistinguishable from a
+     * layout bug, a consent refusal, and an empty ad response.
+     */
+    var onTerminalFailure: ((code: Int, message: String) -> Unit)? = null
+
     fun load() {
         val unit = AdUnits.banner ?: return
         if (destroyed || loading || loaded || paused) return
         if (!Ads.isReady) return
 
-        // An adaptive banner is sized from the container's width, which is 0
-        // until the first layout pass. Wait for it rather than guessing 320dp
-        // and ending up with a banner narrower than the screen.
-        if (container.width == 0) {
-            container.post { load() }
-            return
-        }
+        val widthPx = availableWidthPx()
+        if (widthPx <= 0) return
 
-        val view = adView ?: build(unit)
+        val view = adView ?: build(unit, widthPx)
         loading = true
         view.loadAd(AdRequest.Builder().build())
     }
 
-    private fun build(unit: String): AdView {
-        val widthDp = (container.width / activity.resources.displayMetrics.density).toInt()
+    /**
+     * Width to size an adaptive banner for.
+     *
+     * The container is GONE until an ad loads, and a GONE child of a
+     * LinearLayout is never measured — its width stays 0 forever. Reading the
+     * container alone therefore deadlocks: the first version of this class sat
+     * in a `post { load() }` loop that re-posted itself and never requested an
+     * ad. Falling back to the parent, then the display, means the first request
+     * always has a real width, and the measured width takes over once the slot
+     * is on screen.
+     */
+    private fun availableWidthPx(): Int {
+        if (container.width > 0) return container.width
+        (container.parent as? View)?.let { if (it.width > 0) return it.width }
+        return activity.resources.displayMetrics.widthPixels
+    }
+
+    private fun build(unit: String, widthPx: Int): AdView {
+        val widthDp = (widthPx / activity.resources.displayMetrics.density).toInt()
         builtForWidthDp = widthDp
 
         // Anchored adaptive: full width, one of Google's fixed heights, so it
@@ -115,6 +134,7 @@ class BannerSlot(
 
             if (attempts >= MAX_ATTEMPTS || !Ads.isReady) {
                 Log.w(TAG, "banner gave up: ${error.code} ${error.message}")
+                onTerminalFailure?.invoke(error.code, error.message)
                 return
             }
             val delay = BACKOFF_MS[attempts.coerceAtMost(BACKOFF_MS.lastIndex)]
@@ -127,7 +147,7 @@ class BannerSlot(
 
     /** Rotation changes the usable width, and an adaptive banner cannot be resized. */
     fun onConfigurationChanged() {
-        val widthDp = (container.width / activity.resources.displayMetrics.density).toInt()
+        val widthDp = (availableWidthPx() / activity.resources.displayMetrics.density).toInt()
         if (widthDp == 0 || widthDp == builtForWidthDp) return
         adView?.let {
             container.removeView(it)

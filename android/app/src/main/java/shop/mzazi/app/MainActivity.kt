@@ -88,9 +88,25 @@ class MainActivity : AppCompatActivity() {
         // Ads are the last thing to start: consent first, then the SDK, then a
         // banner request. None of it may delay the first page paint.
         banner = BannerSlot(this, binding.adSlot)
+        if (BuildConfig.DEBUG) {
+            // A missing ad has several causes that look identical on screen:
+            // consent withheld, no fill, a bad unit ID. Debug builds say which.
+            banner.onTerminalFailure = { code, message ->
+                Toast.makeText(
+                    this@MainActivity,
+                    "Ad unavailable ($code) $message",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
         appOpen = AppOpenSlot(this)
         Ads.start(this) { canRequestAds ->
-            if (!canRequestAds) return@start
+            if (!canRequestAds) {
+                if (BuildConfig.DEBUG) {
+                    Toast.makeText(this@MainActivity, "Ads: consent not granted", Toast.LENGTH_LONG).show()
+                }
+                return@start
+            }
             banner.load()
             appOpen.preload()
             interstitial.preload()
