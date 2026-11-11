@@ -75,6 +75,14 @@ class UpdateChecker(private val activity: Activity) {
                 append("\n\n")
                 append(notes)
             }
+            // Builds before 1.0.2 were signed with a throwaway CI key, so Android
+            // refuses to install over them. Telling the person up front is the
+            // difference between a five-second fix and a support message.
+            if (isLegacySignature(BuildConfig.VERSION_NAME)) {
+                append("\n\nThis install predates v1.0.2 and uses an older signing key. ")
+                append("If Android says the app cannot be installed, uninstall it first, ")
+                append("then install this download — updates after that install normally.")
+            }
         }
 
         dialog = AlertDialog.Builder(activity)
@@ -114,6 +122,18 @@ class UpdateChecker(private val activity: Activity) {
     companion object {
         private const val TAG = "MzaziUpdate"
         private const val RETRY_MS = 10 * 60 * 1000L
+
+        /**
+         * True for builds published before the project adopted a stable key.
+         * The scheme is 1.0.<build>, so anything below 1.0.2 was signed by the
+         * per-run CI key and cannot be updated in place.
+         */
+        fun isLegacySignature(version: String): Boolean {
+            val parts = version.trim().removePrefix("v").split(".")
+            val minor = parts.getOrNull(1)?.toIntOrNull() ?: 0
+            val patch = parts.getOrNull(2)?.toIntOrNull() ?: 0
+            return minor == 0 && patch < 2
+        }
 
         /** Semver-ish comparison: 1.0.10 is newer than 1.0.9, not older. */
         fun isNewer(candidate: String, current: String): Boolean {
