@@ -18,6 +18,18 @@ val appVersionName: String = (project.findProperty("versionName") as String?)
     ?.takeIf { it.isNotBlank() }
     ?: "1.0.0"
 
+// Android refuses to install an update signed by a different certificate, and
+// CI debug keystores are generated per runner. This project therefore signs
+// every build — debug included — with one committed key so an in-place update
+// actually installs. It is a sideload key, not a Play key.
+val appVersionCode: Int = (project.findProperty("appVersionCode") as String?)
+    ?.toIntOrNull()
+    ?: 1
+
+// Where the app looks for the newest published build. Served by the site, so a
+// deploy is enough to announce a release.
+val updateUrl: String = appUrl.trimEnd('/') + "/app-version.json"
+
 android {
     namespace = "shop.mzazi.app"
     compileSdk = 34
@@ -26,20 +38,36 @@ android {
         applicationId = "shop.mzazi.app"
         minSdk = 26
         targetSdk = 34
-        versionCode = 1
+        versionCode = appVersionCode
         versionName = appVersionName
 
         // Quoted once here so the generated BuildConfig constant is a Java
         // string literal, not a bare identifier.
         buildConfigField("String", "START_URL", "\"$appUrl\"")
+        buildConfigField("String", "UPDATE_URL", "\"$updateUrl\"")
+    }
+
+    signingConfigs {
+        create("stable") {
+            val store = rootProject.file("keystore/mzazi.p12")
+            if (store.exists()) {
+                storeFile = store
+                storeType = "pkcs12"
+                storePassword = System.getenv("MZAZI_KEYSTORE_PASSWORD") ?: "mzazi-android"
+                keyAlias = System.getenv("MZAZI_KEY_ALIAS") ?: "mzazi"
+                keyPassword = System.getenv("MZAZI_KEY_PASSWORD") ?: "mzazi-android"
+            }
+        }
     }
 
     buildTypes {
         debug {
             isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("stable")
         }
         release {
             isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("stable")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

@@ -35,6 +35,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
+    private lateinit var updates: UpdateChecker
 
     /** Host the shell is allowed to navigate to in-app. */
     private val startHost: String by lazy { Uri.parse(BuildConfig.START_URL).host ?: "" }
@@ -58,6 +59,11 @@ class MainActivity : AppCompatActivity() {
         } else {
             binding.web.restoreState(savedInstanceState)
         }
+
+        // Check after the shell is on screen: a stale install should still see
+        // the site behind the prompt, not a blank window.
+        updates = UpdateChecker(this)
+        updates.check()
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -236,6 +242,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         binding.web.destroy()
+        updates.dispose()
         super.onDestroy()
     }
 

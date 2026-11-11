@@ -33,6 +33,12 @@ Rebuilds happen automatically when `android/**` changes, or on demand:
 *Actions → Android app → Run workflow*, where you can point it at a preview URL
 instead of production.
 
+Each build is published as `1.0.<run number>`, signed with the committed key in
+`android/keystore/` so it installs **over** the previous version, and the site's
+`/app-version.json` is updated in the same run. The app reads that file at
+launch and shows an update prompt — *You are using v1.0.4, version 1.0.5 is
+available* — with **Update** and **Skip**; skipping asks again in ten minutes.
+
 ---
 
 ## 🚀 Overview
