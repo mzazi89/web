@@ -1,10 +1,14 @@
 name: Android app
 
+# The installable build. Every run produces mzazi-tech-debug-apk.zip — unzip,
+# tap the APK, install. Nothing here requires a Play account.
+#
 # Two ways to build:
-#   • Actions → "Android app (debug APK)" → Run workflow  (the normal path)
+#   • Actions → "Android app" → Run workflow   (the normal path)
 #   • automatically, when anything under android/ changes
 #
-# Either way the installable file lands in the run's Artifacts section as a zip.
+# A Play bundle (.aab) is produced only when you tick "Also build a Play
+# bundle" — an .aab cannot be installed on a phone, so it is never the default.
 on:
   workflow_dispatch:
     inputs:
@@ -15,7 +19,12 @@ on:
       version_name:
         description: 'Version label shown in Settings → Apps'
         required: false
-        default: '1.0.0'
+        default: ''
+      build_aab:
+        description: 'Also build a Play bundle (.aab)'
+        type: boolean
+        required: false
+        default: false
   push:
     branches: [main]
     paths:
@@ -32,7 +41,9 @@ concurrency:
 jobs:
   build:
     name: assembleDebug
-    runs-on: ubuntu-latest
+    # Pinned instead of ubuntu-latest: the -latest alias migrates to a new
+    # image without warning, which has already broken one Android build here.
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
 
     defaults:
@@ -41,16 +52,16 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: '17'
 
       - name: Set up Gradle (with build cache)
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v6
 
       - name: Ensure Android SDK platform 34
         run: |
@@ -85,6 +96,23 @@ jobs:
             -PappVersionCode="$VERSION_CODE"
           echo "VERSION_NAME=$VERSION_NAME" >> "$GITHUB_ENV"
 
+      # Optional, and after the APK: a failing bundle build must not cost you
+      # the installable artifact you actually came for.
+      - name: Build Play bundle (optional)
+        if: ${{ inputs.build_aab }}
+        env:
+          SITE_URL: ${{ inputs.site_url || 'https://www.mzazi.shop' }}
+          VERSION_NAME: ${{ inputs.version_name || format('1.0.{0}', github.run_number) }}
+          VERSION_CODE: ${{ github.run_number }}
+          MZAZI_KEYSTORE_PASSWORD: ${{ secrets.MZAZI_KEYSTORE_PASSWORD }}
+          MZAZI_KEY_ALIAS: ${{ secrets.MZAZI_KEY_ALIAS }}
+          MZAZI_KEY_PASSWORD: ${{ secrets.MZAZI_KEY_PASSWORD }}
+        run: |
+          ./gradlew --no-daemon --stacktrace bundleRelease \
+            -PappUrl="$SITE_URL" \
+            -PversionName="$VERSION_NAME" \
+            -PappVersionCode="$VERSION_CODE"
+
       - name: Collect APK
         run: |
           mkdir -p ../artifacts
@@ -92,10 +120,19 @@ jobs:
           ls -lh ../artifacts
 
       - name: Upload debug APK
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: mzazi-tech-debug-apk
           path: artifacts/mzazi-tech-debug.apk
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload Play bundle
+        if: ${{ inputs.build_aab }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: mzazi-tech-release-aab
+          path: android/app/build/outputs/bundle/release/app-release.aab
           if-no-files-found: error
           retention-days: 30
 
@@ -105,37 +142,37 @@ jobs:
           SITE_URL: ${{ inputs.site_url || 'https://www.mzazi.shop' }}
         run: |
           {
-            echo "### Android debug build"
+            echo "### Android build"
             echo ""
             echo "| Field | Value |"
             echo "| --- | --- |"
             echo "| Address | \`$SITE_URL\` |"
             echo "| Commit | \`${{ github.sha }}\` |"
+            echo "| Play bundle | ${{ inputs.build_aab && 'built' || 'not requested' }} |"
             echo "| Status | ${{ job.status }} |"
             echo ""
-            echo "**Download:** scroll to *Artifacts* at the bottom of this page →"
-            echo "**mzazi-tech-debug-apk**."
+            echo "**Install it:** scroll to *Artifacts* → **mzazi-tech-debug-apk** →"
+            echo "download the zip → unzip → tap \`mzazi-tech-debug.apk\`."
             echo ""
-            echo "> The artifact is a **zip**. Unzip it and install \`mzazi-tech-debug.apk\`."
-            echo "> Android will warn that the app is unsigned-for-Play / from an unknown source —"
-            echo "> that is expected for a debug build."
+            echo "> The artifact is a **zip**. Android will warn about installing from"
+            echo "> an unknown source; that is expected."
           } >> "$GITHUB_STEP_SUMMARY"
 
   publish-latest:
     name: Publish APK to Releases
     if: github.ref == 'refs/heads/main'
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
     steps:
       - name: Check out main
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: main
 
       - name: Download built APK
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: mzazi-tech-debug-apk
           path: artifacts
@@ -196,12 +233,12 @@ jobs:
     name: Attach APK to release (tags only)
     if: startsWith(github.ref, 'refs/tags/v')
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
     steps:
       - name: Download built APK
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: mzazi-tech-debug-apk
           path: artifacts
