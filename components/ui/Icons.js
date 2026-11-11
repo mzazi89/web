@@ -82,6 +82,7 @@ export const Sparkles = (p) => <Svg {...p}><path d="M12 3.5 13.6 8l4.4 1.6L13.6 
 export const Star = (p) => <Svg {...p}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></Svg>;
 export const Image = (p) => <Svg {...p}><rect x="3" y="4" width="18" height="16" rx="2.5" /><circle cx="8.5" cy="9.5" r="1.6" /><path d="m4 17 4.5-4.5 4 4L15.5 13 20 17.5" /></Svg>;
 export const Eye = (p) => <Svg {...p}><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z" /><circle cx="12" cy="12" r="3" /></Svg>;
+export const EyeOff = (p) => <Svg {...p}><path d="M3 3l18 18" /><path d="M10.6 6.1A9.7 9.7 0 0 1 12 6c6 0 9.5 6 9.5 6a17.6 17.6 0 0 1-3.2 3.9" /><path d="M6.4 8.3A17.4 17.4 0 0 0 2.5 12S6 18 12 18a9.9 9.9 0 0 0 3.1-.5" /><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" /></Svg>;
 export const Download = (p) => <Svg {...p}><path d="M12 3v12M7.5 10.5 12 15l4.5-4.5M4 20h16" /></Svg>;
 export const Upload = (p) => <Svg {...p}><path d="M12 16V4M7.5 8.5 12 4l4.5 4.5M4 20h16" /></Svg>;
 export const Link = (p) => <Svg {...p}><path d="M10.5 13.5a4 4 0 0 0 5.7 0l2.6-2.6a4 4 0 1 0-5.7-5.7L11.8 6.5" /><path d="M13.5 10.5a4 4 0 0 0-5.7 0l-2.6 2.6a4 4 0 1 0 5.7 5.7l1.3-1.3" /></Svg>;

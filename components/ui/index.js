@@ -11,6 +11,7 @@ export { default as Card, CardHeader, StatCard } from './Card';
 export { default as DeviceCard, formatPhone } from './DeviceCard';
 export { default as CanvasArt } from './CanvasArt';
 export { default as ImageWithFallback, Avatar } from './ImageWithFallback';
+export { default as FeedbackMark, VerdictOverlay } from './FeedbackMark';
 export { default as Modal, ConfirmDialog } from './Modal';
 export { default as PlanCard, BotMark } from './PlanCard';
 export { default as ThemeToggle } from './ThemeToggle';

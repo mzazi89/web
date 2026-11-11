@@ -1876,3 +1876,212 @@ kbd {
     }
   }
 }
+
+/* ── Auth: verdict animation ──────────────────────────────────────────────── */
+/* The answer to "did it work?" for sign in / sign up. A ring draws itself, then
+   a tick or a cross draws inside it. See components/ui/FeedbackMark.js.
+   Overlay rather than an inline banner so the fields never move under the
+   person's finger while they are reading the result. */
+
+.auth-card {
+  position: relative;
+  overflow: hidden;
+}
+.auth-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 2px;
+  background: linear-gradient(90deg, var(--brand), var(--brand-bright), var(--blue));
+  opacity: 0.5;
+}
+
+.verdict {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  display: grid;
+  place-items: center;
+  border-radius: inherit;
+  text-align: center;
+  animation: verdict-in 170ms var(--ease) both;
+}
+/* The veil is a pseudo-element so the mark itself stays perfectly crisp. */
+.verdict::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--surface);
+  -webkit-backdrop-filter: blur(9px) saturate(1.05);
+  backdrop-filter: blur(9px) saturate(1.05);
+  opacity: 0.94;
+}
+.verdict[data-status="success"] { --vd: var(--good); --vd-tint: var(--good-tint); }
+.verdict[data-status="error"]   { --vd: var(--bad);  --vd-tint: var(--bad-tint); }
+
+.verdict-inner {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  padding: 8px;
+  animation: verdict-pop 420ms var(--ease) both;
+}
+
+.verdict-halo {
+  position: absolute;
+  top: 0;
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: var(--vd-tint);
+  pointer-events: none;
+  animation: verdict-halo 1.1s var(--ease) both;
+}
+
+.verdict-ring {
+  position: relative;
+  display: block;
+  overflow: visible;
+}
+.verdict-track {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 3;
+  opacity: 0.5;
+}
+.verdict-circle {
+  fill: none;
+  stroke: var(--vd);
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  stroke-dasharray: 264;
+  stroke-dashoffset: 264;
+  transform: rotate(-90deg);
+  transform-origin: 48px 48px;
+  animation: verdict-draw 520ms var(--ease) forwards;
+}
+.verdict-glyph {
+  fill: none;
+  stroke: var(--vd);
+  stroke-width: 4.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 64;
+  stroke-dashoffset: 64;
+  animation: verdict-draw 300ms 430ms var(--ease) forwards;
+}
+/* The cross is two strokes: stagger the second one. */
+.verdict-glyph + .verdict-glyph { animation-delay: 560ms; }
+
+/* A single, small shake — enough to feel like a "no", never a tantrum. */
+.verdict[data-status="error"] .verdict-ring {
+  animation: verdict-pop 380ms var(--ease) both, verdict-shake 380ms 250ms ease-in-out 1;
+}
+
+.verdict-text {
+  margin: 0;
+  max-width: 240px;
+  font-size: 13px;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+  color: var(--ink);
+  animation: verdict-text 260ms 360ms var(--ease) both;
+}
+
+@keyframes verdict-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes verdict-pop {
+  0%   { transform: scale(0.86); opacity: 0; }
+  60%  { transform: scale(1.03); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes verdict-draw { to { stroke-dashoffset: 0; } }
+@keyframes verdict-halo {
+  0%   { transform: scale(0.65); opacity: 0.75; }
+  70%  { opacity: 0.22; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+@keyframes verdict-shake {
+  0%, 100% { transform: translateX(0); }
+  20%      { transform: translateX(-3px); }
+  45%      { transform: translateX(3px); }
+  70%      { transform: translateX(-2px); }
+}
+@keyframes verdict-text {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .verdict,
+  .verdict-inner,
+  .verdict-halo,
+  .verdict-circle,
+  .verdict-glyph,
+  .verdict-text { animation: none !important; }
+  .verdict-circle,
+  .verdict-glyph { stroke-dashoffset: 0; }
+  .verdict-halo { display: none; }
+}
+
+/* ── Auth: password field ─────────────────────────────────────────────────── */
+
+.pw-wrap { position: relative; }
+.pw-wrap .input { padding-right: 42px; }
+
+.pw-toggle {
+  position: absolute;
+  top: 50%;
+  right: 5px;
+  transform: translateY(-50%);
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color var(--dur) var(--ease), background-color var(--dur) var(--ease);
+}
+.pw-toggle:hover { color: var(--ink); background: var(--surface-2); }
+.pw-toggle:focus-visible { outline: 2px solid var(--brand); outline-offset: 1px; }
+
+/* Strength meter: three segments, no numbers — a glance is enough. */
+.pw-meter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: -4px 0 14px;
+}
+.pw-meter-bars { display: flex; flex: 1; gap: 4px; }
+.pw-meter-bar {
+  height: 3px;
+  flex: 1;
+  border-radius: 99px;
+  background: var(--line);
+  transition: background-color 220ms var(--ease);
+}
+.pw-meter-bar.on-weak { background: var(--bad); }
+.pw-meter-bar.on-fair { background: var(--warn); }
+.pw-meter-bar.on-strong { background: var(--good); }
+.pw-meter-label {
+  font-size: 11.5px;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+  min-width: 46px;
+  text-align: right;
+}
+
+/* First/last name sit side by side only when there is room for two columns. */
+.auth-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+@media (max-width: 420px) {
+  .auth-grid-2 { grid-template-columns: 1fr; gap: 0; }
+}

@@ -3,20 +3,23 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import Logo from '@/components/Logo';
-import { AppBackground, Button, Field, Input, Alert, ThemeToggle, Icons } from '@/components/ui';
+import AuthShell from '@/components/AuthShell';
+import { Button, Field, Input, Alert, Icons, VerdictOverlay } from '@/components/ui';
 import { safeNext, authHref } from '@/lib/nextPath';
 
 // MZAZI TECH — sign in.
-// Deliberately minimal: brand, welcome, two fields, one button, one link.
-// Behaviour is unchanged from v1 (same endpoints, same redirects).
+// Behaviour is unchanged (same endpoint, same redirect targets): what changed is
+// the answer. A wrong password gets a cross, a correct one gets a tick, and the
+// form gets out of the way while it happens.
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
   const [loading, setLoading] = useState(false);
+  const [verdict, setVerdict] = useState(null);
   const router = useRouter();
 
   // Where to land after signing in. Set from ?next=, which is how a visitor who
@@ -43,10 +46,23 @@ export default function LoginPage() {
     }
   }, []);
 
+  const succeeded = verdict?.status === 'success';
+
+  // The overlay carries the headline; the alert underneath keeps the server's
+  // exact wording, so it is still on screen once the mark fades.
+  const fail = (message, detail) => {
+    setError(detail);
+    setVerdict({ id: Date.now(), status: 'error', message });
+  };
+
+  const dismissVerdict = () => setVerdict(null);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading || succeeded) return;
     setError('');
     setNotice('');
+    setVerdict(null);
     setLoading(true);
     try {
       const response = await fetch('/api/auth/login', {
@@ -55,92 +71,35 @@ export default function LoginPage() {
         body: JSON.stringify({ email, password }),
       });
       const data = await response.json().catch(() => ({}));
+
       if (response.ok) {
-        router.push(next);
-        router.refresh();
-      } else {
-        setError(data.error || 'That email and password do not match. Please try again.');
+        setVerdict({ id: Date.now(), status: 'success', message: 'Signed in' });
+        window.setTimeout(() => {
+          router.push(next);
+          router.refresh();
+        }, 850);
+        return;
       }
+
+      const detail = data.error || 'That email and password do not match. Please try again.';
+      // 401/403 is the "these credentials are wrong" case — worth naming, since
+      // that is the one a person can actually fix by retyping.
+      const wrongPassword = response.status === 401 || response.status === 403;
+      fail(wrongPassword ? 'Wrong password' : 'Sign-in failed', detail);
     } catch {
-      setError('We could not reach the server. Check your connection and try again.');
+      fail('Connection lost', 'We could not reach the server. Check your connection and try again.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <AppBackground variant="auth" style={{ minHeight: 'calc(100vh - var(--nav-h))', display: 'flex', flexDirection: 'column' }}>
-      <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '14px 16px' }}>
-        <ThemeToggle />
-      </div>
-
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 20px 24px' }}>
-        <div style={{ width: '100%', maxWidth: 400 }} className="anim-fade-up">
-          <div style={{ textAlign: 'center', marginBottom: 19 }}>
-            <Link href="/" aria-label="MZAZI TECH home" style={{ textDecoration: 'none', display: 'inline-block' }}>
-              <Logo size={44} />
-            </Link>
-            <h1 className="headline" style={{ fontSize: 'clamp(1.6rem, 5vw, 2rem)', marginTop: 20, marginBottom: 0 }}>
-              Welcome back
-            </h1>
-            <p style={{ margin: '8px 0 0', fontSize: 13.5, color: 'var(--muted)' }}>
-              Sign in to manage your bots, devices and payments.
-            </p>
-          </div>
-
-          <div className="card card-pad">
-            {notice && (
-              <Alert kind="success" className="mb-4" style={{ marginBottom: 16 }}>{notice}</Alert>
-            )}
-            {error && (
-              <Alert kind="error" className="mb-4" style={{ marginBottom: 16 }}>{error}</Alert>
-            )}
-
-            <form onSubmit={handleSubmit} noValidate>
-              <Field label="Email address" id="login-email">
-                <Input
-                  id="login-email"
-                  type="email"
-                  required
-                  autoComplete="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com"
-                />
-              </Field>
-
-              <Field label="Password" id="login-password">
-                <Input
-                  id="login-password"
-                  type="password"
-                  required
-                  autoComplete="current-password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Your password"
-                />
-              </Field>
-
-              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: -6, marginBottom: 18 }}>
-                <Link href="/forgot-password" style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--brand)', textDecoration: 'none' }}>
-                  Forgot password?
-                </Link>
-              </div>
-
-              <Button
-                type="submit"
-                variant="primary"
-                size="lg"
-                block
-                loading={loading}
-                loadingText="Signing in…"
-                disabled={!email || !password}
-              >
-                Sign in
-              </Button>
-            </form>
-          </div>
-
+    <AuthShell
+      title="Welcome back"
+      subtitle="Sign in to manage your bots, devices and payments."
+      maxWidth={400}
+      footer={(
+        <>
           <p style={{ marginTop: 16, textAlign: 'center', fontSize: 13.5, color: 'var(--muted)' }}>
             No account?{' '}
             <Link href={authHref(next, { signup: true })} style={{ fontWeight: 700, color: 'var(--brand)', textDecoration: 'none' }}>
@@ -152,8 +111,78 @@ export default function LoginPage() {
             <Icons.Shield size={13} />
             Secured connection · your details are never shared
           </p>
-        </div>
+        </>
+      )}
+    >
+      <div className="card card-pad auth-card">
+        <VerdictOverlay
+          verdict={verdict}
+          ttl={verdict?.status === 'error' ? 2000 : 0}
+          onDone={dismissVerdict}
+        />
+
+        {notice && <Alert kind="success" style={{ marginBottom: 16 }}>{notice}</Alert>}
+        {error && <Alert kind="error" style={{ marginBottom: 16 }}>{error}</Alert>}
+
+        <form onSubmit={handleSubmit} noValidate>
+          <Field label="Email address" id="login-email">
+            <Input
+              id="login-email"
+              type="email"
+              required
+              autoComplete="email"
+              inputMode="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+              disabled={loading || succeeded}
+            />
+          </Field>
+
+          <Field label="Password" id="login-password">
+            <div className="pw-wrap">
+              <Input
+                id="login-password"
+                type={showPassword ? 'text' : 'password'}
+                required
+                autoComplete="current-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Your password"
+                disabled={loading || succeeded}
+              />
+              <button
+                type="button"
+                className="pw-toggle"
+                onClick={() => setShowPassword((v) => !v)}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                aria-pressed={showPassword}
+                tabIndex={0}
+              >
+                {showPassword ? <Icons.EyeOff size={17} /> : <Icons.Eye size={17} />}
+              </button>
+            </div>
+          </Field>
+
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: -6, marginBottom: 18 }}>
+            <Link href="/forgot-password" style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--brand)', textDecoration: 'none' }}>
+              Forgot password?
+            </Link>
+          </div>
+
+          <Button
+            type="submit"
+            variant="primary"
+            size="lg"
+            block
+            loading={loading}
+            loadingText="Signing in…"
+            disabled={!email || !password || succeeded}
+          >
+            Sign in
+          </Button>
+        </form>
       </div>
-    </AppBackground>
+    </AuthShell>
   );
 }
