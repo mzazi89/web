@@ -15,6 +15,24 @@
 
 </div>
 
+## 📱 Android app
+
+The repository also builds an installable Android app — a WebView shell around
+`https://www.mzazi.shop`, so the site opens full-screen with no browser chrome.
+
+**Install it in three steps:**
+
+1. Open **[Actions → Android app](https://github.com/mzazi89/web/actions/workflows/android-debug.yml)**.
+2. Pick the newest green run and download **`mzazi-tech-debug-apk`** from *Artifacts* (a zip — unzip it), **or** grab the ready APK from **[Releases → MZAZI TECH — Android (latest)](https://github.com/mzazi89/web/releases/tag/android-latest)**.
+3. Tap the `.apk`, and allow *install unknown apps* for your browser when Android asks.
+
+Debug builds are unsigned for Play, so the warning is expected. The app needs
+Android 8.0 (API 26) or newer.
+
+Rebuilds happen automatically when `android/**` changes, or on demand:
+*Actions → Android app → Run workflow*, where you can point it at a preview URL
+instead of production.
+
 ---
 
 ## 🚀 Overview
