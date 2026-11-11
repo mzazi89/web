@@ -76,11 +76,6 @@ class MainActivity : AppCompatActivity() {
         if (::notifications.isInitialized) notifications.start()
     }
 
-    override fun onPause() {
-        if (::notifications.isInitialized) notifications.stop()
-        super.onPause()
-    }
-
     @SuppressLint("SetJavaScriptEnabled")
     private fun configureWebView() {
         val web = binding.web
@@ -249,6 +244,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onPause() {
+        // Stop polling while backgrounded; onResume starts it again.
+        if (::notifications.isInitialized) notifications.stop()
         // Persist the session cookie now: the process can be killed from the
         // background without another callback.
         CookieManager.getInstance().flush()
