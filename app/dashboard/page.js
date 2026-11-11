@@ -23,6 +23,7 @@
 //   POST /api/panel/credentials
 
 import React, { useEffect, useState, useRef } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
   AppBackground, PageHeader, Button, Card, CardHeader, StatCard, Badge, StatusIndicator,
@@ -259,13 +260,17 @@ export default function DashboardPage() {
     <AppBackground variant="dashboard">
       <div className="container-site" style={{ paddingTop: 19, paddingBottom: 24, maxWidth: 1100 }}>
         <PageHeader
-          title={<>Welcome back, {firstName} <span aria-hidden="true">👋</span></>}
-          description={user?.email ? `Signed in as ${user.email}` : 'Your account at a glance.'}
+          title={firstName}
+          description={user?.email ? `Control panel · ${user.email}` : 'Control panel'}
           icon={<Icons.Dashboard size={20} />}
           actions={
             <>
-              <Button variant="ghost" href="/wallet" icon={<Icons.Wallet size={16} />}>Wallet</Button>
-              <Button href="/subscription" icon={<Icons.Sparkles size={16} />}>Upgrade plan</Button>
+              <span className="tag tag-green" style={{ fontWeight: 700, minHeight: 32 }}>
+                <Icons.Wallet size={13} />
+                <span className="tnum">{fmtKes(balance)}</span>
+              </span>
+              <Button variant="ghost" href="/wallet" icon={<Icons.Plus size={15} />}>Add money</Button>
+              <Button href="/subscription" icon={<Icons.Sparkles size={15} />}>Upgrade</Button>
             </>
           }
         />
@@ -283,6 +288,24 @@ export default function DashboardPage() {
         <div className="grid-cards anim-fade-up" style={{ marginBottom: 16 }}>
           {facts.map((f) => (
             <StatCard key={f.label} label={f.label} value={f.value} hint={f.hint} icon={f.icon} tone={f.tone} />
+          ))}
+        </div>
+
+        {/* ── Hosting at a glance: the four things this account can be running ── */}
+        <div className="svc-strip anim-fade-up d1">
+          {[
+            { label: 'Panels', value: panels.length, note: `${activePanels} active`, href: '/products', Icon: Icons.Server },
+            { label: 'VPS', value: vpsServers.length, note: 'instances', href: '/vps', Icon: Icons.Cpu },
+            { label: 'Devices', value: deviceList.length, note: unlimited ? 'unlimited' : `of ${maxDevices}`, href: '/devices', Icon: Icons.Phone },
+            { label: 'API calls', value: apiStats?.requests ?? '—', note: 'this month', href: '/api/docs', Icon: Icons.Code },
+          ].map(({ label, value, note, href, Icon }) => (
+            <Link key={label} href={href} className="svc-strip-item">
+              <span className="ssi-ico"><Icon size={14} /></span>
+              <span style={{ minWidth: 0 }}>
+                <span className="ssi-label">{label}</span>
+                <span className="ssi-value">{value} <span className="ssi-note">{note}</span></span>
+              </span>
+            </Link>
           ))}
         </div>
 

@@ -105,3 +105,15 @@ export const WhatsApp = ({ size = 18, label, ...rest }) => (
 );
 
 export const Icon = Svg;
+
+// ── Services set (added for the premium homepage) ───────────────────────────
+export const Server = (p) => <Svg {...p}><rect x="3" y="4" width="18" height="7" rx="2" /><rect x="3" y="13" width="18" height="7" rx="2" /><path d="M7 7.5h.01M7 16.5h.01M11 7.5h5M11 16.5h5" /></Svg>;
+export const Cloud = (p) => <Svg {...p}><path d="M6.5 18h10.2a4.3 4.3 0 0 0 .3-8.6 5.7 5.7 0 0 0-11-1.1A4.6 4.6 0 0 0 6.5 18Z" /></Svg>;
+export const Code = (p) => <Svg {...p}><path d="m8.5 8-4 4 4 4M15.5 8l4 4-4 4M13.5 5l-3 14" /></Svg>;
+export const Box = (p) => <Svg {...p}><path d="M12 3 3.5 7.5v9L12 21l8.5-4.5v-9L12 3Z" /><path d="M3.5 7.5 12 12l8.5-4.5M12 12v9" /></Svg>;
+export const Globe = (p) => <Svg {...p}><circle cx="12" cy="12" r="8.5" /><path d="M3.5 12h17M12 3.5c2.2 2.3 3.3 5.3 3.3 8.5s-1.1 6.2-3.3 8.5c-2.2-2.3-3.3-5.3-3.3-8.5S9.8 5.8 12 3.5Z" /></Svg>;
+export const Activity = (p) => <Svg {...p}><path d="M3 12h3.5L9 6l3 12 2.5-6H21" /></Svg>;
+export const Layers = (p) => <Svg {...p}><path d="m12 3 8.5 4.5L12 12 3.5 7.5 12 3Z" /><path d="m3.5 12.5 8.5 4.5 8.5-4.5M3.5 17l8.5 4.5 8.5-4.5" /></Svg>;
+export const Cpu = (p) => <Svg {...p}><rect x="6" y="6" width="12" height="12" rx="2.5" /><rect x="9.5" y="9.5" width="5" height="5" rx="1" /><path d="M9 3v3M15 3v3M9 18v3M15 18v3M3 9h3M3 15h3M18 9h3M18 15h3" /></Svg>;
+export const ArrowUpRight = (p) => <Svg {...p}><path d="M7 17 17 7M9 7h8v8" /></Svg>;
+export const Quote = (p) => <Svg {...p}><path d="M9.5 6C6.5 7.4 5 9.9 5 13.5V18h4.5v-4.5H7c0-2.2.8-3.6 2.5-4.4V6ZM19 6c-3 1.4-4.5 3.9-4.5 7.5V18H19v-4.5h-2.5c0-2.2.8-3.6 2.5-4.4V6Z" /></Svg>;

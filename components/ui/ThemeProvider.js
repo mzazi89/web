@@ -15,7 +15,7 @@ import { createContext, useCallback, useContext, useEffect, useState } from 'rea
 export const THEME_KEY = 'mzazi-theme';
 
 /** Runs before paint, in <head>. Kept dependency-free and tiny on purpose. */
-export const THEME_BOOT_SCRIPT = `(function(){try{var k='${THEME_KEY}';var s=localStorage.getItem(k)||'system';var d=window.matchMedia('(prefers-color-scheme: dark)').matches;var t=(s==='system')?(d?'dark':'light'):s;var r=document.documentElement;if(s!=='system'){r.setAttribute('data-theme',s);}r.style.colorScheme=t;}catch(e){}})();`;
+export const THEME_BOOT_SCRIPT = `(function(){try{var k='${THEME_KEY}';var s=localStorage.getItem(k)||'system';var d=window.matchMedia('(prefers-color-scheme: dark)').matches;var t=(s==='system')?'dark':s;var r=document.documentElement;if(s!=='system'){r.setAttribute('data-theme',s);}r.style.colorScheme=t;}catch(e){}})();`;
 
 const ThemeContext = createContext({ theme: 'system', resolved: 'light', setTheme: () => {} });
 

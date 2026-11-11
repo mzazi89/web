@@ -1,232 +1,100 @@
 'use client';
-import { useState, useEffect } from 'react';
-import StarRating from './StarRating';
+
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { Icons } from '@/components/ui';
 
+// MZAZI TECH — proof section.
+//
+// Real reviews only. Approved rows come from `testimonials` via /api/testimonials;
+// until there are some, this renders the commitments every plan actually carries
+// rather than invented quotes on a page that sells hosting. (The repo removed a
+// block of fake testimonials once already — this is the guard against it coming
+// back through a redesign.)
 
-function TestimonialCard({ testimonial }) {
-  const date = new Date(testimonial.created_at).toLocaleDateString('en-KE', {
-    year: 'numeric', month: 'short', day: 'numeric',
-  });
-  const initials = testimonial.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
-
-  return (
-    <div
-      className="card card-pad flex flex-col"
-      style={{
-        background: 'var(--surface)',
-        border: '1px solid var(--line)',
-        borderRadius: 6,
-        padding: '19px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '14px',
-        transition: 'transform 0.2s, box-shadow 0.2s, border-color 0.2s',
-      }}
-      onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.borderColor = 'var(--brand-a45)'; e.currentTarget.style.boxShadow = '0 12px 32px rgba(0,0,0,0.35)'; }}
-      onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'var(--line)'; e.currentTarget.style.boxShadow = 'none'; }}
-    >
-      <div className="mono text-lg" style={{ color: 'var(--brand)', lineHeight: 1, opacity: 0.6 }}>"</div>
-      <p className="text-sm leading-relaxed flex-1" style={{ color: 'var(--ink-2)' }}>{testimonial.message}</p>
-      <StarRating value={testimonial.rating} readonly />
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', paddingTop: '8px', borderTop: '1px solid var(--line-soft)' }}>
-        <div style={{
-          width: '40px', height: '40px', borderRadius: '50%',
-          background: 'var(--brand-a10)', border: '1px solid var(--brand-a45)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontWeight: 700, fontSize: '14px', color: 'var(--brand)', flexShrink: 0,
-          fontFamily: 'var(--font-display)',
-        }}>{initials}</div>
-        <div>
-          <div style={{ color: 'var(--ink)', fontWeight: 600, fontSize: '14px' }}>{testimonial.name}</div>
-          <div style={{ color: 'var(--dim)', fontSize: '12px' }}>{date}</div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function TestimonialForm({ onSubmitted }) {
-  const [form, setForm] = useState({ name: '', rating: 0, message: '' });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    if (!form.rating) { setError('Please select a star rating.'); return; }
-    setLoading(true);
-    try {
-      const res = await fetch('/api/testimonials', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
-      });
-      const data = await res.json();
-      if (!res.ok) { setError(data.error || 'Something went wrong.'); return; }
-      setSuccess(true);
-      setForm({ name: '', rating: 0, message: '' });
-      if (onSubmitted) onSubmitted(data.testimonial);
-    } catch { setError('Network error. Please try again.'); }
-    finally { setLoading(false); }
-  };
-
-  if (success) {
-    return (
-      <div className="card card-pad text-center" style={{ borderColor: 'var(--good-a45)' }}>
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--good)', margin: '0 auto' }}>
-          <circle cx="12" cy="12" r="10" /><path d="m8.5 12.5 2.5 2.5 5-6" />
-        </svg>
-        <h3 className="display font-bold text-lg mt-4 mb-2" style={{ color: 'var(--ink)' }}>Thank you!</h3>
-        <p className="text-sm" style={{ color: 'var(--muted)' }}>Your testimonial has been submitted successfully. It will appear after a quick approval.</p>
-        <button onClick={() => setSuccess(false)} className="btn btn-ghost mt-4" style={{ cursor: 'pointer' }}>
-          Add another
-        </button>
-      </div>
-    );
-  }
-
-  return (
-    <form onSubmit={handleSubmit} className="card card-pad" style={{ background: 'var(--surface)' }}>
-      <p className="eyebrow">Your voice</p>
-      <h3 className="section-title text-lg mt-3 mb-4" style={{ color: 'var(--ink)' }}>Share your experience</h3>
-
-      {error && (
-        <div className="px-4 py-3 text-sm mb-5" style={{ background: 'var(--bad-a08)', border: '1px solid var(--bad-a35)', color: 'var(--bad)' }}>
-          {error}
-        </div>
-      )}
-
-      <div className="space-y-3">
-        <div>
-          <label className="label">Your name *</label>
-          <input type="text" placeholder="e.g. John Kamau" value={form.name} required
-            onChange={e => setForm({ ...form, name: e.target.value })} className="input" />
-        </div>
-
-        <div>
-          <label className="label">Your rating *</label>
-          <StarRating value={form.rating} onChange={r => setForm({ ...form, rating: r })} />
-        </div>
-
-        <div>
-          <label className="label">Your testimonial *</label>
-          <textarea placeholder="Tell others about your experience with MZAZI TECH..." value={form.message} required rows={5}
-            onChange={e => setForm({ ...form, message: e.target.value })}
-            className="input resize-none" />
-          <div className="mono text-[10px] mt-2 text-right" style={{ color: 'var(--dim)' }}>{form.message.length} / 1000</div>
-        </div>
-
-        <button type="submit" disabled={loading} className="btn btn-primary w-full" style={{ cursor: loading ? 'not-allowed' : 'pointer' }}>
-          {loading ? 'Submitting…' : 'Submit testimonial'}
-        </button>
-      </div>
-    </form>
-  );
-}
-
-const INITIAL_LIMIT = 6;
-const MORE_LIMIT = 10;
+const COMMITMENTS = [
+  {
+    Icon: Icons.Activity,
+    title: 'Provisioned in minutes',
+    text: 'Panels, VPS and bot pairings are queued and fulfilled automatically. No ticket, no waiting for an operator to wake up.',
+  },
+  {
+    Icon: Icons.Shield,
+    title: 'Your number stays yours',
+    text: 'We never ask for your WhatsApp password and never hold your session on a shared device. Unlink from the dashboard at any time.',
+  },
+  {
+    Icon: Icons.Globe,
+    title: 'Kenyan pricing, global routing',
+    text: 'Billed in KES from a wallet you top up with M-PESA. Traffic and nodes are placed for latency, not for our convenience.',
+  },
+];
 
 export default function Testimonials() {
-  const [testimonials, setTestimonials] = useState([]);
-  const [total, setTotal] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
-
-  const fetchPage = async (offset, limit) => {
-    const res = await fetch(`/api/testimonials?offset=${offset}&limit=${limit}`);
-    const data = await res.json();
-    return data;
-  };
+  const [reviews, setReviews] = useState(null); // null = still loading
 
   useEffect(() => {
-    fetchPage(0, INITIAL_LIMIT)
-      .then(data => {
-        setTestimonials(data.testimonials || []);
-        setTotal(data.total || 0);
+    let cancelled = false;
+    fetch('/api/testimonials?limit=3', { cache: 'no-store' })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (cancelled) return;
+        const list = Array.isArray(d) ? d : d?.testimonials || [];
+        setReviews(list.filter((t) => t && t.message).slice(0, 3));
       })
-      .catch(() => {})
-      .finally(() => setLoading(false));
+      .catch(() => { if (!cancelled) setReviews([]); });
+    return () => { cancelled = true; };
   }, []);
 
-  const handleLoadMore = async () => {
-    setLoadingMore(true);
-    try {
-      const data = await fetchPage(testimonials.length, MORE_LIMIT);
-      setTestimonials(prev => [...prev, ...(data.testimonials || [])]);
-      setTotal(data.total || total);
-    } catch {}
-    finally { setLoadingMore(false); }
-  };
-
-  const handleNewTestimonial = (t) => {
-    setTestimonials(prev => [t, ...prev]);
-    setTotal(prev => prev + 1);
-  };
-
-  const avgRating = testimonials.length
-    ? (testimonials.reduce((s, t) => s + t.rating, 0) / testimonials.length).toFixed(1)
-    : null;
-
-  const hasMore = testimonials.length < total;
+  const hasReviews = Array.isArray(reviews) && reviews.length > 0;
 
   return (
-    <section className="section" style={{ position: 'relative' }}>
-      <div className="container-site max-w-5xl">
+    <section className="section" style={{ paddingTop: 0 }}>
+      <div className="container-site">
+        <span className="eyebrow">{hasReviews ? 'Testimonials' : 'How we operate'}</span>
+        <h2 className="section-title" style={{ margin: '8px 0 16px', fontSize: 'var(--text-3xl)' }}>
+          {hasReviews ? 'Trusted by operators' : 'Built for operators'}
+        </h2>
 
-        {/* Header */}
-        <div className="text-center mb-14">
-          <span className="tag tag-amber mb-4">
-            ★ {avgRating ? `${avgRating} avg rating · ` : ''}{total} {total === 1 ? 'review' : 'reviews'}
-          </span>
-          <h2 className="section-title text-lg sm:text-lg mt-4" style={{ color: 'var(--ink)' }}>
-            What our clients say<span className="bar" style={{ margin: '14px auto 0' }} />
-          </h2>
-          <p className="text-sm mt-5 max-w-md mx-auto" style={{ color: 'var(--muted)' }}>
-            Real experiences from real customers worldwide.
-          </p>
-          <div className="mt-4">
-            <Link href="/testimonials" className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: 'var(--brand)', textDecoration: 'none' }}>
-              View all reviews →
-            </Link>
-          </div>
+        <div className="quote-grid">
+          {hasReviews
+            ? reviews.map((t) => (
+                <figure className="quote-card" key={t.id}>
+                  <div className="quote-stars" aria-label={`${t.rating} out of 5`}>
+                    {Array.from({ length: Math.max(1, Math.min(5, t.rating || 5)) }).map((_, i) => (
+                      <Icons.Star key={i} size={11} />
+                    ))}
+                  </div>
+                  <blockquote className="quote-text" style={{ margin: 0 }}>{t.message}</blockquote>
+                  <figcaption className="quote-who">
+                    <span className="quote-avatar">{(t.name || 'M').slice(0, 1).toUpperCase()}</span>
+                    <span>
+                      <span style={{ display: 'block', fontSize: 11, fontWeight: 650, color: 'var(--ink)' }}>{t.name}</span>
+                      <span style={{ display: 'block', fontSize: 10, color: 'var(--dim)' }}>Verified customer</span>
+                    </span>
+                  </figcaption>
+                </figure>
+              ))
+            : COMMITMENTS.map(({ Icon, title, text }) => (
+                <div className="quote-card" key={title}>
+                  <span className="svc-ico" style={{ width: 26, height: 26 }}><Icon size={14} /></span>
+                  <p className="quote-text" style={{ color: 'var(--ink)', fontWeight: 650, fontSize: 12.5 }}>{title}</p>
+                  <p className="quote-text">{text}</p>
+                </div>
+              ))}
         </div>
 
-        {/* Cards */}
-        {loading ? (
-          <div style={{ textAlign: 'center', color: 'var(--muted)', padding: '24px 0' }}>Loading testimonials…</div>
-        ) : testimonials.length === 0 ? (
-          <div className="card card-pad text-center mb-4" style={{ color: 'var(--muted)' }}>
-            <p className="text-sm">No testimonials yet — be the first to share your experience!</p>
-          </div>
-        ) : (
-          <>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '16px', marginBottom: '20px' }}>
-              {testimonials.map(t => <TestimonialCard key={t.id} testimonial={t} />)}
-            </div>
-
-            {/* See More */}
-            {hasMore && (
-              <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-                <button
-                  onClick={handleLoadMore}
-                  disabled={loadingMore}
-                  className="btn btn-ghost"
-                  style={{ cursor: loadingMore ? 'not-allowed' : 'pointer' }}
-                >
-                  {loadingMore ? 'Loading…' : `See more (${total - testimonials.length} remaining)`}
-                </button>
-              </div>
-            )}
-          </>
-        )}
-
-        {/* Submit form */}
-        <div style={{ maxWidth: '600px', margin: '23px auto 0' }}>
-          <TestimonialForm onSubmitted={handleNewTestimonial} />
-        </div>
+        <p style={{ margin: '12px 0 0', fontSize: 11, color: 'var(--dim)' }}>
+          {hasReviews ? (
+            <Link href="/testimonials" className="link">Read all reviews</Link>
+          ) : (
+            <>
+              Have you used MZAZI?{' '}
+              <Link href="/testimonials" className="link">Leave a review</Link>{' '}
+              — it appears here once approved.
+            </>
+          )}
+        </p>
       </div>
     </section>
   );

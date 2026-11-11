@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Logo from '@/components/Logo';
-import { AppBackground, ThemeToggle } from '@/components/ui';
+import { AppBackground } from '@/components/ui';
 
 // MZAZI TECH — chrome shared by /login, /signup and the recovery screens.
 //
@@ -23,11 +23,7 @@ export default function AuthShell({
       variant="auth"
       style={{ minHeight: 'calc(100vh - var(--nav-h))', display: 'flex', flexDirection: 'column' }}
     >
-      <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '14px 16px' }}>
-        <ThemeToggle />
-      </div>
-
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 20px 24px' }}>
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px 20px 24px' }}>
         <div style={{ width: '100%', maxWidth }} className="anim-fade-up">
           <div style={{ textAlign: 'center', marginBottom: 19 }}>
             <Link href="/" aria-label="MZAZI TECH home" style={{ textDecoration: 'none', display: 'inline-block' }}>

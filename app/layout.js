@@ -1,5 +1,6 @@
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import MobileDock from '../components/MobileDock';
 import TechBackground from '../components/TechBackground';
 import PwaProvider from '../components/PwaProvider';
 import AdSenseScript from '../components/AdSenseScript';
@@ -10,11 +11,11 @@ import './globals.css';
 export const metadata = {
   metadataBase: new URL('https://www.mzazi.shop'),
   title: {
-    default: 'MZAZI TECH — Innovative Solutions & Automation',
-    template: '%s · MZAZI TECH',
+    default: 'MZAZI TECH INC — Innovate. Build. Grow.',
+    template: '%s · MZAZI TECH INC',
   },
   description:
-    'Mzazi Tech offers professional WhatsApp automation, custom web development, and tech education. Founded by Dominic Mokua Kerubo.',
+    'MZAZI TECH INC builds premium infrastructure for the modern internet: Pterodactyl panels, VPS hosting, WhatsApp automation and a 500-endpoint API marketplace. Innovate. Build. Grow.',
   keywords:
     'tech solutions, web development, whatsapp automation, whatsapp bot, mzazi tech, tech education, nairobi tech',
   applicationName: 'MZAZI TECH',
@@ -63,8 +64,8 @@ export const viewport = {
   initialScale: 1,
   maximumScale: 5,
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#F8FAFD' },
-    { media: '(prefers-color-scheme: dark)', color: '#04060D' },
+    { media: '(prefers-color-scheme: light)', color: '#F6F8FC' },
+    { media: '(prefers-color-scheme: dark)', color: '#05070C' },
   ],
 };
 
@@ -78,7 +79,7 @@ export default function RootLayout({ children }) {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap"
           rel="stylesheet"
         />
         <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
@@ -101,6 +102,7 @@ export default function RootLayout({ children }) {
                 {children}
               </main>
               <Footer />
+              <MobileDock />
             </PwaProvider>
           </ToastProvider>
         </ThemeProvider>

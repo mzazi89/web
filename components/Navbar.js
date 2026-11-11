@@ -129,7 +129,7 @@ export default function Navbar() {
 
             {/* ── Brand ── */}
             <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', flex: '0 0 auto' }} aria-label="MZAZI TECH home">
-              <Logo size={42} withText />
+              <Logo size={34} withText />
             </Link>
 
             {/* ── Desktop primary nav ── */}
