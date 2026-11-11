@@ -1350,9 +1350,8 @@ select.input {
   to   { opacity: 1; transform: none; }
 }
 
-/* The popup is a compact card, roughly a quarter of the screen: identity and
-   close on one line, the fifteen destinations in three columns, actions in one
-   row. Nothing is hidden behind a scroll. */
+/* Identity and close live on one line, the grouped destinations scroll inside
+   the card, and the actions stay at the bottom. */
 .drawer-head {
   display: flex;
   align-items: center;
@@ -1661,9 +1660,8 @@ select.input {
    two columns on a phone, and the panel scrolls instead. */
 .drawer-groups {
   padding: 4px 7px 6px;
-  max-height: calc(100dvh - var(--nav-h) - 190px);
-  overflow-y: auto;
-  overscroll-behavior: contain;
+  /* No max-height or overflow here: `.drawer` is already the scroll box, and a
+     second one inside it produces a nested scroll that traps touch gestures. */
 }
 .drawer-group { padding: 2px 0 3px; }
 .drawer-group + .drawer-group { border-top: 1px solid var(--line-soft); }
