@@ -41,7 +41,7 @@ export default function Footer() {
           padding: '11px 16px 0',
         }}
       >
-        {[...LEGAL, { href: '/contact', label: 'Contact' }, { href: '/help', label: 'Help' }].map((l, i, arr) => (
+        {[...LEGAL, { href: '/download', label: 'App' }, { href: '/contact', label: 'Contact' }, { href: '/help', label: 'Help' }].map((l, i, arr) => (
           <span key={l.href} style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
             <Link href={l.href} style={linkStyle} className="footer-link">
               {l.label}

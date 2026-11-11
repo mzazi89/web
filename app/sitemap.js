@@ -6,7 +6,7 @@ export default function sitemap() {
     '', '/products', '/pair', '/pair/quartz', '/pair/mzazi', '/whatsapp-bot',
     '/temp-number', '/ludo', '/api', '/api/docs',
     '/api/explorer', '/api/status', '/testimonials', '/about', '/contact',
-    '/signup', '/login', '/terms', '/privacy',
+    '/signup', '/login', '/terms', '/privacy', '/download',
   ];
   return routes.map(r => ({
     url: `${base}${r}`,
