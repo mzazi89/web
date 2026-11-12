@@ -10,6 +10,7 @@ const METHODS = [
   { id: 'mpesa', label: 'M-PESA', icon: '📲', hint: 'STK push to your phone' },
   { id: 'airtel', label: 'Airtel Money', icon: '📡', hint: 'USSD / Airtel Money' },
   { id: 'mpesa_till', label: 'M-PESA Till', icon: '🏪', hint: 'Pay via Till number' },
+  { id: 'wallet', label: 'Wallet', icon: '👛', hint: 'Pay from your balance' },
 ];
 
 const NEEDS_PHONE = ['mpesa', 'airtel'];
@@ -133,6 +134,15 @@ function VpsInner() {
       if (data.flow === 'redirect') {
         // Card → Paystack checkout
         window.location.href = data.authorization_url;
+        return;
+      }
+
+      if (data.flow === 'wallet') {
+        // Already paid from the balance and fulfilled on the server — straight to
+        // the credentials, no waiting screen.
+        setVps(data.vps || null);
+        setRef(data.reference);
+        setStep('done');
         return;
       }
 

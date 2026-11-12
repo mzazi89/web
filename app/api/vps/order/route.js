@@ -20,6 +20,8 @@ import {
   generateVpsReference,
   getVpsPackageById,
   getVpsAvailableStock,
+  claimVpsInstance,
+  markVpsOrderFailed,
 } from '@/lib/vps';
 
 export const dynamic = 'force-dynamic';
@@ -30,6 +32,9 @@ const METHODS = {
   mpesa: { label: 'M-PESA', provider: PROVIDERS.mpesa, needsPhone: true, needsTill: false },
   airtel: { label: 'Airtel Money', provider: PROVIDERS.airtel, needsPhone: true, needsTill: false },
   mpesa_till: { label: 'M-PESA Till', provider: PROVIDERS.mpesa_till, needsPhone: false, needsTill: true },
+  // Paid from the balance already in the wallet: no prompt, no redirect, and
+  // nothing to wait for — the order is fulfilled in the same request.
+  wallet: { label: 'Wallet', provider: null, needsPhone: false, needsTill: false },
 };
 
 function friendlyChargeError(payload, method) {
@@ -105,6 +110,64 @@ export async function POST(request) {
     const email = userRows[0].email;
 
     const reference = generateVpsReference(userId);
+
+    // ── 0. Wallet → debit, claim, done ──
+    // The debit is the proof of payment, so this skips Paystack entirely. The
+    // balance is re-checked inside the UPDATE, not just above it: two purchases
+    // racing on one wallet would both pass a read-then-write check.
+    if (paymentMethod === 'wallet') {
+      const walletRows = await sql`SELECT balance FROM wallet WHERE user_id = ${userId} LIMIT 1`;
+      const balance = Number(walletRows[0]?.balance || 0);
+      if (balance < amount) {
+        return NextResponse.json({
+          error: `Your wallet holds KES ${balance.toFixed(2)} and this package costs KES ${amount.toFixed(2)}.`,
+          balance,
+        }, { status: 402 });
+      }
+
+      await sql`
+        INSERT INTO vps_orders (user_id, package_id, amount, phone, payment_method, reference, status)
+        VALUES (${userId}, ${packageId}, ${amount}, ${null}, 'wallet', ${reference}, 'processing')
+      `;
+
+      const debited = await sql`
+        UPDATE wallet
+        SET balance = balance - ${amount}, updated_at = CURRENT_TIMESTAMP
+        WHERE user_id = ${userId} AND balance >= ${amount}
+        RETURNING balance
+      `;
+      if (!debited.length) {
+        await markVpsOrderFailed(reference, 'Wallet balance changed during checkout');
+        return NextResponse.json({ error: 'Your wallet balance changed. Please try again.' }, { status: 409 });
+      }
+
+      await sql`
+        INSERT INTO wallet_transactions (user_id, type, amount, description, status, reference, payment_method, paid_at)
+        VALUES (${userId}, 'debit', ${amount}, ${`VPS — ${pkg.name}`}, 'success', ${`VPS-${reference}`}, 'wallet', NOW())
+      `.catch(() => {});
+
+      const claim = await claimVpsInstance(reference);
+      if (!claim.success) {
+        // Nothing was delivered, so the money goes straight back. Refunding here
+        // rather than asking support is the difference between a sold-out
+        // package and a customer who has paid for nothing.
+        await sql`
+          UPDATE wallet SET balance = balance + ${amount}, updated_at = CURRENT_TIMESTAMP
+          WHERE user_id = ${userId}
+        `;
+        await sql`
+          INSERT INTO wallet_transactions (user_id, type, amount, description, status, reference, payment_method, paid_at)
+          VALUES (${userId}, 'credit', ${amount}, ${`Refund — ${pkg.name} unavailable`}, 'success', ${`REFUND-VPS-${reference}`}, 'wallet', NOW())
+        `.catch(() => {});
+        await markVpsOrderFailed(reference, claim.reason);
+        return NextResponse.json(
+          { error: 'That package sold out a moment ago. Your wallet has been refunded in full.' },
+          { status: 409 },
+        );
+      }
+
+      return NextResponse.json({ flow: 'wallet', reference, package: pkg.name, vps: claim.vps });
+    }
 
     // ── 1. Create the pending order BEFORE talking to Paystack ──
     await sql`

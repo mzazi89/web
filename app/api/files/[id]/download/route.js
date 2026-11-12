@@ -1,6 +1,8 @@
 // MZAZI API — GET /api/files/[id]/download
 //
-// Delivers a bot file (BugBot / standard bot) uploaded from the admin panel.
+// Delivers a bot file (BugBot / standard bot) published from the admin panel.
+// Files are download links now; older rows that still hold bytes are served
+// inline, so both vintages keep working.
 //
 // Access rules, in order:
 //   1. signed in                        (401 otherwise)
@@ -38,7 +40,7 @@ export async function GET(request, { params }) {
   if (!Number.isFinite(id)) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
   const rows = await sql`
-    SELECT id, name, file_name, mime, content, price, active
+    SELECT id, name, file_name, mime, content, download_url, price, active
     FROM bot_files
     WHERE id = ${id} AND active = true
     LIMIT 1
@@ -56,6 +58,18 @@ export async function GET(request, { params }) {
   }
 
   await sql`UPDATE bot_files SET downloads = downloads + 1 WHERE id = ${id}`.catch(() => {});
+
+  // A file is now an address rather than bytes: send the buyer to it. The
+  // entitlement check above has already run, so this redirect is the gate — the
+  // link itself is never handed out by the catalogue endpoints.
+  if (file.download_url) {
+    return NextResponse.redirect(file.download_url, 302);
+  }
+
+  // Rows published before the switch still hold bytes in the table.
+  if (!file.content) {
+    return NextResponse.json({ error: 'This file has no download link set. Contact support.' }, { status: 409 });
+  }
 
   const bytes = Buffer.from(String(file.content), 'base64');
   const safeName = String(file.file_name || `${file.name.replace(/[^\w.-]+/g, '-')}.zip`).replace(/["\\\r\n]/g, '');
