@@ -17,6 +17,7 @@ export const NAV = [
   { href: '/dashboard/marketplace', label: 'Marketplace', Icon: Icons.Box },
   { href: '/dashboard/wallet', label: 'Wallet', Icon: Icons.Wallet },
   { href: '/dashboard/api', label: 'API', Icon: Icons.Code },
+  { href: '/dashboard/referral', label: 'Referrals', Icon: Icons.Users },
   { href: '/dashboard/notifications', label: 'Notifications', Icon: Icons.Bell },
   { href: '/dashboard/settings', label: 'Settings', Icon: Icons.Settings },
 ];

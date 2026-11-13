@@ -145,6 +145,7 @@ export async function POST(request) {
         INSERT INTO wallet_transactions (user_id, type, amount, description, status, reference, payment_method, paid_at)
         VALUES (${userId}, 'debit', ${amount}, ${`VPS — ${pkg.name}`}, 'success', ${`VPS-${reference}`}, 'wallet', NOW())
       `.catch(() => {});
+      void import('@/lib/api/referral').then(({ maybeQualifyReferral }) => maybeQualifyReferral(userId)).catch(() => {});
 
       const claim = await claimVpsInstance(reference);
       if (!claim.success) {

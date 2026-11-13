@@ -53,6 +53,7 @@ export async function POST(request) {
       VALUES (${Number(user.userId)}, 'debit', ${plan.priceKsh},
               ${`WhatsApp Bot plan: ${plan.name} — ${plan.days} days`}, 'done')
     `;
+    void import('@/lib/api/referral').then(({ maybeQualifyReferral }) => maybeQualifyReferral(Number(user.userId))).catch(() => {});
 
     // 3) upgrade the shared bot subscription (prisma "User"/"Subscription")
     const account = await ensureAccount(sql, user.userId);

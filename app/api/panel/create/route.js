@@ -173,6 +173,7 @@ export async function POST(request) {
       INSERT INTO wallet_transactions (user_id, type, amount, description, status)
       VALUES (${userId}, 'deduction', ${charge}, ${`Panel created: ${pkg.name}`}, 'success')
     `;
+    void import('@/lib/api/referral').then(({ maybeQualifyReferral }) => maybeQualifyReferral(userId)).catch(() => {});
 
     // ── Save panel record (with credentials stored) ───────────────────────────
     const expiresAt = pkg.expires_after_hours

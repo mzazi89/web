@@ -80,6 +80,8 @@ export async function POST(request, { params }) {
         INSERT INTO wallet_transactions (user_id, type, amount, description, status, reference, payment_method, paid_at)
         VALUES (${uid}, 'debit', ${price}, ${`Bot file: ${file.name}`}, 'success', ${`FILE-${id}`}, 'wallet', CURRENT_TIMESTAMP)
       `;
+      // A purchase counts toward the referred friend's qualifying amount.
+      void import('@/lib/api/referral').then(({ maybeQualifyReferral }) => maybeQualifyReferral(uid)).catch(() => {});
     }
 
     return NextResponse.json({ message: 'Purchased', owned: true, purchaseId: inserted[0]?.id });
