@@ -146,16 +146,19 @@ export async function POST(request) {
         VALUES (${userId}, 'debit', ${amount}, ${`VPS — ${pkg.name}`}, 'success', ${`VPS-${reference}`}, 'wallet', NOW())
       `.catch(() => {});
       void import('@/lib/api/referral').then(({ maybeQualifyReferral }) => maybeQualifyReferral(userId)).catch(() => {});
-      void import('@/lib/push').then(({ sendPush }) => sendPush(userId, {
-        title: 'VPS ordered',
-        body: `${pkg.name} is being provisioned. Details land here when it is ready.`,
-        url: '/dashboard/services',
-        tag: `vps-${reference}`,
-        actions: [
-          { action: 'services', title: 'My services', url: '/dashboard/services' },
-          { action: 'dismiss', title: 'Dismiss' },
-        ],
-      })).catch(() => {});
+      try {
+        const { notify } = await import('@/lib/push');
+        await notify(userId, {
+          title: 'VPS ordered',
+          body: `${pkg.name} is being provisioned. Details land here when it is ready.`,
+          url: '/dashboard/services',
+          tag: `vps-${reference}`,
+          actions: [
+            { action: 'services', title: 'My services', url: '/dashboard/services' },
+            { action: 'dismiss', title: 'Dismiss' },
+          ],
+        });
+      } catch { /* notification is best-effort */ }
 
       const claim = await claimVpsInstance(reference);
       if (!claim.success) {
