@@ -13,7 +13,15 @@ export async function GET() {
     const key = await publicKey();
     return NextResponse.json({ key });
   } catch (e) {
-    console.error('[mzazi] push key unavailable:', e.message);
-    return NextResponse.json({ error: 'Notifications are not available right now' }, { status: 503 });
+    const m = String(e && e.message || '');
+    // Classified rather than echoed: the useful part for support is which stage
+    // failed, and a raw driver message can carry the database host or user.
+    const code = /is not a function|undefined|Cannot read/.test(m) ? 'webpush_import'
+      : /relation .* does not exist|column .* does not exist/.test(m) ? 'schema'
+      : /fetch failed|ENOTFOUND|ECONNREFUSED|timeout/i.test(m) ? 'database'
+      : /VAPID|vapid|key/i.test(m) ? 'vapid'
+      : 'unknown';
+    console.error('[mzazi] push key unavailable:', code, m.slice(0, 300));
+    return NextResponse.json({ error: 'Notifications are not available right now', code }, { status: 503 });
   }
 }
