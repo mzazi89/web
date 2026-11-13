@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import sql from '../../../lib/database';
+import { ipRateLimit, clientIp } from '../../../lib/ip-limiter';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,6 +18,10 @@ async function ensureTable() {
 }
 
 // GET testimonials with pagination — ?offset=0&limit=6
+//
+// Only `approved = true` rows are public. Nothing sets that flag to false on
+// writing any more (reviews publish themselves), so the filter now means "not
+// withdrawn" — it is how an admin takes a review down without deleting it.
 export async function GET(request) {
   try {
     await ensureTable();
@@ -54,9 +59,23 @@ export async function GET(request) {
 }
 
 // POST a new testimonial
+//
+// Published immediately: the site owner asked for reviews to go live on submit
+// rather than wait for approval. The guardrail that replaces moderation is a
+// per-IP burst limit, because an open write endpoint on a page that advertises
+// hosting is a target for link spam. Five an hour from one address is far above
+// what a real customer needs and far below what a flood needs.
 export async function POST(request) {
   try {
     await ensureTable();
+
+    const limit = ipRateLimit(clientIp(request), { max: 5, windowMs: 60 * 60 * 1000 });
+    if (!limit.allowed) {
+      return NextResponse.json(
+        { error: 'That is a lot of reviews in one go. Please try again later.' },
+        { status: 429, headers: { 'Retry-After': String(Math.ceil(limit.retryAfterMs / 1000)) } }
+      );
+    }
 
     const body = await request.json();
     const { name, rating, message } = body;
@@ -76,14 +95,17 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Message must be between 10 and 1000 characters.' }, { status: 400 });
     }
 
-    // New reviews start as pending — an admin approves them before they go live.
+    // approved = true: it is live the moment this returns.
     const [testimonial] = await sql`
       INSERT INTO testimonials (name, rating, message, approved)
-      VALUES (${name.trim()}, ${ratingNum}, ${message.trim()}, false)
+      VALUES (${name.trim()}, ${ratingNum}, ${message.trim()}, true)
       RETURNING id, name, rating, message, created_at
     `;
 
-    return NextResponse.json({ testimonial, message: 'Thank you! Your review has been submitted and will appear after approval.' }, { status: 201 });
+    return NextResponse.json(
+      { testimonial, message: 'Thank you — your review is live.' },
+      { status: 201 }
+    );
   } catch (error) {
     console.error('Failed to save testimonial:', error);
     return NextResponse.json({ error: 'Failed to save testimonial.' }, { status: 500 });

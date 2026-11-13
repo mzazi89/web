@@ -70,6 +70,12 @@ export default function TestimonialsPage() {
       if (!res.ok) throw new Error(d.error || 'Submission failed');
       setFeedback({ type: 'success', text: d.message });
       setForm({ name: '', rating: 0, message: '' });
+      // Live as soon as it is written, so show it: reload the first page and bring
+      // the visitor to their own review instead of leaving it off-screen.
+      await load(0);
+      if (typeof document !== 'undefined') {
+        document.getElementById('reviews')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     } catch (err) {
       setFeedback({ type: 'error', text: humaniseError(err, 'We could not submit your review. Please try again.') });
     }
@@ -105,13 +111,14 @@ export default function TestimonialsPage() {
             <span className="hidden sm:block w-px h-10" style={{ background: 'var(--line)' }} />
             <div>
               <p className="text-sm" style={{ color: 'var(--ink-2)' }}>Rated by real customers worldwide</p>
-              <p className="mono text-[10px] uppercase tracking-[0.12em] mt-0.5" style={{ color: 'var(--dim)' }}>Approval required before publishing</p>
+              <p className="mono text-[10px] uppercase tracking-[0.12em] mt-0.5" style={{ color: 'var(--dim)' }}>Published as soon as it is submitted</p>
             </div>
           </div>
         </div>
       </section>
 
       {/* Reviews grid */}
+      <span id="reviews" />
       <section className="section" style={{ paddingTop: 17 }}>
         <div className="container-site max-w-5xl">
           {loading ? (
@@ -144,7 +151,7 @@ export default function TestimonialsPage() {
             <p className="eyebrow">Share yours</p>
             <h2 className="section-title text-lg mt-3 mb-2" style={{ color: 'var(--ink)' }}>Leave a review</h2>
             <p className="text-sm mb-4" style={{ color: 'var(--muted)' }}>
-              Tell others about your experience. Reviews appear after a quick approval.
+              Tell others about your experience. Your review is published the moment you submit it.
             </p>
 
             {feedback && (
@@ -184,7 +191,7 @@ export default function TestimonialsPage() {
                 {submitting ? 'Submitting…' : 'Submit review'}
               </button>
               <p className="mono text-[10px] text-center uppercase tracking-[0.12em]" style={{ color: 'var(--dim)' }}>
-                Reviews must be 10–1000 characters. We approve reviews before they go live to keep things real.
+                Reviews must be 10–1000 characters and go live immediately — no waiting for approval.
               </p>
             </form>
           </div>

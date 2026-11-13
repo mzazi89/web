@@ -6,9 +6,11 @@ import { Icons } from '@/components/ui';
 
 // MZAZI TECH — proof section.
 //
-// Real reviews only. Approved rows come from `testimonials` via /api/testimonials;
-// until there are some, this renders the commitments every plan actually carries
-// rather than invented quotes on a page that sells hosting. (The repo removed a
+// Real reviews only. Live rows come from `testimonials` via /api/testimonials —
+// reviews publish themselves on submit, so `approved` now means "not withdrawn"
+// rather than "moderated". Until there are some, this renders the commitments
+// every plan actually carries rather than invented quotes on a page that sells
+// hosting. (The repo removed a
 // block of fake testimonials once already — this is the guard against it coming
 // back through a redesign.)
 
@@ -91,7 +93,7 @@ export default function Testimonials() {
             <>
               Have you used MZAZI?{' '}
               <Link href="/testimonials" className="link">Leave a review</Link>{' '}
-              — it appears here once approved.
+              — it appears here the moment you post it.
             </>
           )}
         </p>
