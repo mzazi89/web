@@ -92,7 +92,7 @@ export default function RootLayout({ children }) {
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         {/* AdSense ownership verification (in addition to /ads.txt) */}
-        <meta name="google-adsense-account" content="ca-pub-8796910937166702" />
+        <meta name="google-adsense-account" content="ca-pub-6827095079937073" />
         {/* AdSense loader — auto ads are served from here site-wide. */}
         <AdSenseScript />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
