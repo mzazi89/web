@@ -5,13 +5,17 @@ import { usePathname } from 'next/navigation';
 import { Icons } from '@/components/ui';
 import { isActive } from './Sidebar';
 
-// Mobile navigation for the dashboard. Same five-thumb-reach idea as the
-// marketing dock, but the destinations are account areas, not the shop.
+// Mobile navigation for the dashboard. Same rail as the site dock — every
+// section, swipeable — because hiding half the account behind a hamburger on a
+// phone is how people conclude a feature does not exist.
 
 const ITEMS = [
   { href: '/dashboard', label: 'Overview', Icon: Icons.Dashboard },
   { href: '/dashboard/services', label: 'Services', Icon: Icons.Layers },
   { href: '/dashboard/wallet', label: 'Wallet', Icon: Icons.Wallet },
+  { href: '/dashboard/marketplace', label: 'Marketplace', Icon: Icons.Cart },
+  { href: '/dashboard/referral', label: 'Referrals', Icon: Icons.Users },
+  { href: '/dashboard/notifications', label: 'Alerts', Icon: Icons.Bell },
   { href: '/dashboard/api', label: 'API', Icon: Icons.Code },
   { href: '/dashboard/settings', label: 'Account', Icon: Icons.Settings },
 ];
