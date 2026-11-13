@@ -51,6 +51,7 @@ export async function GET(request) {
     key: Boolean(config.key),
     secret: Boolean(config.secret),
     passkey: Boolean(config.passkey),
+    agent: config.type === 'till' ? mask(config.partyB) : null,
     callback: config.callbackUrl ? new URL(config.callbackUrl).host + new URL(config.callbackUrl).pathname : null,
   });
 }
