@@ -62,7 +62,9 @@ function maskPhone(phone) {
 
 const PAYMENT_METHODS = [
   { id: 'card', name: 'Card', desc: 'Visa, Mastercard & more — secure Paystack checkout', icon: <Icons.CreditCard size={22} /> },
-  { id: 'mpesa', name: 'M-PESA', desc: 'Instant STK push to your M-PESA phone', icon: <Icons.Phone size={22} /> },
+  // Direct Safaricom Daraja STK push — no Paystack in the middle.
+  { id: 'mpesa_stk', name: 'M-PESA', desc: 'Safaricom STK push straight to your phone', icon: <Icons.Phone size={22} /> },
+  { id: 'mpesa', name: 'M-PESA (Paystack)', desc: 'Fallback rail through Paystack', icon: <Icons.Phone size={22} /> },
   { id: 'airtel', name: 'Airtel Money', desc: 'Pay from your Airtel Money wallet', icon: <Icons.Phone size={22} /> },
   { id: 'mpesa_till', name: 'M-PESA Till', desc: 'Pay from a registered M-PESA Till', icon: <Icons.CreditCard size={22} /> },
 ];
@@ -106,6 +108,9 @@ function WalletInner() {
   const [till, setTill] = useState('');
   const [reference, setReference] = useState(null);
   const [depositing, setDepositing] = useState(false);
+  // Whether Safaricom's direct rail is configured on this deployment. Unknown
+  // until asked; the tile is hidden rather than offered and then refused.
+  const [mpesaReady, setMpesaReady] = useState(null);
   const [failureMsg, setFailureMsg] = useState('');
   const [creditedAmount, setCreditedAmount] = useState(0);
   const [offer, setOffer] = useState(null);
@@ -162,6 +167,13 @@ function WalletInner() {
       }
     } catch { /* offer is optional */ }
   };
+
+  useEffect(() => {
+    fetch('/api/wallet/deposit/mpesa')
+      .then((r) => (r.ok ? r.json() : { available: false }))
+      .then((d) => setMpesaReady(Boolean(d.available)))
+      .catch(() => setMpesaReady(false));
+  }, []);
 
   // ── Poll payment status while the user authorizes on their phone ──
   useEffect(() => {
@@ -245,7 +257,7 @@ function WalletInner() {
     const amount = parseFloat(depositAmount);
     if (!amount || amount < 10) { setFailureMsg('Minimum deposit is KES 10'); setStep('failed'); return; }
     if (amount > 150000) { setFailureMsg('Maximum deposit is KES 150,000'); setStep('failed'); return; }
-    if (method === 'mpesa' || method === 'airtel') {
+    if (method === 'mpesa' || method === 'airtel' || method === 'mpesa_stk') {
       const norm = normalizePhoneClient(phone);
       if (!norm.ok) {
         setFailureMsg('Please enter a valid Kenyan phone number (e.g. 0712345678).');
@@ -268,6 +280,24 @@ function WalletInner() {
     setDepositing(true);
     setStep('processing'); // flips to 'redirecting' below for card
     try {
+      // Direct rail first: Safaricom's own STK push.
+      if (method === 'mpesa_stk') {
+        const res = await fetch('/api/wallet/deposit/mpesa', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ amount, phone }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (res.ok && data.ok) {
+          setReference(data.reference);
+          setStep('processing');
+          return;
+        }
+        setFailureMsg(humaniseError(data.error || 'M-PESA could not send the prompt. Please try again.'));
+        setStep('failed');
+        return;
+      }
+
       const res = await fetch('/api/wallet/deposit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -511,7 +541,7 @@ function WalletInner() {
         {/* STEP 1 — method */}
         {step === 'method' && (
           <div style={{ display: 'grid', gap: 10 }}>
-            {PAYMENT_METHODS.map((m) => (
+            {PAYMENT_METHODS.filter((m) => m.id !== 'mpesa_stk' || mpesaReady !== false).map((m) => (
               <button
                 key={m.id}
                 type="button"
@@ -576,8 +606,8 @@ function WalletInner() {
               </div>
             )}
 
-            {(method === 'mpesa' || method === 'airtel') && (
-              <Field label={method === 'mpesa' ? 'M-PESA phone number' : 'Airtel Money phone number'} id="dep-phone" hint="We’ll send the payment prompt to this number.">
+            {(method === 'mpesa' || method === 'airtel' || method === 'mpesa_stk') && (
+              <Field label={method === 'airtel' ? 'Airtel Money phone number' : 'M-PESA phone number'} id="dep-phone" hint="We’ll send the payment prompt to this number.">
                 <Input
                   id="dep-phone"
                   type="tel"

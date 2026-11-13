@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { CHARGE_TTL_MS } from '@/lib/paystack';
+import { reconcileMpesa } from '@/lib/mpesaSettle';
 import {
   getTransactionByReference,
   verifyAndCreditWalletDeposit,
@@ -46,6 +47,16 @@ export async function GET(request) {
     }
     if (tx.status === 'abandoned') {
       return NextResponse.json({ status: 'abandoned', failureReason: tx.failure_reason || null, ...base });
+    }
+
+    // Direct Daraja deposits never touch Paystack — settle them on their own rail.
+    if (tx.provider === 'mpesa') {
+      const result = await reconcileMpesa(tx);
+      if (result.status === 'success') return NextResponse.json({ status: 'success', ...base });
+      if (result.status === 'failed') {
+        return NextResponse.json({ status: 'failed', failureReason: result.message || null, ...base });
+      }
+      return NextResponse.json({ status: 'pending', ...base });
     }
 
     // Mobile-money prompts expire after 180 seconds (network-provider limit).
