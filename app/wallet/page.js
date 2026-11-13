@@ -21,6 +21,7 @@ import {
 import { fmtKes } from '@/lib/currency';
 import SignInGate from '@/components/SignInGate';
 import { authHref } from '@/lib/nextPath';
+import StatementButton from '@/components/StatementButton';
 
 // ─── Receipts ─────────────────────────────────────────────────────────────────
 // One renderer, not two. This page used to build its own 380 px thermal-style
@@ -367,6 +368,7 @@ function WalletInner() {
           icon={<Icons.Wallet size={20} />}
           actions={
             <>
+              <StatementButton label="Statement" size="md" />
               <Button variant="ghost" onClick={() => setVoucherOpen(true)} icon={<Icons.Ticket size={16} />}>Redeem voucher</Button>
               <Button onClick={openDeposit} icon={<Icons.Plus size={16} />}>Add money</Button>
             </>

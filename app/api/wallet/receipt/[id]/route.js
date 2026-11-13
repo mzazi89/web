@@ -11,11 +11,10 @@
 // Ownership is enforced in SQL (`user_id = viewer.id`): a guessed id is a 404.
 
 import { NextResponse } from 'next/server';
-import { readFileSync } from 'node:fs';
-import path from 'node:path';
 import { neon } from '@neondatabase/serverless';
 import { getViewer } from '@/lib/dashboard/session';
 import { money } from '@/lib/dashboard/data';
+import { logoDataUri } from '@/lib/brand-logo';
 
 export const dynamic = 'force-dynamic';
 const sql = neon(process.env.DATABASE_URL, { fetchOptions: { cache: 'no-store' } });
@@ -25,18 +24,6 @@ const esc = (v) =>
 
 const when = (d) =>
   d ? new Date(d).toLocaleString('en-KE', { dateStyle: 'medium', timeStyle: 'short' }) : '—';
-
-let logoCache = null;
-function logo() {
-  if (logoCache !== null) return logoCache;
-  try {
-    const file = path.join(process.cwd(), 'public', 'brand', 'logo.png');
-    logoCache = `data:image/png;base64,${readFileSync(file).toString('base64')}`;
-  } catch {
-    logoCache = '';
-  }
-  return logoCache;
-}
 
 export async function GET(request, { params }) {
   const viewer = await getViewer();
@@ -170,7 +157,7 @@ export async function GET(request, { params }) {
 <body>
   <div class="sheet">
     <header class="head">
-      <span class="mark">${logo() ? `<img src="${logo()}" alt="MZAZI TECH" />` : ''}</span>
+      <span class="mark">${logoDataUri() ? `<img src="${logoDataUri()}" alt="MZAZI TECH" />` : ''}</span>
       <span class="co"><b>MZAZI <em>TECH</em></b><span>Innovate · Build · Grow</span></span>
       <span class="doc">
         <small>Receipt</small>

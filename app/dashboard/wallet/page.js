@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Icons } from '@/components/ui';
 import { getViewer } from '@/lib/dashboard/session';
+import StatementButton from '@/components/StatementButton';
 import { getWallet, money, shortDate } from '@/lib/dashboard/data';
 import { PageHead, Panel, Empty, Status, Line, Kpi } from '@/components/dashboard/Parts';
 
@@ -30,7 +31,7 @@ export default async function WalletPage() {
         sub={updatedAt ? `Balance last updated ${shortDate(updatedAt)}` : 'Top up once, spend on any service'}
         actions={
           <>
-            <Link href="/payments" className="btn btn-ghost"><Icons.Receipt size={14} /> Statements</Link>
+            <StatementButton label="Statement" />
             <Link href="/wallet" className="btn btn-primary"><Icons.Plus size={14} /> Add funds</Link>
           </>
         }
