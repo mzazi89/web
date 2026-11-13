@@ -22,158 +22,16 @@ import { fmtKes } from '@/lib/currency';
 import SignInGate from '@/components/SignInGate';
 import { authHref } from '@/lib/nextPath';
 
-// ─── Receipt printer (unchanged behaviour) ──────────────────────────────────
-function downloadReceipt(t, userEmail, balance) {
-  const date = new Date(t.created_at);
-  const dateStr = date.toLocaleDateString('en-KE', { year: 'numeric', month: 'long', day: 'numeric' });
-  const timeStr = date.toLocaleTimeString('en-KE', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-  const isDebit = t.type !== 'deposit';
-  const sign = isDebit ? '-' : '+';
-  // Literals, not tokens: this markup is written into a detached popup window,
-  // where none of the app's CSS custom properties exist.
-  const color = isDebit ? '#E11D48' : '#047857';
-
-  const html = `<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8"/>
-  <title>Mzazi Tech Receipt #${t.id}</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Mono:wght@400;600&display=swap');
-    * { margin: 0; padding: 0; box-sizing:border-box; }
-    body { background:#04060D; display:flex; justify-content:center; align-items:flex-start; padding:clamp(12px, 4vw, 30px); font-family:'Space Grotesk',sans-serif; }
-    .receipt {
-      background:#fff;
-      width:100%;
-      max-width:380px;
-      border-radius:4px;
-      box-shadow:0 4px 24px rgba(0,0,0,0.12);
-      overflow:hidden;
-      position:relative;
-    }
-    .receipt::before {
-      content:'';
-      display:block;
-      height:14px;
-      background: radial-gradient(circle at 10px 14px, #04060D 10px, transparent 0) repeat-x, #fff;
-      background-size:20px 14px, 100% 100%;
-    }
-    .receipt::after {
-      content:'';
-      display:block;
-      height:14px;
-      background: radial-gradient(circle at 10px 0px, #04060D 10px, transparent 0) repeat-x, #fff;
-      background-size:20px 14px, 100% 100%;
-      transform:rotate(180deg);
-    }
-    .header {
-      background:#1D4ED8;
-      color:#fff;
-      text-align:center;
-      padding: 20px 24px 20px;
-    }
-    .logo { font-size:20px; font-weight:700; letter-spacing:0.5px; margin-bottom:4px; }
-    .logo span { color:#FDE047; }
-    .tagline { font-family:'IBM Plex Mono',monospace; font-size: 12.5px; color:rgba(255,255,255,0.78); letter-spacing:2px; text-transform:uppercase; }
-    .status-badge {
-      display:inline-block;
-      margin-top:14px;
-      padding: 4px 16px;
-      border-radius:2px;
-      font-family:'IBM Plex Mono',monospace;
-      font-size: 12.5px;
-      font-weight:600;
-      letter-spacing:1px;
-      text-transform:uppercase;
-      background:${t.status === 'success' ? 'rgba(4,120,87,0.12)' : 'rgba(124,58,237,0.12)'};
-      color:${t.status === 'success' ? '#047857' : '#1D4ED8'};
-      border:1px solid ${t.status === 'success' ? 'rgba(4,120,87,0.45)' : 'rgba(124,58,237,0.45)'};
-    }
-    .body { padding: 17px; }
-    .amount-section { text-align:center; padding: 20px 0 24px; border-bottom:1px dashed #CBD5E5; }
-    .amount-label { font-family:'IBM Plex Mono',monospace; font-size: 12.5px; color:#4E5B76; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:6px; }
-    .amount { font-size:38px; font-weight:700; color:${color}; letter-spacing:-1px; }
-    .currency { font-size:16px; font-weight:500; }
-    .rows { padding: 20px 0; border-bottom:1px dashed #CBD5E5; }
-    .row { display:flex; justify-content:space-between; align-items:flex-start; padding: 7px 0; font-size:13px; }
-    .row-label { color:#4E5B76; font-size: 12.5px; font-family:'IBM Plex Mono',monospace; text-transform:uppercase; letter-spacing:0.6px; }
-    .row-value { color:#04060D; font-weight:600; text-align:right; max-width:200px; word-break:break-all; }
-    .ref { font-family:'IBM Plex Mono',monospace; font-size: 12.5px; color:#2563EB; }
-    .warranty {
-      margin: 16px 0 0;
-      padding: 12px 14px;
-      background:#04060D;
-      border-radius:2px;
-      border-left:3px solid #1D4ED8;
-      font-size: 12.5px;
-      color:#C6C6D6;
-      line-height:1.6;
-    }
-    .warranty strong { display:block; margin-bottom:2px; font-size:12px; color:#FFFFFF; }
-    .footer { text-align:center; padding: 16px 24px 20px; }
-    .footer p { font-size: 12.5px; color:#4E5B76; line-height:1.7; }
-    .footer a { color:#2563EB; text-decoration:none; }
-    .barcode {
-      font-family:'IBM Plex Mono',monospace;
-      font-size: 12.5px;
-      color:#04060D;
-      letter-spacing:4px;
-      margin-top:8px;
-      word-break:break-all;
-    }
-    @media print {
-      body { background:#fff; padding: 0; }
-      .receipt { box-shadow:none; }
-    }
-  </style>
-</head>
-<body>
-<div class="receipt">
-  <div class="header">
-    <div class="logo">MZAZI<span>.</span>TECH</div>
-    <div class="tagline">Official Transaction Receipt</div>
-    <div class="status-badge">${t.status}</div>
-  </div>
-  <div class="body">
-    <div class="amount-section">
-      <div class="amount-label">Transaction Amount</div>
-      <div class="amount"><span class="currency">KES </span>${sign}${Number(t.amount).toLocaleString('en-KE', { minimumFractionDigits: 2 })}</div>
-    </div>
-    <div class="rows">
-      <div class="row"><span class="row-label">Receipt No.</span><span class="row-value ref">#MZAZI-${String(t.id).padStart(6,'0')}</span></div>
-      <div class="row"><span class="row-label">Date</span><span class="row-value">${dateStr}</span></div>
-      <div class="row"><span class="row-label">Time</span><span class="row-value">${timeStr}</span></div>
-      <div class="row"><span class="row-label">Description</span><span class="row-value">${t.description || t.type}</span></div>
-      <div class="row"><span class="row-label">Transaction Type</span><span class="row-value" style="text-transform:capitalize">${t.type}</span></div>
-      <div class="row"><span class="row-label">Account</span><span class="row-value">${userEmail || '—'}</span></div>
-      ${t.reference ? `<div class="row"><span class="row-label">Reference</span><span class="row-value ref">${t.reference}</span></div>` : ''}
-      <div class="row"><span class="row-label">Wallet Balance After</span><span class="row-value">KES ${Number(balance).toLocaleString('en-KE', { minimumFractionDigits: 2 })}</span></div>
-    </div>
-    <div class="warranty">
-      <strong>Panel Warranty Policy</strong>
-      Pterodactyl panel replacement warranty is valid for <strong>2 weeks</strong> from the date of purchase. Contact support within this period for a free replacement.
-    </div>
-  </div>
-  <div class="footer">
-    <p>Thank you for using Mzazi Tech Inc.<br/>
-    Support: <a href="mailto:mzazitechinc@gmail.com">mzazitechinc@gmail.com</a></p>
-    <div class="barcode">||||| ${t.reference || `TX${t.id}`} |||||</div>
-  </div>
-</div>
-<script>window.onload = function() { window.print(); }<\/script>
-</body>
-</html>`;
-
-  const blob = new Blob([html], { type: 'text/html' });
-  const url = URL.createObjectURL(blob);
-  const win = window.open(url, '_blank', 'width=480,height=720,scrollbars=yes');
-  if (!win) {
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `Mzazi-Receipt-${t.id}.html`;
-    a.click();
-  }
-  setTimeout(() => URL.revokeObjectURL(url), 60000);
+// ─── Receipts ─────────────────────────────────────────────────────────────────
+// One renderer, not two. This page used to build its own 380 px thermal-style
+// document in a popup while the dashboard linked to /api/wallet/receipt/[id] —
+// two formats for the same transaction. A receipt is a document a customer may
+// forward to an accountant, so it now always comes from that route: same design,
+// same figures, logo included, printable to PDF from the browser.
+function openReceipt(t) {
+  const url = `/api/wallet/receipt/${t.id}`;
+  const win = window.open(url, '_blank', 'noopener,noreferrer');
+  if (!win) window.location.href = url; // popup blocked — same document, same tab
 }
 
 // ─── Deposit helpers ──────────────────────────────────────────────────────────
@@ -614,7 +472,7 @@ function WalletInner() {
                     <Badge tone={t.status === 'success' ? 'good' : 'warn'}>{t.status}</Badge>
                   </td>
                   <td data-label="Receipt">
-                    <Button size="sm" variant="dark" onClick={() => downloadReceipt(t, user?.email, balance)}>Receipt</Button>
+                    <Button size="sm" variant="dark" onClick={() => openReceipt(t)}>Receipt</Button>
                   </td>
                 </tr>
               ))}
