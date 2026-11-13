@@ -10,7 +10,7 @@ import { createPortal } from 'react-dom';
  * `position: relative; z-index: 1` to stay above the fixed RouteBackdrop layers.
  * A positioned element with a z-index opens a stacking context, so anything
  * rendered inside <main> is confined to it and cannot paint above a sibling of
- * <main> — however high its own z-index is. <Footer> is exactly that sibling
+ * <main> — however high its own z-index is. The footer used to be exactly that sibling
  * (`position: relative; z-index: 1`, later in the DOM), so a full-screen overlay
  * written inside a page painted *under* the footer and had its bottom cut off.
  *

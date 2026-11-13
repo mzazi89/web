@@ -86,7 +86,7 @@ export default function Modal({
      element with a z-index opens a stacking context. Everything inside <main>
      is therefore confined to it: this dialog's `.overlay` (90) and `.modal-host`
      (91) could not paint above a sibling of <main> no matter how high they were
-     set. <Footer> is that sibling — `position: relative; z-index: 1`, and later
+     set. The site footer used to be that sibling — `position: relative; z-index: 1`, and later
      in the DOM — so it painted over this dialog and cut off its bottom, which
      on the wallet's "Add money" sheet hid the payment methods.
 
