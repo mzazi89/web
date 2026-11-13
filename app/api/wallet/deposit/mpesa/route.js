@@ -20,8 +20,20 @@ const MAX = 150000;
 
 export async function GET() {
   // The deposit page asks once whether to show the M-PESA tile at all.
+  // Shape, not secrets: enough to tell a sandbox/live mix-up or a wrong channel
+  // from a bad passkey without ever echoing a key.
   const config = await mpesaConfig();
-  return NextResponse.json({ available: await isConfigured(), channel: config.type });
+  const mask = (v) => (v ? `${String(v).slice(0, 3)}…${String(v).slice(-3)} (${String(v).length})` : null);
+  return NextResponse.json({
+    available: await isConfigured(),
+    channel: config.type,
+    env: config.base.includes('sandbox') ? 'sandbox' : 'production',
+    shortcode: mask(config.shortcode),
+    key: Boolean(config.key),
+    secret: Boolean(config.secret),
+    passkey: Boolean(config.passkey),
+    callback: config.callbackUrl ? new URL(config.callbackUrl).host + new URL(config.callbackUrl).pathname : null,
+  });
 }
 
 export async function POST(request) {
