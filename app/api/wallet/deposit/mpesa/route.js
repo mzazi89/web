@@ -11,19 +11,32 @@
 import { NextResponse } from 'next/server';
 import { requireUser } from '@/lib/api/web-auth';
 import { sql, ensureWalletSchema, generateReference, getDepositOffer, markTransactionFailed } from '@/lib/wallet';
-import { isConfigured, stkPush, normalizeMpesaPhone, mpesaConfig } from '@/lib/mpesa';
+import { isConfigured, stkPush, normalizeMpesaPhone, mpesaConfig, accessToken } from '@/lib/mpesa';
 
 export const dynamic = 'force-dynamic';
 
 const MIN = 10;
 const MAX = 150000;
 
-export async function GET() {
+export async function GET(request) {
   // The deposit page asks once whether to show the M-PESA tile at all.
   // Shape, not secrets: enough to tell a sandbox/live mix-up or a wrong channel
   // from a bad passkey without ever echoing a key.
   const config = await mpesaConfig();
   const mask = (v) => (v ? `${String(v).slice(0, 3)}…${String(v).slice(-3)} (${String(v).length})` : null);
+  // ?probe=auth asks Safaricom for a token and reports only whether the key and
+  // secret were accepted. It never sends a prompt and never returns the token, so
+  // it is safe to leave reachable — and it isolates "wrong credentials" from
+  // "wrong shortcode", which look identical to the customer.
+  if (new URL(request.url).searchParams.get('probe') === 'auth') {
+    try {
+      await accessToken(true);
+      return NextResponse.json({ auth: 'ok' });
+    } catch (e) {
+      return NextResponse.json({ auth: 'failed', detail: String(e.message || e).slice(0, 200) }, { status: 502 });
+    }
+  }
+
   return NextResponse.json({
     available: await isConfigured(),
     channel: config.type,
