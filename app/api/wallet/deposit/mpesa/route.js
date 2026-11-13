@@ -33,7 +33,13 @@ export async function GET(request) {
       await accessToken(true);
       return NextResponse.json({ auth: 'ok' });
     } catch (e) {
-      return NextResponse.json({ auth: 'failed', detail: String(e.message || e).slice(0, 200) }, { status: 502 });
+      const cause = e?.cause || {};
+      const detail = [
+        String(e?.message || e),
+        cause.code || cause.errno || '',
+        String(cause.message || '').slice(0, 120),
+      ].filter(Boolean).join(' | ');
+      return NextResponse.json({ auth: 'failed', detail: detail.slice(0, 300) }, { status: 502 });
     }
   }
 
