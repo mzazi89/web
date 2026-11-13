@@ -3,6 +3,8 @@ import { Icons } from '@/components/ui';
 import { getViewer } from '@/lib/dashboard/session';
 import { getNotifications } from '@/lib/dashboard/data';
 import { PageHead, Panel, Empty } from '@/components/dashboard/Parts';
+import EnableNotifications from '@/components/EnableNotifications';
+import { subscriptionCount } from '@/lib/push';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Notifications' };
@@ -33,7 +35,7 @@ export default async function NotificationsPage() {
   const viewer = await getViewer();
   if (!viewer) return null;
 
-  const items = await getNotifications(viewer.id);
+  const [items, devices] = await Promise.all([getNotifications(viewer.id), subscriptionCount(viewer.id)]);
   const attention = items.filter((n) => n.tone === 'warn' || n.tone === 'bad');
   const activity = items.filter((n) => n.tone === 'good' || n.tone === 'brand');
 
@@ -59,6 +61,8 @@ export default async function NotificationsPage() {
         sub="Payments, expiry reminders and order updates generated from your own records."
         actions={<Link href="/dashboard/wallet" className="btn btn-ghost"><Icons.Wallet size={14} /> Payments</Link>}
       />
+
+      <EnableNotifications devices={devices} />
 
       {items.length === 0 ? (
         <Panel title="Nothing yet" sub="This page fills as your account does">

@@ -1,6 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  experimental: {
+    // web-push is CommonJS; loading it from node_modules at runtime instead of
+    // letting the bundler inline it keeps its default-export interop intact.
+    serverComponentsExternalPackages: ['web-push'],
+  },
   async headers() {
     return [
       {

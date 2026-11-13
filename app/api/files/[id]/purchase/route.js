@@ -82,6 +82,16 @@ export async function POST(request, { params }) {
       `;
       // A purchase counts toward the referred friend's qualifying amount.
       void import('@/lib/api/referral').then(({ maybeQualifyReferral }) => maybeQualifyReferral(uid)).catch(() => {});
+      void import('@/lib/push').then(({ sendPush }) => sendPush(uid, {
+        title: 'Purchase complete',
+        body: `${file.name} is in your library — open it any time.`,
+        url: '/dashboard/marketplace',
+        tag: `file-${id}`,
+        actions: [
+          { action: 'files', title: 'My files', url: '/dashboard/marketplace' },
+          { action: 'wallet', title: 'Wallet', url: '/dashboard/wallet' },
+        ],
+      })).catch(() => {});
     }
 
     return NextResponse.json({ message: 'Purchased', owned: true, purchaseId: inserted[0]?.id });
