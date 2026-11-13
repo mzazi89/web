@@ -93,11 +93,18 @@ export async function POST(request) {
 
   const checkoutId = result?.CheckoutRequestID;
   if (String(result?.ResponseCode) !== '0' || !checkoutId) {
-    await markTransactionFailed(reference, result?.errorMessage || result?.ResponseDescription || 'Request rejected');
-    const msg = /invalid|shortcode|party/i.test(String(result?.errorMessage || ''))
-      ? 'M-PESA rejected the request. Please try again later.'
-      : String(result?.CustomerMessage || result?.ResponseDescription || 'M-PESA could not send the prompt.');
-    return NextResponse.json({ error: msg }, { status: 400 });
+    // Keep Safaricom's own wording. It is the only thing that distinguishes a
+    // wrong passkey from a wrong shortcode or a sandbox/production mix-up, and
+    // it contains no secrets — hiding it just makes the failure unactionable.
+    const detail = String(
+      result?.errorMessage || result?.ResponseDescription || result?.CustomerMessage || 'Request rejected'
+    ).slice(0, 160);
+    await markTransactionFailed(reference, detail);
+    return NextResponse.json({
+      error: `M-PESA could not send the prompt: ${detail}`,
+      detail,
+      code: result?.errorCode || null,
+    }, { status: 400 });
   }
 
   await sql`UPDATE wallet_transactions SET provider_ref = ${checkoutId}, updated_at = NOW() WHERE reference = ${reference}`;

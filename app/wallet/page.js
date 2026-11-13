@@ -191,7 +191,10 @@ function WalletInner() {
           await fetchWallet();
         } else if (data.status === 'failed' || data.status === 'abandoned') {
           clearInterval(timer);
-          setFailureMsg('Payment was not completed. Please try again.');
+          // Safaricom's own reason beats a generic apology — "Wrong M-PESA PIN",
+          // "You cancelled the prompt", or a misconfigured shortcode all look the
+          // same otherwise, and the customer cannot tell what to do next.
+          setFailureMsg(data.failureReason || 'Payment was not completed. Please try again.');
           setStep('failed');
         }
       } catch { /* transient network error — keep polling */ }
