@@ -1,9 +1,10 @@
 import Link from 'next/link';
-import { Icons } from '@/components/ui';
+import { Avatar, Icons } from '@/components/ui';
 import { getViewer, initials } from '@/lib/dashboard/session';
 import { getLogins, shortDate } from '@/lib/dashboard/data';
 import { PageHead, Panel, Line, Status, Empty } from '@/components/dashboard/Parts';
 import { ProfileForm, PasswordForm, SignOutButton } from '@/components/dashboard/SettingsForms';
+import AvatarUploader from '@/components/dashboard/AvatarUploader';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Account settings' };
@@ -28,7 +29,11 @@ export default async function SettingsPage() {
       />
 
       <div className="profile-strip">
-        <span className="dash-avatar" style={{ width: 40, height: 40, fontSize: 14 }}>{initials(viewer)}</span>
+        {viewer.avatar ? (
+          <Avatar src={viewer.avatar} name={[viewer.firstname, viewer.lastname].filter(Boolean).join(' ')} size={40} />
+        ) : (
+          <span className="dash-avatar" style={{ width: 40, height: 40, fontSize: 14 }}>{initials(viewer)}</span>
+        )}
         <div style={{ minWidth: 0 }}>
           <p className="dash-line-label" style={{ fontSize: 13 }}>{[viewer.firstname, viewer.lastname].filter(Boolean).join(' ') || viewer.email}</p>
           <p className="dash-line-note">{viewer.email} · member since {shortDate(viewer.created_at)}</p>
@@ -36,7 +41,11 @@ export default async function SettingsPage() {
         <span className="pill-status is-muted" style={{ marginLeft: 'auto' }}>{viewer.role || 'customer'}</span>
       </div>
 
-      <Panel title="Profile" sub="How your name appears on receipts and in support">
+      <Panel title="Profile" sub="How your name and photo appear on receipts and in support">
+        <AvatarUploader
+          src={viewer.avatar}
+          name={[viewer.firstname, viewer.lastname].filter(Boolean).join(' ')}
+        />
         <ProfileForm user={{ firstname: viewer.firstname, lastname: viewer.lastname, email: viewer.email }} />
       </Panel>
 

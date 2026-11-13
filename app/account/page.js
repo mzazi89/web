@@ -2,9 +2,10 @@
 
 // MZAZI TECH — Account.
 //
-// Everything here is read from real endpoints and shown honestly. There is no
-// profile-update API, so the name/email are displayed (not faked as editable);
-// the page says so plainly instead of offering a form that cannot save.
+// Everything here is read from real endpoints and shown honestly. The photo is
+// editable here (POST /api/account/avatar); the name and email are not, because
+// they go through dashboard settings and support respectively — the page says so
+// plainly instead of offering a form that cannot save.
 //
 // Endpoints used (all pre-existing):
 //   GET  /api/auth/me          → { user }
@@ -23,6 +24,7 @@ import {
 } from '@/components/ui';
 import { fmtKes } from '@/lib/currency';
 import SignInGate from '@/components/SignInGate';
+import AvatarUploader from '@/components/dashboard/AvatarUploader';
 import { authHref } from '@/lib/nextPath';
 import Link from 'next/link';
 
@@ -156,6 +158,7 @@ export default function AccountPage() {
               {/* ── Profile ── */}
               <Card className="anim-fade-up">
                 <CardHeader title="Profile" description="Shown on your account and receipts." icon={<Icons.User size={18} />} />
+                <AvatarUploader src={user?.avatar || null} name={displayName} />
                 <dl style={{ margin: 0, display: 'grid', gap: 14 }}>
                   <div>
                     <dt className="stat-label" style={{ marginBottom: 3 }}>Name</dt>
@@ -171,8 +174,10 @@ export default function AccountPage() {
                   </div>
                 </dl>
                 <p style={{ margin: '16px 0 0', fontSize: 12, color: 'var(--dim)', lineHeight: 1.6 }}>
-                  Your name and email can’t be edited here yet. To change them, message support from the{' '}
-                  <Link className="link" href="/help">Help page</Link>.
+                  Your photo changes instantly. Your name is edited in{' '}
+                  <Link className="link" href="/dashboard/settings">dashboard settings</Link>, and your email
+                  goes through support from the <Link className="link" href="/help">Help page</Link> — that
+                  stops a borrowed session from moving the account to another address.
                 </p>
               </Card>
 

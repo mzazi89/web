@@ -42,7 +42,7 @@ export default async function DashboardLayout({ children }) {
     <AppBackground variant="dashboard">
       <div className="dash">
         <Sidebar
-          user={{ firstname: viewer.firstname, lastname: viewer.lastname, email: viewer.email }}
+          user={{ firstname: viewer.firstname, lastname: viewer.lastname, email: viewer.email, avatar: viewer.avatar }}
           plan={bot.planLabel}
           unread={unread}
         />

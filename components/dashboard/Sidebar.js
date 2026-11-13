@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Icons } from '@/components/ui';
+import { Avatar, Icons } from '@/components/ui';
 
 // MZAZI TECH — dashboard rail.
 //
@@ -34,7 +34,11 @@ export default function Sidebar({ user, plan, unread = 0 }) {
   return (
     <aside className="dash-side">
       <div className="dash-id">
-        <span className="dash-avatar">{initials}</span>
+        {user?.avatar ? (
+          <Avatar src={user.avatar} name={name} size={30} />
+        ) : (
+          <span className="dash-avatar">{initials}</span>
+        )}
         <span style={{ minWidth: 0 }}>
           <span className="dash-id-name">{name}</span>
           <span className="dash-id-plan">{plan || 'FREE'} plan</span>

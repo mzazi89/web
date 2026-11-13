@@ -2938,6 +2938,25 @@ body { padding-bottom: calc(var(--dock-h) + env(safe-area-inset-bottom)); }
 .row-between { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
 .profile-strip { display: flex; align-items: center; gap: 10px; padding: 10px 12px; margin-bottom: 10px; border-radius: var(--r-lg); border: 1px solid var(--line); background: var(--surface); }
 
+/* Profile photo control — avatar on the left, actions and hint on the right.
+   Wraps on a phone so the buttons never squeeze the hint into a 40 px column. */
+.avatar-edit {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 12px;
+  margin-bottom: 14px;
+  border-radius: var(--r-lg);
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+}
+.avatar-edit .field-hint { line-height: 1.45; }
+@media (max-width: 420px) {
+  .avatar-edit { gap: 10px; }
+  .avatar-edit .btn-sm { min-height: 30px; padding: 6px 12px; font-size: 12px; }
+}
+
 /* Notifications */
 .notif {
   display: flex; align-items: flex-start; gap: 9px;

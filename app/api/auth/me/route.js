@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { neon } from '@neondatabase/serverless';
+import { loadAvatar } from '@/lib/avatar';
 
 export const dynamic = 'force-dynamic';
 const sql = neon(process.env.DATABASE_URL, { fetchOptions: { cache: 'no-store' } });
@@ -26,7 +27,11 @@ export async function GET() {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    return NextResponse.json({ user: rows[0] });
+    // The photo is fetched separately so /me keeps working on a database whose
+    // avatar columns have not been created yet.
+    const avatar = await loadAvatar(rows[0].id);
+
+    return NextResponse.json({ user: { ...rows[0], avatar } });
   } catch (error) {
     return NextResponse.json({ error: 'Invalid or expired session' }, { status: 401 });
   }
