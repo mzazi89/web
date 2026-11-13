@@ -2644,7 +2644,9 @@ a:focus-visible > .mz-brand {
 
 .dock-item {
   flex: 0 0 auto;
-  min-width: 63px;
+  min-width: 64px;
+  min-height: 46px;
+  justify-content: center;
   scroll-snap-align: center;
   display: flex;
   flex-direction: column;
@@ -2660,11 +2662,22 @@ a:focus-visible > .mz-brand {
   transition: color 160ms var(--ease), background 160ms var(--ease);
 }
 .dock-item svg { width: 18px; height: 18px; }
+/* Edge fades: a rail that ends mid-chip reads as broken, so whichever side has
+   more content fades out instead. Added/removed by JS from real scroll state. */
+.dock.fade-end { -webkit-mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 26px), transparent 100%); mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 26px), transparent 100%); }
+.dock.fade-start { -webkit-mask-image: linear-gradient(to right, transparent 0, #000 26px); mask-image: linear-gradient(to right, transparent 0, #000 26px); }
+.dock.fade-start.fade-end { -webkit-mask-image: linear-gradient(to right, transparent 0, #000 26px, #000 calc(100% - 26px), transparent 100%); mask-image: linear-gradient(to right, transparent 0, #000 26px, #000 calc(100% - 26px), transparent 100%); }
+
+/* Long labels truncate rather than widen a chip and break the rhythm. */
+.dock-item span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
 .dock-item.is-active { color: var(--blue-bright); }
 .dock-item.is-active::before {
   content: '';
   position: absolute;
   top: 0;
+  left: 50%;
+  transform: translateX(-50%);
   width: 18px;
   height: 2px;
   border-radius: 0 0 2px 2px;

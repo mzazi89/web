@@ -1,5 +1,5 @@
 import Navbar from '../components/Navbar';
-import MobileDock from '../components/MobileDock';
+import BottomNav from '../components/BottomNav';
 import ChatWidget from '../components/ChatWidget';
 import TechBackground from '../components/TechBackground';
 import PwaProvider from '../components/PwaProvider';
@@ -107,7 +107,7 @@ export default function RootLayout({ children }) {
               <main id="main-content" className="flex-grow app-content relative z-10">
                 {children}
               </main>
-              <MobileDock />
+              <BottomNav />
               <ChatWidget />
             </PwaProvider>
           </ToastProvider>

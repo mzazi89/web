@@ -1,7 +1,7 @@
 import SignInGate from '@/components/SignInGate';
 import { AppBackground } from '@/components/ui';
 import Sidebar from '@/components/dashboard/Sidebar';
-import DashDock from '@/components/dashboard/DashDock';
+import BottomNav from '@/components/BottomNav';
 import { getViewer } from '@/lib/dashboard/session';
 import { getBot, getNotifications } from '@/lib/dashboard/data';
 
@@ -48,7 +48,7 @@ export default async function DashboardLayout({ children }) {
         />
         <div className="dash-main">{children}</div>
       </div>
-      <DashDock />
+      <BottomNav />
     </AppBackground>
   );
 }
