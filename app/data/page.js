@@ -1,81 +1,94 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Button, Card, Field, Input, Badge, Icons, Skeleton } from '@/components/ui';
+import { Badge, Button, Card, Field, Input, Icons, Skeleton } from '@/components/ui';
 
-// MZAZI TECH — buy data.
+// MZAZI TECH — buy data, straight from Safaricom.
 //
-// One screen: pick a bundle, confirm the number, pay from the wallet. The phone
-// number defaults to the account's own M-PESA line, because the commonest
-// mistake in a top-up is a typo in a number you have typed a hundred times.
+// Four states, and the page is honest in each of them:
+//   idle     ask for a number
+//   offers   exactly what the API returned — no fallback catalogue, no invented prices
+//   buy      submit, then show what Safaricom said
+//   history  what happened, with a refresh that asks again
 //
-// While Safaricom's rail is unconfigured the page says so plainly and disables
-// the buttons — worse than a missing feature is one that takes money and fails.
+// If the API is not configured or the app lacks the Dynamic Offers subscription,
+// the real message is shown instead of a fake shelf of bundles.
 
-const fmt = (n) => `KES ${Number(n).toLocaleString('en-KE', { minimumFractionDigits: 0 })}`;
-const size = (mb) => (mb >= 1024 ? `${(mb / 1024).toFixed(mb % 1024 === 0 ? 0 : 1)} GB` : `${mb} MB`);
+const money = (n, cur = 'KES') => (n == null ? '—' : `${cur} ${Number(n).toLocaleString('en-KE')}`);
+const size = (mb) => (mb == null ? null : mb >= 1024 ? `${(mb / 1024).toFixed(mb % 1024 === 0 ? 0 : 1)} GB` : `${mb} MB`);
+const when = (d) => new Date(d).toLocaleString('en-KE', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
 
 export default function DataPage() {
-  const [state, setState] = useState({ loading: true, plans: [], balance: 0, live: false });
-  const [phone, setPhone] = useState('');
-  const [busy, setBusy] = useState(null);
-  const [note, setNote] = useState(null);
+  const [msisdn, setMsisdn] = useState('');
+  const [phase, setPhase] = useState('idle'); // idle | loading | offers | empty | error | buying | done
+  const [offers, setOffers] = useState([]);
+  const [selected, setSelected] = useState(null);
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState(null);
+  const [history, setHistory] = useState([]);
+  const [refreshing, setRefreshing] = useState(null);
 
-  useEffect(() => {
-    let alive = true;
-    (async () => {
-      try {
-        const [plansRes, meRes] = await Promise.all([
-          fetch('/api/data/plans').then((r) => r.json()),
-          fetch('/api/auth/me').then((r) => r.json()).catch(() => ({})),
-        ]);
-        if (!alive) return;
-        setState({
-          loading: false,
-          plans: plansRes.plans || [],
-          balance: Number(plansRes.balance || 0),
-          live: Boolean(plansRes.live),
-        });
-        const p = meRes?.user?.phone || meRes?.user?.phone_number || '';
-        if (p) setPhone(String(p));
-      } catch {
-        if (alive) setState((s) => ({ ...s, loading: false }));
-      }
-    })();
-    return () => { alive = false; };
+  const loadHistory = useCallback(async () => {
+    const res = await fetch('/api/data/history').catch(() => null);
+    if (!res || !res.ok) return;
+    const d = await res.json().catch(() => ({}));
+    setHistory(d.purchases || []);
   }, []);
 
-  const grouped = useMemo(() => {
-    const map = new Map();
-    for (const p of state.plans) {
-      const key = p.network || 'safaricom';
-      if (!map.has(key)) map.set(key, []);
-      map.get(key).push(p);
-    }
-    return [...map.entries()];
-  }, [state.plans]);
+  useEffect(() => { loadHistory(); }, [loadHistory]);
 
-  async function buy(plan) {
-    setNote(null);
-    setBusy(plan.id);
+  async function fetchOffers(e) {
+    e?.preventDefault();
+    setError(null); setResult(null); setSelected(null); setOffers([]);
+    setPhase('loading');
     try {
-      const res = await fetch('/api/data/order', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ planId: plan.id, phone }),
+      const res = await fetch('/api/data/offers', {
+        method: 'POST', headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ msisdn }),
       });
-      const data = await res.json();
-      if (!res.ok) {
-        setNote({ bad: true, text: data.error || 'That did not go through.' });
-      } else {
-        setNote({ bad: false, text: `${plan.name} sent to ${phone}. Receipt ${data.reference}.` });
-        setState((s) => ({ ...s, balance: +(s.balance - plan.price).toFixed(2) }));
+      const d = await res.json().catch(() => ({}));
+      if (!res.ok || !d.ok) {
+        setError({ message: d.error || 'Safaricom could not answer.', kind: d.kind, raw: d.raw });
+        setPhase('error');
+        return;
       }
+      setOffers(d.offers || []);
+      setPhase((d.offers || []).length ? 'offers' : 'empty');
     } catch {
-      setNote({ bad: true, text: 'Network hiccup — nothing was charged.' });
+      setError({ message: 'Could not reach the server.', kind: 'network' });
+      setPhase('error');
+    }
+  }
+
+  async function buy() {
+    if (!selected) return;
+    setPhase('buying'); setError(null);
+    try {
+      const res = await fetch('/api/data/purchase', {
+        method: 'POST', headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ msisdn, offer: { id: selected.id, name: selected.name, price: selected.price } }),
+      });
+      const d = await res.json().catch(() => ({}));
+      setResult({ ...d, ok: res.ok && d.ok });
+      setPhase('done');
+      loadHistory();
+    } catch {
+      setError({ message: 'Network hiccup — the purchase was not confirmed.', kind: 'network' });
+      setPhase('done');
+    }
+  }
+
+  async function refresh(id) {
+    setRefreshing(id);
+    try {
+      const res = await fetch(`/api/data/purchase/${id}`);
+      const d = await res.json().catch(() => ({}));
+      if (d.ok && d.status) {
+        setHistory((rows) => rows.map((r) => (r.id === id ? { ...r, status: d.status } : r)));
+      }
     } finally {
-      setBusy(null);
+      setRefreshing(null);
     }
   }
 
@@ -83,89 +96,165 @@ export default function DataPage() {
     <div className="container" style={{ paddingTop: 96, paddingBottom: 120 }}>
       <div className="eyebrow" style={{ marginBottom: 10 }}>— DATA BUNDLES</div>
       <h1 className="display" style={{ fontSize: 'clamp(2rem, 5vw, 3rem)', marginBottom: 10 }}>
-        Data, straight to the phone.
+        Data, straight from Safaricom.
       </h1>
       <p className="lede" style={{ maxWidth: 560 }}>
-        Buy a bundle with your wallet and it is delivered to any Safaricom number — yours or a
-        customer&apos;s. No vouchers, no codes to type.
+        Enter a Safaricom number and we will ask Safaricom what it can sell that line right now —
+        bundles, prices and validity exactly as they come back.
       </p>
 
-      <div className="data-strip">
-        <div>
-          <div className="data-strip-label">Wallet</div>
-          <div className="data-strip-value">{fmt(state.balance)}</div>
-        </div>
-        <Link href="/wallet" className="btn btn-ghost btn-sm">Top up <Icons.ArrowRight size={13} /></Link>
-      </div>
-
-      {!state.loading && !state.live && (
-        <div className="data-banner">
-          <Icons.Info size={16} />
-          <span>Data bundles are being switched on. Top up your wallet meanwhile — nothing is charged until they go live.</span>
-        </div>
-      )}
-
-      <Card className="data-phone" style={{ marginTop: 22 }}>
-        <Field label="Send to" hint="Safaricom number that receives the bundle">
-          <Input
-            inputMode="tel"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            placeholder="07XX XXX XXX"
-            autoComplete="tel"
-            maxLength={15}
-          />
-        </Field>
+      <Card style={{ marginTop: 22 }}>
+        <form onSubmit={fetchOffers} className="data-form">
+          <Field label="Safaricom number" hint="07XX XXX XXX · 01XX XXX XXX · 2547XXXXXXXX">
+            <Input
+              inputMode="tel" value={msisdn} onChange={(e) => setMsisdn(e.target.value)}
+              placeholder="0712 345 678" autoComplete="tel" maxLength={15}
+            />
+          </Field>
+          <Button type="submit" disabled={phase === 'loading' || msisdn.trim().length < 9} icon={<Icons.Wifi size={15} />}>
+            {phase === 'loading' ? 'Asking Safaricom…' : 'Fetch offers'}
+          </Button>
+        </form>
       </Card>
 
-      {note && (
-        <div className={`data-note ${note.bad ? 'is-bad' : 'is-good'}`} role="status">
-          {note.text}
+      {phase === 'loading' && (
+        <div className="data-grid" style={{ marginTop: 20 }}>
+          {[0, 1, 2].map((i) => <Skeleton key={i} h={120} radius={14} />)}
         </div>
       )}
 
-      {state.loading ? (
-        <div className="data-grid">
-          {[0, 1, 2, 3, 4, 5].map((i) => <Skeleton key={i} h={132} radius={14} />)}
-        </div>
-      ) : state.plans.length === 0 ? (
-        <Card style={{ marginTop: 22, textAlign: 'center', padding: 40 }}>
-          <Icons.Wifi size={26} />
-          <p style={{ marginTop: 12 }}>No bundles on the shelf yet.</p>
+      {phase === 'empty' && (
+        <Card style={{ marginTop: 20 }}>
+          <p><strong>No offers for that line.</strong></p>
+          <p className="muted" style={{ marginTop: 6 }}>
+            Safaricom returned an empty offer list, which usually means the account cannot buy
+            bundles right now (airtime balance, barred line, or a number not on the Safaricom network).
+          </p>
         </Card>
-      ) : (
-        grouped.map(([network, plans]) => (
-          <section key={network} style={{ marginTop: 26 }}>
-            <div className="data-group">
-              <Badge tone="brand">{network}</Badge>
-              <span>{plans.length} bundle{plans.length === 1 ? '' : 's'}</span>
-            </div>
-            <div className="data-grid">
-              {plans.map((p) => {
-                const short = p.price > state.balance;
-                return (
-                  <Card key={p.id} className="data-card">
-                    <div className="data-card-top">
-                      <span className="data-size">{size(p.size_mb)}</span>
-                      <span className="data-valid">{p.validity_days} day{p.validity_days === 1 ? '' : 's'}</span>
-                    </div>
-                    <div className="data-name">{p.name}</div>
-                    <div className="data-price">{fmt(p.price)}</div>
-                    <Button
-                      size="sm"
-                      variant={short ? 'ghost' : 'primary'}
-                      disabled={!state.live || short || busy === p.id || !phone.trim()}
-                      onClick={() => buy(p)}
-                    >
-                      {busy === p.id ? 'Sending…' : short ? 'Top up first' : 'Buy'}
-                    </Button>
-                  </Card>
-                );
-              })}
-            </div>
-          </section>
-        ))
       )}
+
+      {phase === 'error' && error && (
+        <Card style={{ marginTop: 20 }}>
+          <p style={{ color: 'var(--danger)', fontWeight: 600 }}>{error.message}</p>
+          {error.kind === 'config' && (
+            <p className="muted" style={{ marginTop: 8 }}>
+              The Dynamic Offers endpoint has not been entered yet. It comes from your Daraja app&apos;s
+              API definition and is pasted in Admin → Settings → Data bundles.
+            </p>
+          )}
+          {error.kind === 'permission' && (
+            <p className="muted" style={{ marginTop: 8 }}>
+              Your Daraja app is not subscribed to Dynamic Offers. Safaricom has to approve that
+              product for the app before any call will succeed.
+            </p>
+          )}
+          {error.raw && (
+            <pre className="data-raw">{error.raw}</pre>
+          )}
+          <Button variant="ghost" size="sm" style={{ marginTop: 12 }} onClick={fetchOffers}>Try again</Button>
+        </Card>
+      )}
+
+      {(phase === 'offers' || phase === 'buying' || phase === 'done') && offers.length > 0 && (
+        <section style={{ marginTop: 24 }}>
+          <div className="data-group">
+            <Badge tone="brand">live offers</Badge>
+            <span>{offers.length} from Safaricom</span>
+          </div>
+          <div className="data-grid">
+            {offers.map((o) => (
+              <button
+                key={o.id}
+                type="button"
+                className={`data-offer ${selected?.id === o.id ? 'is-selected' : ''}`}
+                onClick={() => setSelected(o)}
+                disabled={phase === 'buying'}
+              >
+                <span className="data-size">{size(o.sizeMb) || o.name}</span>
+                <span className="data-name">{o.name}</span>
+                <span className="data-meta">
+                  {o.validity ? `${o.validity}${/^\d+$/.test(String(o.validity)) ? ' days' : ''}` : '—'}
+                </span>
+                <span className="data-price">{money(o.price, o.currency)}</span>
+              </button>
+            ))}
+          </div>
+
+          <div className="data-buybar">
+            <div>
+              {selected ? (
+                <>
+                  <div className="data-strip-label">Selected</div>
+                  <div style={{ fontWeight: 650 }}>{selected.name} · {money(selected.price, selected.currency)}</div>
+                </>
+              ) : <span className="muted">Choose an offer above.</span>}
+            </div>
+            <Button onClick={buy} disabled={!selected || phase === 'buying'} icon={<Icons.Send size={15} />}>
+              {phase === 'buying' ? 'Submitting…' : 'Buy with M-PESA'}
+            </Button>
+          </div>
+        </section>
+      )}
+
+      {phase === 'done' && result && (
+        <Card style={{ marginTop: 20 }}>
+          <div className="data-result">
+            <Badge tone={result.ok && result.status === 'confirmed' ? 'good' : result.ok ? 'warn' : 'bad'}>
+              {result.ok ? result.status : 'failed'}
+            </Badge>
+            <div>
+              <div style={{ fontWeight: 700 }}>
+                {result.ok
+                  ? result.status === 'confirmed' ? 'Purchase confirmed by Safaricom' : 'Submitted — awaiting confirmation'
+                  : 'Not completed'}
+              </div>
+              <div className="muted" style={{ marginTop: 4 }}>
+                {result.reference ? `Reference ${result.reference}. ` : ''}
+                {result.error || (result.status === 'confirmed' ? 'The bundle is being applied to the number.' : 'Refresh below to check again.')}
+              </div>
+            </div>
+          </div>
+          {result.id && (
+            <Button variant="ghost" size="sm" style={{ marginTop: 12 }} onClick={() => refresh(result.id)}>
+              {refreshing === result.id ? 'Checking…' : 'Refresh status'}
+            </Button>
+          )}
+        </Card>
+      )}
+
+      <Card style={{ marginTop: 30 }}>
+        <div className="data-group" style={{ marginBottom: 8 }}>
+          <Badge tone="neutral">history</Badge>
+          <span>{history.length} purchase{history.length === 1 ? '' : 's'}</span>
+        </div>
+        {history.length === 0 ? (
+          <p className="muted">Nothing yet — your purchases will appear here.</p>
+        ) : (
+          <div className="data-history">
+            {history.map((h) => (
+              <div key={h.id} className="data-history-row">
+                <div>
+                  <div style={{ fontWeight: 600 }}>{h.offer_name || 'Bundle'}</div>
+                  <div className="muted" style={{ fontSize: 12 }}>
+                    {h.msisdn} · {when(h.created_at)} · {money(h.amount)}
+                  </div>
+                </div>
+                <div className="data-history-right">
+                  <Badge tone={h.status === 'confirmed' ? 'good' : h.status === 'failed' ? 'bad' : 'warn'}>{h.status}</Badge>
+                  <Button size="sm" variant="ghost" onClick={() => refresh(h.id)} disabled={refreshing === h.id}>
+                    {refreshing === h.id ? '…' : <Icons.Refresh size={13} />}
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </Card>
+
+      <p className="muted" style={{ marginTop: 18, fontSize: 12 }}>
+        Not sure what to buy? <Link className="link" href="/whatsapp-bot">Talk to us</Link> — or top up your
+        wallet first and come back.
+      </p>
     </div>
   );
 }

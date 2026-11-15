@@ -3500,3 +3500,73 @@ body { padding-bottom: calc(var(--dock-h) + env(safe-area-inset-bottom)); }
 .data-name { font-size: 12.5px; color: var(--muted); line-height: 1.4; min-height: 2.8em; }
 .data-price { font-size: 15px; font-weight: 700; margin-top: auto; }
 .data-card .btn { width: 100%; justify-content: center; }
+
+/* ── Dynamic offers ─────────────────────────────────────────────────────────
+   The shelf is whatever Safaricom returned, so cards must cope with a name that
+   is one word or eight, a validity that is "7" or "7 days", and no size at all. */
+.data-form { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
+.data-form > *:first-child { flex: 1 1 240px; }
+
+.data-offer {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+  padding: 14px;
+  border-radius: var(--r-lg);
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: inherit;
+  cursor: pointer;
+  transition: border-color .15s, transform .15s, background .15s;
+}
+.data-offer:hover { border-color: var(--brand); transform: translateY(-1px); }
+.data-offer.is-selected {
+  border-color: var(--brand);
+  background: linear-gradient(180deg, rgba(63, 124, 255, 0.14), rgba(63, 124, 255, 0.04));
+  box-shadow: 0 0 0 1px var(--brand) inset;
+}
+.data-offer:disabled { opacity: .6; cursor: default; }
+.data-meta { font-size: 11px; color: var(--dim); text-transform: uppercase; letter-spacing: .08em; }
+
+.data-buybar {
+  position: sticky;
+  bottom: 84px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: var(--r-lg);
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(12px);
+}
+
+.data-result { display: flex; gap: 12px; align-items: flex-start; }
+
+.data-raw {
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: var(--r-sm);
+  background: var(--code-bg, rgba(255,255,255,0.04));
+  font-size: 11px;
+  line-height: 1.5;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.data-history { display: flex; flex-direction: column; }
+.data-history-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 0;
+  border-top: 1px solid var(--line);
+}
+.data-history-row:first-child { border-top: 0; }
+.data-history-right { display: flex; align-items: center; gap: 8px; }
