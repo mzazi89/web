@@ -11,6 +11,7 @@ import { sql } from '@/lib/wallet';
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
+  try {
   const user = await requireUser();
   if (!user) return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
 
@@ -20,9 +21,14 @@ export async function GET() {
     sql`SELECT balance::float AS balance FROM wallet WHERE user_id = ${user.id}`.catch(() => []),
   ]);
 
+  // eslint-disable-next-line no-unused-vars
+  const __dbg = null;
   return NextResponse.json({
     plans,
     live: Boolean(cfg.path),
     balance: Number(wallet[0]?.balance || 0),
   });
+  } catch (e) {
+    return NextResponse.json({ error: 'Could not load bundles', detail: String(e && e.message || e).slice(0, 160) }, { status: 500 });
+  }
 }
