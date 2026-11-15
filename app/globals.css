@@ -3421,3 +3421,82 @@ body { padding-bottom: calc(var(--dock-h) + env(safe-area-inset-bottom)); }
 }
 .chat-send:disabled { opacity: 0.45; cursor: not-allowed; }
 .chat-error { margin: 0; padding: 6px 12px 8px; font-size: 9.5px; color: var(--bad); }
+
+/* ── Data bundles ────────────────────────────────────────────────────────────
+   A shelf, not a form. Size first (it is what people shop by), price last, and
+   one button per card so there is never a question of what gets bought. */
+.data-strip {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-top: 20px;
+  padding: 12px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+}
+.data-strip-label { font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dim); }
+.data-strip-value { font-size: 19px; font-weight: 700; margin-top: 2px; }
+
+.data-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: var(--r-md);
+  border: 1px solid rgba(255, 176, 32, 0.28);
+  background: rgba(255, 176, 32, 0.08);
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.data-phone { margin-top: 22px; }
+
+.data-note {
+  margin-top: 14px;
+  padding: 11px 14px;
+  border-radius: var(--r-md);
+  font-size: 13px;
+  line-height: 1.5;
+  border: 1px solid var(--line);
+}
+.data-note.is-good { border-color: rgba(52, 211, 153, 0.35); background: rgba(52, 211, 153, 0.08); }
+.data-note.is-bad { border-color: rgba(248, 113, 113, 0.35); background: rgba(248, 113, 113, 0.08); }
+
+.data-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  font-size: 12px;
+  color: var(--dim);
+  text-transform: capitalize;
+}
+
+.data-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(158px, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+@media (max-width: 420px) {
+  .data-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+}
+
+.data-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+  min-height: 168px;
+}
+.data-card-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.data-size { font-size: 20px; font-weight: 750; letter-spacing: -0.01em; }
+.data-valid { font-size: 10.5px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.1em; }
+.data-name { font-size: 12.5px; color: var(--muted); line-height: 1.4; min-height: 2.8em; }
+.data-price { font-size: 15px; font-weight: 700; margin-top: auto; }
+.data-card .btn { width: 100%; justify-content: center; }

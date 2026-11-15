@@ -36,6 +36,7 @@ const ICONS = {
   code: Icons.Code,
   phone: Icons.Phone,
   play: Icons.Play,
+  wifi: Icons.Wifi,
   info: Icons.Info,
   settings: Icons.Settings,
 };
