@@ -4,13 +4,13 @@
 // inside placeOrder(), so this handler only translates outcomes into status
 // codes the page can act on.
 import { NextResponse } from 'next/server';
-import { requireUser } from '@/lib/api/web-auth';
+import { optionalUser } from '@/lib/api/session';
 import { placeOrder } from '@/lib/data';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(request) {
-  const user = await requireUser();
+  const user = await optionalUser();
   if (!user) return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
 
   let body;

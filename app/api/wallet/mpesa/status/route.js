@@ -4,14 +4,14 @@
 // generic /api/wallet/status poll delegates to the same function, so the answer
 // is identical whichever entry point the UI uses.
 import { NextResponse } from 'next/server';
-import { requireUser } from '@/lib/api/web-auth';
+import { optionalUser } from '@/lib/api/session';
 import { sql } from '@/lib/wallet';
 import { reconcileMpesa } from '@/lib/mpesaSettle';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(request) {
-  const viewer = await requireUser();
+  const viewer = await optionalUser();
   if (!viewer) return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
 
   const reference = new URL(request.url).searchParams.get('ref') || '';

@@ -5,14 +5,14 @@
 // payment alert — same icon, same two buttons — and reports how many devices it
 // reached, so a silent phone is diagnosable instead of mysterious.
 import { NextResponse } from 'next/server';
-import { requireUser } from '@/lib/api/web-auth';
+import { optionalUser } from '@/lib/api/session';
 import { sendPush, subscriptionCount } from '@/lib/push';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST() {
   try {
-    const user = await requireUser();
+    const user = await optionalUser();
     const devices = await subscriptionCount(user.id);
     if (devices === 0) {
       return NextResponse.json(

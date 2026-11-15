@@ -9,7 +9,7 @@
 // row and credit it; the reverse order would take the customer's money and leave
 // it unclaimed.
 import { NextResponse } from 'next/server';
-import { requireUser } from '@/lib/api/web-auth';
+import { optionalUser } from '@/lib/api/session';
 import { sql, ensureWalletSchema, generateReference, getDepositOffer, markTransactionFailed } from '@/lib/wallet';
 import { isConfigured, stkPush, normalizeMpesaPhone, mpesaConfig, accessToken } from '@/lib/mpesa';
 
@@ -57,7 +57,7 @@ export async function GET(request) {
 }
 
 export async function POST(request) {
-  const viewer = await requireUser();
+  const viewer = await optionalUser();
   if (!viewer) return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
 
   if (!(await isConfigured())) {

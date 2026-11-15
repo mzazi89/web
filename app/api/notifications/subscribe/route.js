@@ -8,14 +8,14 @@
 // instead of piling up duplicates, and can move it to another account if the
 // person signs in as somebody else on a shared phone.
 import { NextResponse } from 'next/server';
-import { requireUser } from '@/lib/api/web-auth';
+import { optionalUser } from '@/lib/api/session';
 import { saveSubscription, removeSubscription, subscriptionCount } from '@/lib/push';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(request) {
   try {
-    const user = await requireUser();
+    const user = await optionalUser();
     const body = await request.json().catch(() => ({}));
     await saveSubscription(user.id, body.subscription, request.headers.get('user-agent'));
     const devices = await subscriptionCount(user.id);
@@ -34,7 +34,7 @@ export async function POST(request) {
 
 export async function DELETE(request) {
   try {
-    const user = await requireUser();
+    const user = await optionalUser();
     const body = await request.json().catch(() => ({}));
     await removeSubscription(user.id, body.endpoint || null);
     return NextResponse.json({ message: 'Notifications turned off' });
