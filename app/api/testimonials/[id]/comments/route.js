@@ -6,15 +6,12 @@
 // Anyone may read; only signed-in customers may write, because a comment thread
 // with no identity behind it is a spam surface with a reply box drawn on it.
 import { NextResponse } from 'next/server';
-import { optionalUser } from '@/lib/api/session';
+import { optionalUser, displayNameOf } from '@/lib/api/session';
 import { sql } from '@/lib/wallet';
 import { ensureInteractions, commentReactionSummary } from '@/lib/testimonials';
 import { ipRateLimit, clientIp } from '@/lib/ip-limiter';
 
 export const dynamic = 'force-dynamic';
-
-const displayName = (u) =>
-  [u.firstname, u.lastname].filter(Boolean).join(' ').trim() || u.username || 'MZAZI customer';
 
 export async function GET(request, { params }) {
   const id = Number(params?.id);
@@ -118,7 +115,7 @@ export async function POST(request, { params }) {
 
     const [row] = await sql`
       INSERT INTO testimonial_comments (testimonial_id, user_id, name, body, parent_id)
-      VALUES (${id}, ${user.id}, ${displayName(user)}, ${body}, ${parentId})
+      VALUES (${id}, ${user.id}, ${displayNameOf(user)}, ${body}, ${parentId})
       RETURNING id, name, body, created_at, parent_id
     `;
     return NextResponse.json(

@@ -226,7 +226,8 @@ export default function TestimonialsPage() {
   const [avg, setAvg] = useState(null);
   const [offset, setOffset] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [form, setForm] = useState({ name: '', rating: 0, message: '' });
+  const [form, setForm] = useState({ rating: 0, message: '' });
+  const [accountName, setAccountName] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [feedback, setFeedback] = useState(null);
 
@@ -253,12 +254,12 @@ export default function TestimonialsPage() {
       const res = await fetch('/api/testimonials', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ rating: form.rating, message: form.message }),
       });
       const d = await res.json();
       if (!res.ok) throw new Error(d.error || 'Submission failed');
       setFeedback({ type: 'success', text: d.message });
-      setForm({ name: '', rating: 0, message: '' });
+      setForm({ rating: 0, message: '' });
       // Live as soon as it is written, so show it: reload the first page and bring
       // the visitor to their own review instead of leaving it off-screen.
       await load(0);
@@ -349,17 +350,17 @@ export default function TestimonialsPage() {
               </p>
             )}
 
+            {signedIn === false && (
+              <p className="t-signin">
+                <Link href="/login?next=/testimonials">Sign in</Link> to leave a review — reviews carry your account name.
+              </p>
+            )}
+            {signedIn !== false && (
             <form onSubmit={submit} className="space-y-3">
-              <div>
-                <label className="label">Your name</label>
-                <input
-                  value={form.name}
-                  onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-                  placeholder="e.g. John Doe"
-                  maxLength={100}
-                  className="input"
-                />
-              </div>
+              <p className="review-as">
+                Posting as <strong>{accountName || 'your account'}</strong>
+                <span className="review-as-note">Your account name is shown with the review.</span>
+              </p>
               <div>
                 <label className="label">Your rating</label>
                 <StarRating value={form.rating} onChange={r => setForm(f => ({ ...f, rating: r }))} />
@@ -375,7 +376,7 @@ export default function TestimonialsPage() {
                   className="input resize-none"
                 />
               </div>
-              <button type="submit" disabled={submitting || !form.rating || form.name.trim().length < 2 || form.message.trim().length < 10}
+              <button type="submit" disabled={submitting || !form.rating || form.message.trim().length < 10}
                 className="btn btn-primary w-full" style={{ opacity: submitting ? 0.6 : 1, cursor: submitting ? 'not-allowed' : 'pointer' }}>
                 {submitting ? 'Submitting…' : 'Submit review'}
               </button>
@@ -383,6 +384,7 @@ export default function TestimonialsPage() {
                 Reviews must be 10–1000 characters and go live immediately — no waiting for approval.
               </p>
             </form>
+            )}
           </div>
         </div>
       </section>

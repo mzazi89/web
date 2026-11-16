@@ -4033,3 +4033,19 @@ main#main-content > * { animation: pageIn .26s ease both; }
   margin-left: auto; border: 0; background: transparent;
   color: var(--dim); font-size: 15px; line-height: 1; cursor: pointer;
 }
+
+/* "Posting as …" — replaces the name field. The account is the identity, so
+   this line states it rather than asking for it again. */
+.review-as {
+  margin: 0 0 2px;
+  font-size: 12px;
+  color: var(--ink-2);
+}
+.review-as strong { color: var(--ink); font-weight: 700; }
+.review-as-note {
+  display: block;
+  margin-top: 2px;
+  font-size: 10.5px;
+  color: var(--dim);
+  letter-spacing: .01em;
+}

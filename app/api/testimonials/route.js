@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import sql from '../../../lib/database';
 import { ipRateLimit, clientIp } from '../../../lib/ip-limiter';
-import { optionalUser } from '@/lib/api/session';
+import { optionalUser, displayNameOf } from '@/lib/api/session';
 import { ensureInteractions, reactionSummary, commentCounts } from '@/lib/testimonials';
 
 export const dynamic = 'force-dynamic';
@@ -101,7 +101,12 @@ export async function GET(request) {
 // what a real customer needs and far below what a flood needs.
 export async function POST(request) {
   try {
+    // A review is public and signed. The name on it comes from the account, so
+    // there is nothing to type and nothing to impersonate.
     const user = await optionalUser();
+    if (!user) {
+      return NextResponse.json({ error: 'Sign in to post a review.' }, { status: 401 });
+    }
     await ensureTable();
 
     const limit = ipRateLimit(clientIp(request), { max: 5, windowMs: 60 * 60 * 1000 });
@@ -113,18 +118,18 @@ export async function POST(request) {
     }
 
     const body = await request.json();
-    const { name, rating, message } = body;
+    const { rating, message } = body;
+    // Whatever the browser sends for a name is ignored: the account is the
+    // identity, so a review cannot be signed with somebody else's name.
+    const name = displayNameOf(user);
 
-    if (!name || !rating || !message) {
-      return NextResponse.json({ error: 'Name, rating, and message are required.' }, { status: 400 });
+    if (!rating || !message) {
+      return NextResponse.json({ error: 'A rating and a message are required.' }, { status: 400 });
     }
 
     const ratingNum = parseInt(rating, 10);
     if (ratingNum < 1 || ratingNum > 5) {
       return NextResponse.json({ error: 'Rating must be between 1 and 5.' }, { status: 400 });
-    }
-    if (name.trim().length < 2 || name.trim().length > 100) {
-      return NextResponse.json({ error: 'Name must be between 2 and 100 characters.' }, { status: 400 });
     }
     if (message.trim().length < 10 || message.trim().length > 1000) {
       return NextResponse.json({ error: 'Message must be between 10 and 1000 characters.' }, { status: 400 });
