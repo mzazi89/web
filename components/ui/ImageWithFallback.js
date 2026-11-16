@@ -97,6 +97,13 @@ export function Avatar({ src, name = '', size = 40, alt, ring = false, style }) 
     .split(' ').filter(Boolean).slice(0, 2)
     .map((w) => w[0]).join('').toUpperCase() || '?';
 
+  // A generated avatar, not a grey circle: a hue derived from the person's name,
+  // held inside the brand's blue→indigo band so a page of reviewers reads as a
+  // set rather than as confetti. Same name, same colour, forever.
+  const seed = [...String(name || '')].reduce((sum, ch) => sum + ch.charCodeAt(0), 0);
+  const hue = 204 + (seed % 78);
+  const fallbackBg = `linear-gradient(135deg, hsl(${hue} 82% 54%), hsl(${(hue + 26) % 360} 88% 62%) 56%, hsl(${(hue + 54) % 360} 84% 58%))`;
+
   return (
     <span
       style={{
@@ -108,7 +115,7 @@ export function Avatar({ src, name = '', size = 40, alt, ring = false, style }) 
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'linear-gradient(135deg, var(--brand), var(--pink) 52%, var(--blue))',
+        background: fallbackBg,
         color: 'var(--on-brand)',
         fontFamily: 'var(--font-display)',
         fontWeight: 700,

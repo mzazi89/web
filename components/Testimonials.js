@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Icons } from '@/components/ui';
+import { Avatar, Icons } from '@/components/ui';
 
 // MZAZI TECH — proof section.
 //
@@ -69,7 +69,7 @@ export default function Testimonials() {
                   </div>
                   <blockquote className="quote-text" style={{ margin: 0 }}>{t.message}</blockquote>
                   <figcaption className="quote-who">
-                    <span className="quote-avatar">{(t.name || 'M').slice(0, 1).toUpperCase()}</span>
+                    <Avatar src={t.avatar_url || null} name={t.name || 'MZAZI customer'} size={34} />
                     <span>
                       <span style={{ display: 'block', fontSize: 11, fontWeight: 650, color: 'var(--ink)' }}>{t.name}</span>
                       <span style={{ display: 'block', fontSize: 10, color: 'var(--dim)' }}>Verified customer</span>

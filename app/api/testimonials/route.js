@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import sql from '../../../lib/database';
 import { ipRateLimit, clientIp } from '../../../lib/ip-limiter';
+import { optionalUser } from '@/lib/api/session';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,6 +16,10 @@ async function ensureTable() {
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
   `;
+  // Who wrote it, when they were signed in. Reviews are public by name, but the
+  // photo that sits beside a name should be the one its owner chose — which
+  // means remembering the account, not just the typed name.
+  await sql`ALTER TABLE testimonials ADD COLUMN IF NOT EXISTS user_id INTEGER`;
 }
 
 // GET testimonials with pagination — ?offset=0&limit=6
@@ -35,10 +40,14 @@ export async function GET(request) {
     `;
 
     const testimonials = await sql`
-      SELECT id, name, rating, message, created_at
-      FROM testimonials
-      WHERE approved = true
-      ORDER BY created_at DESC
+      SELECT t.id, t.name, t.rating, t.message, t.created_at,
+             t.user_id,
+             (u.avatar IS NOT NULL AND u.avatar <> '') AS has_photo,
+             u.avatar_at
+      FROM testimonials t
+      LEFT JOIN users u ON u.id = t.user_id
+      WHERE t.approved = true
+      ORDER BY t.created_at DESC
       LIMIT ${limit} OFFSET ${offset}
     `;
 
@@ -46,8 +55,17 @@ export async function GET(request) {
       SELECT ROUND(AVG(rating)::numeric, 2) AS avg, COUNT(*)::int AS total FROM testimonials WHERE approved = true
     `;
 
+    // The client only needs to know whether a photo exists and its version; the
+    // bytes come from /api/users/[id]/avatar.
+    const shaped = testimonials.map((t) => ({
+      ...t,
+      avatar_url: t.has_photo && t.user_id
+        ? `/api/users/${t.user_id}/avatar${t.avatar_at ? `?v=${new Date(t.avatar_at).getTime()}` : ''}`
+        : null,
+    }));
+
     return NextResponse.json({
-      testimonials,
+      testimonials: shaped,
       total: count,
       avg_rating: avg.avg !== null ? Number(avg.avg) : null,
       rating_count: avg.total || 0,
@@ -67,6 +85,7 @@ export async function GET(request) {
 // what a real customer needs and far below what a flood needs.
 export async function POST(request) {
   try {
+    const user = await optionalUser();
     await ensureTable();
 
     const limit = ipRateLimit(clientIp(request), { max: 5, windowMs: 60 * 60 * 1000 });
@@ -97,8 +116,8 @@ export async function POST(request) {
 
     // approved = true: it is live the moment this returns.
     const [testimonial] = await sql`
-      INSERT INTO testimonials (name, rating, message, approved)
-      VALUES (${name.trim()}, ${ratingNum}, ${message.trim()}, true)
+      INSERT INTO testimonials (name, rating, message, approved, user_id)
+      VALUES (${name.trim()}, ${ratingNum}, ${message.trim()}, true, ${user?.id ?? null})
       RETURNING id, name, rating, message, created_at
     `;
 

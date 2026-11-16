@@ -2,7 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import StarRating from '@/components/StarRating';
-import { humaniseError } from '@/components/ui';
+import { Avatar, humaniseError } from '@/components/ui';
 
 function Stars({ value, size = 18 }) {
   return (
@@ -13,14 +13,10 @@ function Stars({ value, size = 18 }) {
 }
 
 function TestimonialCard({ t }) {
-  const initials = t.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
   return (
     <div className="card card-pad flex flex-col" style={{ padding: '17px 16px', background: 'var(--surface)' }}>
       <div className="flex items-center gap-3 mb-5">
-        <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0"
-          style={{ background: 'var(--brand-a12)', border: '1px solid var(--brand-a45)', color: 'var(--brand)' }}>
-          {initials}
-        </div>
+        <Avatar src={t.avatar_url || null} name={t.name} size={40} />
         <div className="min-w-0">
           <p className="text-sm font-bold truncate" style={{ color: 'var(--ink)' }}>{t.name}</p>
           <Stars value={t.rating} size={13} />
