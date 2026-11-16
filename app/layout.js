@@ -1,5 +1,6 @@
 import Navbar from '../components/Navbar';
 import BottomNav from '../components/BottomNav';
+import IntroSplash from '../components/IntroSplash';
 import ChatWidget from '../components/ChatWidget';
 import TechBackground from '../components/TechBackground';
 import PwaProvider from '../components/PwaProvider';
@@ -101,6 +102,7 @@ export default function RootLayout({ children }) {
         <ThemeProvider>
           <ToastProvider>
             <PwaProvider>
+              <IntroSplash />
               <TechBackground />
               <a href="#main-content" className="skip-link">Skip to content</a>
               <Navbar />

@@ -3570,3 +3570,42 @@ body { padding-bottom: calc(var(--dock-h) + env(safe-area-inset-bottom)); }
 }
 .data-history-row:first-child { border-top: 0; }
 .data-history-right { display: flex; align-items: center; gap: 8px; }
+
+/* ── First-open animation ───────────────────────────────────────────────────
+   Once per session, capped at a second, and skipped for reduced motion. The
+   page beneath is already painted, so this covers a ready page rather than
+   delaying one. */
+.intro {
+  position: fixed; inset: 0; z-index: 120; display: grid; place-items: center;
+  background: radial-gradient(60% 55% at 50% 42%, #0b1526 0%, #05070c 72%);
+  animation: introIn .16s ease both;
+}
+.intro.is-leaving { animation: introOut .34s ease forwards; }
+.intro-inner { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.intro-mark {
+  width: 78px; height: 78px; border-radius: 22px; display: grid; place-items: center;
+  background: rgba(77, 139, 255, .12);
+  box-shadow: 0 0 0 1px rgba(122, 180, 255, .25), 0 18px 60px rgba(46, 107, 255, .35);
+  animation: introPop .5s cubic-bezier(.2, .9, .2, 1) both;
+}
+.intro-mark img { width: 56px; height: 56px; border-radius: 14px; display: block; }
+.intro-word { font-size: 12px; font-weight: 800; letter-spacing: .16em; color: #e8f0ff; }
+.intro-word span { color: #22d3ee; margin-left: .28em; }
+.intro-bar { width: 92px; height: 2px; border-radius: 2px; background: rgba(122, 180, 255, .18); overflow: hidden; }
+.intro-bar i { display: block; height: 100%; width: 42%; background: linear-gradient(90deg, #2e6bff, #22d3ee); animation: introBar 1s ease-in-out infinite; }
+
+@keyframes introIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes introOut { to { opacity: 0; transform: scale(1.015); } }
+@keyframes introPop { from { opacity: 0; transform: translateY(10px) scale(.9); } to { opacity: 1; transform: none; } }
+@keyframes introBar { 0% { transform: translateX(-110%); } 100% { transform: translateX(260%); } }
+
+/* Page changes arrive rather than snap. Runs on the new page's root element,
+   so it costs nothing on repeat renders of the same page. */
+@keyframes pageIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+main#main-content > * { animation: pageIn .26s ease both; }
+
+@media (prefers-reduced-motion: reduce) {
+  main#main-content > * { animation: none; }
+  .intro { display: none; }
+  .intro-bar i { animation: none; }
+}
