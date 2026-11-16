@@ -4110,3 +4110,56 @@ main#main-content > * { animation: pageIn .26s ease both; }
   .mz-star { animation: none; }
   .mz-bulb { animation: none; opacity: .95; }
 }
+
+/* ── Greenery around the wordmark ──────────────────────────────────────────
+   The letters now sit on a garland, a holly sprig leads them, and two saplings
+   stand beside the tree. Every piece is a few bytes of SVG; all motion is
+   transform/opacity so the header never reflows. */
+.mz-mark { position: relative; display: inline-flex; align-items: baseline; gap: 0.22em; }
+
+.mz-garland {
+  position: absolute;
+  left: -0.06em;
+  right: -0.06em;
+  bottom: -0.22em;
+  width: calc(100% + 0.12em);
+  height: 0.34em;
+  pointer-events: none;
+  opacity: .9;
+}
+
+.mz-sprig { display: inline-block; vertical-align: -0.16em; overflow: visible; }
+.mz-leaf { transform-box: fill-box; transform-origin: 50% 100%; animation: mzLeafSway 5.4s ease-in-out infinite; }
+.mz-leaf.l2 { animation-delay: -2.1s; }
+.mz-berry { animation: mzBerryGlow 3.4s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.mz-berry.b { animation-delay: -1.6s; }
+
+@keyframes mzLeafSway {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+@keyframes mzBerryGlow {
+  0%, 100% { opacity: .75; }
+  50% { opacity: 1; }
+}
+
+.mz-gl { transform-box: fill-box; transform-origin: 50% 50%; animation: mzGarlandRustle 4.6s ease-in-out infinite; }
+.mz-gl.g2 { animation-delay: -0.7s; }
+.mz-gl.g3 { animation-delay: -1.4s; }
+.mz-gl.g4 { animation-delay: -2.1s; }
+.mz-gl.g5 { animation-delay: -2.8s; }
+.mz-gl.g6 { animation-delay: -3.5s; }
+@keyframes mzGarlandRustle {
+  0%, 100% { transform: rotate(-6deg) translateY(0); }
+  50% { transform: rotate(6deg) translateY(-0.4px); }
+}
+
+/* Saplings are shorter, slower and dimmer than the main tree, so the grove has
+   depth instead of looking like three copies of one icon. */
+.mz-tree.sapling { opacity: .92; animation-duration: 7.5s; margin-left: 0.1em; margin-right: -0.1em; }
+.mz-bulb.s1 { animation-delay: -0.9s; }
+.mz-bulb.s2 { animation-delay: -1.6s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .mz-leaf, .mz-berry, .mz-gl, .mz-tree.sapling { animation: none; }
+}
