@@ -12,7 +12,7 @@ function Stars({ value, size = 18 }) {
   );
 }
 
-function TestimonialCard({ t }) {
+function TestimonialCard({ t, signedIn }) {
   const [likes, setLikes] = useState(t.likes || 0);
   const [dislikes, setDislikes] = useState(t.dislikes || 0);
   const [mine, setMine] = useState(t.my_reaction || null);
@@ -25,6 +25,7 @@ function TestimonialCard({ t }) {
   const [shared, setShared] = useState('');
 
   async function react(kind) {
+    if (signedIn === false) { window.location.assign('/login?next=/testimonials'); return; }
     if (busy) return;
     setBusy(true);
     setNote('');
@@ -35,8 +36,8 @@ function TestimonialCard({ t }) {
         body: JSON.stringify({ kind }),
       });
       const data = await res.json();
-      if (res.status === 401) { setNote('Sign in to react'); return; }
-      if (!res.ok) { setNote(humaniseError(data)); return; }
+      if (res.status === 401) { setNote('Sign in to react.'); return; }
+      if (!res.ok) { setNote(humaniseError(data?.error || res.status)); return; }
       setLikes(data.likes);
       setDislikes(data.dislikes);
       setMine(data.mine);
@@ -77,8 +78,8 @@ function TestimonialCard({ t }) {
         body: JSON.stringify({ body }),
       });
       const data = await res.json();
-      if (res.status === 401) { setNote('Sign in to comment'); return; }
-      if (!res.ok) { setNote(humaniseError(data)); return; }
+      if (res.status === 401) { setNote('Sign in to comment — your session has ended.'); return; }
+      if (!res.ok) { setNote(humaniseError(data?.error || res.status)); return; }
       setDraft('');
       setThread((prev) => [...(prev || []), data.comment]);
       setCount((n) => n + 1);
@@ -148,6 +149,12 @@ function TestimonialCard({ t }) {
               </div>
             </div>
           ))}
+          {signedIn === false && (
+            <p className="t-signin">
+              <Link href="/login?next=/testimonials">Sign in</Link> to join the conversation.
+            </p>
+          )}
+          {signedIn !== false && (
           <form className="t-form" onSubmit={postComment}>
             <input
               value={draft}
@@ -160,6 +167,7 @@ function TestimonialCard({ t }) {
               {busy ? 'Sending' : 'Send'}
             </button>
           </form>
+          )}
         </div>
       )}
     </div>
@@ -168,6 +176,9 @@ function TestimonialCard({ t }) {
 
 export default function TestimonialsPage() {
   const [items, setItems] = useState([]);
+  // null = still asking. The comment box and the reaction buttons depend on this,
+  // and guessing either way is worse than waiting half a second.
+  const [signedIn, setSignedIn] = useState(null);
   const [total, setTotal] = useState(0);
   const [avg, setAvg] = useState(null);
   const [offset, setOffset] = useState(0);
@@ -265,7 +276,7 @@ export default function TestimonialsPage() {
           ) : (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {items.map(t => <TestimonialCard key={t.id} t={t} />)}
+                {items.map(t => <TestimonialCard key={t.id} t={t} signedIn={signedIn} />)}
               </div>
               {offset + 6 < total && (
                 <div className="text-center mt-4">

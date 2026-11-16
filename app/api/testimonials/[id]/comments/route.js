@@ -60,8 +60,10 @@ export async function POST(request, { params }) {
   const id = Number(params?.id);
   if (!Number.isInteger(id) || id <= 0) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
+  // ipRateLimit() answers { allowed }, not { ok } — reading the wrong key made
+  // this branch always true, so every comment was refused as "too many".
   const limit = ipRateLimit(clientIp(request), { max: 12, windowMs: 60 * 60 * 1000 });
-  if (!limit.ok) {
+  if (!limit.allowed) {
     return NextResponse.json({ error: 'Too many comments — try again later.' }, { status: 429 });
   }
 

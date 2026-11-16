@@ -3994,3 +3994,7 @@ main#main-content > * { animation: pageIn .26s ease both; }
 }
 .t-form button:hover:not(:disabled) { background: rgba(46, 107, 255, .26); }
 .t-form button:disabled { opacity: .45; cursor: not-allowed; }
+
+.t-signin { margin: 4px 0 0; font-size: 12px; color: var(--dim); }
+.t-signin a { color: var(--blue-bright); text-decoration: none; font-weight: 650; }
+.t-signin a:hover { text-decoration: underline; }
