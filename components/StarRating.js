@@ -20,7 +20,7 @@ export default function StarRating({ value, onChange, readonly = false }) {
             padding: '2px',
             fontSize: readonly ? '18px' : '24px',
             fontFamily: 'var(--font-mono)',
-            color: star <= (hovered || value) ? 'var(--brand)' : 'var(--dim)',
+            color: star <= (hovered || value) ? 'var(--star-gold)' : 'var(--dim)',
             transition: 'color 0.15s',
           }}
           aria-label={`${star} star${star !== 1 ? 's' : ''}`}

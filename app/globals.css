@@ -66,6 +66,9 @@
   --page-tint: rgba(248, 250, 253, 0.34);
   --tint-hairline: rgba(37, 99, 235, 0.05);
   --star: rgba(37, 99, 235, 0.20);
+  /* Rating stars: warm gold on every theme — amber reads as a score, while a
+     brand-blue star reads as a bullet point. */
+  --star-gold: #f7c948;
   --brand-a04: rgba(37, 99, 235, 0.04);
   --brand-a06: rgba(37, 99, 235, 0.06);
   --brand-a08: rgba(37, 99, 235, 0.08);

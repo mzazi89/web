@@ -6,7 +6,7 @@ import { Avatar, Icons, humaniseError } from '@/components/ui';
 
 function Stars({ value, size = 18 }) {
   return (
-    <span className="mono" style={{ color: 'var(--brand)', fontSize: size, letterSpacing: '3px' }}>
+    <span className="mono" style={{ color: 'var(--star-gold)', fontSize: size, letterSpacing: '3px' }}>
       {'★'.repeat(value)}{'☆'.repeat(5 - value)}
     </span>
   );
