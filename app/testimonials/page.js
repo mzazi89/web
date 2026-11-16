@@ -16,7 +16,7 @@ function TestimonialCard({ t }) {
   return (
     <div className="card card-pad flex flex-col" style={{ padding: '17px 16px', background: 'var(--surface)' }}>
       <div className="flex items-center gap-3 mb-5">
-        <Avatar src={t.avatar_url || null} name={t.name} size={40} />
+        <Avatar src={t.avatar_url || `/api/avatar/generated?seed=${encodeURIComponent(t.name)}`} name={t.name} size={40} />
         <div className="min-w-0">
           <p className="text-sm font-bold truncate" style={{ color: 'var(--ink)' }}>{t.name}</p>
           <Stars value={t.rating} size={13} />

@@ -69,7 +69,11 @@ export default function Testimonials() {
                   </div>
                   <blockquote className="quote-text" style={{ margin: 0 }}>{t.message}</blockquote>
                   <figcaption className="quote-who">
-                    <Avatar src={t.avatar_url || null} name={t.name || 'MZAZI customer'} size={34} />
+                    <Avatar
+                      src={t.avatar_url || `/api/avatar/generated?seed=${encodeURIComponent(t.name || 'MZAZI customer')}`}
+                      name={t.name || 'MZAZI customer'}
+                      size={34}
+                    />
                     <span>
                       <span style={{ display: 'block', fontSize: 11, fontWeight: 650, color: 'var(--ink)' }}>{t.name}</span>
                       <span style={{ display: 'block', fontSize: 10, color: 'var(--dim)' }}>Verified customer</span>
