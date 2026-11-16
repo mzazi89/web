@@ -20,6 +20,7 @@ function TestimonialCard({ t, signedIn }) {
   const [open, setOpen] = useState(false);
   const [thread, setThread] = useState(null);
   const [draft, setDraft] = useState('');
+  const [replyTo, setReplyTo] = useState(null);
   const [busy, setBusy] = useState(false);
   const [note, setNote] = useState('');
   const [shared, setShared] = useState('');
@@ -64,6 +65,22 @@ function TestimonialCard({ t, signedIn }) {
     if (next && thread === null) loadThread();
   }
 
+  async function reactComment(c, kind) {
+    if (signedIn === false) { window.location.assign('/login?next=/testimonials'); return; }
+    try {
+      const res = await fetch(`/api/testimonials/${t.id}/comments/${c.id}/react`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ kind }),
+      });
+      const data = await res.json();
+      if (!res.ok) return;
+      setThread((prev) => prev.map((x) => (x.id === c.id
+        ? { ...x, likes: data.likes, dislikes: data.dislikes, my_reaction: data.mine }
+        : x)));
+    } catch {}
+  }
+
   async function postComment(e) {
     e.preventDefault();
     if (busy) return;
@@ -75,12 +92,13 @@ function TestimonialCard({ t, signedIn }) {
       const res = await fetch(`/api/testimonials/${t.id}/comments`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ body }),
+        body: JSON.stringify({ body, parent_id: replyTo?.id ?? null }),
       });
       const data = await res.json();
       if (res.status === 401) { setNote('Sign in to comment — your session has ended.'); return; }
       if (!res.ok) { setNote(humaniseError(data?.error || res.status)); return; }
       setDraft('');
+      setReplyTo(null);
       setThread((prev) => [...(prev || []), data.comment]);
       setCount((n) => n + 1);
     } catch {
@@ -141,17 +159,42 @@ function TestimonialCard({ t, signedIn }) {
           {thread === null && <p className="t-note">Loading comments…</p>}
           {thread && thread.length === 0 && <p className="t-note">No comments yet — say the first thing.</p>}
           {thread && thread.map((c) => (
-            <div className="t-comment" key={c.id}>
-              <Avatar src={c.avatar_url || `/api/avatar/generated?seed=${encodeURIComponent(c.name)}`} name={c.name} size={26} />
-              <div>
+            <div className={`t-comment ${c.parent_id ? 'is-reply' : ''}`} key={c.id}>
+              <Avatar
+                src={c.avatar_url || `/api/avatar/generated?seed=${encodeURIComponent(c.name)}`}
+                name={c.name}
+                size={c.parent_id ? 22 : 26}
+              />
+              <div style={{ minWidth: 0, flex: 1 }}>
                 <span className="t-comment-name">{c.name}</span>
-                <p className="t-comment-body">{c.body}</p>
+                <p className="t-comment-body">
+                  {c.reply_to && <span className="t-at">@{c.reply_to}</span>} {c.body}
+                </p>
+                <div className="t-cacts">
+                  <button type="button" className={`t-cact ${c.my_reaction === 'like' ? 'is-on' : ''}`} onClick={() => reactComment(c, 'like')} aria-label="Like this comment">
+                    <Icons.ThumbUp size={11} /> {c.likes > 0 ? c.likes : ''}
+                  </button>
+                  <button type="button" className={`t-cact ${c.my_reaction === 'dislike' ? 'is-on' : ''}`} onClick={() => reactComment(c, 'dislike')} aria-label="Dislike this comment">
+                    <Icons.ThumbDown size={11} /> {c.dislikes > 0 ? c.dislikes : ''}
+                  </button>
+                  {signedIn !== false && (
+                    <button type="button" className="t-cact" onClick={() => setReplyTo({ id: c.id, name: c.name })}>
+                      Reply
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           ))}
           {signedIn === false && (
             <p className="t-signin">
               <Link href="/login?next=/testimonials">Sign in</Link> to join the conversation.
+            </p>
+          )}
+          {signedIn !== false && replyTo && (
+            <p className="t-reply-chip">
+              Replying to <strong>{replyTo.name}</strong>
+              <button type="button" onClick={() => setReplyTo(null)} aria-label="Cancel reply">×</button>
             </p>
           )}
           {signedIn !== false && (

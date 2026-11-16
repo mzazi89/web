@@ -3998,3 +3998,35 @@ main#main-content > * { animation: pageIn .26s ease both; }
 .t-signin { margin: 4px 0 0; font-size: 12px; color: var(--dim); }
 .t-signin a { color: var(--blue-bright); text-decoration: none; font-weight: 650; }
 .t-signin a:hover { text-decoration: underline; }
+
+/* Replies sit one step in, and open with the name they answer — the thread
+   reads as a conversation without a second level of indentation that a phone
+   cannot afford. */
+.t-comment.is-reply { padding-left: 24px; }
+.t-at { color: var(--blue-bright); font-weight: 700; margin-right: 2px; }
+
+.t-cacts { display: flex; align-items: center; gap: 2px; margin-top: 3px; }
+.t-cact {
+  display: inline-flex; align-items: center; gap: 4px;
+  min-height: 24px; padding: 0 6px;
+  border: 1px solid transparent; border-radius: 999px;
+  background: transparent; color: var(--dim);
+  font-size: 10.5px; font-weight: 600; cursor: pointer;
+  transition: color .16s ease, background .16s ease;
+}
+.t-cact:hover { color: var(--ink); background: rgba(122, 180, 255, .08); }
+.t-cact.is-on { color: var(--blue-bright); background: rgba(77, 139, 255, .14); }
+
+.t-reply-chip {
+  display: flex; align-items: center; gap: 6px;
+  margin: 0 0 6px; padding: 5px 9px;
+  border-radius: 8px;
+  background: rgba(46, 107, 255, .12);
+  border: 1px solid rgba(77, 139, 255, .28);
+  font-size: 11px; color: var(--ink-2);
+}
+.t-reply-chip strong { color: var(--ink); font-weight: 700; }
+.t-reply-chip button {
+  margin-left: auto; border: 0; background: transparent;
+  color: var(--dim); font-size: 15px; line-height: 1; cursor: pointer;
+}
