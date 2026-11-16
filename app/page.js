@@ -105,9 +105,11 @@ export default function Home() {
               <span className="eyebrow anim-fade-up">MZAZI TECH INC · Nairobi → Global</span>
 
               <h1 className="hero-title anim-fade-up d1">
-                Innovate.<br />
-                Build.<br />
-                <span className="gradient-text">Grow.</span>
+                <span className="tag-live">
+                  <span className="tag-live-line">Innovate. Build.</span>
+                  <span className="tag-live-line is-second">Grow.</span>
+                  <span className="tag-live-rule" aria-hidden="true" />
+                </span>
               </h1>
 
               <p className="hero-sub anim-fade-up d2">
