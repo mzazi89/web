@@ -1,4 +1,5 @@
-// One-shot cleanup. TEMPORARY — deleted in the next commit.
+// One-shot cleanup. TEMPORARY — deleted in the next commit. (Next ignores
+// underscore-prefixed folders in app/, which is why this is not `_cleanup`.)
 //
 // A verification request of mine landed on the previous build before it flipped,
 // and created a review signed "Hacker". This removes exactly that row: it is
