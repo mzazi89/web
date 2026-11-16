@@ -2,7 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import StarRating from '@/components/StarRating';
-import { Avatar, humaniseError } from '@/components/ui';
+import { Avatar, Icons, humaniseError } from '@/components/ui';
 
 function Stars({ value, size = 18 }) {
   return (
@@ -13,8 +13,101 @@ function Stars({ value, size = 18 }) {
 }
 
 function TestimonialCard({ t }) {
+  const [likes, setLikes] = useState(t.likes || 0);
+  const [dislikes, setDislikes] = useState(t.dislikes || 0);
+  const [mine, setMine] = useState(t.my_reaction || null);
+  const [count, setCount] = useState(t.comment_count || 0);
+  const [open, setOpen] = useState(false);
+  const [thread, setThread] = useState(null);
+  const [draft, setDraft] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [note, setNote] = useState('');
+  const [shared, setShared] = useState('');
+
+  async function react(kind) {
+    if (busy) return;
+    setBusy(true);
+    setNote('');
+    try {
+      const res = await fetch(`/api/testimonials/${t.id}/react`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ kind }),
+      });
+      const data = await res.json();
+      if (res.status === 401) { setNote('Sign in to react'); return; }
+      if (!res.ok) { setNote(humaniseError(data)); return; }
+      setLikes(data.likes);
+      setDislikes(data.dislikes);
+      setMine(data.mine);
+    } catch {
+      setNote('Network error — try again');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function loadThread() {
+    try {
+      const res = await fetch(`/api/testimonials/${t.id}/comments`);
+      const data = await res.json();
+      setThread(data.comments || []);
+    } catch {
+      setThread([]);
+    }
+  }
+
+  function toggleThread() {
+    const next = !open;
+    setOpen(next);
+    if (next && thread === null) loadThread();
+  }
+
+  async function postComment(e) {
+    e.preventDefault();
+    if (busy) return;
+    const body = draft.trim();
+    if (body.length < 2) return;
+    setBusy(true);
+    setNote('');
+    try {
+      const res = await fetch(`/api/testimonials/${t.id}/comments`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ body }),
+      });
+      const data = await res.json();
+      if (res.status === 401) { setNote('Sign in to comment'); return; }
+      if (!res.ok) { setNote(humaniseError(data)); return; }
+      setDraft('');
+      setThread((prev) => [...(prev || []), data.comment]);
+      setCount((n) => n + 1);
+    } catch {
+      setNote('Network error — try again');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function share() {
+    const url = `${window.location.origin}/testimonials#t-${t.id}`;
+    const text = `${t.name} on MZAZI TECH: “${t.message.slice(0, 120)}…”`;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: 'MZAZI TECH review', text, url });
+        return;
+      }
+      await navigator.clipboard.writeText(`${text} ${url}`);
+      setShared('Link copied');
+      setTimeout(() => setShared(''), 2000);
+    } catch {
+      setShared('Could not share');
+      setTimeout(() => setShared(''), 2000);
+    }
+  }
+
   return (
-    <div className="card card-pad flex flex-col" style={{ padding: '17px 16px', background: 'var(--surface)' }}>
+    <div id={`t-${t.id}`} className="card card-pad flex flex-col" style={{ padding: '17px 16px', background: 'var(--surface)' }}>
       <div className="flex items-center gap-3 mb-5">
         <Avatar src={t.avatar_url || `/api/avatar/generated?seed=${encodeURIComponent(t.name)}`} name={t.name} size={40} />
         <div className="min-w-0">
@@ -22,7 +115,53 @@ function TestimonialCard({ t }) {
           <Stars value={t.rating} size={13} />
         </div>
       </div>
+
       <p className="text-sm leading-relaxed flex-1" style={{ color: 'var(--ink-2)' }}>“{t.message}”</p>
+
+      <div className="t-actions">
+        <button type="button" className={`t-act ${mine === 'like' ? 'is-on' : ''}`} onClick={() => react('like')} aria-pressed={mine === 'like'} aria-label="Like this review">
+          <Icons.ThumbUp size={13} /> {likes > 0 ? likes : ''}
+        </button>
+        <button type="button" className={`t-act ${mine === 'dislike' ? 'is-on' : ''}`} onClick={() => react('dislike')} aria-pressed={mine === 'dislike'} aria-label="Dislike this review">
+          <Icons.ThumbDown size={13} /> {dislikes > 0 ? dislikes : ''}
+        </button>
+        <button type="button" className={`t-act ${open ? 'is-on' : ''}`} onClick={toggleThread} aria-expanded={open}>
+          <Icons.Chat size={13} /> {count > 0 ? count : 'Comment'}
+        </button>
+        <button type="button" className="t-act" onClick={share}>
+          <Icons.Share size={13} /> {shared || 'Share'}
+        </button>
+      </div>
+
+      {note && <p className="t-note">{note}</p>}
+
+      {open && (
+        <div className="t-thread">
+          {thread === null && <p className="t-note">Loading comments…</p>}
+          {thread && thread.length === 0 && <p className="t-note">No comments yet — say the first thing.</p>}
+          {thread && thread.map((c) => (
+            <div className="t-comment" key={c.id}>
+              <Avatar src={c.avatar_url || `/api/avatar/generated?seed=${encodeURIComponent(c.name)}`} name={c.name} size={26} />
+              <div>
+                <span className="t-comment-name">{c.name}</span>
+                <p className="t-comment-body">{c.body}</p>
+              </div>
+            </div>
+          ))}
+          <form className="t-form" onSubmit={postComment}>
+            <input
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              maxLength={500}
+              placeholder="Add a comment…"
+              aria-label="Add a comment"
+            />
+            <button type="submit" disabled={busy || draft.trim().length < 2}>
+              {busy ? 'Sending' : 'Send'}
+            </button>
+          </form>
+        </div>
+      )}
     </div>
   );
 }

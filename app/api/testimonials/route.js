@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import sql from '../../../lib/database';
 import { ipRateLimit, clientIp } from '../../../lib/ip-limiter';
 import { optionalUser } from '@/lib/api/session';
+import { ensureInteractions, reactionSummary, commentCounts } from '@/lib/testimonials';
 
 export const dynamic = 'force-dynamic';
 
@@ -57,11 +58,26 @@ export async function GET(request) {
 
     // The client only needs to know whether a photo exists and its version; the
     // bytes come from /api/users/[id]/avatar.
+    const viewer = await optionalUser();
+    const ids = testimonials.map((t) => t.id);
+    let reactions = {};
+    let comments = {};
+    try {
+      await ensureInteractions();
+      [reactions, comments] = await Promise.all([reactionSummary(ids, viewer?.id), commentCounts(ids)]);
+    } catch {
+      // a review without its counters is still a review
+    }
+
     const shaped = testimonials.map((t) => ({
       ...t,
       avatar_url: t.has_photo && t.user_id
         ? `/api/users/${t.user_id}/avatar${t.avatar_at ? `?v=${new Date(t.avatar_at).getTime()}` : ''}`
         : null,
+      likes: reactions[t.id]?.likes || 0,
+      dislikes: reactions[t.id]?.dislikes || 0,
+      my_reaction: reactions[t.id]?.mine || null,
+      comment_count: comments[t.id] || 0,
     }));
 
     return NextResponse.json({

@@ -122,3 +122,7 @@ export const Receipt = (p) => <Svg {...p}><path d="M6 3.5h12v17l-3-2-3 2-3-2-3 2
 export const Key = (p) => <Svg {...p}><circle cx="8" cy="8" r="3.6" /><path d="m10.6 10.6 8 8M16 16l-1.6 1.6M18.2 18.2 16.6 20" /></Svg>;
 export const Cart = (p) => <Svg {...p}><path d="M3 4h2l2.4 10.4a2 2 0 0 0 2 1.6h7.2a2 2 0 0 0 2-1.55L20 7H6" /><circle cx="10" cy="20" r="1.2" /><circle cx="17.5" cy="20" r="1.2" /></Svg>;
 export const Chat = (p) => <Svg {...p}><path d="M20.5 12.4c0 4-3.8 7.2-8.5 7.2-1 0-2-.15-2.9-.42L4.5 21l1.2-4.1A6.9 6.9 0 0 1 3.5 12.4c0-4 3.8-7.2 8.5-7.2s8.5 3.2 8.5 7.2Z" /></Svg>;
+
+export const ThumbUp = (p) => <Svg {...p}><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3z" /><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3" /></Svg>;
+export const ThumbDown = (p) => <Svg {...p}><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3z" /><path d="M17 2h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17" /></Svg>;
+export const Share = (p) => <Svg {...p}><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" /><path d="M16 6l-4-4-4 4" /><path d="M12 2v13" /></Svg>;
