@@ -3591,13 +3591,33 @@ body { padding-bottom: calc(var(--dock-h) + env(safe-area-inset-bottom)); }
 .intro-mark img { width: 56px; height: 56px; border-radius: 14px; display: block; }
 .intro-word { font-size: 12px; font-weight: 800; letter-spacing: .16em; color: #e8f0ff; }
 .intro-word span { color: #22d3ee; margin-left: .28em; }
-.intro-bar { width: 92px; height: 2px; border-radius: 2px; background: rgba(122, 180, 255, .18); overflow: hidden; }
-.intro-bar i { display: block; height: 100%; width: 42%; background: linear-gradient(90deg, #2e6bff, #22d3ee); animation: introBar 1s ease-in-out infinite; }
+/* The loader: a real ring, not a bar. The track is the faint full circle; the
+   arc is a gradient stroke whose length breathes while the whole ring turns, so
+   it reads as work happening rather than decoration. 1.1 s per turn, and it
+   stops existing when the overlay unmounts. */
+.intro-ring {
+  position: absolute;
+  width: 112px; height: 112px;
+  animation: ringSpin 1.1s linear infinite;
+  filter: drop-shadow(0 0 12px rgba(46, 107, 255, .45));
+}
+.intro-track { fill: none; stroke: rgba(122, 180, 255, .16); stroke-width: 4; }
+.intro-arc {
+  fill: none; stroke: url(#introStroke); stroke-width: 4; stroke-linecap: round;
+  stroke-dasharray: 289; stroke-dashoffset: 217;
+  animation: ringDash 1.5s ease-in-out infinite;
+}
+.intro-inner { position: relative; }
 
 @keyframes introIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes introOut { to { opacity: 0; transform: scale(1.015); } }
 @keyframes introPop { from { opacity: 0; transform: translateY(10px) scale(.9); } to { opacity: 1; transform: none; } }
-@keyframes introBar { 0% { transform: translateX(-110%); } 100% { transform: translateX(260%); } }
+@keyframes ringSpin { to { transform: rotate(360deg); } }
+@keyframes ringDash {
+  0%   { stroke-dashoffset: 217; }
+  50%  { stroke-dashoffset: 72; }
+  100% { stroke-dashoffset: 217; }
+}
 
 /* Page changes arrive rather than snap. Runs on the new page's root element,
    so it costs nothing on repeat renders of the same page. */
@@ -3607,5 +3627,6 @@ main#main-content > * { animation: pageIn .26s ease both; }
 @media (prefers-reduced-motion: reduce) {
   main#main-content > * { animation: none; }
   .intro { display: none; }
-  .intro-bar i { animation: none; }
+  .intro-ring { animation: none; }
+  .intro-arc { animation: none; stroke-dashoffset: 90; }
 }

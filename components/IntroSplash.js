@@ -50,7 +50,17 @@ export default function IntroSplash() {
         <span className="intro-word">
           MZAZI<span>TECH</span>
         </span>
-        <span className="intro-bar"><i /></span>
+        <svg className="intro-ring" viewBox="0 0 100 100" aria-hidden="true">
+          <defs>
+            <linearGradient id="introStroke" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor="#2e6bff" />
+              <stop offset="55%" stopColor="#4d8bff" />
+              <stop offset="100%" stopColor="#22d3ee" />
+            </linearGradient>
+          </defs>
+          <circle className="intro-track" cx="50" cy="50" r="46" />
+          <circle className="intro-arc" cx="50" cy="50" r="46" />
+        </svg>
       </div>
     </div>
   );
