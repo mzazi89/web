@@ -1,5 +1,7 @@
 'use client';
 
+import Ring from './Ring';
+
 // MZAZI TECH — loading, empty and error states.
 //
 // Rules the product follows everywhere:
@@ -43,7 +45,7 @@ export function LoadingState({ message = 'Loading…', minHeight = 240 }) {
         gap: 14, color: 'var(--muted)', fontSize: 13.5,
       }}
     >
-      <span className="spinner" />
+      <Ring size={26} stroke={3.5} />
       <span>{message}</span>
     </div>
   );

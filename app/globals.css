@@ -1210,12 +1210,27 @@ select.input {
 
 /* ─────────────────────── 14. LOADERS & SKELETONS ─────────────────────────── */
 
+/* The shared ring loader (components/ui/Ring). r=47 in a 100 viewBox → 295.35
+   of circumference; the dash keyframes below are those numbers. */
+.ring { display: inline-block; vertical-align: -0.18em; animation: ringSpin 1.1s linear infinite; flex: 0 0 auto; }
+.ring-arc { stroke-dasharray: 295.35; animation: ringArc 1.5s ease-in-out infinite; }
+.ring-glow { filter: drop-shadow(0 0 10px rgba(46, 107, 255, .45)); }
+@keyframes ringArc {
+  0%   { stroke-dashoffset: 295.35; }
+  50%  { stroke-dashoffset: 88; }
+  100% { stroke-dashoffset: 295.35; }
+}
+
+/* Legacy class, kept because a few places render it directly. Conic gradient
+   masked into a ring so it matches the SVG loader instead of looking like a
+   different product. */
 .spinner {
   width: 26px; height: 26px;
-  border: 3px solid var(--line);
-  border-top-color: var(--brand);
   border-radius: 50%;
-  animation: spin 0.7s linear infinite;
+  background: conic-gradient(from 0deg, #2e6bff, #4d8bff, #22d3ee, #2e6bff);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 0);
+  mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 0);
+  animation: spin 0.9s linear infinite;
   flex: 0 0 auto;
 }
 .spinner-sm { width: 14px; height: 14px; border-width: 2px; }
