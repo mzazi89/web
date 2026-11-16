@@ -120,12 +120,12 @@ export default function Home() {
               </p>
 
               <div className="hero-cta anim-fade-up d3">
-                <Link href="/signup" className="btn btn-primary btn-lg">
-                  Get started
-                  <Icons.ArrowRight size={15} />
+                <Link href="/signup" className="btn btn-lg btn-hero btn-hero-primary">
+                  <span>Get started</span>
+                  <Icons.ArrowRight size={15} className="btn-hero-arrow" />
                 </Link>
-                <Link href="/products" className="btn btn-ghost btn-lg">
-                  Browse services
+                <Link href="/products" className="btn btn-lg btn-hero btn-hero-ghost">
+                  <span>Browse services</span>
                 </Link>
               </div>
 
