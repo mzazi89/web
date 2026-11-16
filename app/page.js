@@ -113,9 +113,10 @@ export default function Home() {
               </h1>
 
               <p className="hero-sub anim-fade-up d2">
-                Infrastructure for the modern internet — managed panels, NVMe VPS,
-                WhatsApp automation and a 500-endpoint API. One account, one wallet,
-                one dashboard.
+                Everything you need to run and grow your digital projects in one place.
+                From managed panels and powerful NVMe VPS to WhatsApp automation and
+                500+ API endpoints, we’ve got the tools to make your work easier.
+                Manage everything with one account, one wallet, and one dashboard.
               </p>
 
               <div className="hero-cta anim-fade-up d3">
