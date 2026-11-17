@@ -36,6 +36,10 @@ function InboxIcon() {
 
 export default function TempNumberPage() {
   const [provider, setProvider] = useState('receive-sms-online');
+  // Providers with numbers right now. Four of the six answer 200 with an empty
+  // list, so a static picker sends people to a dead choice.
+  const [providers, setProviders] = useState(PROVIDERS);
+  const [providerCounts, setProviderCounts] = useState({});
   const [numbers, setNumbers] = useState(null);       // array or null
   const [loadingNumbers, setLoadingNumbers] = useState(false);
   const [selected, setSelected] = useState(null);     // number object
@@ -47,6 +51,24 @@ export default function TempNumberPage() {
   const timerRef = useRef(null);
 
   const showStatus = (type, text) => setStatus({ type, text });
+
+  useEffect(() => {
+    let alive = true;
+    fetch(`${BASE_URL}/api/temp-number?action=providers`, { cache: 'no-store' })
+      .then((r) => r.json())
+      .then((d) => {
+        if (!alive || !d?.providers?.length) return;
+        const counts = Object.fromEntries((d.checked || []).map((p) => [p.id, p.count]));
+        setProviderCounts(counts);
+        const live = PROVIDERS.filter((p) => d.providers.some((x) => x.id === p.id));
+        if (live.length) {
+          setProviders(live);
+          setProvider((current) => (live.some((p) => p.id === current) ? current : live[0].id));
+        }
+      })
+      .catch(() => {});
+    return () => { alive = false; };
+  }, []);
 
   const fetchNumbers = async () => {
     setLoadingNumbers(true);
@@ -126,12 +148,16 @@ export default function TempNumberPage() {
             <div className="lg:col-span-4">
               <label className="label">Provider</label>
               <select value={provider} onChange={e => { setProvider(e.target.value); setNumbers(null); setSelected(null); setMessages(null); }} className="input">
-                {PROVIDERS.map(p => <option key={p.id} value={p.id}>{p.label}</option>)}
+                {providers.map(p => (
+                  <option key={p.id} value={p.id}>
+                    {p.label}{providerCounts[p.id] ? ` — ${providerCounts[p.id]} live` : ''}
+                  </option>
+                ))}
               </select>
             </div>
             <div className="lg:col-span-4">
               <p className="mono text-[10px] uppercase tracking-[0.14em] mb-2" style={{ color: 'var(--dim)' }}>
-                Region: {PROVIDERS.find(p => p.id === provider)?.country || '—'}
+                Region: {providers.find(p => p.id === provider)?.country || '—'}
               </p>
               <p className="text-xs" style={{ color: 'var(--muted)' }}>
                 No account or API key needed — numbers come straight from the provider.

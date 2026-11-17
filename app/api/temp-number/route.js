@@ -27,9 +27,46 @@ function limited(ip) {
   return rec.count > RATE_LIMIT.max;
 }
 
+// Provider health, cached for a minute. Four of the six upstreams answer 200
+// with an empty list, which made the picker look broken: the customer chose a
+// provider and saw "no numbers". The list is now built from what actually has
+// numbers, and the default is the one with most.
+let healthCache = { at: 0, data: null };
+
+async function providerHealth() {
+  if (healthCache.data && Date.now() - healthCache.at < 60_000) return healthCache.data;
+
+  const entries = await Promise.all(
+    [...PROVIDERS].map(async (id) => {
+      try {
+        const c = new AbortController();
+        const timer = setTimeout(() => c.abort(), 6000);
+        const res = await fetch(`${UPSTREAM}/tempnumber/${id}/numbers`, { signal: c.signal });
+        clearTimeout(timer);
+        const json = await res.json().catch(() => null);
+        const numbers = json?.result?.numbers || [];
+        return { id, count: Array.isArray(numbers) ? numbers.length : 0 };
+      } catch {
+        return { id, count: 0 };
+      }
+    })
+  );
+
+  healthCache = { at: Date.now(), data: entries.sort((a, b) => b.count - a.count) };
+  return healthCache.data;
+}
+
 export async function GET(request) {
   const url = new URL(request.url);
   const action = url.searchParams.get('action'); // numbers | inbox
+  if (url.searchParams.get('action') === 'providers') {
+    const providers = await providerHealth();
+    return NextResponse.json(
+      { status: true, providers: providers.filter((p) => p.count > 0), checked: providers },
+      { headers: { 'Cache-Control': 'no-store' } }
+    );
+  }
+
   const provider = url.searchParams.get('provider');
   const number = url.searchParams.get('number') || '';
 
