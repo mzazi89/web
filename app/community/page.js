@@ -61,8 +61,17 @@ export default function CommunityPage() {
   const [toAdd, setToAdd] = useState([]);
   const [confirm, setConfirm] = useState(null);
   const [working, setWorking] = useState(false);
+  const [inviteCode, setInviteCode] = useState('');
+  const [inviteLoading, setInviteLoading] = useState(false);
+  const [memberMenu, setMemberMenu] = useState(null);
+  const [joinInvite, setJoinInvite] = useState(null);
+  const [joining, setJoining] = useState(false);
+  const [origin, setOrigin] = useState('');
 
   const chatIdRef = useRef(0);
+  const shellRef = useRef(null);
+  const inviteCheckedRef = useRef(false);
+  const [shellH, setShellH] = useState(0);
   const lastIdRef = useRef(0);
   const readRef = useRef(0);
   const busyRef = useRef(false);
@@ -464,6 +473,157 @@ export default function CommunityPage() {
     setConfirm(null);
   }, [patchChat, pull]);
 
+  // ── invite links ───────────────────────────────────────────────────────────
+  const loadInvite = useCallback(async (chatIdValue) => {
+    if (!chatIdValue) return;
+    setInviteLoading(true);
+    try {
+      const res = await fetch(`/api/community/chats/${chatIdValue}/invite`, { cache: 'no-store' });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) setInviteCode(data.code || '');
+    } catch {
+      /* the card simply stays empty and the group still works */
+    } finally {
+      setInviteLoading(false);
+    }
+  }, []);
+
+  const resetInviteLink = useCallback(async () => {
+    const id = chatIdRef.current;
+    if (!id) return;
+    setWorking(true);
+    try {
+      const res = await fetch(`/api/community/chats/${id}/invite`, { method: 'POST' });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Could not reset the link');
+      setInviteCode(data.code || '');
+      toast.success('New link created — the old one stopped working');
+    } catch (e) {
+      toast.error(e.message);
+    } finally {
+      setWorking(false);
+    }
+  }, [toast]);
+
+  const copyInvite = useCallback(async () => {
+    if (!inviteCode) return;
+    const url = `${window.location.origin}/community?invite=${inviteCode}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      toast.success('Invite link copied');
+    } catch {
+      // Clipboard API needs HTTPS and a user gesture; a prompt is the fallback
+      // that always works rather than silently doing nothing.
+      window.prompt('Copy this invite link', url);
+    }
+  }, [inviteCode, toast]);
+
+  const shareInvite = useCallback(async () => {
+    if (!inviteCode) return;
+    const url = `${window.location.origin}/community?invite=${inviteCode}`;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: chat?.title || 'Join my group', text: `Join “${chat?.title || 'our group'}” on MZAZI`, url });
+        return;
+      } catch { /* the user dismissed the sheet — fall through to copy */ }
+    }
+    copyInvite();
+  }, [chat?.title, copyInvite, inviteCode]);
+
+  const changeRole = useCallback(async (member, role) => {
+    const ok = await patchChat({ setRole: { userId: member.id, role } });
+    if (ok) {
+      toast.success(role === 'admin' ? `${member.name} is now an admin` : `${member.name} is no longer an admin`);
+      setMemberMenu(null);
+    }
+  }, [patchChat, toast]);
+
+  // ── joining from a link ────────────────────────────────────────────────────
+  useEffect(() => {
+    if (needAuth) return;
+    if (inviteCheckedRef.current) return;
+    const code = new URLSearchParams(window.location.search).get('invite');
+    if (!code) return;
+    inviteCheckedRef.current = true;
+
+    (async () => {
+      try {
+        const res = await fetch(`/api/community/invite/${encodeURIComponent(code)}`, { cache: 'no-store' });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          toast.error(data.error || 'That invite link is not valid');
+          return;
+        }
+        if (data.isMember) {
+          await openChat(data.chatId);
+        } else {
+          setJoinInvite({ ...data, code });
+        }
+      } catch {
+        toast.error('Could not read that invite link');
+      }
+    })();
+  }, [needAuth, openChat, toast]);
+
+  const joinGroup = useCallback(async () => {
+    if (!joinInvite) return;
+    setJoining(true);
+    try {
+      const res = await fetch(`/api/community/invite/${encodeURIComponent(joinInvite.code)}`, { method: 'POST' });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Could not join that group');
+      setJoinInvite(null);
+      if (window.history?.replaceState) window.history.replaceState({}, '', '/community');
+      await openChat(data.chatId);
+      toast.success('You joined the group');
+    } catch (e) {
+      toast.error(e.message);
+    } finally {
+      setJoining(false);
+    }
+  }, [joinInvite, openChat, toast]);
+
+  // Fetch the code only when the sheet is opened for a group that can have one.
+  useEffect(() => {
+    if (!infoOpen) return;
+    setMemberMenu(null);
+    if (chat?.kind !== 'group' || chat?.isMain) {
+      setInviteCode('');
+      return;
+    }
+    loadInvite(chat.id);
+  }, [infoOpen, chat?.kind, chat?.isMain, chat?.id, loadInvite]);
+
+  // ── shell height ───────────────────────────────────────────────────────────
+  // Measured rather than computed from the --nav-h/--dock-h tokens: the header
+  // is taller than its minimum on a phone, and the difference was exactly what
+  // pushed the composer under the dock.
+  useEffect(() => {
+    setOrigin(window.location.origin);
+    const measure = () => {
+      const el = shellRef.current;
+      if (!el) return;
+      const top = Math.max(0, el.getBoundingClientRect().top);
+      const dock = document.querySelector('.dock');
+      const dockH = dock ? dock.getBoundingClientRect().height : 58;
+      const viewH = window.visualViewport?.height || window.innerHeight;
+      setShellH(Math.max(320, Math.round(viewH - top - dockH - 6)));
+    };
+    measure();
+    const raf = requestAnimationFrame(measure);
+    const settle = setTimeout(measure, 350);
+    window.addEventListener('resize', measure);
+    window.addEventListener('orientationchange', measure);
+    window.visualViewport?.addEventListener('resize', measure);
+    return () => {
+      cancelAnimationFrame(raf);
+      clearTimeout(settle);
+      window.removeEventListener('resize', measure);
+      window.removeEventListener('orientationchange', measure);
+      window.visualViewport?.removeEventListener('resize', measure);
+    };
+  }, []);
+
   // ── derived ────────────────────────────────────────────────────────────────
   const canManage = chat?.myRole === 'owner' || chat?.myRole === 'admin';
   const memberIds = useMemo(() => (chat?.members || []).map((m) => m.id), [chat]);
@@ -483,10 +643,11 @@ export default function CommunityPage() {
       <audio ref={audioRef} src={SOUND} preload="auto" />
 
       <div
+        ref={shellRef}
         className="flex flex-col"
         style={{
-          height: 'calc(100dvh - var(--nav-h) - var(--dock-h) - env(safe-area-inset-bottom))',
-          minHeight: 380,
+          height: shellH ? `${shellH}px` : 'calc(100dvh - var(--nav-h) - var(--dock-h))',
+          minHeight: 320,
         }}
       >
         <div
@@ -666,27 +827,32 @@ export default function CommunityPage() {
         title={isGroup ? 'Group info' : 'Contact info'}
         size="sm"
       >
-        <div className="flex items-center gap-3 pb-3">
+        <div className="flex flex-col items-center pb-1 text-center">
           <Avatar
             avatar={chat?.avatar}
             photo={chat?.photo}
             label={chat?.title}
-            size={52}
+            size={64}
             online={!isGroup && chat?.peer?.online}
+            ring={!!chat?.isMain}
           />
-          <div className="min-w-0">
-            <p className="truncate text-[14px] font-extrabold" style={{ color: 'var(--ink)' }}>{chat?.title}</p>
-            <p className="text-[11.5px]" style={{ color: 'var(--dim)' }}>
-              {isGroup
-                ? `${chat?.members?.length || 0} members${chat?.isMain ? ' · the public room' : ''}`
-                : chat?.peer?.online ? 'Online now' : 'Direct message'}
+          <p className="mt-2 text-[15px] font-extrabold" style={{ color: 'var(--ink)' }}>{chat?.title}</p>
+          <p className="text-[11.5px]" style={{ color: 'var(--dim)' }}>
+            {isGroup
+              ? `${chat?.members?.length || 0} members${chat?.isMain ? ' · the public room' : ''}`
+              : chat?.peer?.online ? 'online now' : 'direct message'}
+          </p>
+          {isGroup && !chat?.isMain && (
+            <p className="mt-1 text-[11px]" style={{ color: 'var(--dim)' }}>
+              {(chat?.members || []).slice(0, 3).map((m) => (m.id === me?.id ? 'You' : m.name.split(' ')[0])).join(', ')}
+              {(chat?.members?.length || 0) > 3 ? ` +${(chat?.members?.length || 0) - 3}` : ''}
             </p>
-          </div>
+          )}
         </div>
 
         {isGroup && canManage && !chat?.isMain && (
-          <div className="mb-4 rounded-lg p-3" style={{ background: 'var(--bg-2)', border: '1px solid var(--line-soft)' }}>
-            <p className="mb-2 text-[11px] font-bold" style={{ color: 'var(--muted)' }}>Group name</p>
+          <div className="mb-3 mt-3 rounded-xl p-3" style={{ background: 'var(--bg-2)', border: '1px solid var(--line-soft)' }}>
+            <p className="mb-2 text-[10.5px] font-bold uppercase tracking-wide" style={{ color: 'var(--dim)' }}>Group name</p>
             <div className="flex gap-2">
               <input
                 value={renameTo}
@@ -716,16 +882,72 @@ export default function CommunityPage() {
           </div>
         )}
 
+        {/* invite link */}
+        {isGroup && !chat?.isMain && (
+          <div className="mb-3 rounded-xl p-3" style={{ background: 'var(--brand-a06)', border: '1px solid var(--brand-a25)' }}>
+            <div className="flex items-center justify-between">
+              <p className="text-[10.5px] font-bold uppercase tracking-wide" style={{ color: 'var(--brand)' }}>
+                Invite via link
+              </p>
+              {canManage && (
+                <button
+                  type="button"
+                  onClick={resetInviteLink}
+                  disabled={working}
+                  className="text-[10.5px] font-bold"
+                  style={{ background: 'transparent', border: 'none', color: 'var(--dim)', cursor: 'pointer' }}
+                >
+                  Reset
+                </button>
+              )}
+            </div>
+            <p className="mt-0.5 text-[11px]" style={{ color: 'var(--muted)' }}>
+              Only people with this link can join — anyone who has it can.
+            </p>
+
+            <div className="mt-2 flex items-center gap-1.5">
+              <input
+                readOnly
+                value={inviteLoading ? 'Creating link…' : inviteCode ? `${origin}/community?invite=${inviteCode}` : ''}
+                onFocus={(e) => e.currentTarget.select()}
+                aria-label="Invite link"
+                className="min-w-0 flex-1 rounded-lg px-2.5 py-1.5 text-[11px] outline-none"
+                style={{ background: 'var(--surface)', border: '1px solid var(--line)', color: 'var(--ink)' }}
+              />
+              <button
+                type="button"
+                onClick={copyInvite}
+                disabled={!inviteCode}
+                aria-label="Copy invite link"
+                className="rounded-lg px-2.5 py-1.5 text-[11px] font-extrabold"
+                style={{ background: inviteCode ? 'var(--brand)' : 'var(--surface-3)', color: inviteCode ? '#fff' : 'var(--dim)', border: 'none', cursor: inviteCode ? 'pointer' : 'default' }}
+              >
+                Copy
+              </button>
+              <button
+                type="button"
+                onClick={shareInvite}
+                disabled={!inviteCode}
+                aria-label="Share invite link"
+                className="rounded-lg px-2.5 py-1.5 text-[11px] font-extrabold"
+                style={{ background: 'var(--surface)', border: '1px solid var(--line)', color: 'var(--muted)', cursor: inviteCode ? 'pointer' : 'default' }}
+              >
+                Share
+              </button>
+            </div>
+          </div>
+        )}
+
         {isGroup && (
           <>
             <div className="mb-1.5 flex items-center justify-between">
-              <p className="text-[11px] font-bold uppercase tracking-wide" style={{ color: 'var(--dim)' }}>
-                Members
+              <p className="text-[10.5px] font-bold uppercase tracking-wide" style={{ color: 'var(--dim)' }}>
+                {chat?.members?.length || 0} members
               </p>
               {canManage && !chat?.isMain && (
                 <button
                   type="button"
-                  onClick={() => setAddingOpen((v) => !v)}
+                  onClick={() => { setAddingOpen((v) => !v); setToAdd([]); }}
                   className="text-[11.5px] font-bold"
                   style={{ background: 'transparent', border: 'none', color: 'var(--brand)', cursor: 'pointer' }}
                 >
@@ -767,49 +989,93 @@ export default function CommunityPage() {
               </div>
             )}
 
-            <div className="max-h-[30vh] overflow-y-auto">
-              {(chat?.members || []).map((m) => (
-                <div key={m.id} className="flex items-center gap-2.5 py-1.5">
-                  <Avatar avatar={m.avatar} photo={m.photo} label={m.name} size={34} online={m.online} />
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-[12.5px] font-bold" style={{ color: 'var(--ink)' }}>
-                      {m.name}{m.id === me?.id ? ' (you)' : ''}
-                    </p>
-                    <p className="text-[10.5px]" style={{ color: m.role === 'member' ? 'var(--dim)' : 'var(--brand)' }}>
-                      {m.role === 'owner' ? 'Group owner' : m.role === 'admin' ? 'Admin' : m.online ? 'Online' : 'Member'}
-                    </p>
+            <div className="max-h-[32vh] overflow-y-auto pr-0.5">
+              {(chat?.members || []).map((m) => {
+                const isMe = m.id === me?.id;
+                const canPromote = canManage && m.role === 'member' && !chat?.isMain;
+                const canDemote = (chat?.myRole === 'owner' || chat?.myRole === 'admin') && m.role === 'admin';
+                const canRemove = canManage && m.role !== 'owner' && !isMe && !chat?.isMain;
+                const open = memberMenu === m.id;
+
+                return (
+                  <div key={m.id} className="border-b last:border-b-0" style={{ borderColor: 'var(--line-soft)' }}>
+                    <div className="flex items-center gap-2.5 py-2">
+                      <Avatar avatar={m.avatar} photo={m.photo} label={m.name} size={36} online={m.online} />
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-[12.5px] font-bold" style={{ color: 'var(--ink)' }}>
+                          {m.name}{isMe ? ' (you)' : ''}
+                        </p>
+                        <p className="text-[10.5px] font-semibold" style={{ color: m.role === 'member' ? 'var(--dim)' : 'var(--brand)' }}>
+                          {m.role === 'owner' ? 'Group owner' : m.role === 'admin' ? 'Group admin' : m.online ? 'Online' : 'Member'}
+                        </p>
+                      </div>
+                      {!isMe && (
+                        <button
+                          type="button"
+                          onClick={() => setMemberMenu(open ? null : m.id)}
+                          aria-label={`Options for ${m.name}`}
+                          aria-expanded={open}
+                          style={{ background: 'transparent', border: 'none', color: 'var(--dim)', cursor: 'pointer', padding: 4, display: 'grid', placeItems: 'center' }}
+                        >
+                          <Icons.MoreVertical size={16} />
+                        </button>
+                      )}
+                    </div>
+
+                    {open && !isMe && (
+                      <div className="mb-2 flex flex-wrap gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => { setInfoOpen(false); setMemberMenu(null); openDm({ id: m.id }); }}
+                          className="rounded-full px-2.5 py-1 text-[11px] font-bold"
+                          style={{ background: 'var(--brand-a10)', border: '1px solid var(--brand-a25)', color: 'var(--brand)', cursor: 'pointer' }}
+                        >
+                          Message
+                        </button>
+                        {canPromote && (
+                          <button
+                            type="button"
+                            onClick={() => changeRole(m, 'admin')}
+                            className="rounded-full px-2.5 py-1 text-[11px] font-bold"
+                            style={{ background: 'var(--surface)', border: '1px solid var(--line)', color: 'var(--ink)', cursor: 'pointer' }}
+                          >
+                            Make group admin
+                          </button>
+                        )}
+                        {canDemote && (
+                          <button
+                            type="button"
+                            onClick={() => changeRole(m, 'member')}
+                            className="rounded-full px-2.5 py-1 text-[11px] font-bold"
+                            style={{ background: 'var(--surface)', border: '1px solid var(--line)', color: 'var(--ink)', cursor: 'pointer' }}
+                          >
+                            Dismiss as admin
+                          </button>
+                        )}
+                        {canRemove && (
+                          <button
+                            type="button"
+                            onClick={() => setConfirm({
+                              title: `Remove ${m.name}?`,
+                              description: 'They will stop receiving messages from this group.',
+                              label: 'Remove',
+                              run: async () => {
+                                const ok = await patchChat({ removeMember: m.id });
+                                if (ok) toast.success('Member removed');
+                                setConfirm(null);
+                              },
+                            })}
+                            className="rounded-full px-2.5 py-1 text-[11px] font-bold"
+                            style={{ background: 'var(--bad-a08)', border: '1px solid var(--bad-a25)', color: 'var(--bad)', cursor: 'pointer' }}
+                          >
+                            Remove
+                          </button>
+                        )}
+                      </div>
+                    )}
                   </div>
-                  {m.id !== me?.id && (
-                    <button
-                      type="button"
-                      onClick={() => { setInfoOpen(false); openDm({ id: m.id }); }}
-                      className="text-[11px] font-bold"
-                      style={{ background: 'transparent', border: 'none', color: 'var(--brand)', cursor: 'pointer' }}
-                    >
-                      Message
-                    </button>
-                  )}
-                  {canManage && m.role !== 'owner' && m.id !== me?.id && !chat?.isMain && (
-                    <button
-                      type="button"
-                      onClick={() => setConfirm({
-                        title: `Remove ${m.name}?`,
-                        description: 'They will stop receiving messages from this group.',
-                        label: 'Remove',
-                        run: async () => {
-                          const ok = await patchChat({ removeMember: m.id });
-                          if (ok) toast.success('Member removed');
-                          setConfirm(null);
-                        },
-                      })}
-                      className="text-[11px] font-bold"
-                      style={{ background: 'transparent', border: 'none', color: 'var(--bad)', cursor: 'pointer' }}
-                    >
-                      Remove
-                    </button>
-                  )}
-                </div>
-              ))}
+                );
+              })}
             </div>
           </>
         )}
@@ -829,7 +1095,7 @@ export default function CommunityPage() {
               className="rounded-full px-4 py-2 text-[12px] font-bold"
               style={{ background: 'transparent', border: '1px solid var(--line)', color: 'var(--muted)', cursor: 'pointer' }}
             >
-              Leave group
+              Exit group
             </button>
           )}
 
@@ -868,6 +1134,57 @@ export default function CommunityPage() {
         confirmLabel={confirm?.label || 'Confirm'}
         loading={working}
       />
+      {/* ── group invite ────────────────────────────────────────────────────── */}
+      <Modal
+        open={!!joinInvite}
+        onClose={() => {
+          setJoinInvite(null);
+          if (window.history?.replaceState) window.history.replaceState({}, '', '/community');
+        }}
+        title="Group invite"
+        size="sm"
+        footer={(
+          <>
+            <button
+              type="button"
+              onClick={() => {
+                setJoinInvite(null);
+                if (window.history?.replaceState) window.history.replaceState({}, '', '/community');
+              }}
+              className="rounded-full px-4 py-2 text-[12.5px] font-bold"
+              style={{ background: 'transparent', border: '1px solid var(--line)', color: 'var(--muted)', cursor: 'pointer' }}
+            >
+              Not now
+            </button>
+            <button
+              type="button"
+              onClick={joinGroup}
+              disabled={joining}
+              className="rounded-full px-5 py-2 text-[12.5px] font-extrabold"
+              style={{ background: 'var(--brand)', color: '#fff', border: 'none', cursor: joining ? 'default' : 'pointer' }}
+            >
+              {joining ? 'Joining…' : 'Join group'}
+            </button>
+          </>
+        )}
+      >
+        <div className="flex flex-col items-center pb-2 text-center">
+          <Avatar avatar={joinInvite?.avatar} label={joinInvite?.title} size={64} />
+          <p className="mt-2 text-[15px] font-extrabold" style={{ color: 'var(--ink)' }}>{joinInvite?.title}</p>
+          <p className="text-[11.5px]" style={{ color: 'var(--dim)' }}>
+            {joinInvite?.members} member{joinInvite?.members === 1 ? '' : 's'}
+          </p>
+          {joinInvite?.names?.length ? (
+            <p className="mt-1 text-[11px]" style={{ color: 'var(--muted)' }}>
+              {joinInvite.names.join(', ')}
+            </p>
+          ) : null}
+          <p className="mt-3 text-[11.5px]" style={{ color: 'var(--dim)' }}>
+            You will see this group in your chats and can leave at any time.
+          </p>
+        </div>
+      </Modal>
+
       {/* ── photo viewer ───────────────────────────────────────────────────── */}
       {lightbox && (
         <div

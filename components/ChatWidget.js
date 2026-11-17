@@ -16,7 +16,7 @@ import { Icons } from '@/components/ui';
 // Hidden on the auth screens and inside the admin portal, where a floating
 // support button would be noise.
 
-const HIDDEN = ['/login', '/signup', '/forgot-password'];
+const HIDDEN = ['/login', '/signup', '/forgot-password', '/community'];
 const POLL_MS = 2500;
 
 const timeOf = (iso) => {

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import {
-  ensureCommunity, currentUser, membership, membersOf, systemNote, sql,
+  ensureCommunity, currentUser, membership, membersOf, systemNote, setMemberRole, sql,
   cleanBody, MAX_GROUP, asInt,
 } from '@/lib/community';
 
@@ -79,6 +79,29 @@ export async function PATCH(request, { params }) {
         await systemNote(chatId, `${me.name} added ${label}`);
       }
       return NextResponse.json({ ok: true, added });
+    }
+
+    if (body.setRole && typeof body.setRole === 'object') {
+      if (chat.kind !== 'group') return NextResponse.json({ error: 'Not a group' }, { status: 400 });
+      if (!canManage) return NextResponse.json({ error: 'Only group admins can change roles' }, { status: 403 });
+
+      const targetId = asInt(body.setRole.userId);
+      const role = body.setRole.role === 'admin' ? 'admin' : 'member';
+
+      const rows = await sql`SELECT role FROM com_members WHERE chat_id = ${chatId} AND user_id = ${targetId} LIMIT 1`;
+      if (!rows[0]) return NextResponse.json({ error: 'That person is not in this group' }, { status: 404 });
+      if (rows[0].role === 'owner') {
+        return NextResponse.json({ error: 'The group owner cannot be demoted' }, { status: 400 });
+      }
+      if (rows[0].role === role) return NextResponse.json({ ok: true, unchanged: true });
+
+      // Admins can promote members and demote each other, which is WhatsApp's
+      // rule; only the owner is out of reach.
+      await setMemberRole(chatId, targetId, role);
+      const person = await sql`SELECT fullname, email FROM users WHERE id = ${targetId} LIMIT 1`;
+      const name = person[0]?.fullname || person[0]?.email || 'a member';
+      await systemNote(chatId, role === 'admin' ? `${me.name} made ${name} an admin` : `${me.name} dismissed ${name} as admin`);
+      return NextResponse.json({ ok: true });
     }
 
     if (body.removeMember) {

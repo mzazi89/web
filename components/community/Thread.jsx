@@ -382,8 +382,11 @@ export default function Thread({
   };
 
   // ── render ─────────────────────────────────────────────────────────────────
+  // Groups read like a person list in WhatsApp ("You, Mercy, Brian +2") rather
+  // than a count, which tells you who you are talking to without opening info.
+  const memberNames = (chat?.members || []).map((m) => (m.id === me?.id ? 'You' : m.name.split(' ')[0]));
   const subtitle = isGroup
-    ? `${chat?.members?.length || 0} member${(chat?.members?.length || 0) === 1 ? '' : 's'}${chat?.isMain ? ' · everyone welcome' : ''}`
+    ? `${memberNames.slice(0, 3).join(', ')}${memberNames.length > 3 ? ` +${memberNames.length - 3}` : ''}`
     : chat?.peer?.online
       ? 'online'
       : 'tap for contact info';
@@ -743,7 +746,9 @@ export default function Thread({
         style={{
           background: 'var(--surface)',
           borderTop: '1px solid var(--line-soft)',
-          paddingBottom: 'calc(8px + env(safe-area-inset-bottom))',
+          // The shell is measured to the top of the dock, which already carries
+          // the home-indicator inset — adding it again here left a dead strip.
+          paddingBottom: 8,
         }}
       >
         {reply && !rec.active && (
