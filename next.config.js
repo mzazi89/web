@@ -4,7 +4,7 @@ const nextConfig = {
   experimental: {
     // web-push is CommonJS; loading it from node_modules at runtime instead of
     // letting the bundler inline it keeps its default-export interop intact.
-    serverComponentsExternalPackages: ['web-push'],
+    serverComponentsExternalPackages: ['web-push', 'yt-search', '@distube/ytdl-core'],
   },
   async headers() {
     return [

@@ -40,6 +40,7 @@ const ICONS = {
   info: Icons.Info,
   settings: Icons.Settings,
   mail: Icons.Mail,
+  play: Icons.Play,
 };
 
 // A sign-in form is one decision; a nav bar under it invites people to leave.
