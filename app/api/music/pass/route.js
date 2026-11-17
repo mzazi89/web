@@ -2,14 +2,14 @@
 import { NextResponse } from 'next/server';
 import { optionalUser } from '@/lib/api/session';
 import { activePass, buyPass, TIERS } from '@/lib/music';
-import { salePrice, fmtKes } from '@/lib/currency';
+import { fmtKes } from '@/lib/currency';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
   const user = await optionalUser();
   const pass = await activePass(user?.id);
-  const tiers = Object.entries(TIERS).map(([id, t]) => ({ id, label: t.label, price: salePrice(t.price), priceLabel: fmtKes(salePrice(t.price)) }));
+  const tiers = Object.entries(TIERS).map(([id, t]) => ({ id, label: t.label, price: t.price, priceLabel: fmtKes(t.price) }));
   return NextResponse.json({ pass, tiers });
 }
 
