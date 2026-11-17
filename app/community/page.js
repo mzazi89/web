@@ -549,7 +549,6 @@ export default function CommunityPage() {
     const ok = await patchChat({ setRole: { userId: member.id, role } });
     if (ok) {
       toast.success(role === 'admin' ? `${member.name} is now an admin` : `${member.name} is no longer an admin`);
-      setMemberMenu(null);
     }
   }, [patchChat, toast]);
 
@@ -601,7 +600,6 @@ export default function CommunityPage() {
   // Fetch the code only when the sheet is opened for a group that can have one.
   useEffect(() => {
     if (!infoOpen) return;
-    setMemberMenu(null);
     if (chat?.kind !== 'group' || chat?.isMain) {
       setInviteCode('');
       return;
