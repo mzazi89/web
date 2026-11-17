@@ -4285,3 +4285,5 @@ main#main-content > * { animation: pageIn .26s ease both; }
 .dc-mode { display: flex; gap: 6px; margin-top: 10px; }
 .dc-mode button { flex: 1; height: 34px; border-radius: 9px; border: 1px solid var(--line); background: rgba(255,255,255,.03); color: var(--dim); font-size: 11.5px; font-weight: 600; cursor: pointer; }
 .dc-mode button.is-on { color: var(--ink); border-color: rgba(77,139,255,.45); background: rgba(46,107,255,.16); }
+
+.dc-dl.is-alt { border-color: rgba(122,180,255,.28); background: rgba(122,180,255,.10); }

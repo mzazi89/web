@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Button, Card, Icons, Ring } from '@/components/ui';
 
 // MZAZI TECH — download centre.
@@ -22,38 +22,10 @@ export default function DownloadCenterPage() {
   const [searching, setSearching] = useState(false);
   const [note, setNote] = useState('');
   const [playing, setPlaying] = useState(null);
-  // Watch shows the video; Listen drops to audio so it survives the screen
-  // locking. Only one of them may ever be running, or you get two soundtracks.
-  const [mode, setMode] = useState('watch');
   const [pass, setPass] = useState(null);
   const [tiers, setTiers] = useState([]);
   const [paywall, setPaywall] = useState(null);
   const [busy, setBusy] = useState(false);
-  const audioRef = useRef(null);
-
-  // Media Session is what turns a playing tab into a notification with a pause
-  // button, and what lets the audio survive the screen locking.
-  const attachMediaSession = useCallback(() => {
-    if (!('mediaSession' in navigator) || !playing) return;
-    try {
-      navigator.mediaSession.metadata = new window.MediaMetadata({
-        title: playing.title,
-        artist: playing.author || 'MZAZI TECH',
-        album: 'MZAZI Download Centre',
-        artwork: [{ src: playing.thumb, sizes: '320x180', type: 'image/jpeg' }],
-      });
-      navigator.mediaSession.setActionHandler('play', () => audioRef.current?.play());
-      navigator.mediaSession.setActionHandler('pause', () => audioRef.current?.pause());
-      navigator.mediaSession.setActionHandler('stop', () => { audioRef.current?.pause(); setPlaying(null); });
-    } catch {}
-  }, [playing]);
-
-  const stopPlayback = useCallback(() => {
-    audioRef.current?.pause();
-    if ('mediaSession' in navigator) navigator.mediaSession.metadata = null;
-    setPlaying(null);
-  }, []);
-
   const loadPass = useCallback(() => {
     fetch('/api/music/pass', { cache: 'no-store' })
       .then((r) => r.json())
@@ -77,10 +49,10 @@ export default function DownloadCenterPage() {
     finally { setSearching(false); }
   }
 
-  async function download(song) {
-    if (!pass) { setPaywall(song); return; }
-    // A real navigation, so the phone's own download manager handles the file.
-    window.location.href = `/api/music/download?id=${encodeURIComponent(song.id)}`;
+  async function download(song, fmt = 'mp3') {
+    if (!pass) { setPaywall({ ...song, fmt }); return; }
+    // A real navigation, so the phone's own download manager saves it.
+    window.location.href = `/api/music/download?id=${encodeURIComponent(song.id)}&fmt=${fmt}`;
   }
 
   async function buy(tier) {
@@ -96,7 +68,7 @@ export default function DownloadCenterPage() {
       setPass(d.pass);
       const song = paywall;
       setPaywall(null);
-      if (song) setTimeout(() => { window.location.href = `/api/music/download?id=${encodeURIComponent(song.id)}`; }, 400);
+      if (song) setTimeout(() => { window.location.href = `/api/music/download?id=${encodeURIComponent(song.id)}&fmt=${song.fmt || 'mp3'}`; }, 400);
     } catch { setNote('Network error — try again.'); }
     finally { setBusy(false); }
   }
@@ -138,36 +110,15 @@ export default function DownloadCenterPage() {
               <strong>{playing.title}</strong>
               <span>{playing.author} · now playing</span>
             </div>
-            <button type="button" onClick={stopPlayback} aria-label="Close player">×</button>
+            <button type="button" onClick={() => setPlaying(null)} aria-label="Close player">×</button>
           </div>
-          {mode === 'watch' ? (
-            <iframe
-              className="dc-frame"
-              title={playing.title}
-              src={`https://www.youtube.com/embed/${playing.id}?autoplay=1&playsinline=1`}
-              allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
-              allowFullScreen
-            />
-          ) : (
-            <audio
-              ref={audioRef}
-              className="dc-audio"
-              controls
-              autoPlay
-              preload="none"
-              src={`/api/music/stream?id=${encodeURIComponent(playing.id)}`}
-              onPlay={attachMediaSession}
-            />
-          )}
-
-          <div className="dc-mode">
-            <button type="button" className={mode === 'watch' ? 'is-on' : ''} onClick={() => setMode('watch')}>
-              Watch video
-            </button>
-            <button type="button" className={mode === 'listen' ? 'is-on' : ''} onClick={() => setMode('listen')}>
-              Background audio
-            </button>
-          </div>
+          <iframe
+            className="dc-frame"
+            title={playing.title}
+            src={`https://www.youtube.com/embed/${playing.id}?autoplay=1&playsinline=1`}
+            allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+            allowFullScreen
+          />
         </Card>
       )}
 
@@ -183,8 +134,11 @@ export default function DownloadCenterPage() {
               <button type="button" className="dc-play" onClick={() => setPlaying(s)} aria-label={`Play ${s.title}`}>
                 <Icons.Play size={14} />
               </button>
-              <button type="button" className="dc-dl" onClick={() => download(s)}>
-                {pass ? 'Download' : 'Unlock'}
+              <button type="button" className="dc-dl" onClick={() => download(s, 'mp3')}>
+                {pass ? 'MP3' : 'Unlock'}
+              </button>
+              <button type="button" className="dc-dl is-alt" onClick={() => download(s, 'mp4')}>
+                MP4
               </button>
             </div>
           </li>

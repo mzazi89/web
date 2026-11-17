@@ -16,13 +16,16 @@ export async function GET(request) {
   const pass = await activePass(user.id);
   if (!pass) return NextResponse.json({ error: 'A download pass is needed.' }, { status: 403 });
 
-  const id = new URL(request.url).searchParams.get('id') || '';
+  const { searchParams } = new URL(request.url);
+  const id = searchParams.get('id') || '';
+  const fmt = searchParams.get('fmt') === 'mp4' ? 'mp4' : 'mp3';
+
   try {
-    const { stream, title } = await openAudio(id);
+    const { stream, title } = await openAudio(id, fmt);
     return new NextResponse(stream, {
       headers: {
-        'Content-Type': 'audio/mp4',
-        'Content-Disposition': `attachment; filename="${title}.m4a"`,
+        'Content-Type': fmt === 'mp4' ? 'video/mp4' : 'audio/mp4',
+        'Content-Disposition': `attachment; filename="${title}.${fmt === 'mp4' ? 'mp4' : 'm4a'}"`,
         'Cache-Control': 'no-store',
       },
     });
