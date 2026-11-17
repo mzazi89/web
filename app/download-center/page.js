@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button, Card, Icons, Ring } from '@/components/ui';
 
 // MZAZI TECH — download centre.
@@ -26,6 +26,30 @@ export default function DownloadCenterPage() {
   const [tiers, setTiers] = useState([]);
   const [paywall, setPaywall] = useState(null);
   const [busy, setBusy] = useState(false);
+  const audioRef = useRef(null);
+
+  // Media Session is what turns a playing tab into a notification with a pause
+  // button, and what lets the audio survive the screen locking.
+  const attachMediaSession = useCallback(() => {
+    if (!('mediaSession' in navigator) || !playing) return;
+    try {
+      navigator.mediaSession.metadata = new window.MediaMetadata({
+        title: playing.title,
+        artist: playing.author || 'MZAZI TECH',
+        album: 'MZAZI Download Centre',
+        artwork: [{ src: playing.thumb, sizes: '320x180', type: 'image/jpeg' }],
+      });
+      navigator.mediaSession.setActionHandler('play', () => audioRef.current?.play());
+      navigator.mediaSession.setActionHandler('pause', () => audioRef.current?.pause());
+      navigator.mediaSession.setActionHandler('stop', () => { audioRef.current?.pause(); setPlaying(null); });
+    } catch {}
+  }, [playing]);
+
+  const stopPlayback = useCallback(() => {
+    audioRef.current?.pause();
+    if ('mediaSession' in navigator) navigator.mediaSession.metadata = null;
+    setPlaying(null);
+  }, []);
 
   const loadPass = useCallback(() => {
     fetch('/api/music/pass', { cache: 'no-store' })
@@ -107,15 +131,24 @@ export default function DownloadCenterPage() {
       {playing && (
         <Card className="dc-player">
           <div className="dc-player-head">
-            <strong>{playing.title}</strong>
-            <button type="button" onClick={() => setPlaying(null)} aria-label="Close player">×</button>
+            <div>
+              <strong>{playing.title}</strong>
+              <span>{playing.author} · now playing</span>
+            </div>
+            <button type="button" onClick={stopPlayback} aria-label="Close player">×</button>
           </div>
-          <iframe
-            title={playing.title}
-            src={`https://www.youtube.com/embed/${playing.id}?autoplay=1`}
-            allow="autoplay; encrypted-media; picture-in-picture"
-            allowFullScreen
+          <audio
+            ref={audioRef}
+            className="dc-audio"
+            controls
+            autoPlay
+            preload="none"
+            src={`/api/music/stream?id=${encodeURIComponent(playing.id)}`}
+            onPlay={attachMediaSession}
           />
+          <p className="dc-fine" style={{ padding: '8px 0 0' }}>
+            Keeps playing when you switch apps or lock the screen.
+          </p>
         </Card>
       )}
 
