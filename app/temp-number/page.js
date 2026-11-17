@@ -130,7 +130,7 @@ export default function TempNumberPage() {
               <select value={country} onChange={(e) => setCountry(e.target.value)}>
                 {countries.map((c) => (
                   <option key={c.country} value={c.country}>
-                    {label(c.country)} — {c.stock} available
+                    {c.label || label(c.country)}
                   </option>
                 ))}
               </select>
