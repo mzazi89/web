@@ -40,7 +40,7 @@ export default function ChatList({
     <div className="flex h-full min-h-0 flex-col border-line md:border-r" style={{ background: 'var(--surface)' }}>
       {/* ── me ─────────────────────────────────────────────────────────── */}
       <div className="flex items-center gap-3 px-4 py-3" style={{ borderBottom: '1px solid var(--line-soft)' }}>
-        <Avatar avatar={me?.avatar} label={me?.name} size={38} online />
+        <Avatar avatar={me?.avatar} photo={me?.photo} label={me?.name} size={38} online />
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-extrabold" style={{ color: 'var(--ink)' }}>
             {me?.name || 'Community'}
@@ -135,7 +135,7 @@ export default function ChatList({
               onMouseEnter={(e) => { if (!active) e.currentTarget.style.background = 'var(--brand-a04)'; }}
               onMouseLeave={(e) => { if (!active) e.currentTarget.style.background = 'transparent'; }}
             >
-              <Avatar avatar={c.avatar} label={c.title} online={c.online} ring={!!c.isMain} />
+              <Avatar avatar={c.avatar} photo={c.photo} label={c.title} online={c.online} ring={!!c.isMain} />
               <div className="min-w-0 flex-1">
                 <div className="flex items-baseline gap-2">
                   <span className="truncate text-[13px] font-extrabold" style={{ color: 'var(--ink)' }}>

@@ -4301,3 +4301,10 @@ main#main-content > * { animation: pageIn .26s ease both; }
 @media (prefers-reduced-motion: reduce) {
   [style*="comBounce"] { animation: none !important; }
 }
+
+/* The recording dot: the only element on the page that says "this is live right
+   now", so it is the one thing allowed to pulse. */
+@keyframes comPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.35; transform: scale(0.82); }
+}

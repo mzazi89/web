@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import {
   ensureCommunity, currentUser, touchPresence, chatsFor, messagesIn, typingIn,
-  shapeMessage, membersOf, membership, mainChatId, joinMain, avatarFor, sql,
+  shapeMany, membersOf, membership, mainChatId, joinMain, avatarFor, sql,
 } from '@/lib/community';
 
 export const dynamic = 'force-dynamic';
@@ -58,7 +58,7 @@ export async function GET(request) {
     else if (after) rows = await messagesIn(chatId, { after, limit: 200 });
     else rows = await messagesIn(chatId, { before: 2147483647, limit: 80 });
 
-    const messages = rows.map((r) => shapeMessage(r, { meId: me.id, members }));
+    const messages = await shapeMany(rows, { meId: me.id, members });
     const typing = await typingIn(chatId, me.id);
 
     const peer = chatRow.kind === 'dm' ? members.find((m) => m.id !== me.id) : null;
@@ -76,6 +76,7 @@ export async function GET(request) {
         myRole: mine.role,
         members,
         peer: peer || null,
+        photo: peer?.photo || null,
         avatar: avatarFor(chatRow.kind === 'dm' ? peer?.id || chatRow.id : chatRow.id,
           chatRow.kind === 'dm' ? peer?.name || 'DM' : chatRow.title || 'Group'),
       },

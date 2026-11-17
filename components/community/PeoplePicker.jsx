@@ -103,7 +103,7 @@ export default function PeoplePicker({
               onMouseEnter={(e) => { if (!chosen) e.currentTarget.style.background = 'var(--brand-a04)'; }}
               onMouseLeave={(e) => { if (!chosen) e.currentTarget.style.background = 'transparent'; }}
             >
-              <Avatar avatar={p.avatar} label={p.name} size={38} online={p.online} />
+              <Avatar avatar={p.avatar} photo={p.photo} label={p.name} size={38} online={p.online} />
               <div className="min-w-0 flex-1">
                 <p className="truncate text-[13px] font-bold" style={{ color: 'var(--ink)' }}>{p.name}</p>
                 <p className="text-[11px]" style={{ color: 'var(--dim)' }}>

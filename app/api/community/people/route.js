@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { ensureCommunity, currentUser, onlineIds, displayName, avatarFor, sql } from '@/lib/community';
+import { ensureCommunity, currentUser, onlineIds, displayName, avatarFor, photoUrl, sql } from '@/lib/community';
 
 export const dynamic = 'force-dynamic';
 
@@ -25,6 +25,7 @@ export async function GET(request) {
     const rows = q
       ? await sql`
           SELECT u.id, u.fullname, u.firstname, u.lastname, u.email,
+                 u.avatar_at, (u.avatar IS NOT NULL AND u.avatar <> '') AS has_photo,
                  (SELECT c.id FROM com_chats c
                    WHERE c.dm_key = 'dm:' || LEAST(u.id, ${me.id})::text || ':' || GREATEST(u.id, ${me.id})::text
                    LIMIT 1) AS dm_id
@@ -36,6 +37,7 @@ export async function GET(request) {
         `
       : await sql`
           SELECT u.id, u.fullname, u.firstname, u.lastname, u.email,
+                 u.avatar_at, (u.avatar IS NOT NULL AND u.avatar <> '') AS has_photo,
                  (SELECT c.id FROM com_chats c
                    WHERE c.dm_key = 'dm:' || LEAST(u.id, ${me.id})::text || ':' || GREATEST(u.id, ${me.id})::text
                    LIMIT 1) AS dm_id
@@ -56,6 +58,7 @@ export async function GET(request) {
           dmId: u.dm_id || null,
           online: online.has(u.id),
           avatar: avatarFor(u.id, name),
+          photo: u.has_photo ? photoUrl(u.id, u.avatar_at) : null,
         };
       }),
       onlineCount: online.size,

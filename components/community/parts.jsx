@@ -9,13 +9,22 @@
 // they came from the same app.
 // ─────────────────────────────────────────────────────────────────────────────
 
+import { useState } from 'react';
 import { Icons } from '@/components/ui';
 
-/** Initials avatar. `avatar` is { ink, tint, initials } from the API. */
-export function Avatar({ avatar, label, size = 46, online = false, square = false, ring = false }) {
+/**
+ * Someone's face, or their initials when they have not set one.
+ *
+ * `photo` is the URL from the API; when the image fails to load (a photo removed
+ * between the list being rendered and the request landing) the initials layer
+ * underneath simply shows through, so an avatar never becomes a broken-image box.
+ */
+export function Avatar({ avatar, photo = null, label, size = 46, online = false, square = false, ring = false }) {
   const ink = avatar?.ink || 'var(--brand)';
   const tint = avatar?.tint || 'var(--brand-tint)';
   const text = avatar?.initials || (label ? label.slice(0, 2).toUpperCase() : '?');
+  const [failed, setFailed] = useState(false);
+  const showPhoto = Boolean(photo) && !failed;
 
   return (
     <div style={{ position: 'relative', flex: `0 0 ${size}px`, width: size, height: size }}>
@@ -34,9 +43,28 @@ export function Avatar({ avatar, label, size = 46, online = false, square = fals
           letterSpacing: '0.01em',
           boxShadow: ring ? `inset 0 0 0 1.5px ${ink}` : 'none',
           userSelect: 'none',
+          overflow: 'hidden',
+          position: 'relative',
         }}
       >
         {text}
+        {showPhoto && (
+          <img
+            src={photo}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            onError={() => setFailed(true)}
+            style={{
+              position: 'absolute',
+              inset: 0,
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              borderRadius: 'inherit',
+            }}
+          />
+        )}
       </div>
       {online && (
         <span
@@ -220,3 +248,55 @@ export function IconButton({ label, onClick, children, active = false, size = 34
 
 /** Group glyph used where a group has no custom art. */
 export const GroupGlyph = Icons.Users;
+
+// ─── glyphs the shared icon set does not carry ───────────────────────────────
+
+export function MicIcon({ size = 20 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <rect x="9" y="3" width="6" height="11" rx="3" stroke="currentColor" strokeWidth="1.7" />
+      <path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function CameraIcon({ size = 20 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M4 8.5h2.6l1.3-2h8.2l1.3 2H20V19H4V8.5Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
+      <circle cx="12" cy="13.5" r="3.2" stroke="currentColor" strokeWidth="1.7" />
+    </svg>
+  );
+}
+
+export function StopIcon({ size = 14 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 16 16" aria-hidden="true">
+      <rect x="2.5" y="2.5" width="11" height="11" rx="2.5" fill="currentColor" />
+    </svg>
+  );
+}
+
+/** 0:07 — voice-note lengths are short, so mm:ss is enough. */
+export function fmtDuration(ms) {
+  const total = Math.max(0, Math.round(Number(ms || 0) / 1000));
+  const m = Math.floor(total / 60);
+  const s = total % 60;
+  return `${m}:${String(s).padStart(2, '0')}`;
+}
+
+/**
+ * A deterministic bar pattern for a voice note.
+ *
+ * Real waveforms need the decoded samples, which means downloading the whole
+ * recording before it can be drawn. The bars are decoration: they show where you
+ * are in the clip, and deriving their heights from the message id means the same
+ * note always looks the same instead of reshuffling on every poll.
+ */
+export function waveform(seed, count = 27) {
+  let x = Math.abs(Number(seed) || 1) % 9973 || 7;
+  return Array.from({ length: count }, () => {
+    x = (x * 16807) % 2147483647;
+    return 0.28 + ((x % 100) / 100) * 0.72;
+  });
+}

@@ -22,7 +22,7 @@ import SignInGate from '@/components/SignInGate';
 import ChatList from '@/components/community/ChatList';
 import Thread from '@/components/community/Thread';
 import PeoplePicker from '@/components/community/PeoplePicker';
-import { Avatar } from '@/components/community/parts';
+import { Avatar, clock } from '@/components/community/parts';
 
 const SOUND = 'https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3';
 const POLL_MS = 2600;
@@ -47,6 +47,8 @@ export default function CommunityPage() {
   const [sending, setSending] = useState(false);
   const [loadingOlder, setLoadingOlder] = useState(false);
   const [soundOn, setSoundOn] = useState(true);
+  const [uploading, setUploading] = useState(false);
+  const [lightbox, setLightbox] = useState(null);
 
   const [newChatOpen, setNewChatOpen] = useState(false);
   const [newGroupOpen, setNewGroupOpen] = useState(false);
@@ -86,6 +88,14 @@ export default function CommunityPage() {
     soundRef.current = soundOn;
     try { localStorage.setItem('mzazi:community:sound', soundOn ? '1' : '0'); } catch {}
   }, [soundOn]);
+
+  // Esc closes the photo viewer, which is otherwise only dismissible by tap.
+  useEffect(() => {
+    if (!lightbox) return undefined;
+    const onKey = (e) => { if (e.key === 'Escape') setLightbox(null); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [lightbox]);
 
   // Unread in the tab title, restored on the way out.
   useEffect(() => {
@@ -262,6 +272,69 @@ export default function CommunityPage() {
     }
   }, [me, toast]);
 
+  const sendMedia = useCallback(async (payload, replyTo) => {
+    const id = chatIdRef.current;
+    if (!id) return;
+    setUploading(true);
+    try {
+      const res = await fetch(`/api/community/chats/${id}/media`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...payload, replyTo: replyTo || null }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Could not send that attachment');
+
+      setMessages((prev) => (prev.some((m) => m.id === data.message.id) ? prev : [...prev, data.message]));
+      lastIdRef.current = Math.max(lastIdRef.current, data.message.id);
+      readRef.current = Math.max(readRef.current, data.message.id);
+    } catch (e) {
+      toast.error(e.message);
+    } finally {
+      setUploading(false);
+    }
+  }, [toast]);
+
+  // Optimistic: the chip flips immediately, then the server's tally replaces it.
+  // If the request fails the poll puts the list back the way it was.
+  const react = useCallback(async (messageId, emoji) => {
+    const apply = (list = []) => {
+      const next = list.map((r) => ({ ...r }));
+      const hit = next.find((r) => r.emoji === emoji);
+      if (hit?.mine) {
+        hit.count -= 1;
+        hit.mine = false;
+      } else if (hit) {
+        // a different emoji replaces this person's old reaction, like WhatsApp
+        next.forEach((r) => { if (r.mine && r.emoji !== emoji) { r.count -= 1; r.mine = false; } });
+        hit.count += 1;
+        hit.mine = true;
+      } else {
+        next.forEach((r) => { if (r.mine) { r.count -= 1; r.mine = false; } });
+        next.push({ emoji, count: 1, mine: true });
+      }
+      return next.filter((r) => r.count > 0).sort((a, b) => b.count - a.count);
+    };
+
+    setMessages((prev) => prev.map((m) => (m.id === messageId ? { ...m, reactions: apply(m.reactions) } : m)));
+    setLightbox((l) => (l && l.id === messageId ? { ...l, reactions: apply(l.reactions) } : l));
+
+    try {
+      const res = await fetch(`/api/community/messages/${messageId}/reactions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ emoji }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Could not save that reaction');
+      setMessages((prev) => prev.map((m) => (m.id === messageId ? { ...m, reactions: data.reactions } : m)));
+      setLightbox((l) => (l && l.id === messageId ? { ...l, reactions: data.reactions } : l));
+    } catch (e) {
+      toast.error(e.message);
+      pull();
+    }
+  }, [pull, toast]);
+
   const removeMessage = useCallback(async (id) => {
     try {
       const res = await fetch(`/api/community/messages/${id}`, { method: 'DELETE' });
@@ -409,8 +482,17 @@ export default function CommunityPage() {
     <AppBackground orbs>
       <audio ref={audioRef} src={SOUND} preload="auto" />
 
-      <div className="container-site" style={{ paddingTop: 16, paddingBottom: 16 }}>
-        <div className="mb-3 hidden items-end justify-between md:flex">
+      <div
+        className="flex flex-col"
+        style={{
+          height: 'calc(100dvh - var(--nav-h) - var(--dock-h) - env(safe-area-inset-bottom))',
+          minHeight: 380,
+        }}
+      >
+        <div
+          className="mb-2 hidden items-end justify-between px-4 pt-3 md:flex lg:px-6"
+          style={{ maxWidth: 1120, margin: '0 auto', width: '100%' }}
+        >
           <div>
             <p className="text-[10.5px] font-extrabold uppercase tracking-[0.14em]" style={{ color: 'var(--dim)' }}>
               Messages
@@ -428,7 +510,7 @@ export default function CommunityPage() {
         </div>
 
         {needAuth ? (
-          <div className="mx-auto max-w-[460px] pt-6">
+          <div className="mx-auto w-full max-w-[460px] px-4 pt-6">
             <SignInGate
               title="Sign in to message the community"
               description="Conversations are private to the people in them, so we need to know who you are. Your account is free."
@@ -438,16 +520,18 @@ export default function CommunityPage() {
           </div>
         ) : (
           <div
-            className="grid overflow-hidden md:grid-cols-[320px_minmax(0,1fr)]"
+            className="grid min-h-0 flex-1 overflow-hidden px-0 pb-0 md:px-4 md:pb-3 lg:px-6"
+            style={{ gridTemplateColumns: 'minmax(0, 1fr)' }}
+          >
+          <div
+            className="grid min-h-0 overflow-hidden border-line md:grid-cols-[320px_minmax(0,1fr)] md:rounded-[var(--r-xl)] md:border"
             style={{
-              height: 'calc(100dvh - 148px)',
-              minHeight: 520,
-              maxHeight: 900,
-              border: '1px solid var(--line)',
-              borderRadius: 'var(--r-xl)',
               background: 'var(--surface)',
               boxShadow: 'var(--shadow-sm)',
               backdropFilter: 'blur(var(--glass-blur))',
+              maxWidth: 1120,
+              margin: '0 auto',
+              width: '100%',
             }}
           >
             <div className={pane === 'chat' ? 'hidden min-h-0 md:block' : 'min-h-0'}>
@@ -484,8 +568,13 @@ export default function CommunityPage() {
                 onInfo={() => setInfoOpen(true)}
                 onLoadOlder={loadOlder}
                 onTyping={noteTyping}
+                onSendMedia={sendMedia}
+                onReact={react}
+                onOpenMedia={(m) => setLightbox(m)}
+                uploading={uploading}
               />
             </div>
+          </div>
           </div>
         )}
       </div>
@@ -578,7 +667,13 @@ export default function CommunityPage() {
         size="sm"
       >
         <div className="flex items-center gap-3 pb-3">
-          <Avatar avatar={chat?.avatar} label={chat?.title} size={52} online={!isGroup && chat?.peer?.online} />
+          <Avatar
+            avatar={chat?.avatar}
+            photo={chat?.photo}
+            label={chat?.title}
+            size={52}
+            online={!isGroup && chat?.peer?.online}
+          />
           <div className="min-w-0">
             <p className="truncate text-[14px] font-extrabold" style={{ color: 'var(--ink)' }}>{chat?.title}</p>
             <p className="text-[11.5px]" style={{ color: 'var(--dim)' }}>
@@ -675,7 +770,7 @@ export default function CommunityPage() {
             <div className="max-h-[30vh] overflow-y-auto">
               {(chat?.members || []).map((m) => (
                 <div key={m.id} className="flex items-center gap-2.5 py-1.5">
-                  <Avatar avatar={m.avatar} label={m.name} size={34} online={m.online} />
+                  <Avatar avatar={m.avatar} photo={m.photo} label={m.name} size={34} online={m.online} />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-[12.5px] font-bold" style={{ color: 'var(--ink)' }}>
                       {m.name}{m.id === me?.id ? ' (you)' : ''}
@@ -773,6 +868,116 @@ export default function CommunityPage() {
         confirmLabel={confirm?.label || 'Confirm'}
         loading={working}
       />
+      {/* ── photo viewer ───────────────────────────────────────────────────── */}
+      {lightbox && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={lightbox.body || 'Photo'}
+          onClick={() => setLightbox(null)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 90,
+            background: 'rgba(6, 8, 12, 0.93)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 12,
+            padding: 'calc(12px + env(safe-area-inset-top)) 12px calc(12px + env(safe-area-inset-bottom))',
+          }}
+        >
+          <button
+            type="button"
+            onClick={() => setLightbox(null)}
+            aria-label="Close photo"
+            style={{
+              position: 'absolute',
+              top: 'calc(10px + env(safe-area-inset-top))',
+              right: 12,
+              width: 36,
+              height: 36,
+              borderRadius: '50%',
+              background: 'rgba(255,255,255,0.14)',
+              color: '#fff',
+              border: 'none',
+              display: 'grid',
+              placeItems: 'center',
+              cursor: 'pointer',
+            }}
+          >
+            <Icons.X size={18} />
+          </button>
+
+          <img
+            src={lightbox.media?.url}
+            alt={lightbox.body || 'Photo'}
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              maxWidth: 'min(94vw, 1000px)',
+              maxHeight: '72dvh',
+              objectFit: 'contain',
+              borderRadius: 14,
+              boxShadow: '0 24px 60px rgba(0,0,0,0.5)',
+            }}
+          />
+
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-full"
+            style={{ maxWidth: 'min(94vw, 1000px)', color: '#fff' }}
+          >
+            <div className="flex items-end justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-[12px] font-extrabold">
+                  {lightbox.mine ? 'You' : lightbox.senderName}
+                </p>
+                <p className="text-[11px]" style={{ color: 'rgba(255,255,255,0.6)' }}>
+                  {clock(lightbox.createdAt)}
+                </p>
+              </div>
+              {lightbox.media?.width ? (
+                <p className="shrink-0 text-[11px]" style={{ color: 'rgba(255,255,255,0.6)' }}>
+                  {lightbox.media.width} × {lightbox.media.height}
+                </p>
+              ) : null}
+            </div>
+
+            {lightbox.body && (
+              <p className="mt-1 text-[13px]" style={{ color: 'rgba(255,255,255,0.9)' }}>
+                {lightbox.body}
+              </p>
+            )}
+
+            <div className="mt-3 flex flex-wrap items-center gap-1.5">
+              {['👍', '❤️', '😂', '😮', '😢', '🙏'].map((emoji) => {
+                const hit = (lightbox.reactions || []).find((r) => r.emoji === emoji);
+                return (
+                  <button
+                    key={emoji}
+                    type="button"
+                    onClick={() => react(lightbox.id, emoji)}
+                    aria-label={`React ${emoji}`}
+                    aria-pressed={!!hit?.mine}
+                    className="flex items-center gap-1 rounded-full px-2 py-1"
+                    style={{
+                      background: hit?.mine ? 'var(--brand)' : 'rgba(255,255,255,0.12)',
+                      color: '#fff',
+                      border: '1px solid rgba(255,255,255,0.18)',
+                      cursor: 'pointer',
+                      fontSize: 14,
+                    }}
+                  >
+                    <span>{emoji}</span>
+                    {hit ? <span className="text-[11px] font-bold">{hit.count}</span> : null}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
     </AppBackground>
   );
 }

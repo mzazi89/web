@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import {
   ensureCommunity, currentUser, membership, membersOf, messagesIn, postMessage,
-  shapeMessage, cleanBody, asInt, sql, MAX_BODY,
+  shapeMany, messageById, cleanBody, asInt, sql, MAX_BODY,
 } from '@/lib/community';
 
 export const dynamic = 'force-dynamic';
@@ -38,7 +38,7 @@ export async function GET(request, { params }) {
     ]);
 
     return NextResponse.json({
-      messages: rows.map((r) => shapeMessage(r, { meId: me.id, members })),
+      messages: await shapeMany(rows, { meId: me.id, members }),
       more: rows.length >= 60,
     });
   } catch (e) {
@@ -92,24 +92,10 @@ export async function POST(request, { params }) {
     // Re-read that one row so the response carries the joined sender and quote,
     // exactly as /sync will render it — the optimistic bubble is then replaced by
     // a message that already looks final.
-    const inserted = await sql`
-      SELECT x.id, x.chat_id, x.sender_id, x.sender_label, x.kind, x.body, x.reply_to,
-             x.created_at, x.deleted_at,
-             u.fullname AS sender_name, u.firstname AS sender_first, u.lastname AS sender_last, u.email AS sender_email,
-             r.body AS reply_body, r.deleted_at AS reply_deleted, r.sender_label AS reply_label,
-             ru.fullname AS reply_name, ru.firstname AS reply_first, ru.lastname AS reply_last, ru.email AS reply_email
-      FROM com_messages x
-      LEFT JOIN users u ON u.id = x.sender_id
-      LEFT JOIN com_messages r ON r.id = x.reply_to
-      LEFT JOIN users ru ON ru.id = r.sender_id
-      WHERE x.id = ${created.id}
-      LIMIT 1
-    `;
-    const members = await membersOf(chatId);
+    const [row, members] = await Promise.all([messageById(created.id), membersOf(chatId)]);
+    const [message] = await shapeMany([row], { meId: me.id, members });
 
-    return NextResponse.json({
-      message: shapeMessage(inserted[0], { meId: me.id, members }),
-    });
+    return NextResponse.json({ message });
   } catch (e) {
     console.error('[community/messages:POST]', e?.message || e);
     return NextResponse.json({ error: 'Could not send that message' }, { status: 500 });
