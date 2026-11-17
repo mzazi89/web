@@ -61,6 +61,12 @@ export async function POST(request) {
     if (e.code === 'AUTH') return NextResponse.json({ error: 'The provider rejected the stored key.' }, { status: 502 });
     if (e.code === 'BALANCE') return NextResponse.json({ error: 'The provider balance is empty.' }, { status: 402 });
     if (e.code === 'INPUT') return NextResponse.json({ error: e.message }, { status: 400 });
+    if (e.code === 'STOCK') {
+      return NextResponse.json(
+        { error: 'That service is out of stock in that country right now — try another service, or the same one in a different country.' },
+        { status: 409 }
+      );
+    }
     return NextResponse.json({ error: 'No number available for that service right now.' }, { status: 502 });
   }
 }
