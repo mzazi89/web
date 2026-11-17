@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Button, Card, Icons, Ring } from '@/components/ui';
+import { fmtKes, fromUsd } from '@/lib/currency';
 
 // MZAZI TECH — temporary numbers.
 //
@@ -12,7 +13,9 @@ import { Button, Card, Icons, Ring } from '@/components/ui';
 // Receiving requires a provider key; browsing does not. When the key is missing
 // the page says so instead of showing numbers that can never receive.
 
-const money = (v) => (v == null ? '—' : `$${Number(v).toFixed(3)}`);
+// Provider prices are quoted in USD; the customer pays shillings with the
+// platform fee already in them, so nothing is converted twice.
+const money = (usd) => (usd == null ? '—' : fmtKes(fromUsd(usd)));
 
 export default function TempNumberPage() {
   const [countries, setCountries] = useState([]);
@@ -25,6 +28,7 @@ export default function TempNumberPage() {
   const [busy, setBusy] = useState(false);
   const [note, setNote] = useState('');
   const [copied, setCopied] = useState(false);
+  const [query, setQuery] = useState('');
   const poll = useRef(null);
 
   useEffect(() => {
@@ -99,6 +103,15 @@ export default function TempNumberPage() {
   }
 
   const chosen = useMemo(() => services.find((s) => s.service === service), [services, service]);
+
+  // Alphabetical, then filtered by what was typed. The provider returns services
+  // cheapest-first, which is good for browsing and useless for finding one.
+  const visibleServices = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return services
+      .filter((s) => !q || s.service.replace(/_/g, ' ').includes(q) || s.service.includes(q))
+      .sort((a, b) => a.service.localeCompare(b.service));
+  }, [services, query]);
   const label = (id) => id.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 
   return (
@@ -138,11 +151,18 @@ export default function TempNumberPage() {
 
             <label>
               <span>Service</span>
+              <input
+                className="tn-search"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder={`Search ${services.length} services…`}
+                aria-label="Search services"
+              />
               <select value={service} onChange={(e) => setService(e.target.value)}>
-                <option value="">Choose a service…</option>
-                {services.map((s) => (
+                <option value="">{visibleServices.length ? 'Choose a service…' : 'Nothing matches that search'}</option>
+                {visibleServices.map((s) => (
                   <option key={s.service} value={s.service}>
-                    {label(s.service)} — {money(s.price)} · {s.stock} left
+                    {label(s.service)} — {money(s.price)}
                   </option>
                 ))}
               </select>
