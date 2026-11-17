@@ -67,6 +67,9 @@ export async function POST(request) {
         { status: 409 }
       );
     }
-    return NextResponse.json({ error: 'No number available for that service right now.' }, { status: 502 });
+    return NextResponse.json(
+      { error: 'No number available for that service right now.', detail: e.detail || e.message },
+      { status: 502 }
+    );
   }
 }
