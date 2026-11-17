@@ -39,6 +39,7 @@ const ICONS = {
   wifi: Icons.Wifi,
   info: Icons.Info,
   settings: Icons.Settings,
+  mail: Icons.Mail,
 };
 
 // A sign-in form is one decision; a nav bar under it invites people to leave.

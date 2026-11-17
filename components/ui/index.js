@@ -26,3 +26,4 @@ export {
   Toggle, WizardSteps, ProgressBar, RowMenu, DataTable,
 } from './Layout';
 export * as Icons from './Icons';
+export { default as Ring } from './Ring';
