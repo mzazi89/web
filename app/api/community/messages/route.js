@@ -1,94 +1,86 @@
 import { NextResponse } from 'next/server';
-import jwt from 'jsonwebtoken';
-import { adminJwtSecret } from '@/lib/authSecret';
-import { cookies } from 'next/headers';
-import { neon } from '@neondatabase/serverless';
+import {
+  ensureCommunity, currentUser, mainChatId, joinMain, membership, postMessage,
+  cleanBody, displayName, asInt, sql,
+} from '@/lib/community';
 
 export const dynamic = 'force-dynamic';
-const sql = neon(process.env.DATABASE_URL, { fetchOptions: { cache: 'no-store' } });
-const JWT_SECRET = process.env.JWT_SECRET;
-// Shared helper — no hardcoded fallback (the old one was published in this
-// repository, so a deployment without ADMIN_JWT_SECRET accepted forged
-// admin tokens on a public endpoint).
-const ADMIN_JWT_SECRET = adminJwtSecret();
 
-async function ensureTable() {
-  await sql`
-    CREATE TABLE IF NOT EXISTS community_messages (
-      id          SERIAL PRIMARY KEY,
-      user_id     INTEGER,
-      user_name   VARCHAR(255) NOT NULL,
-      message     TEXT NOT NULL,
-      role        VARCHAR(50) DEFAULT 'user',
-      created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
-  `;
-}
-
-async function getAuth() {
-  const cookieStore = await cookies();
-  
-  // Check Admin first
-  const adminToken = cookieStore.get('admin_token');
-  if (adminToken) {
-    try {
-      const decoded = jwt.verify(adminToken.value, ADMIN_JWT_SECRET);
-      if (decoded.role === 'admin') return { id: 0, name: 'Dominic (Founder)', role: 'admin' };
-    } catch {}
-  }
-
-  // Check User
-  const token = cookieStore.get('token');
-  if (!token) return null;
-  try {
-    const decoded = jwt.verify(token.value, JWT_SECRET);
-    const users = await sql`SELECT * FROM users WHERE id = ${decoded.userId}`;
-    const user = users[0];
-    if (!user) return null;
-    const name = user.fullname || ((user.firstname || '') + ' ' + (user.lastname || '')).trim() || user.email;
-    return { id: user.id, name, role: 'user' };
-  } catch { return null; }
-}
-
-// GET /api/community/messages — fetch latest messages
+// MZAZI API — /api/community/messages  (legacy shape, kept working)
+//
+// The community page now speaks /api/community/sync. This endpoint survives
+// because it is the shape any older client and the admin panel already understand:
+// a flat list of { id, user_id, user_name, message, role, created_at } for the
+// main room. It writes into the SAME room the new page reads (com_messages on the
+// `main` chat) rather than a second table, so there is one history and no drift.
 export async function GET(request) {
   try {
-    await ensureTable();
-    const { searchParams } = new URL(request.url);
-    const lastId = parseInt(searchParams.get('lastId') || '0');
+    await ensureCommunity();
+    const me = await currentUser();
+    if (!me) return NextResponse.json({ error: 'Not signed in' }, { status: 401 });
 
-    const messages = await sql`
-      SELECT * FROM community_messages 
-      WHERE id > ${lastId}
-      ORDER BY created_at ASC 
-      LIMIT 100
+    const chatId = await mainChatId();
+    if (!chatId) return NextResponse.json({ messages: [] });
+
+    const { searchParams } = new URL(request.url);
+    const lastId = asInt(searchParams.get('lastId'));
+
+    const rows = await sql`
+      SELECT x.id, x.sender_id, x.sender_label, x.kind, x.body, x.created_at, x.deleted_at,
+             u.fullname, u.firstname, u.lastname, u.email
+      FROM com_messages x LEFT JOIN users u ON u.id = x.sender_id
+      WHERE x.chat_id = ${chatId} AND x.id > ${lastId}
+      ORDER BY x.id ASC LIMIT 100
     `;
-    return NextResponse.json({ messages });
-  } catch (error) {
+
+    return NextResponse.json({
+      messages: rows.map((r) => ({
+        id: r.id,
+        user_id: r.sender_id || 0,
+        user_name: r.sender_label || displayName(r),
+        message: r.deleted_at ? 'This message was deleted' : r.body,
+        role: r.sender_id ? 'user' : 'admin',
+        created_at: r.created_at,
+      })),
+    });
+  } catch (e) {
+    console.error('[community/messages:legacy GET]', e?.message || e);
     return NextResponse.json({ error: 'Failed to fetch messages' }, { status: 500 });
   }
 }
 
-// POST /api/community/messages — send a message
 export async function POST(request) {
   try {
-    const auth = await getAuth();
-    if (!auth) return NextResponse.json({ error: 'Please log in' }, { status: 401 });
+    await ensureCommunity();
+    const me = await currentUser();
+    if (!me) return NextResponse.json({ error: 'Please log in' }, { status: 401 });
 
-    const { message } = await request.json();
-    if (!message?.trim()) return NextResponse.json({ error: 'Message is required' }, { status: 400 });
+    let payload;
+    try { payload = await request.json(); } catch { payload = {}; }
+    const body = cleanBody(payload.message || payload.body);
+    if (!body) return NextResponse.json({ error: 'Message is required' }, { status: 400 });
 
-    await ensureTable();
-    
-    const result = await sql`
-      INSERT INTO community_messages (user_id, user_name, message, role)
-      VALUES (${auth.id}, ${auth.name}, ${message.trim()}, ${auth.role})
-      RETURNING *
-    `;
-    
-    return NextResponse.json({ message: result[0] });
-  } catch (error) {
-    console.error('Community message error:', error);
+    let chatId = await mainChatId();
+    if (!chatId) return NextResponse.json({ error: 'Community room is not ready' }, { status: 503 });
+    if (!(await membership(chatId, me.id))) {
+      await joinMain(me.id);
+      chatId = (await mainChatId()) || chatId;
+    }
+
+    const row = await postMessage(chatId, { senderId: me.id, body });
+
+    return NextResponse.json({
+      message: {
+        id: row.id,
+        user_id: me.id,
+        user_name: me.name,
+        message: row.body,
+        role: 'user',
+        created_at: row.created_at,
+      },
+    });
+  } catch (e) {
+    console.error('[community/messages:legacy POST]', e?.message || e);
     return NextResponse.json({ error: 'Failed to send message' }, { status: 500 });
   }
 }

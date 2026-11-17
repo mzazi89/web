@@ -4287,3 +4287,17 @@ main#main-content > * { animation: pageIn .26s ease both; }
 .dc-mode button.is-on { color: var(--ink); border-color: rgba(77,139,255,.45); background: rgba(46,107,255,.16); }
 
 .dc-dl.is-alt { border-color: rgba(122,180,255,.28); background: rgba(122,180,255,.10); }
+
+/* ─── Community (messages) ──────────────────────────────────────────────────
+   One animation, shared by the typing indicator in a chat and by nothing else.
+   Declared here rather than inline because @keyframes cannot live in a style
+   attribute, and honouring reduced-motion matters: a bouncing dot inside a
+   conversation that updates every 2.6s is exactly what that setting is for. */
+@keyframes comBounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.55; }
+  30%           { transform: translateY(-3px); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [style*="comBounce"] { animation: none !important; }
+}
