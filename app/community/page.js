@@ -22,6 +22,7 @@ import SignInGate from '@/components/SignInGate';
 import ChatList from '@/components/community/ChatList';
 import Thread from '@/components/community/Thread';
 import PeoplePicker from '@/components/community/PeoplePicker';
+import ChatInfo from '@/components/community/ChatInfo';
 import { Avatar, clock } from '@/components/community/parts';
 
 const SOUND = 'https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3';
@@ -56,19 +57,16 @@ export default function CommunityPage() {
   const [groupPeople, setGroupPeople] = useState([]);
   const [creating, setCreating] = useState(false);
   const [infoOpen, setInfoOpen] = useState(false);
-  const [renameTo, setRenameTo] = useState('');
-  const [addingOpen, setAddingOpen] = useState(false);
-  const [toAdd, setToAdd] = useState([]);
   const [confirm, setConfirm] = useState(null);
   const [working, setWorking] = useState(false);
   const [inviteCode, setInviteCode] = useState('');
   const [inviteLoading, setInviteLoading] = useState(false);
-  const [memberMenu, setMemberMenu] = useState(null);
   const [joinInvite, setJoinInvite] = useState(null);
   const [joining, setJoining] = useState(false);
   const [origin, setOrigin] = useState('');
 
   const chatIdRef = useRef(0);
+  const cacheRef = useRef(new Map());
   const shellRef = useRef(null);
   const inviteCheckedRef = useRef(false);
   const [shellH, setShellH] = useState(0);
@@ -161,7 +159,17 @@ export default function CommunityPage() {
       }
 
       if (reset || switched) {
-        setMessages(incoming);
+        // Merge instead of replace. A fresh open returns the newest 80 messages;
+        // replacing would silently drop any older pages already loaded and, if a
+        // poll raced the switch, make messages appear to disappear. Both sides
+        // are keyed by id so the server's copy always wins.
+        setMessages((prev) => {
+          const keep = (chatIdRef.current === data.chat.id ? prev : []).filter((m) => !m.pending);
+          const map = new Map(keep.map((m) => [m.id, m]));
+          for (const m of incoming) map.set(m.id, m);
+          const merged = [...map.values()].sort((a, b) => a.id - b.id);
+          return merged.slice(-400);
+        });
         lastIdRef.current = incoming.reduce((n, m) => Math.max(n, m.id), 0);
         readRef.current = 0;
         return;
@@ -202,6 +210,13 @@ export default function CommunityPage() {
     };
   }, [pull]);
 
+  // Whatever is on screen is what a chat switch should show next time: no empty
+  // flash, and no loss if the network drops mid-switch.
+  useEffect(() => {
+    const id = chatIdRef.current;
+    if (id && messages.length) cacheRef.current.set(id, messages);
+  }, [messages]);
+
   // ── read receipts ──────────────────────────────────────────────────────────
   useEffect(() => {
     const id = chatIdRef.current;
@@ -232,7 +247,7 @@ export default function CommunityPage() {
     lastIdRef.current = 0;
     readRef.current = 0;
     setChatId(id);
-    setMessages([]);
+    setMessages(cacheRef.current.get(id) || []);
     setReply(null);
     setPane('chat');
     await pull({ reset: true });
@@ -629,15 +644,6 @@ export default function CommunityPage() {
   const memberIds = useMemo(() => (chat?.members || []).map((m) => m.id), [chat]);
   const isGroup = chat?.kind === 'group';
 
-  // Keep the rename field in step with whatever the server says the name is.
-  useEffect(() => {
-    if (infoOpen) {
-      setRenameTo(chat?.title || '');
-      setAddingOpen(false);
-      setToAdd([]);
-    }
-  }, [infoOpen, chat?.title]);
-
   return (
     <AppBackground orbs>
       <audio ref={audioRef} src={SOUND} preload="auto" />
@@ -821,309 +827,57 @@ export default function CommunityPage() {
       </Modal>
 
       {/* ── conversation info ──────────────────────────────────────────────── */}
-      <Modal
+      <ChatInfo
         open={infoOpen}
         onClose={() => setInfoOpen(false)}
-        title={isGroup ? 'Group info' : 'Contact info'}
-        size="sm"
-      >
-        <div className="flex flex-col items-center pb-1 text-center">
-          <Avatar
-            avatar={chat?.avatar}
-            photo={chat?.photo}
-            label={chat?.title}
-            size={64}
-            online={!isGroup && chat?.peer?.online}
-            ring={!!chat?.isMain}
-          />
-          <p className="mt-2 text-[15px] font-extrabold" style={{ color: 'var(--ink)' }}>{chat?.title}</p>
-          <p className="text-[11.5px]" style={{ color: 'var(--dim)' }}>
-            {isGroup
-              ? `${chat?.members?.length || 0} members${chat?.isMain ? ' · the public room' : ''}`
-              : chat?.peer?.online ? 'online now' : 'direct message'}
-          </p>
-          {isGroup && !chat?.isMain && (
-            <p className="mt-1 text-[11px]" style={{ color: 'var(--dim)' }}>
-              {(chat?.members || []).slice(0, 3).map((m) => (m.id === me?.id ? 'You' : m.name.split(' ')[0])).join(', ')}
-              {(chat?.members?.length || 0) > 3 ? ` +${(chat?.members?.length || 0) - 3}` : ''}
-            </p>
-          )}
-        </div>
-
-        {isGroup && canManage && !chat?.isMain && (
-          <div className="mb-3 mt-3 rounded-xl p-3" style={{ background: 'var(--bg-2)', border: '1px solid var(--line-soft)' }}>
-            <p className="mb-2 text-[10.5px] font-bold uppercase tracking-wide" style={{ color: 'var(--dim)' }}>Group name</p>
-            <div className="flex gap-2">
-              <input
-                value={renameTo}
-                onChange={(e) => setRenameTo(e.target.value.slice(0, 80))}
-                maxLength={80}
-                className="min-w-0 flex-1 rounded-lg px-3 py-1.5 text-[12.5px] outline-none"
-                style={{ background: 'var(--surface)', border: '1px solid var(--line)', color: 'var(--ink)' }}
-              />
-              <button
-                type="button"
-                disabled={working || renameTo.trim().length < 2 || renameTo.trim() === chat?.title}
-                onClick={async () => {
-                  const ok = await patchChat({ title: renameTo.trim() });
-                  if (ok) toast.success('Group renamed');
-                }}
-                className="rounded-lg px-3 py-1.5 text-[12px] font-bold"
-                style={{
-                  background: renameTo.trim().length >= 2 && renameTo.trim() !== chat?.title ? 'var(--brand)' : 'var(--surface-3)',
-                  color: renameTo.trim().length >= 2 && renameTo.trim() !== chat?.title ? '#fff' : 'var(--dim)',
-                  border: 'none',
-                  cursor: 'pointer',
-                }}
-              >
-                Save
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* invite link */}
-        {isGroup && !chat?.isMain && (
-          <div className="mb-3 rounded-xl p-3" style={{ background: 'var(--brand-a06)', border: '1px solid var(--brand-a25)' }}>
-            <div className="flex items-center justify-between">
-              <p className="text-[10.5px] font-bold uppercase tracking-wide" style={{ color: 'var(--brand)' }}>
-                Invite via link
-              </p>
-              {canManage && (
-                <button
-                  type="button"
-                  onClick={resetInviteLink}
-                  disabled={working}
-                  className="text-[10.5px] font-bold"
-                  style={{ background: 'transparent', border: 'none', color: 'var(--dim)', cursor: 'pointer' }}
-                >
-                  Reset
-                </button>
-              )}
-            </div>
-            <p className="mt-0.5 text-[11px]" style={{ color: 'var(--muted)' }}>
-              Only people with this link can join — anyone who has it can.
-            </p>
-
-            <div className="mt-2 flex items-center gap-1.5">
-              <input
-                readOnly
-                value={inviteLoading ? 'Creating link…' : inviteCode ? `${origin}/community?invite=${inviteCode}` : ''}
-                onFocus={(e) => e.currentTarget.select()}
-                aria-label="Invite link"
-                className="min-w-0 flex-1 rounded-lg px-2.5 py-1.5 text-[11px] outline-none"
-                style={{ background: 'var(--surface)', border: '1px solid var(--line)', color: 'var(--ink)' }}
-              />
-              <button
-                type="button"
-                onClick={copyInvite}
-                disabled={!inviteCode}
-                aria-label="Copy invite link"
-                className="rounded-lg px-2.5 py-1.5 text-[11px] font-extrabold"
-                style={{ background: inviteCode ? 'var(--brand)' : 'var(--surface-3)', color: inviteCode ? '#fff' : 'var(--dim)', border: 'none', cursor: inviteCode ? 'pointer' : 'default' }}
-              >
-                Copy
-              </button>
-              <button
-                type="button"
-                onClick={shareInvite}
-                disabled={!inviteCode}
-                aria-label="Share invite link"
-                className="rounded-lg px-2.5 py-1.5 text-[11px] font-extrabold"
-                style={{ background: 'var(--surface)', border: '1px solid var(--line)', color: 'var(--muted)', cursor: inviteCode ? 'pointer' : 'default' }}
-              >
-                Share
-              </button>
-            </div>
-          </div>
-        )}
-
-        {isGroup && (
-          <>
-            <div className="mb-1.5 flex items-center justify-between">
-              <p className="text-[10.5px] font-bold uppercase tracking-wide" style={{ color: 'var(--dim)' }}>
-                {chat?.members?.length || 0} members
-              </p>
-              {canManage && !chat?.isMain && (
-                <button
-                  type="button"
-                  onClick={() => { setAddingOpen((v) => !v); setToAdd([]); }}
-                  className="text-[11.5px] font-bold"
-                  style={{ background: 'transparent', border: 'none', color: 'var(--brand)', cursor: 'pointer' }}
-                >
-                  {addingOpen ? 'Done' : '+ Add people'}
-                </button>
-              )}
-            </div>
-
-            {addingOpen && (
-              <div className="mb-2 rounded-lg p-2" style={{ border: '1px solid var(--line)', background: 'var(--bg-2)' }}>
-                <PeoplePicker
-                  mode="multi"
-                  selected={toAdd.map((p) => p.id)}
-                  exclude={memberIds}
-                  onToggle={(p) => setToAdd((prev) => (prev.some((x) => x.id === p.id) ? prev.filter((x) => x.id !== p.id) : [...prev, p]))}
-                  emptyHint="Everyone already knows this group."
-                />
-                <button
-                  type="button"
-                  disabled={!toAdd.length || working}
-                  onClick={async () => {
-                    const ok = await patchChat({ addMembers: toAdd.map((p) => p.id) });
-                    if (ok) {
-                      toast.success(`Added ${toAdd.length} ${toAdd.length === 1 ? 'person' : 'people'}`);
-                      setToAdd([]);
-                      setAddingOpen(false);
-                    }
-                  }}
-                  className="mt-2 w-full rounded-full py-2 text-[12px] font-extrabold"
-                  style={{
-                    background: toAdd.length ? 'var(--brand)' : 'var(--surface-3)',
-                    color: toAdd.length ? '#fff' : 'var(--dim)',
-                    border: 'none',
-                    cursor: toAdd.length ? 'pointer' : 'default',
-                  }}
-                >
-                  {toAdd.length ? `Add ${toAdd.length} to the group` : 'Select people to add'}
-                </button>
-              </div>
-            )}
-
-            <div className="max-h-[32vh] overflow-y-auto pr-0.5">
-              {(chat?.members || []).map((m) => {
-                const isMe = m.id === me?.id;
-                const canPromote = canManage && m.role === 'member' && !chat?.isMain;
-                const canDemote = (chat?.myRole === 'owner' || chat?.myRole === 'admin') && m.role === 'admin';
-                const canRemove = canManage && m.role !== 'owner' && !isMe && !chat?.isMain;
-                const open = memberMenu === m.id;
-
-                return (
-                  <div key={m.id} className="border-b last:border-b-0" style={{ borderColor: 'var(--line-soft)' }}>
-                    <div className="flex items-center gap-2.5 py-2">
-                      <Avatar avatar={m.avatar} photo={m.photo} label={m.name} size={36} online={m.online} />
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-[12.5px] font-bold" style={{ color: 'var(--ink)' }}>
-                          {m.name}{isMe ? ' (you)' : ''}
-                        </p>
-                        <p className="text-[10.5px] font-semibold" style={{ color: m.role === 'member' ? 'var(--dim)' : 'var(--brand)' }}>
-                          {m.role === 'owner' ? 'Group owner' : m.role === 'admin' ? 'Group admin' : m.online ? 'Online' : 'Member'}
-                        </p>
-                      </div>
-                      {!isMe && (
-                        <button
-                          type="button"
-                          onClick={() => setMemberMenu(open ? null : m.id)}
-                          aria-label={`Options for ${m.name}`}
-                          aria-expanded={open}
-                          style={{ background: 'transparent', border: 'none', color: 'var(--dim)', cursor: 'pointer', padding: 4, display: 'grid', placeItems: 'center' }}
-                        >
-                          <Icons.MoreVertical size={16} />
-                        </button>
-                      )}
-                    </div>
-
-                    {open && !isMe && (
-                      <div className="mb-2 flex flex-wrap gap-1.5">
-                        <button
-                          type="button"
-                          onClick={() => { setInfoOpen(false); setMemberMenu(null); openDm({ id: m.id }); }}
-                          className="rounded-full px-2.5 py-1 text-[11px] font-bold"
-                          style={{ background: 'var(--brand-a10)', border: '1px solid var(--brand-a25)', color: 'var(--brand)', cursor: 'pointer' }}
-                        >
-                          Message
-                        </button>
-                        {canPromote && (
-                          <button
-                            type="button"
-                            onClick={() => changeRole(m, 'admin')}
-                            className="rounded-full px-2.5 py-1 text-[11px] font-bold"
-                            style={{ background: 'var(--surface)', border: '1px solid var(--line)', color: 'var(--ink)', cursor: 'pointer' }}
-                          >
-                            Make group admin
-                          </button>
-                        )}
-                        {canDemote && (
-                          <button
-                            type="button"
-                            onClick={() => changeRole(m, 'member')}
-                            className="rounded-full px-2.5 py-1 text-[11px] font-bold"
-                            style={{ background: 'var(--surface)', border: '1px solid var(--line)', color: 'var(--ink)', cursor: 'pointer' }}
-                          >
-                            Dismiss as admin
-                          </button>
-                        )}
-                        {canRemove && (
-                          <button
-                            type="button"
-                            onClick={() => setConfirm({
-                              title: `Remove ${m.name}?`,
-                              description: 'They will stop receiving messages from this group.',
-                              label: 'Remove',
-                              run: async () => {
-                                const ok = await patchChat({ removeMember: m.id });
-                                if (ok) toast.success('Member removed');
-                                setConfirm(null);
-                              },
-                            })}
-                            className="rounded-full px-2.5 py-1 text-[11px] font-bold"
-                            style={{ background: 'var(--bad-a08)', border: '1px solid var(--bad-a25)', color: 'var(--bad)', cursor: 'pointer' }}
-                          >
-                            Remove
-                          </button>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </>
-        )}
-
-        <div className="mt-4 flex flex-wrap gap-2 border-t pt-3" style={{ borderColor: 'var(--line-soft)' }}>
-          {isGroup && !chat?.isMain && (
-            <button
-              type="button"
-              onClick={() => setConfirm({
-                title: 'Leave this group?',
-                description: chat?.myRole === 'owner'
-                  ? 'You are the owner, so the group passes to the longest-standing member.'
-                  : 'You will stop receiving its messages. You can be added back later.',
-                label: 'Leave',
-                run: leaveChat,
-              })}
-              className="rounded-full px-4 py-2 text-[12px] font-bold"
-              style={{ background: 'transparent', border: '1px solid var(--line)', color: 'var(--muted)', cursor: 'pointer' }}
-            >
-              Exit group
-            </button>
-          )}
-
-          {(!isGroup || chat?.myRole === 'owner') && !chat?.isMain && (
-            <button
-              type="button"
-              onClick={() => setConfirm({
-                title: isGroup ? 'Delete this group?' : 'Delete this chat?',
-                description: isGroup
-                  ? 'Every message is deleted for everyone. This cannot be undone.'
-                  : 'The chat disappears from your list. The other person keeps their copy.',
-                label: isGroup ? 'Delete group' : 'Delete chat',
-                run: deleteChat,
-              })}
-              className="rounded-full px-4 py-2 text-[12px] font-bold"
-              style={{ background: 'var(--bad-a08)', border: '1px solid var(--bad-a25)', color: 'var(--bad)', cursor: 'pointer' }}
-            >
-              {isGroup ? 'Delete group' : 'Delete chat'}
-            </button>
-          )}
-
-          {chat?.isMain && (
-            <p className="text-[11.5px]" style={{ color: 'var(--dim)' }}>
-              This is the public community room — every account is in it, and it cannot be left or deleted.
-            </p>
-          )}
-        </div>
-      </Modal>
+        chat={chat}
+        me={me}
+        inviteCode={inviteCode}
+        inviteLoading={inviteLoading}
+        onCopyInvite={copyInvite}
+        onResetInvite={resetInviteLink}
+        onAddMembers={async (ids) => {
+          const ok = await patchChat({ addMembers: ids });
+          if (ok) toast.success(`Added ${ids.length} ${ids.length === 1 ? 'person' : 'people'}`);
+          return ok;
+        }}
+        onSetRole={changeRole}
+        onRemove={async (member) => {
+          const ok = await patchChat({ removeMember: member.id });
+          if (ok) toast.success(`${member.name} removed`);
+        }}
+        onLeave={() => setConfirm({
+          title: 'Exit this group?',
+          description: chat?.myRole === 'owner'
+            ? 'You are the owner, so the group passes to the longest-standing member.'
+            : 'You will stop receiving its messages. You can be added back later.',
+          label: 'Exit',
+          run: leaveChat,
+        })}
+        onDelete={() => setConfirm({
+          title: isGroup ? 'Delete this group?' : 'Delete this chat?',
+          description: isGroup
+            ? 'Every message is deleted for everyone. This cannot be undone.'
+            : 'The chat disappears from your list. The other person keeps their copy.',
+          label: isGroup ? 'Delete group' : 'Delete chat',
+          run: deleteChat,
+        })}
+        onPin={async (pinned) => {
+          const ok = await patchChat({ pin: pinned });
+          if (ok) toast.success(pinned ? 'Chat pinned' : 'Chat unpinned');
+        }}
+        onSaveTitle={async (title) => {
+          const ok = await patchChat({ title });
+          if (ok) toast.success('Group renamed');
+        }}
+        onSaveAbout={async (text) => {
+          const ok = await patchChat({ about: text });
+          if (ok) toast.success('Description saved');
+        }}
+        onOpenMedia={(m) => setLightbox(m)}
+        onMessageMember={(m) => openDm({ id: m.id })}
+        busy={working}
+      />
 
       <ConfirmDialog
         open={!!confirm}

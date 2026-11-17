@@ -17,7 +17,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Icons, useToast } from '@/components/ui';
 import {
-  Avatar, EmojiTray, IconButton, Ticks, TypingDots,
+  Avatar, EmojiTray, IconButton, Ticks, TypingDots, WA, DOODLE_URL,
   clock, dayKey, dayLabel, fmtDuration, waveform,
   MicIcon, CameraIcon,
 } from './parts';
@@ -165,6 +165,7 @@ export default function Thread({
   const scrollRef = useRef(null);
   const areaRef = useRef(null);
   const fileRef = useRef(null);
+  const cameraRef = useRef(null);
   const atBottomRef = useRef(true);
   const lastCountRef = useRef(0);
   const lastHeightRef = useRef(0);
@@ -445,14 +446,21 @@ export default function Thread({
       {/* ── messages ───────────────────────────────────────────────────── */}
       <div className="relative min-h-0 flex-1">
         <div
+          aria-hidden="true"
+          style={{
+            position: 'absolute',
+            inset: 0,
+            backgroundImage: DOODLE_URL,
+            backgroundSize: '240px 240px',
+            opacity: 0.07,
+            pointerEvents: 'none',
+          }}
+        />
+        <div
           ref={scrollRef}
           onScroll={onScroll}
-          className="h-full overflow-y-auto px-3 pb-2 md:px-6"
-          style={{
-            backgroundImage: 'radial-gradient(var(--brand-a08) 1px, transparent 0)',
-            backgroundSize: '22px 22px',
-            overscrollBehavior: 'contain',
-          }}
+          className="relative h-full overflow-y-auto px-3 pb-2 md:px-6"
+          style={{ overscrollBehavior: 'contain', zIndex: 1 }}
         >
           {hasMore && (
             <div className="pt-3 text-center">
@@ -469,20 +477,24 @@ export default function Thread({
           )}
 
           {!messages.length && (
-            <div className="grid h-full place-items-center px-6">
-              <div className="max-w-[320px] text-center">
-                <div className="mx-auto mb-3" style={{ width: 56, height: 56, borderRadius: '50%', background: 'var(--brand-tint)', color: 'var(--brand)', display: 'grid', placeItems: 'center' }}>
-                  {isGroup ? <Icons.Users size={26} /> : <Icons.Chat size={26} />}
-                </div>
-                <p className="text-[13px] font-extrabold" style={{ color: 'var(--ink)' }}>
-                  {isGroup ? `Welcome to ${chat?.title}` : `Say hello to ${chat?.title}`}
-                </p>
-                <p className="mt-1 text-[11.5px]" style={{ color: 'var(--dim)' }}>
-                  {isGroup
-                    ? 'This is the start of the group. Messages are visible to its members only.'
-                    : 'This is the start of your private conversation. Only the two of you can read it.'}
-                </p>
+            <div className="flex flex-col items-center px-2 pt-5">
+              <span
+                className="rounded-full px-3 py-1 text-[10px] font-extrabold uppercase tracking-wide"
+                style={{ background: 'var(--surface)', border: '1px solid var(--line-soft)', color: 'var(--dim)' }}
+              >
+                {dayLabel(Date.now())}
+              </span>
+              <div
+                className="mt-4 max-w-[320px] rounded-lg px-3 py-2 text-center text-[11px] leading-relaxed"
+                style={{ background: 'rgba(255, 193, 7, 0.07)', border: '1px solid rgba(255, 193, 7, 0.16)', color: '#D8BE86' }}
+              >
+                <span className="mr-1 inline-flex align-[-2px]"><Icons.Lock size={12} /></span>
+                Messages in this chat are private to its members. Nothing here is visible to anyone outside it,
+                and attachments are served only to signed-in members of this conversation.
               </div>
+              <p className="mt-6 text-[11.5px]" style={{ color: 'var(--dim)' }}>
+                {isGroup ? `This is the start of ${chat?.title}.` : `This is the start of your chat with ${chat?.title}.`}
+              </p>
             </div>
           )}
 
@@ -540,7 +552,7 @@ export default function Thread({
                     <div
                       onClick={() => setPicked(showActions ? null : m.id)}
                       style={{
-                        background: mine ? 'var(--brand)' : 'var(--surface)',
+                        background: mine ? WA.outgoing : WA.incoming,
                         color: mine ? '#fff' : 'var(--ink)',
                         border: mine ? '1px solid transparent' : '1px solid var(--line-soft)',
                         borderRadius: 14,
@@ -843,35 +855,39 @@ export default function Thread({
         ) : (
           <div className="flex items-end gap-2">
             <input ref={fileRef} type="file" accept="image/*" onChange={pickPhoto} style={{ display: 'none' }} />
-
-            <IconButton label="Attach a photo" onClick={() => fileRef.current?.click()} active={preparing}>
-              <CameraIcon size={19} />
-            </IconButton>
-
-            <div className="relative">
-              <IconButton label="Emoji" onClick={() => setEmojiOpen((v) => !v)} active={emojiOpen}>
-                <span style={{ fontSize: 16, lineHeight: 1 }}>🙂</span>
-              </IconButton>
-              {emojiOpen && (
-                <EmojiTray onPick={(e) => setDraft((d) => `${d}${e}`)} onClose={() => setEmojiOpen(false)} />
-              )}
-            </div>
+            <input ref={cameraRef} type="file" accept="image/*" capture="environment" onChange={pickPhoto} style={{ display: 'none' }} />
 
             <div
-              className="flex min-w-0 flex-1 items-end"
-              style={{ background: 'var(--bg-2)', border: '1px solid var(--line-soft)', borderRadius: 20, padding: '4px 10px' }}
+              className="relative flex min-w-0 flex-1 items-end gap-0.5"
+              style={{ background: 'var(--bg-2)', border: '1px solid var(--line-soft)', borderRadius: 24, padding: '3px 6px 3px 4px' }}
             >
+              <div className="relative">
+                <IconButton label="Emoji" onClick={() => setEmojiOpen((v) => !v)} active={emojiOpen} size={30}>
+                  <span style={{ fontSize: 17, lineHeight: 1 }}>🙂</span>
+                </IconButton>
+                {emojiOpen && (
+                  <EmojiTray onPick={(e) => setDraft((d) => `${d}${e}`)} onClose={() => setEmojiOpen(false)} />
+                )}
+              </div>
+
               <textarea
                 ref={areaRef}
                 value={draft}
                 onChange={(e) => { setDraft(e.target.value); noteTyping(); }}
                 onKeyDown={onKeyDown}
                 rows={1}
-                placeholder={chat ? (isGroup ? 'Message the group' : `Message ${chat.title}`) : 'Type a message'}
+                placeholder="Message"
                 aria-label="Message"
-                className="w-full resize-none bg-transparent py-1.5 text-[13px] outline-none"
+                className="min-w-0 flex-1 resize-none bg-transparent px-1 py-2 text-[13px] outline-none"
                 style={{ color: 'var(--ink)', maxHeight: 132 }}
               />
+
+              <IconButton label="Attach a photo" onClick={() => fileRef.current?.click()} active={preparing} size={30}>
+                <Icons.Upload size={17} />
+              </IconButton>
+              <IconButton label="Take a photo" onClick={() => cameraRef.current?.click()} size={30}>
+                <CameraIcon size={17} />
+              </IconButton>
             </div>
 
             {draft.trim() ? (
@@ -881,9 +897,10 @@ export default function Thread({
                 disabled={sending}
                 aria-label="Send message"
                 style={{
-                  width: 42, height: 42, flex: '0 0 42px', borderRadius: '50%',
-                  background: 'var(--brand)', color: '#fff', border: 'none',
+                  width: 44, height: 44, flex: '0 0 44px', borderRadius: '50%',
+                  background: WA.accent, color: '#fff', border: 'none',
                   display: 'grid', placeItems: 'center', cursor: 'pointer',
+                  boxShadow: '0 6px 16px -8px rgba(0,168,132,0.9)',
                 }}
               >
                 <Icons.Send size={19} />
@@ -894,9 +911,9 @@ export default function Thread({
                 onClick={startRecording}
                 aria-label="Record a voice note"
                 style={{
-                  width: 42, height: 42, flex: '0 0 42px', borderRadius: '50%',
-                  background: 'var(--brand-a12)', color: 'var(--brand)',
-                  border: '1px solid var(--brand-a25)', display: 'grid', placeItems: 'center', cursor: 'pointer',
+                  width: 44, height: 44, flex: '0 0 44px', borderRadius: '50%',
+                  background: WA.accentSoft, color: WA.accent,
+                  border: `1px solid ${WA.accentLine}`, display: 'grid', placeItems: 'center', cursor: 'pointer',
                 }}
               >
                 <MicIcon size={19} />

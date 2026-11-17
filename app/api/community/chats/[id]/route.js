@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import {
-  ensureCommunity, currentUser, membership, membersOf, systemNote, setMemberRole, sql,
-  cleanBody, MAX_GROUP, asInt,
+  ensureCommunity, currentUser, membership, membersOf, systemNote, setMemberRole, setPinned,
+  sql, cleanBody, MAX_GROUP, asInt,
 } from '@/lib/community';
 
 export const dynamic = 'force-dynamic';
@@ -79,6 +79,21 @@ export async function PATCH(request, { params }) {
         await systemNote(chatId, `${me.name} added ${label}`);
       }
       return NextResponse.json({ ok: true, added });
+    }
+
+    // Pin/unpin is per member, not per chat: what sits at the top of your list is
+    // your business, not the group's.
+    if (body.pin !== undefined) {
+      await setPinned(chatId, me.id, !!body.pin);
+      return NextResponse.json({ ok: true, pinned: !!body.pin });
+    }
+
+    if (body.about !== undefined) {
+      if (chat.kind !== 'group') return NextResponse.json({ error: 'Only groups have a description' }, { status: 400 });
+      if (!canManage) return NextResponse.json({ error: 'Only group admins can edit the description' }, { status: 403 });
+      const about = cleanBody(body.about, 255);
+      await sql`UPDATE com_chats SET about = ${about} WHERE id = ${chatId}`;
+      return NextResponse.json({ ok: true, about });
     }
 
     if (body.setRole && typeof body.setRole === 'object') {

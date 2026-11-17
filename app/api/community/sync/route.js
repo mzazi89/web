@@ -74,6 +74,7 @@ export async function GET(request) {
         title: chatRow.kind === 'dm' ? peer?.name || 'Direct message' : chatRow.title || 'Group',
         about: chatRow.about || '',
         myRole: mine.role,
+        pinned: !!mine.pinned,
         members,
         peer: peer || null,
         photo: peer?.photo || null,

@@ -126,3 +126,6 @@ export const Chat = (p) => <Svg {...p}><path d="M20.5 12.4c0 4-3.8 7.2-8.5 7.2-1
 export const ThumbUp = (p) => <Svg {...p}><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3z" /><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3" /></Svg>;
 export const ThumbDown = (p) => <Svg {...p}><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3z" /><path d="M17 2h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17" /></Svg>;
 export const Share = (p) => <Svg {...p}><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" /><path d="M16 6l-4-4-4 4" /><path d="M12 2v13" /></Svg>;
+
+export const Pin = (p) => <Svg {...p}><path d="M9 3h6l-1 6 4 3v2H6v-2l4-3-1-6Z" /><path d="M12 14v7" /></Svg>;
+export const Lock = (p) => <Svg {...p}><rect x="4" y="10" width="16" height="11" rx="2.5" /><path d="M8 10V7.5a4 4 0 0 1 8 0V10" /></Svg>;

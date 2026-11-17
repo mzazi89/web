@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import {
   ensureCommunity, currentUser, membership, membersOf, postMessage, attachMedia,
-  messageById, shapeMany, asInt,
+  messageById, shapeMany, mediaIn, asInt, sql,
 } from '@/lib/community';
 
 export const dynamic = 'force-dynamic';
@@ -48,6 +48,33 @@ function decode(input, max) {
   const bytes = Buffer.from(clean, 'base64');
   if (!bytes.length || bytes.length > max) return null;
   return bytes;
+}
+
+// GET — the Media tab. Metadata only; the bytes stay behind /api/community/media/:id,
+// which checks membership again, so a grid cannot be used to walk attachments.
+export async function GET(request, { params }) {
+  try {
+    await ensureCommunity();
+    const me = await currentUser();
+    if (!me) return NextResponse.json({ error: 'Not signed in' }, { status: 401 });
+
+    const { id } = await params;
+    const chatId = asInt(id);
+    const mine = await membership(chatId, me.id);
+    if (!mine) return NextResponse.json({ error: 'You are not in this conversation' }, { status: 403 });
+
+    const media = await mediaIn(chatId, 60);
+    const total = await sql`
+      SELECT COUNT(*)::int AS c FROM com_media md
+      JOIN com_messages x ON x.id = md.message_id
+      WHERE md.chat_id = ${chatId} AND x.deleted_at IS NULL
+    `;
+
+    return NextResponse.json({ media, total: Number(total[0]?.c || 0) });
+  } catch (e) {
+    console.error('[community/media:list]', e?.message || e);
+    return NextResponse.json({ error: 'Could not load media' }, { status: 500 });
+  }
 }
 
 export async function POST(request, { params }) {

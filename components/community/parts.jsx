@@ -19,6 +19,42 @@ import { Icons } from '@/components/ui';
  * between the list being rendered and the request landing) the initials layer
  * underneath simply shows through, so an avatar never becomes a broken-image box.
  */
+/**
+ * The messenger's own accent.
+ *
+ * The rest of the site is blue; a chat that uses green for "send", unread counts
+ * and the floating button reads as the app people already know, which is the point
+ * of matching WhatsApp. Scoped to these components rather than added to the global
+ * palette so nothing else on the site shifts.
+ */
+export const WA = {
+  accent: '#00A884',
+  accentSoft: 'rgba(0, 168, 132, 0.14)',
+  accentLine: 'rgba(0, 168, 132, 0.38)',
+  outgoing: '#005C4B',
+  incoming: '#202C33',
+  tick: '#53BDEB',
+  badge: '#00A884',
+};
+
+/** A doodle wall, faint enough to sit behind text. */
+const DOODLE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240" viewBox="0 0 240 240">
+  <g fill="none" stroke="#8da2b0" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M18 28h30v22H32l-7 7v-7h-7z"/><circle cx="96" cy="32" r="11"/>
+    <path d="M146 22l7 14 15 2-11 10 3 15-14-8-14 8 3-15-11-10 15-2z"/>
+    <rect x="200" y="20" width="24" height="20" rx="4"/>
+    <path d="M22 96c8-12 24-12 32 0-8 12-24 12-32 0z"/><path d="M96 84v26M83 97h26"/>
+    <path d="M144 88h26v18h-26z"/><path d="M148 88l9 7 9-7"/><circle cx="212" cy="96" r="9"/>
+    <path d="M14 158h28v18H14z"/><path d="M20 152l8 6 8-6"/><path d="M92 150q10-12 20 0t20 0"/>
+    <path d="M150 146l6 12 12 1-9 8 2 12-11-6-11 6 2-12-9-8 12-1z"/>
+    <rect x="196" y="150" width="28" height="20" rx="3"/><path d="M210 150v20M196 160h28"/>
+    <path d="M20 212h32M36 204v16"/><circle cx="104" cy="212" r="10"/>
+    <path d="M96 208l5 9 8-12"/><path d="M150 204h24v18h-24z"/>
+  </g>
+</svg>`;
+
+export const DOODLE_URL = `url("data:image/svg+xml,${encodeURIComponent(DOODLE_SVG)}")`;
+
 export function Avatar({ avatar, photo = null, label, size = 46, online = false, square = false, ring = false }) {
   const ink = avatar?.ink || 'var(--brand)';
   const tint = avatar?.tint || 'var(--brand-tint)';
