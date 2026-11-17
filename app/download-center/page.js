@@ -22,6 +22,9 @@ export default function DownloadCenterPage() {
   const [searching, setSearching] = useState(false);
   const [note, setNote] = useState('');
   const [playing, setPlaying] = useState(null);
+  // Watch shows the video; Listen drops to audio so it survives the screen
+  // locking. Only one of them may ever be running, or you get two soundtracks.
+  const [mode, setMode] = useState('watch');
   const [pass, setPass] = useState(null);
   const [tiers, setTiers] = useState([]);
   const [paywall, setPaywall] = useState(null);
@@ -137,18 +140,34 @@ export default function DownloadCenterPage() {
             </div>
             <button type="button" onClick={stopPlayback} aria-label="Close player">×</button>
           </div>
-          <audio
-            ref={audioRef}
-            className="dc-audio"
-            controls
-            autoPlay
-            preload="none"
-            src={`/api/music/stream?id=${encodeURIComponent(playing.id)}`}
-            onPlay={attachMediaSession}
-          />
-          <p className="dc-fine" style={{ padding: '8px 0 0' }}>
-            Keeps playing when you switch apps or lock the screen.
-          </p>
+          {mode === 'watch' ? (
+            <iframe
+              className="dc-frame"
+              title={playing.title}
+              src={`https://www.youtube.com/embed/${playing.id}?autoplay=1&playsinline=1`}
+              allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+              allowFullScreen
+            />
+          ) : (
+            <audio
+              ref={audioRef}
+              className="dc-audio"
+              controls
+              autoPlay
+              preload="none"
+              src={`/api/music/stream?id=${encodeURIComponent(playing.id)}`}
+              onPlay={attachMediaSession}
+            />
+          )}
+
+          <div className="dc-mode">
+            <button type="button" className={mode === 'watch' ? 'is-on' : ''} onClick={() => setMode('watch')}>
+              Watch video
+            </button>
+            <button type="button" className={mode === 'listen' ? 'is-on' : ''} onClick={() => setMode('listen')}>
+              Background audio
+            </button>
+          </div>
         </Card>
       )}
 
