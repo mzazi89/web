@@ -59,7 +59,14 @@ export async function POST(request) {
       box.sid
     );
   } catch (e) {
+    console.error('[temp-mail] create failed:', e.code || '', e.message);
     if (e.code === 'LIMIT') return NextResponse.json({ error: e.message }, { status: 429 });
+    if (e.code === 'DOMAINS') {
+      return NextResponse.json({ error: 'The mail service is refusing new mailboxes from this server right now.' }, { status: 502 });
+    }
+    if (e.code === 'ACCOUNT') {
+      return NextResponse.json({ error: 'The mail service would not issue an address — try again in a moment.' }, { status: 502 });
+    }
     return NextResponse.json({ error: 'Could not create an inbox right now.' }, { status: 502 });
   }
 }
