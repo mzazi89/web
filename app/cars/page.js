@@ -69,7 +69,7 @@ export default async function CarsPage() {
                 {DEALER.brand} <span style={{ color: GOLD }}>Showroom</span>
               </h1>
               <p style={{ marginTop: 10, maxWidth: 520, fontSize: 14, lineHeight: 1.6, color: 'var(--muted)' }}>
-                {DEALER.tagline} Pickups, vans, light trucks and buses — each listing carries the
+                {DEALER.tagline} Prime movers, tippers, pickups vans and buses — each listing carries the
                 specs that matter on a site, not just a year and a mileage.
               </p>
             </div>

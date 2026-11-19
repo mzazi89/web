@@ -206,7 +206,7 @@ export default function CarsBrowser({ cars = [], bodies = [] }) {
 
                 <div style={{ marginTop: 'auto', paddingTop: 10, display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 8 }}>
                   <span style={{ fontSize: 14, fontWeight: 800, color: GOLD, letterSpacing: '0.01em' }}>
-                    {priceLabel(car.price_kes)}
+                    {priceLabel(car.price_kes, car.currency)}
                   </span>
                   {car.negotiable && car.price_kes != null && (
                     <span style={{ fontSize: 10.5, color: 'var(--dim)' }}>negotiable</span>

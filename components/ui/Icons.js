@@ -134,3 +134,4 @@ export const Car = (p) => <Svg {...p}><path d="M3 13.5 4.6 9a2 2 0 0 1 1.9-1.3h1
 export const Truck = (p) => <Svg {...p}><path d="M3 7h10v9H3z" /><path d="M13 10h4l3 3v3h-7" /><circle cx="7" cy="18" r="1.8" /><circle cx="17" cy="18" r="1.8" /></Svg>;
 export const Gauge = (p) => <Svg {...p}><path d="M4 18a8 8 0 1 1 16 0" /><path d="M12 18l4-5" /><circle cx="12" cy="18" r="1.4" /></Svg>;
 export const Fuel = (p) => <Svg {...p}><path d="M5 21V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v16" /><path d="M5 12h8M13 8h3l3 3v7a2 2 0 0 1-4 0v-3h-2" /></Svg>;
+export const MapPin = (p) => <Svg {...p}><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11Z" /><circle cx="12" cy="10" r="2.5" /></Svg>;

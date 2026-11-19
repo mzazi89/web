@@ -3,13 +3,13 @@ import { neon } from "@neondatabase/serverless";
 var sql = neon(process.env.DATABASE_URL, { fetchOptions: { cache: "no-store" } });
 var MAX_IMAGES = 8;
 var MAX_IMAGE_BYTES = 18e5;
-var BODY_TYPES = ["Pickup", "Light Truck", "Heavy Truck", "Van", "Bus", "SUV", "Tractor"];
+var BODY_TYPES = ["Pickup", "Light Truck", "Heavy Truck", "Prime Mover", "Tipper Truck", "Van", "Bus", "SUV", "Tractor"];
 var CONDITIONS = ["Brand new", "Foreign used", "Locally used", "Refurbished"];
 var FUELS = ["Diesel", "Petrol", "Electric", "Hybrid"];
 var TRANSMISSIONS = ["Manual", "Automatic"];
 var STATUSES = ["draft", "published", "sold"];
 var DEALER = {
-  company: "Golden Lion Motors Co.",
+  company: "Golden Lion Motor Co. Limited",
   brand: "FOTON",
   tagline: "Commercial vehicles built to work."
 };
@@ -45,6 +45,8 @@ function ensureCars() {
           updated_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
       `;
+      await sql`ALTER TABLE cars ADD COLUMN IF NOT EXISTS currency VARCHAR(3) DEFAULT 'KES'`;
+      await sql`ALTER TABLE cars ADD COLUMN IF NOT EXISTS specs JSONB DEFAULT '[]'::jsonb`;
       await sql`CREATE INDEX IF NOT EXISTS cars_status_idx ON cars (status, created_at DESC)`;
       await sql`
         CREATE TABLE IF NOT EXISTS car_images (
@@ -83,7 +85,7 @@ async function uniqueSlug(base, exceptId = null) {
   }
   return `${root}-${Date.now().toString(36)}`;
 }
-var money = (n) => n == null ? "Price on request" : `KES ${Number(n).toLocaleString("en-KE")}`;
+var money = (n, currency = "KES") => n == null ? "Price on request" : `${currency} ${Number(n).toLocaleString("en-KE")}`;
 var spec = (car) => [
   { label: "Body", value: car.body },
   { label: "Year", value: car.year },
@@ -95,8 +97,9 @@ var spec = (car) => [
   { label: "Seats", value: car.seats },
   { label: "Payload", value: car.payload_kg != null ? `${Number(car.payload_kg).toLocaleString("en-KE")} kg` : null },
   { label: "Colour", value: car.color },
-  { label: "Condition", value: car.condition }
-].filter((s) => s.value !== null && s.value !== void 0 && s.value !== "");
+  { label: "Condition", value: car.condition },
+  ...Array.isArray(car.specs) ? car.specs : []
+].filter((s) => s && s.value !== null && s.value !== void 0 && s.value !== "");
 async function dealerContact() {
   await ensureCars();
   let map = {};
@@ -122,7 +125,7 @@ async function listCars({ body = "", q = "", sort = "newest", limit = 60 } = {})
   const bodyFilter = BODY_TYPES.includes(body) ? body : "";
   const term = clean(q, 60);
   return sql`
-    SELECT c.id, c.slug, c.title, c.model, c.body, c.year, c.price_kes, c.negotiable,
+    SELECT c.id, c.slug, c.title, c.model, c.body, c.year, c.price_kes, c.currency, c.negotiable,
            c.mileage_km, c.fuel, c.transmission, c.drive, c.seats, c.payload_kg,
            c.color, c.condition, c.status, c.featured, c.created_at,
            (SELECT i.id FROM car_images i WHERE i.car_id = c.id ORDER BY i.position, i.id LIMIT 1) AS cover_id,
@@ -201,6 +204,14 @@ async function saveCar(input, { id = null } = {}) {
     description: clean(input.description, 6e3) || null,
     features,
     status,
+    currency: ["KES", "USD"].includes(String(input.currency || "").toUpperCase()) ? String(input.currency).toUpperCase() : "KES",
+    specs: Array.isArray(input.specs) ? input.specs.filter((r) => r && r.label && r.value).map((r) => ({ label: clean(r.label, 60), value: clean(r.value, 120) })).slice(0, 30) : String(input.specs || "").split("\n").map((line) => {
+      const idx = line.indexOf(":");
+      if (idx === -1) return null;
+      const label = clean(line.slice(0, idx), 60);
+      const value = clean(line.slice(idx + 1), 120);
+      return label && value ? { label, value } : null;
+    }).filter(Boolean).slice(0, 30),
     featured: Boolean(input.featured)
   };
   if (id) {
@@ -213,6 +224,7 @@ async function saveCar(input, { id = null } = {}) {
         drive = ${values.drive}, engine = ${values.engine}, seats = ${values.seats},
         payload_kg = ${values.payload_kg}, color = ${values.color}, condition = ${values.condition},
         description = ${values.description}, features = ${values.features}::text[], status = ${values.status},
+        currency = ${values.currency}, specs = ${JSON.stringify(values.specs)}::jsonb,
         featured = ${values.featured}, updated_at = NOW()
       WHERE id = ${id}
       RETURNING *
@@ -223,12 +235,14 @@ async function saveCar(input, { id = null } = {}) {
   const rows = await sql`
     INSERT INTO cars
       (slug, title, model, body, year, price_kes, negotiable, mileage_km, fuel, transmission,
-       drive, engine, seats, payload_kg, color, condition, description, features, status, featured)
+       drive, engine, seats, payload_kg, color, condition, description, features, status,
+       currency, specs, featured)
     VALUES
       (${slug}, ${values.title}, ${values.model}, ${values.body}, ${values.year}, ${values.price_kes},
        ${values.negotiable}, ${values.mileage_km}, ${values.fuel}, ${values.transmission},
        ${values.drive}, ${values.engine}, ${values.seats}, ${values.payload_kg}, ${values.color},
-       ${values.condition}, ${values.description}, ${values.features}::text[], ${values.status}, ${values.featured})
+       ${values.condition}, ${values.description}, ${values.features}::text[], ${values.status},
+       ${values.currency}, ${JSON.stringify(values.specs)}::jsonb, ${values.featured})
     RETURNING *
   `;
   return rows[0];

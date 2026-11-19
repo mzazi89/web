@@ -18,11 +18,11 @@ export async function generateMetadata({ params }) {
 
   const bits = [car.year, car.body, car.fuel].filter(Boolean).join(' · ');
   return {
-    title: `${car.title} — ${priceLabel(car.price_kes)} | Golden Lion Motors`,
+    title: `${car.title} — ${priceLabel(car.price_kes, car.currency)} | Golden Lion Motors`,
     description: `${bits}. ${car.description || `${DEALER.brand} ${car.body || 'vehicle'} available from ${DEALER.company}.`}`.slice(0, 300),
     openGraph: {
       title: car.title,
-      description: `${bits} — ${priceLabel(car.price_kes)}`,
+      description: `${bits} — ${priceLabel(car.price_kes, car.currency)}`,
       images: car.images[0] ? [`${SITE}/api/cars/image/${car.images[0].id}`] : [],
     },
   };
@@ -54,7 +54,7 @@ export default async function CarPage({ params }) {
     image: car.images.map((i) => `${SITE}/api/cars/image/${i.id}`),
     offers: {
       '@type': 'Offer',
-      priceCurrency: 'KES',
+      priceCurrency: car.currency || 'KES',
       price: car.price_kes || undefined,
       availability: car.status === 'sold'
         ? 'https://schema.org/SoldOut'
@@ -168,7 +168,7 @@ export default async function CarPage({ params }) {
                 </p>
 
                 <p style={{ fontFamily: 'Georgia, serif', fontSize: 27, color: GOLD, marginTop: 16 }}>
-                  {priceLabel(car.price_kes)}
+                  {priceLabel(car.price_kes, car.currency)}
                 </p>
                 <p style={{ fontSize: 11.5, color: 'var(--dim)', marginTop: 2 }}>
                   {car.price_kes != null && car.negotiable ? 'Negotiable · ' : ''}
@@ -225,8 +225,8 @@ export default async function CarPage({ params }) {
             </div>
 
             <p style={{ fontSize: 10.5, color: 'var(--dim)', marginTop: 10, lineHeight: 1.6 }}>
-              Listed by {DEALER.company} · {DEALER.brand} dealer. Prices in Kenyan shillings; confirm
-              final price and availability with the showroom.
+              Listed by {DEALER.company} · {DEALER.brand} dealer. Prices in {car.currency || 'KES'};
+              confirm final price and availability with the showroom.
             </p>
           </aside>
         </div>
@@ -252,7 +252,7 @@ export default async function CarPage({ params }) {
                   </div>
                   <div style={{ padding: '12px 14px' }}>
                     <p style={{ fontFamily: 'Georgia, serif', fontSize: 15, color: 'var(--ink)' }}>{c.title}</p>
-                    <p style={{ fontSize: 12, color: GOLD, marginTop: 4 }}>{priceLabel(c.price_kes)}</p>
+                    <p style={{ fontSize: 12, color: GOLD, marginTop: 4 }}>{priceLabel(c.price_kes, c.currency)}</p>
                   </div>
                 </Link>
               ))}
