@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Icons } from '@/components/ui';
 import { getViewer } from '@/lib/dashboard/session';
 import StatementButton from '@/components/StatementButton';
+import WithdrawButton from '@/components/WithdrawButton';
 import { getWallet, money, shortDate } from '@/lib/dashboard/data';
 import { PageHead, Panel, Empty, Status, Line, Kpi } from '@/components/dashboard/Parts';
 
@@ -20,8 +21,10 @@ export default async function WalletPage() {
 
   const { balance, transactions, updatedAt } = await getWallet(viewer.id);
   const settled = transactions.filter((t) => ['success', 'done'].includes(String(t.status).toLowerCase()));
-  const inTotal = settled.filter((t) => t.type !== 'debit').reduce((s, t) => s + Number(t.amount || 0) + Number(t.bonus_amount || 0), 0);
-  const outTotal = settled.filter((t) => t.type === 'debit').reduce((s, t) => s + Number(t.amount || 0), 0);
+  // Withdrawals are money out, like a debit — they must not be counted as "In".
+  const isOut = (t) => t.type === 'debit' || t.type === 'withdrawal';
+  const inTotal = settled.filter((t) => !isOut(t)).reduce((s, t) => s + Number(t.amount || 0) + Number(t.bonus_amount || 0), 0);
+  const outTotal = settled.filter(isOut).reduce((s, t) => s + Number(t.amount || 0), 0);
 
   return (
     <>
@@ -32,6 +35,7 @@ export default async function WalletPage() {
         actions={
           <>
             <StatementButton label="Statement" />
+            <WithdrawButton className="btn btn-ghost" />
             <Link href="/wallet" className="btn btn-primary"><Icons.Plus size={14} /> Add funds</Link>
           </>
         }
@@ -41,7 +45,7 @@ export default async function WalletPage() {
         <div>
           <span className="kpi-label">Available balance</span>
           <p className="wallet-amount">{money(balance)}</p>
-          <p className="kpi-note">Spendable on panels, VPS, bot plans and API overage.</p>
+          <p className="kpi-note">Spendable on panels, VPS, bot plans and API overage — or withdraw to M-PESA.</p>
         </div>
         <div className="wallet-split">
           <div><span className="kpi-label">In</span><p className="wallet-stat is-in">+{money(inTotal)}</p></div>
@@ -64,16 +68,17 @@ export default async function WalletPage() {
             label="Add funds"
           />
         ) : transactions.map((t) => {
+          const bonusOf = (row) => (isOut(row) ? 0 : Number(row.bonus_amount || 0));
           const receiptable = ['success', 'done', 'failed', 'abandoned'].includes(String(t.status).toLowerCase());
           return (
             <Line
               key={t.id}
-              label={t.description || (t.type === 'deposit' ? 'Wallet top-up' : 'Wallet charge')}
+              label={t.description || (t.type === 'deposit' ? 'Wallet top-up' : t.type === 'withdrawal' ? 'M-PESA withdrawal' : 'Wallet charge')}
               note={`${shortDate(t.paid_at || t.created_at)} · ${(t.payment_method || 'wallet').toUpperCase()}${t.reference ? ` · ${String(t.reference).slice(0, 18)}…` : ''}`}
               right={
                 <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-                  <b className={`dash-amount ${t.type === 'debit' ? 'is-out' : 'is-in'}`}>
-                    {t.type === 'debit' ? '−' : '+'}{money(Number(t.amount) + Number(t.bonus_amount || 0))}
+                  <b className={`dash-amount ${isOut(t) ? 'is-out' : 'is-in'}`}>
+                    {isOut(t) ? '−' : '+'}{money(Number(t.amount) + Number(bonusOf(t)))}
                   </b>
                   <Status value={t.status} />
                   {receiptable && (
