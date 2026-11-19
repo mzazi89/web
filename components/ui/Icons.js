@@ -129,3 +129,8 @@ export const Share = (p) => <Svg {...p}><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 
 
 export const Pin = (p) => <Svg {...p}><path d="M9 3h6l-1 6 4 3v2H6v-2l4-3-1-6Z" /><path d="M12 14v7" /></Svg>;
 export const Lock = (p) => <Svg {...p}><rect x="4" y="10" width="16" height="11" rx="2.5" /><path d="M8 10V7.5a4 4 0 0 1 8 0V10" /></Svg>;
+
+export const Car = (p) => <Svg {...p}><path d="M3 13.5 4.6 9a2 2 0 0 1 1.9-1.3h11a2 2 0 0 1 1.9 1.3L21 13.5V18h-2.2M3 18h2.2" /><path d="M3 13.5h18" /><circle cx="7.4" cy="18" r="1.9" /><circle cx="16.6" cy="18" r="1.9" /></Svg>;
+export const Truck = (p) => <Svg {...p}><path d="M3 7h10v9H3z" /><path d="M13 10h4l3 3v3h-7" /><circle cx="7" cy="18" r="1.8" /><circle cx="17" cy="18" r="1.8" /></Svg>;
+export const Gauge = (p) => <Svg {...p}><path d="M4 18a8 8 0 1 1 16 0" /><path d="M12 18l4-5" /><circle cx="12" cy="18" r="1.4" /></Svg>;
+export const Fuel = (p) => <Svg {...p}><path d="M5 21V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v16" /><path d="M5 12h8M13 8h3l3 3v7a2 2 0 0 1-4 0v-3h-2" /></Svg>;
