@@ -54,9 +54,9 @@ export async function GET(request) {
     const members = await membersOf(chatId);
 
     let rows;
-    if (before) rows = await messagesIn(chatId, { before, limit: 60 });
-    else if (after) rows = await messagesIn(chatId, { after, limit: 200 });
-    else rows = await messagesIn(chatId, { before: 2147483647, limit: 80 });
+    if (before) rows = await messagesIn(chatId, { before, limit: 60, viewerId: me.id });
+    else if (after) rows = await messagesIn(chatId, { after, limit: 200, viewerId: me.id });
+    else rows = await messagesIn(chatId, { before: 2147483647, limit: 80, viewerId: me.id });
 
     const messages = await shapeMany(rows, { meId: me.id, members });
     const typing = await typingIn(chatId, me.id);

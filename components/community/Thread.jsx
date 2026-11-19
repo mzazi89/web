@@ -23,6 +23,40 @@ import {
 } from './parts';
 import { prepareImage, pickAudioMime, canRecord, MAX_RECORD_MS } from './media';
 
+// ─── links inside a message ──────────────────────────────────────────────────
+// A chat where a pasted URL is dead text is a chat people copy from instead of
+// tap. Only http(s) is linked: "javascript:" and "data:" in a message body would
+// otherwise become a one-tap script on this origin.
+const URL_RE = /(https?:\/\/[^\s<>"']+)/g;
+
+function RichText({ text, style }) {
+  const value = String(text || '');
+  const parts = value.split(URL_RE);
+  return (
+    <p className="whitespace-pre-wrap break-words text-[13px]" style={style}>
+      {parts.map((part, i) => {
+        if (i % 2 === 0) return part;
+        const trimmed = part.replace(/[.,)\]]+$/, '');
+        const tail = part.slice(trimmed.length);
+        return (
+          <span key={`${part}-${i}`}>
+            <a
+              href={trimmed}
+              target="_blank"
+              rel="noopener noreferrer nofollow"
+              onClick={(e) => e.stopPropagation()}
+              style={{ color: 'inherit', textDecoration: 'underline', textUnderlineOffset: 2, wordBreak: 'break-all' }}
+            >
+              {trimmed}
+            </a>
+            {tail}
+          </span>
+        );
+      })}
+    </p>
+  );
+}
+
 const REACTIONS = ['👍', '❤️', '😂', '😮', '😢', '🙏'];
 
 function PendingClock() {
@@ -140,6 +174,11 @@ export default function Thread({
   onInfo,
   onLoadOlder,
   onTyping,
+  onLongPress,
+  editing = null,
+  editingBusy = false,
+  onCancelEdit,
+  onEditSubmit,
   hidden = false,
 }) {
   const toast = useToast();
@@ -171,6 +210,8 @@ export default function Thread({
   const lastHeightRef = useRef(0);
   const firstIdRef = useRef(0);
   const typingSentRef = useRef(0);
+  const pressTimer = useRef(null);
+  const longPressed = useRef(false);
 
   const canModerate = chat?.myRole === 'owner' || chat?.myRole === 'admin';
   const isGroup = chat?.kind === 'group';
@@ -216,6 +257,12 @@ export default function Thread({
     lastHeightRef.current = el.scrollHeight;
   }, [messages, hidden]);
 
+  // The composer becomes the editor while a message is being changed.
+  useEffect(() => {
+    if (editing) setDraft(editing.body || '');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editing?.id]);
+
   // Switching chats resets the composer, not the server state.
   useEffect(() => {
     atBottomRef.current = true;
@@ -233,6 +280,16 @@ export default function Thread({
     try { recorderRef.current?.stop(); } catch {}
     try { recorderRef.current?.stream?.getTracks?.().forEach((t) => t.stop()); } catch {}
   }, []);
+
+  const startPress = (message) => {
+    longPressed.current = false;
+    clearTimeout(pressTimer.current);
+    pressTimer.current = setTimeout(() => {
+      longPressed.current = true;
+      onLongPress?.(message);
+    }, 460);
+  };
+  const cancelPress = () => clearTimeout(pressTimer.current);
 
   const onScroll = () => {
     const el = scrollRef.current;
@@ -252,7 +309,15 @@ export default function Thread({
 
   const submit = () => {
     const text = draft.trim();
-    if (!text || sending) return;
+    if (!text || sending || editingBusy) return;
+
+    if (editing) {
+      onEditSubmit?.(editing.id, text);
+      setDraft('');
+      atBottomRef.current = true;
+      return;
+    }
+
     onSend(text, reply?.id || null);
     setDraft('');
     setEmojiOpen(false);
@@ -550,7 +615,15 @@ export default function Thread({
 
                   <div className="relative" style={{ maxWidth: 'min(82%, 520px)' }}>
                     <div
-                      onClick={() => setPicked(showActions ? null : m.id)}
+                      onClick={() => {
+                        if (longPressed.current) { longPressed.current = false; return; }
+                        setPicked(showActions ? null : m.id);
+                      }}
+                      onTouchStart={() => startPress(m)}
+                      onTouchEnd={cancelPress}
+                      onTouchMove={cancelPress}
+                      onTouchCancel={cancelPress}
+                      onContextMenu={(e) => { e.preventDefault(); cancelPress(); onLongPress?.(m); }}
                       style={{
                         background: mine ? WA.outgoing : WA.incoming,
                         color: mine ? '#fff' : 'var(--ink)',
@@ -626,9 +699,7 @@ export default function Thread({
                           onBroken={() => toast.error('That voice note could not be played')}
                         />
                       ) : (
-                        <p className="whitespace-pre-wrap break-words text-[13px]" style={{ lineHeight: 1.45 }}>
-                          {m.body}
-                        </p>
+                        <RichText text={m.body} style={{ lineHeight: 1.45 }} />
                       )}
 
                       {isImage && m.body && (
@@ -646,6 +717,9 @@ export default function Thread({
                           color: isImage ? '#fff' : 'inherit',
                         }}
                       >
+                        {m.edited && !m.deleted && (
+                          <span className="text-[9.5px]" style={{ fontStyle: 'italic', opacity: 0.85 }}>edited</span>
+                        )}
                         <span className="text-[10px]" style={{ fontWeight: 600 }}>
                           {clock(m.createdAt)}
                         </span>
@@ -763,6 +837,22 @@ export default function Thread({
           paddingBottom: 8,
         }}
       >
+        {editing && !rec.active && (
+          <div
+            className="mb-2 flex items-center gap-2 rounded-lg px-2.5 py-1.5"
+            style={{ background: 'rgba(201,162,39,0.10)', borderLeft: '3px solid #C9A227' }}
+          >
+            <Icons.Pencil size={13} style={{ color: '#C9A227' }} />
+            <div className="min-w-0 flex-1">
+              <p className="text-[10.5px] font-extrabold" style={{ color: '#C9A227' }}>Editing message</p>
+              <p className="truncate text-[11px]" style={{ color: 'var(--muted)' }}>{editing.body}</p>
+            </div>
+            <button type="button" onClick={onCancelEdit} aria-label="Cancel edit" style={{ background: 'transparent', border: 'none', color: 'var(--dim)', cursor: 'pointer' }}>
+              <Icons.X size={14} />
+            </button>
+          </div>
+        )}
+
         {reply && !rec.active && (
           <div
             className="mb-2 flex items-start gap-2 rounded-lg px-2.5 py-1.5"

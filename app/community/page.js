@@ -23,6 +23,8 @@ import ChatList from '@/components/community/ChatList';
 import Thread from '@/components/community/Thread';
 import PeoplePicker from '@/components/community/PeoplePicker';
 import ChatInfo from '@/components/community/ChatInfo';
+import MessageActions from '@/components/community/MessageActions';
+import ReportDialog from '@/components/community/ReportDialog';
 import { Avatar, clock } from '@/components/community/parts';
 
 const SOUND = 'https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3';
@@ -64,11 +66,17 @@ export default function CommunityPage() {
   const [joinInvite, setJoinInvite] = useState(null);
   const [joining, setJoining] = useState(false);
   const [origin, setOrigin] = useState('');
+  const [sheetMessage, setSheetMessage] = useState(null);
+  const [editingMessage, setEditingMessage] = useState(null);
+  const [reportMessage, setReportMessage] = useState(null);
+  const [reportBusy, setReportBusy] = useState(false);
+  const [editingBusy, setEditingBusy] = useState(false);
 
   const chatIdRef = useRef(0);
   const cacheRef = useRef(new Map());
   const shellRef = useRef(null);
   const inviteCheckedRef = useRef(false);
+  const hydratedRef = useRef(false);
   const [shellH, setShellH] = useState(0);
   const lastIdRef = useRef(0);
   const readRef = useRef(0);
@@ -607,6 +615,35 @@ export default function CommunityPage() {
     loadInvite(chat.id);
   }, [infoOpen, chat?.kind, chat?.isMain, chat?.id, loadInvite]);
 
+  // Keep the recent chats across a reload: the list is small, and an empty rail
+  // while the poll answers is exactly the "where did my chats go" moment.
+  useEffect(() => {
+    if (!me?.id || hydratedRef.current) return;
+    hydratedRef.current = true;
+    try {
+      const raw = localStorage.getItem(`mzazi:community:chats:${me.id}`);
+      if (!raw) return;
+      const saved = JSON.parse(raw);
+      if (Array.isArray(saved) && saved.length) {
+        setChats((prev) => (prev.length ? prev : saved));
+      }
+      const last = Number(localStorage.getItem(`mzazi:community:last:${me.id}`) || 0);
+      if (last) setChatId((prev) => prev || last);
+    } catch { /* a corrupt cache is not worth a broken page */ }
+  }, [me?.id]);
+
+  useEffect(() => {
+    if (!me?.id || !chats.length) return;
+    try {
+      localStorage.setItem(`mzazi:community:chats:${me.id}`, JSON.stringify(chats.slice(0, 60)));
+    } catch { /* quota — skip */ }
+  }, [chats, me?.id]);
+
+  useEffect(() => {
+    if (!me?.id || !chatId) return;
+    try { localStorage.setItem(`mzazi:community:last:${me.id}`, String(chatId)); } catch { /* ignore */ }
+  }, [chatId, me?.id]);
+
   // ── shell height ───────────────────────────────────────────────────────────
   // Measured rather than computed from the --nav-h/--dock-h tokens: the header
   // is taller than its minimum on a phone, and the difference was exactly what
@@ -636,6 +673,86 @@ export default function CommunityPage() {
       window.visualViewport?.removeEventListener('resize', measure);
     };
   }, []);
+
+  // ── message actions ────────────────────────────────────────────────────────
+  const copyMessage = useCallback(async (m) => {
+    setSheetMessage(null);
+    const text = m.body || '';
+    if (!text) return;
+    try {
+      await navigator.clipboard.writeText(text);
+      toast.success('Copied');
+    } catch {
+      // Clipboard needs a secure context and a gesture; a prompt always works.
+      window.prompt('Copy this message', text);
+    }
+  }, [toast]);
+
+  const deleteForEveryone = useCallback(async (m) => {
+    setSheetMessage(null);
+    try {
+      const res = await fetch(`/api/community/messages/${m.id}`, { method: 'DELETE' });
+      const d = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(d.error || 'Could not delete that message');
+      setMessages((prev) => prev.map((x) => (x.id === m.id ? { ...x, deleted: true, body: '' } : x)));
+      toast.success('Deleted for everyone');
+    } catch (e) {
+      toast.error(e.message);
+    }
+  }, [toast]);
+
+  const deleteForMe = useCallback(async (m) => {
+    setSheetMessage(null);
+    try {
+      const res = await fetch(`/api/community/messages/${m.id}?scope=me`, { method: 'DELETE' });
+      const d = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(d.error || 'Could not remove that message');
+      setMessages((prev) => prev.filter((x) => x.id !== m.id));
+      toast.success('Removed from your view');
+    } catch (e) {
+      toast.error(e.message);
+    }
+  }, [toast]);
+
+  const saveEdit = useCallback(async (id, body) => {
+    setEditingBusy(true);
+    try {
+      const res = await fetch(`/api/community/messages/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ body }),
+      });
+      const d = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(d.error || 'Could not edit that message');
+      setMessages((prev) => prev.map((x) => (x.id === id ? { ...x, ...d.message, edited: true } : x)));
+      setEditingMessage(null);
+      toast.success('Message edited');
+    } catch (e) {
+      toast.error(e.message);
+    } finally {
+      setEditingBusy(false);
+    }
+  }, [toast]);
+
+  const submitReport = useCallback(async ({ reason, note }) => {
+    if (!reportMessage) return;
+    setReportBusy(true);
+    try {
+      const res = await fetch(`/api/community/messages/${reportMessage.id}/report`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reason, note }),
+      });
+      const d = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(d.error || 'Could not send that report');
+      toast.success(d.message || 'Reported to MZAZI support');
+      setReportMessage(null);
+    } catch (e) {
+      toast.error(e.message);
+    } finally {
+      setReportBusy(false);
+    }
+  }, [reportMessage, toast]);
 
   // ── derived ────────────────────────────────────────────────────────────────
   const canManage = chat?.myRole === 'owner' || chat?.myRole === 'admin';
@@ -734,6 +851,11 @@ export default function CommunityPage() {
                 onLoadOlder={loadOlder}
                 onTyping={noteTyping}
                 onSendMedia={sendMedia}
+                onLongPress={(m) => setSheetMessage(m)}
+                editing={editingMessage}
+                editingBusy={editingBusy}
+                onCancelEdit={() => setEditingMessage(null)}
+                onEditSubmit={saveEdit}
                 onReact={react}
                 onOpenMedia={(m) => setLightbox(m)}
                 uploading={uploading}
@@ -886,6 +1008,26 @@ export default function CommunityPage() {
         confirmLabel={confirm?.label || 'Confirm'}
         loading={working}
       />
+      <MessageActions
+        message={sheetMessage}
+        mine={!!sheetMessage?.mine}
+        canModerate={canManage}
+        onClose={() => setSheetMessage(null)}
+        onReply={(m) => { setReply(m); setSheetMessage(null); }}
+        onEdit={(m) => { setEditingMessage(m); setSheetMessage(null); }}
+        onCopy={copyMessage}
+        onReport={(m) => { setReportMessage(m); setSheetMessage(null); }}
+        onDeleteEveryone={deleteForEveryone}
+        onDeleteMe={deleteForMe}
+      />
+
+      <ReportDialog
+        message={reportMessage}
+        busy={reportBusy}
+        onClose={() => setReportMessage(null)}
+        onSubmit={submitReport}
+      />
+
       {/* ── group invite ────────────────────────────────────────────────────── */}
       <Modal
         open={!!joinInvite}

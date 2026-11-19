@@ -33,7 +33,7 @@ export async function GET(request, { params }) {
     const before = asInt(searchParams.get('before')) || 2147483647;
 
     const [rows, members] = await Promise.all([
-      messagesIn(chatId, { before, limit: 60 }),
+      messagesIn(chatId, { before, limit: 60, viewerId: me.id }),
       membersOf(chatId),
     ]);
 
