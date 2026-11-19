@@ -61,5 +61,22 @@ wallet ledger, the statement and the admin transactions list with no extra work.
 
 ## Limits
 
-`MIN_WITHDRAW = 50`, `MAX_WITHDRAW = 150000`, no fee. Both are enforced server-side;
-the form only mirrors them.
+`MIN_WITHDRAW = 50`, `MAX_WITHDRAW = 150000`, no fee, **whole shillings only** —
+Daraja rejects a fractional Amount, and the ledger debits exactly what will be
+paid, so `100.50` is refused rather than rounded.
+
+## Support tools
+
+Admin → **Payouts** lists withdrawals by state. A row that is still `pending`
+means the wallet is debited and Safaricom has not confirmed: paste the M-PESA
+code to mark it paid, or refund it back. Both actions are guarded by
+`status = 'pending'`, so two operators cannot double-refund. Nothing reverses
+automatically — a late callback for a payout that did happen would otherwise pay
+twice.
+
+## Concurrency
+
+A partial unique index (`wtx_one_pending_withdrawal`, on `user_id WHERE
+type='withdrawal' AND status='pending'`) is the real guard against a
+double-tapped button: the second insert fails, the money is credited back, and
+the API answers **409**.

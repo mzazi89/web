@@ -56,8 +56,10 @@ export default function WithdrawButton({ className = 'btn btn-ghost' }) {
   }, [open, load]);
 
   const value = Number(amount);
-  const valid = Number.isFinite(value) && value >= (config?.min || 50) && value <= (config?.max || 150000)
-    && value <= (config?.balance || 0) && /\d{9,}/.test(phone.replace(/\D/g, ''));
+  const pendingOne = (config?.recent || []).some((r) => r.status === 'pending');
+  const whole = Number.isFinite(value) && Math.abs(value - Math.round(value)) < 0.0001;
+  const valid = whole && value >= (config?.min || 50) && value <= (config?.max || 150000)
+    && value <= (config?.balance || 0) && /\d{9,}/.test(phone.replace(/\D/g, '')) && !pendingOne;
 
   const submit = async () => {
     if (!valid || busy) return;
@@ -204,8 +206,15 @@ export default function WithdrawButton({ className = 'btn btn-ghost' }) {
                   />
                 </label>
 
+                {pendingOne && (
+                  <div className="note" style={{ borderColor: 'var(--brand-a25)', background: 'var(--brand-a06)' }}>
+                    <Icons.Clock size={15} />
+                    <p>A payout is already being processed. It clears the moment M-PESA confirms, then you can withdraw again.</p>
+                  </div>
+                )}
+
                 <p className="text-[11.5px]" style={{ color: 'var(--dim)' }}>
-                  Minimum {fmt(config.min)} · maximum {fmt(config.max)} · no fee.
+                  Whole shillings only · minimum {fmt(config.min)} · maximum {fmt(config.max)} · no fee.
                   The balance is held the moment you send and returned automatically if M-PESA
                   fails. Payouts on {config.channel || 'M-PESA'}.
                 </p>
@@ -214,6 +223,33 @@ export default function WithdrawButton({ className = 'btn btn-ghost' }) {
                   <div className="note" style={{ borderColor: 'var(--bad-a25)', background: 'var(--bad-a08)' }}>
                     <Icons.AlertCircle size={15} />
                     <p>{error}</p>
+                  </div>
+                )}
+
+                {(config.recent || []).length > 0 && (
+                  <div>
+                    <p className="mb-1 text-[11px] font-bold uppercase tracking-wide" style={{ color: 'var(--dim)' }}>Recent payouts</p>
+                    <div className="stack" style={{ gap: 6 }}>
+                      {config.recent.map((r) => (
+                        <div key={r.id} className="flex items-center justify-between" style={{ gap: 8 }}>
+                          <span className="mono text-[11.5px]" style={{ color: 'var(--muted)' }}>
+                            {new Date(r.created_at).toLocaleDateString('en-KE')} · {r.phone_number}
+                          </span>
+                          <span className="flex items-center" style={{ gap: 8 }}>
+                            <b className="text-[12px]">{fmt(r.amount)}</b>
+                            <span
+                              className="rounded-full px-2 py-[2px] text-[10.5px] font-bold"
+                              style={{
+                                background: r.status === 'success' ? 'var(--good-a10, rgba(34,197,94,0.12))' : r.status === 'failed' ? 'var(--bad-a08)' : 'var(--brand-a10)',
+                                color: r.status === 'success' ? 'var(--good)' : r.status === 'failed' ? 'var(--bad)' : 'var(--brand)',
+                              }}
+                            >
+                              {r.status === 'pending' ? 'processing' : r.status}
+                            </span>
+                          </span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
               </>
