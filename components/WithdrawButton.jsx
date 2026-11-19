@@ -21,6 +21,13 @@ import { Icons, Modal, useToast } from '@/components/ui';
 
 const fmt = (n) => `KES ${Number(n || 0).toLocaleString('en-KE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
+/** 0712 345 678 / 254712345678 / +254… → "+254 712 345 678", or '' when unusable. */
+const prettyMsisdn = (value) => {
+  const d = String(value || '').replace(/\D/g, '');
+  const norm = d.startsWith('0') ? `254${d.slice(1)}` : d.startsWith('254') ? d : d ? `254${d}` : '';
+  return norm.length === 12 ? `+${norm.slice(0, 3)} ${norm.slice(3, 6)} ${norm.slice(6, 9)} ${norm.slice(9)}` : '';
+};
+
 export default function WithdrawButton({ className = 'btn btn-ghost' }) {
   const router = useRouter();
   const toast = useToast();
@@ -31,6 +38,8 @@ export default function WithdrawButton({ className = 'btn btn-ghost' }) {
   const [amount, setAmount] = useState('');
   const [phone, setPhone] = useState('');
   const [note, setNote] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [done, setDone] = useState(null);
@@ -52,14 +61,20 @@ export default function WithdrawButton({ className = 'btn btn-ghost' }) {
     if (!open) return;
     setDone(null);
     setError('');
+    try {
+      const saved = localStorage.getItem('mzazi:withdraw:msisdn');
+      if (saved && !phone) setPhone(saved);
+    } catch {}
     load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, load]);
 
   const value = Number(amount);
   const pendingOne = (config?.recent || []).some((r) => r.status === 'pending');
   const whole = Number.isFinite(value) && Math.abs(value - Math.round(value)) < 0.0001;
+  const msisdn = prettyMsisdn(phone);
   const valid = whole && value >= (config?.min || 50) && value <= (config?.max || 150000)
-    && value <= (config?.balance || 0) && /\d{9,}/.test(phone.replace(/\D/g, '')) && !pendingOne;
+    && value <= (config?.balance || 0) && Boolean(msisdn) && password.length > 0 && !pendingOne;
 
   const submit = async () => {
     if (!valid || busy) return;
@@ -69,7 +84,7 @@ export default function WithdrawButton({ className = 'btn btn-ghost' }) {
       const res = await fetch('/api/wallet/withdraw', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: value, phone, note }),
+        body: JSON.stringify({ amount: value, phone, note, password }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || 'Could not start the withdrawal');
@@ -77,6 +92,8 @@ export default function WithdrawButton({ className = 'btn btn-ghost' }) {
       setDone(data);
       setAmount('');
       setNote('');
+      setPassword('');
+      try { localStorage.setItem('mzazi:withdraw:msisdn', phone); } catch {}
       toast.success('Withdrawal sent to M-PESA');
       router.refresh();
     } catch (e) {
@@ -185,7 +202,7 @@ export default function WithdrawButton({ className = 'btn btn-ghost' }) {
                 </label>
 
                 <label className="block">
-                  <span className="mb-1 block text-[12px] font-semibold">M-PESA number</span>
+                  <span className="mb-1 block text-[12px] font-semibold">Number to receive the money</span>
                   <input
                     type="tel"
                     inputMode="tel"
@@ -194,6 +211,35 @@ export default function WithdrawButton({ className = 'btn btn-ghost' }) {
                     placeholder="0712 345 678"
                     className="input"
                   />
+                  <span className="mt-1 block text-[11px]" style={{ color: msisdn ? 'var(--good)' : 'var(--dim)' }}>
+                    {msisdn ? `Safaricom · ${msisdn}` : 'Safaricom number only. It does not have to be the one you signed up with.'}
+                  </span>
+                </label>
+
+                <label className="block">
+                  <span className="mb-1 block text-[12px] font-semibold">Account password</span>
+                  <div className="flex gap-2">
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Confirm it is you"
+                      autoComplete="current-password"
+                      className="input"
+                      style={{ flex: 1 }}
+                    />
+                    <button
+                      type="button"
+                      className="btn btn-ghost"
+                      onClick={() => setShowPassword((v) => !v)}
+                      aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    >
+                      {showPassword ? <Icons.EyeOff size={15} /> : <Icons.Eye size={15} />}
+                    </button>
+                  </div>
+                  <span className="mt-1 block text-[11px]" style={{ color: 'var(--dim)' }}>
+                    Money leaving the wallet needs the password even if the session is already signed in.
+                  </span>
                 </label>
 
                 <label className="block">

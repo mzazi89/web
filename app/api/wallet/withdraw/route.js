@@ -53,15 +53,18 @@ export async function POST(request) {
     userId: viewer.id,
     amount: body.amount,
     phone: body.phone,
+    password: typeof body.password === 'string' ? body.password : '',
     note: typeof body.note === 'string' ? body.note.slice(0, 80) : '',
   });
 
   if (!result.ok) {
     const status = result.code === 'unconfigured' ? 503
-      : result.code === 'funds' ? 402
-        : result.code === 'inflight' ? 409
-          : result.code === 'provider' || result.code === 'transport' ? 502
-            : 400;
+      : result.code === 'auth' ? 401
+        : result.code === 'locked' ? 429
+          : result.code === 'funds' ? 402
+            : result.code === 'inflight' ? 409
+              : result.code === 'provider' || result.code === 'transport' ? 502
+                : 400;
     return NextResponse.json({ error: result.error, code: result.code }, { status });
   }
 

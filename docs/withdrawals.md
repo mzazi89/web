@@ -28,6 +28,19 @@ Callbacks land on:
 
 Both honour `mpesa_callback_secret` as `?k=…` when it is set.
 
+## Confirmation
+
+The form takes the number the money should go to — it does not have to be the
+number on the account — and the **account password**. A signed-in session is not
+enough on its own: a borrowed laptop or a stolen cookie can read a balance, and
+should not be able to empty it.
+
+Failed passwords are counted per account in `withdraw_auth`: five wrong tries
+inside fifteen minutes lock payouts for fifteen minutes, a correct password
+clears the counter, and signing out does not reset it. The password is checked
+before anything else, so a wrong one never reveals whether payouts are
+configured and never touches the balance.
+
 ## The safety model
 
 1. **Atomic debit.** `UPDATE wallet SET balance = balance - $amt WHERE user_id = $u
