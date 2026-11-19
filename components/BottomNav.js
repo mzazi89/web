@@ -24,6 +24,7 @@ import { DOCK } from '@/lib/nav';
 
 const ICONS = {
   home: Icons.Home,
+  car: Icons.Car,
   bot: Icons.Bot,
   server: Icons.Server,
   cloud: Icons.Cloud,
