@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { AppBackground, Icons } from '@/components/ui';
 import CarGallery from '@/components/cars/CarGallery';
-import { priceLabel, km, GOLD } from '@/lib/carsFormat';
+import { priceLabel, km, GOLD, enquiryText, waLink } from '@/lib/carsFormat';
 import {
   carBySlug, listCars, spec, dealerContact, bumpViews, DEALER,
 } from '@/lib/cars';
@@ -41,7 +41,8 @@ export default async function CarPage({ params }) {
 
   const others = related.filter((r) => r.id !== car.id).slice(0, 3);
   const specs = spec(car);
-  const enquire = `Hello ${DEALER.company}, I am interested in the ${car.title}${car.year ? ` (${car.year})` : ''} listed on mzazi.shop.`;
+  const enquire = enquiryText(car, contact, DEALER.company);
+  const enquiryLink = waLink(contact.enquiryWhatsapp, enquire);
 
   // Structured data: a dealership listing is exactly what a search engine wants
   // to read, and it costs nothing to include.
@@ -178,15 +179,41 @@ export default async function CarPage({ params }) {
               </div>
 
               <div style={{ padding: 16, display: 'grid', gap: 10 }}>
+                {car.status !== 'sold' && contact.salesName && (
+                  <div
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 10, padding: '9px 12px',
+                      borderRadius: 10, border: '1px solid var(--line)', background: 'var(--bg-2)',
+                    }}
+                  >
+                    <span
+                      aria-hidden="true"
+                      style={{
+                        width: 30, height: 30, borderRadius: '50%', flex: '0 0 30px',
+                        display: 'grid', placeItems: 'center', fontSize: 11, fontWeight: 800,
+                        background: 'rgba(201,162,39,0.16)', color: GOLD,
+                      }}
+                    >
+                      {contact.salesName.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase()}
+                    </span>
+                    <div style={{ minWidth: 0 }}>
+                      <p style={{ fontSize: 10, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--dim)' }}>
+                        Sales representative
+                      </p>
+                      <p style={{ fontSize: 12.5, fontWeight: 700, color: 'var(--ink)' }}>{contact.salesName}</p>
+                    </div>
+                  </div>
+                )}
+
                 {car.status === 'sold' ? (
                   <p style={{ fontSize: 12.5, color: 'var(--muted)', textAlign: 'center' }}>
                     This one has found a home. Ask what else is on the yard.
                   </p>
                 ) : (
                   <>
-                    {contact.whatsapp && (
+                    {enquiryLink && (
                       <a
-                        href={`https://wa.me/${contact.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(enquire)}`}
+                        href={enquiryLink}
                         target="_blank"
                         rel="noopener noreferrer"
                         style={cta(GOLD, '#141207')}

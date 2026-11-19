@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { AppBackground, Icons } from '@/components/ui';
 import { listCars, bodiesInStock, ensureCars, dealerContact, DEALER } from '@/lib/cars';
 import CarsBrowser from '@/components/cars/CarsBrowser';
-import { GOLD } from '@/lib/carsFormat';
+import { GOLD, waLink } from '@/lib/carsFormat';
 
 export const dynamic = 'force-dynamic';
 
@@ -133,9 +133,9 @@ export default async function CarsPage() {
                     <Icons.Phone size={14} /> {contact.phone}
                   </a>
                 )}
-                {contact.whatsapp && (
+                {contact.enquiryWhatsapp && (
                   <a
-                    href={`https://wa.me/${contact.whatsapp.replace(/\D/g, '')}`}
+                    href={waLink(contact.enquiryWhatsapp, `Hello ${'Golden Lion Motor Co. Limited'}, I would like to ask about the vehicles on mzazi.shop${contact.salesName ? ` (${contact.salesName})` : ''}.`)}
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{
@@ -144,7 +144,7 @@ export default async function CarsPage() {
                       fontSize: 12.5, fontWeight: 700, textDecoration: 'none',
                     }}
                   >
-                    <Icons.Chat size={14} /> WhatsApp
+                    <Icons.Chat size={14} /> WhatsApp{contact.salesName ? ` · ${contact.salesName.split(' ')[0]}` : ''}
                   </a>
                 )}
               </div>
