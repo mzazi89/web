@@ -3,10 +3,20 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { Icons, Button, Card, Badge, AppBackground } from '@/components/ui';
 
-// One way in. Every other channel (Telegram, WhatsApp, a phone line) has been
-// retired so there is no number to leak, no handle to go stale, and one queue
-// that cannot be missed.
+// Two public ways in, both belonging to the CEO himself.
+//
+// This page previously kept a single email on purpose — fewer channels, no
+// number on the open internet. That call has been reversed by the owner's
+// decision: the WhatsApp line is published so a customer can reach the person
+// who runs the company without hunting for a handle. The email stays for
+// billing and anything that needs a paper trail.
 const channels = [
+  {
+    icon: <Icons.WhatsApp size={24} />,
+    color: '#25D366', title: 'WhatsApp',
+    desc: 'The fastest route to Dominic Mokua Kerubo, founder and CEO. Support, partnerships, pricing.',
+    action: '+254 741 388 986', href: 'https://wa.me/254741388986',
+  },
   {
     icon: <Icons.Mail size={24} />,
     color: 'var(--brand)', title: 'Email',
@@ -182,12 +192,12 @@ export default function ContactPage() {
               Talk to a <span className="gradient-text">Human</span>.
             </h1>
             <p className="lede mt-4 max-w-xl" style={{ fontSize: '1rem', color: 'var(--muted)' }}>
-              Got a question? We reply within two hours, around the clock. Send a message below, or email us directly.
+              Got a question? We reply within two hours, around the clock. Send a message below, message the CEO on WhatsApp, or email us directly.
             </p>
           </div>
 
           {/* Quick channels */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5 anim-fade-up d2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5 anim-fade-up d2">
             {channels.map(c => (
               <Card key={c.title} hover accent style={{ padding: 0 }}>
                 <a href={c.href} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', padding: '23px', display: 'flex', flexDirection: 'column', height: '100%' }}>

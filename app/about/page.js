@@ -67,9 +67,10 @@ export default function AboutPage() {
             <div className="lg:col-span-5 anim-fade-up">
               <div style={{ position: 'sticky', top: 100 }}>
                 <Badge tone="blue" style={{ marginBottom: 16 }}>The Visionary</Badge>
-                <h2 className="founder-name-h2" style={{ fontSize: '1.9rem', fontWeight: 900, marginBottom: 17, lineHeight: 1.2 }}>
+                <h2 className="founder-name-h2" style={{ fontSize: '1.9rem', fontWeight: 900, marginBottom: 10, lineHeight: 1.2 }}>
                   <FounderName />
                 </h2>
+                <p className="founder-role">Founder &amp; Chief Executive Officer · MZAZI TECH INC</p>
                 <Card
                   accent
                   className="founder-card-shell"
@@ -106,6 +107,18 @@ export default function AboutPage() {
                     </p>
                   </div>
                 </Card>
+
+                {/* Published on purpose: a customer should never have to hunt for
+                    the person who runs the company. Same two details as the
+                    footer and the JSON-LD, kept in one wording. */}
+                <div className="founder-contact">
+                  <a href="https://wa.me/254741388986" target="_blank" rel="noopener noreferrer">
+                    <Icons.WhatsApp size={14} /> WhatsApp +254 741 388 986
+                  </a>
+                  <a href="mailto:mzazitechinc@gmail.com">
+                    <Icons.Mail size={14} /> mzazitechinc@gmail.com
+                  </a>
+                </div>
               </div>
             </div>
 
