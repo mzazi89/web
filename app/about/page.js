@@ -71,10 +71,12 @@ export default function AboutPage() {
                   <span style={{ color: 'var(--blue)' }}>Kerubo</span>.
                 </h2>
                 <Card accent style={{ padding: 0, overflow: 'hidden', background: 'var(--surface)' }}>
-                  {/* Portrait LEFT, words RIGHT. The photo is square and is
-                      scaled by the layout class, not by a fixed width, so the
-                      quote stays the loudest thing on the card on a phone and
-                      the face still reads at 84px. */}
+                  {/* Two bands, not two columns.
+                      Band 1: portrait LEFT, the quote RIGHT.
+                      Band 2: the biography runs edge to edge under the picture —
+                      the photo does not shorten it and the quote does not wrap
+                      around it. The grid owns the shape (see .founder-card); the
+                      markup only says which cell each piece belongs to. */}
                   <div className="founder-card">
                     <div className="founder-photo">
                       <img
@@ -92,12 +94,12 @@ export default function AboutPage() {
                       <p className="display founder-quote">
                         "I didn't start with a team or a budget. I started with a laptop and a stubborn refusal to give up on a bug."
                       </p>
-                      <p className="founder-bio">
-                        Dominic is a BCOM student at the <strong>Cooperative University of Kenya</strong>. 
-                        He balances corporate strategy studies with late-night coding sessions, building 
-                        the very platforms he uses to teach others.
-                      </p>
                     </div>
+                    <p className="founder-bio">
+                      Dominic is a BCOM student at the <strong>Cooperative University of Kenya</strong>. 
+                      He balances corporate strategy studies with late-night coding sessions, building 
+                      the very platforms he uses to teach others.
+                    </p>
                   </div>
                 </Card>
               </div>

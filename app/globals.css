@@ -698,22 +698,26 @@ h3 { font-size: var(--text-xl); }
   box-shadow: var(--shadow-md);
 }
 
-/* ── Founder card (/about): portrait LEFT, words RIGHT ──────────────────────
+/* ── Founder card (/about): portrait LEFT, quote RIGHT, bio FULL WIDTH ──────
    The portrait is a studio shot on a black field, so it is framed rather than
    floated: a hairline ring, a rounded square and a soft shadow make the black
    read as intent next to the glass card instead of as a stray rectangle.
-   Width lives here, not inline, because it changes at breakpoints — 112px in
-   the desktop sidebar, 104px on tablets, 84px on a phone — and the words keep
-   the remaining space (min-width:0 lets long words wrap instead of pushing the
-   photo out of the card). */
+   Two bands, not two columns — the grid is what guarantees the third block
+   spans the whole card. A flex row would let the biography sit inside the text
+   column, which is exactly the shape this replaced.
+   Width lives here, not inline, because it changes at breakpoints: 112px in the
+   desktop sidebar, 104px on tablets, 84px on a phone. */
 .founder-card {
-  display: flex;
-  align-items: flex-start;
-  gap: 20px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 20px;
+  row-gap: 16px;
+  align-items: start;
   padding: 23px;
 }
 .founder-photo {
-  flex: 0 0 auto;
+  grid-column: 1;
+  grid-row: 1;
   width: 112px;
 }
 .founder-photo img {
@@ -727,15 +731,23 @@ h3 { font-size: var(--text-xl); }
   background: #05070D;
   box-shadow: 0 10px 24px rgba(2, 6, 23, 0.22);
 }
-.founder-copy { min-width: 0; }
+.founder-copy {
+  grid-column: 2;
+  grid-row: 1;
+  min-width: 0;
+}
 .founder-quote {
-  margin: 0 0 14px;
+  margin: 0;
   color: var(--ink);
   font-weight: 800;
   font-size: clamp(1rem, 2.2vw, 1.125rem);
   line-height: 1.35;
 }
+/* 1 / -1 = both columns, i.e. right to left across the card, sitting directly
+   under the portrait and the quote. */
 .founder-bio {
+  grid-column: 1 / -1;
+  grid-row: 2;
   margin: 0;
   font-size: 13.5px;
   line-height: 1.6;
@@ -745,7 +757,7 @@ h3 { font-size: var(--text-xl); }
   .founder-photo { width: 104px; }
 }
 @media (max-width: 420px) {
-  .founder-card { gap: 14px; padding: 18px; }
+  .founder-card { column-gap: 14px; row-gap: 14px; padding: 18px; }
   .founder-photo { width: 84px; }
   .founder-photo img { border-radius: 12px; }
   .founder-bio { font-size: 13px; }
