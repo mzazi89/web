@@ -763,6 +763,133 @@ h3 { font-size: var(--text-xl); }
   .founder-bio { font-size: 13px; }
 }
 
+/* ── Founder card: the moving shine ─────────────────────────────────────────
+   Two layers, one job each.
+   1. The RING (on the Card itself) is a 1px frame whose gradient slides along
+      it. It is drawn with a mask instead of a border because a border cannot
+      hold a gradient — `padding: 1px` + `mask-composite: exclude` leaves only
+      the 1px edge painted, and moving `background-position` walks the colours
+      through it. The card's own border is made transparent so the two edges
+      cannot double up.
+   2. The SHEEN (inside .founder-card) is a skewed band of light that sweeps
+      across the card and then rests off-screen for the remainder of the cycle.
+      It sits behind the text (z-index 0 against the children's 1) so it never
+      washes the words out.
+   Both stop dead under prefers-reduced-motion: this is decoration, and a
+   permanent loop is exactly what that setting exists to switch off. */
+.founder-card-shell {
+  position: relative;
+  border-color: transparent;
+}
+/* The static 3px hairline that .card-accent normally draws would sit 1px
+   inside the new moving ring and read as a doubled edge. This card's top edge
+   is the ring. */
+.founder-card-shell.card-accent::before { display: none; }
+.founder-card-shell::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  padding: 1.5px;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    #1D4ED8 0%, #38BDF8 18%, #E0F2FE 33%, #93C5FD 46%,
+    #2563EB 62%, #0EA5E9 78%, #1D4ED8 100%
+  ) 0 0 / 300% 100%;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+          mask-composite: exclude;
+  animation: founder-ring 8s linear infinite;
+}
+.founder-card {
+  position: relative;
+}
+.founder-card > * { position: relative; z-index: 1; }
+.founder-card::before {
+  content: '';
+  position: absolute;
+  top: -20%;
+  bottom: -20%;
+  left: -55%;
+  width: 42%;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    100deg,
+    rgba(147, 197, 253, 0) 0%,
+    rgba(147, 197, 253, 0.16) 38%,
+    rgba(224, 242, 254, 0.34) 50%,
+    rgba(147, 197, 253, 0.16) 62%,
+    rgba(147, 197, 253, 0) 100%
+  );
+  transform: skewX(-16deg);
+  animation: founder-sheen 8s ease-in-out infinite;
+}
+@keyframes founder-ring {
+  from { background-position: 0 0; }
+  to   { background-position: 300% 0; }
+}
+@keyframes founder-sheen {
+  0%   { left: -55%; }
+  55%  { left: 125%; }
+  100% { left: 125%; }
+}
+
+/* ── The founder's name: typed, colour-cycling, underlined ──────────────────
+   The colour walk and the underline ride on `currentColor`, so the rule under
+   the letters always matches the letters themselves. `text-underline-offset`
+   is generous because the name is set at 1.9rem/900 — a 3px line hugging the
+   baseline would read as a strikethrough at that weight. */
+.founder-name-h2 { color: var(--ink); }
+.founder-name {
+  display: inline-block;
+  animation: founder-name-hue 9s linear infinite;
+}
+.fn-line {
+  text-decoration-line: underline;
+  text-decoration-thickness: 3px;
+  text-underline-offset: 8px;
+  text-decoration-color: currentColor;
+}
+.fn-line-accent { font-weight: 900; }
+.fn-caret {
+  display: inline-block;
+  width: 0.09em;
+  height: 0.92em;
+  margin-left: 0.06em;
+  vertical-align: -0.08em;
+  background: currentColor;
+  opacity: 0;
+  border-radius: 1px;
+}
+.fn-caret.is-on {
+  opacity: 1;
+  animation: fn-blink 1s steps(1, end) infinite;
+}
+@keyframes fn-blink {
+  0%, 49%  { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+@keyframes founder-name-hue {
+  0%   { color: var(--ink); }
+  22%  { color: #38BDF8; }
+  45%  { color: #93C5FD; }
+  68%  { color: #0EA5E9; }
+  88%  { color: #2563EB; }
+  100% { color: var(--ink); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .founder-card-shell::after,
+  .founder-card::before,
+  .founder-name,
+  .fn-caret.is-on { animation: none; }
+  .founder-card::before { display: none; }
+  .founder-name { color: var(--blue); }
+}
+
 /* ── Glass ──────────────────────────────────────────────────────────────────
    One rule supplies the blur for every large surface, so the surfaces cannot
    drift apart. The surfaces themselves are translucent in the token block;

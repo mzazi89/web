@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import AuthSwap from '@/components/AuthSwap';
 import { AppBackground, Card, Badge, Icons } from '@/components/ui';
+import FounderName from '@/components/FounderName';
 
 const values = [
   { num: '01', title: 'Speed First', desc: 'Deploy servers in under 2 minutes. No waiting, no friction — just instant results.', icon: <Icons.Zap size={24} /> },
@@ -66,11 +67,14 @@ export default function AboutPage() {
             <div className="lg:col-span-5 anim-fade-up">
               <div style={{ position: 'sticky', top: 100 }}>
                 <Badge tone="blue" style={{ marginBottom: 16 }}>The Visionary</Badge>
-                <h2 style={{ fontSize: '1.9rem', fontWeight: 900, marginBottom: 17, lineHeight: 1.2 }}>
-                  Dominic Mokua <br />
-                  <span style={{ color: 'var(--blue)' }}>Kerubo</span>.
+                <h2 className="founder-name-h2" style={{ fontSize: '1.9rem', fontWeight: 900, marginBottom: 17, lineHeight: 1.2 }}>
+                  <FounderName />
                 </h2>
-                <Card accent style={{ padding: 0, overflow: 'hidden', background: 'var(--surface)' }}>
+                <Card
+                  accent
+                  className="founder-card-shell"
+                  style={{ padding: 0, overflow: 'hidden', background: 'var(--surface)' }}
+                >
                   {/* Two bands, not two columns.
                       Band 1: portrait LEFT, the quote RIGHT.
                       Band 2: the biography runs edge to edge under the picture —
