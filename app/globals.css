@@ -698,6 +698,59 @@ h3 { font-size: var(--text-xl); }
   box-shadow: var(--shadow-md);
 }
 
+/* ── Founder card (/about): portrait LEFT, words RIGHT ──────────────────────
+   The portrait is a studio shot on a black field, so it is framed rather than
+   floated: a hairline ring, a rounded square and a soft shadow make the black
+   read as intent next to the glass card instead of as a stray rectangle.
+   Width lives here, not inline, because it changes at breakpoints — 112px in
+   the desktop sidebar, 104px on tablets, 84px on a phone — and the words keep
+   the remaining space (min-width:0 lets long words wrap instead of pushing the
+   photo out of the card). */
+.founder-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 23px;
+}
+.founder-photo {
+  flex: 0 0 auto;
+  width: 112px;
+}
+.founder-photo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: #05070D;
+  box-shadow: 0 10px 24px rgba(2, 6, 23, 0.22);
+}
+.founder-copy { min-width: 0; }
+.founder-quote {
+  margin: 0 0 14px;
+  color: var(--ink);
+  font-weight: 800;
+  font-size: clamp(1rem, 2.2vw, 1.125rem);
+  line-height: 1.35;
+}
+.founder-bio {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+@media (max-width: 1024px) {
+  .founder-photo { width: 104px; }
+}
+@media (max-width: 420px) {
+  .founder-card { gap: 14px; padding: 18px; }
+  .founder-photo { width: 84px; }
+  .founder-photo img { border-radius: 12px; }
+  .founder-bio { font-size: 13px; }
+}
+
 /* ── Glass ──────────────────────────────────────────────────────────────────
    One rule supplies the blur for every large surface, so the surfaces cannot
    drift apart. The surfaces themselves are translucent in the token block;

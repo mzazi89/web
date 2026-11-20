@@ -71,16 +71,33 @@ export default function AboutPage() {
                   <span style={{ color: 'var(--blue)' }}>Kerubo</span>.
                 </h2>
                 <Card accent style={{ padding: 0, overflow: 'hidden', background: 'var(--surface)' }}>
-                  <div style={{ padding: 23 }}>
-                    <Icons.User size={48} style={{ color: 'var(--brand)', marginBottom: 20 }} />
-                    <p className="display text-lg font-bold leading-snug" style={{ color: 'var(--ink)', marginBottom: 16 }}>
-                      "I didn't start with a team or a budget. I started with a laptop and a stubborn refusal to give up on a bug."
-                    </p>
-                    <p style={{ fontSize: 13.5, color: 'var(--muted)' }}>
-                      Dominic is a BCOM student at the <strong>Cooperative University of Kenya</strong>. 
-                      He balances corporate strategy studies with late-night coding sessions, building 
-                      the very platforms he uses to teach others.
-                    </p>
+                  {/* Portrait LEFT, words RIGHT. The photo is square and is
+                      scaled by the layout class, not by a fixed width, so the
+                      quote stays the loudest thing on the card on a phone and
+                      the face still reads at 84px. */}
+                  <div className="founder-card">
+                    <div className="founder-photo">
+                      <img
+                        src="/images/dominic-mokua-360.webp"
+                        srcSet="/images/dominic-mokua-360.webp 360w, /images/dominic-mokua.webp 720w"
+                        sizes="(max-width: 420px) 84px, (max-width: 1024px) 104px, 112px"
+                        alt="Dominic Mokua Kerubo, founder of MZAZI TECH"
+                        width="112"
+                        height="112"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    </div>
+                    <div className="founder-copy">
+                      <p className="display founder-quote">
+                        "I didn't start with a team or a budget. I started with a laptop and a stubborn refusal to give up on a bug."
+                      </p>
+                      <p className="founder-bio">
+                        Dominic is a BCOM student at the <strong>Cooperative University of Kenya</strong>. 
+                        He balances corporate strategy studies with late-night coding sessions, building 
+                        the very platforms he uses to teach others.
+                      </p>
+                    </div>
                   </div>
                 </Card>
               </div>
